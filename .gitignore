@@ -1,0 +1,12 @@
+node_modules/
+dist/
+public/mediapipe/
+public/content/
+public/icons/*.png
+test-results/
+playwright-report/
+.env
+*.service-account.json
+out/
+.claude/worktrees/
+.claude/settings.local.json

@@ -1,0 +1,141 @@
+import { sortear } from './sorteio';
+import type { Noticia, Veredito } from './types';
+
+export const TEMPOS = {
+  cardMs: 15000,
+  feedbackMs: 3000,
+  saidaMs: 250,
+  calibracaoMs: 2000,
+  ausenciaMs: 10000,
+} as const;
+
+export type Resultado = 'acerto' | 'erro' | 'tempo';
+export interface Presenca { presente: boolean; centralizado: boolean }
+export type Entrada = 'corpo' | 'alternativa';
+export interface Partida { cards: Noticia[]; resultados: Resultado[]; entrada: Entrada }
+
+export type EstadoCard = {
+  tela: 'card';
+  partida: Partida;
+  indice: number;
+  restanteMs: number;
+  saibaMais: boolean;
+  ausenteMs: number | null;
+};
+
+export type Estado =
+  | { tela: 'espera' }
+  | { tela: 'calibracao'; centradoMs: number; ausenteMs: number }
+  | EstadoCard
+  // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
+  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null }
+  | { tela: 'resumo'; partida: Partida };
+
+export type Evento =
+  | { tipo: 'tick'; dtMs: number; presenca: Presenca | null }
+  | { tipo: 'escolha'; resposta: Veredito }
+  | { tipo: 'saibaMais' }
+  | { tipo: 'enter' }
+  | { tipo: 'sair' };
+
+/** `tempoCardMs`: tempo por card configurado (FR-9); sem valor, vale `TEMPOS.cardMs`. */
+export interface Contexto {
+  noticias: Noticia[];
+  rng: () => number;
+  cameraAtiva: boolean;
+  tempoCardMs?: number;
+  /** v6.0.0 (AC-9.21): nos modos Mão e Cabeça a ausência não pausa nem encerra a partida. */
+  ignorarAusencia?: boolean;
+}
+
+export const ESTADO_INICIAL: Estado = { tela: 'espera' };
+const CALIBRACAO: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
+
+function card(partida: Partida, indice: number, tempoCardMs: number = TEMPOS.cardMs): EstadoCard {
+  return { tela: 'card', partida, indice, restanteMs: tempoCardMs, saibaMais: false, ausenteMs: null };
+}
+
+function iniciarPartida(ctx: Contexto, entrada: Entrada): Estado {
+  const cards = sortear(ctx.noticias, ctx.rng);
+  return cards.length === 0 ? ESTADO_INICIAL : card({ cards, resultados: [], entrada }, 0, ctx.tempoCardMs);
+}
+
+function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null): Estado {
+  return {
+    tela: 'feedback',
+    partida: { ...e.partida, resultados: [...e.partida.resultados, r] },
+    indice: e.indice,
+    // Escolha: o card sai antes (saidaMs) e o resultado ainda fica 3 s inteiros (AC-4.1/AC-4.2).
+    restanteMs: resposta === null ? TEMPOS.feedbackMs : TEMPOS.feedbackMs + TEMPOS.saidaMs,
+    resposta,
+  };
+}
+
+export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
+  // "✕ Sair" / Esc (FR-10): encerra na hora, sem resumo; na espera não faz nada.
+  if (evento.tipo === 'sair') return estado.tela === 'espera' ? estado : ESTADO_INICIAL;
+  switch (estado.tela) {
+    case 'espera': {
+      if (ctx.noticias.length === 0) return estado;
+      // v3.0.0: só o operador inicia (Enter ou "▶ Iniciar"); a presença na câmera nunca tira o jogo da espera (AC-1.1).
+      // Com câmera ativa, Enter abre a calibração (AC-1.7); sem câmera, a partida começa direto (AC-1.6).
+      if (evento.tipo === 'enter') return ctx.cameraAtiva ? CALIBRACAO : iniciarPartida(ctx, 'alternativa');
+      return estado;
+    }
+    case 'calibracao': {
+      if (evento.tipo === 'enter') return iniciarPartida(ctx, 'alternativa');
+      if (evento.tipo !== 'tick') return estado;
+      const p = evento.presenca;
+      if (!p || !p.presente) {
+        const ausenteMs = estado.ausenteMs + evento.dtMs;
+        return ausenteMs >= TEMPOS.ausenciaMs ? ESTADO_INICIAL : { tela: 'calibracao', centradoMs: 0, ausenteMs };
+      }
+      if (!p.centralizado) return { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
+      const centradoMs = estado.centradoMs + evento.dtMs;
+      return centradoMs >= TEMPOS.calibracaoMs ? iniciarPartida(ctx, 'corpo') : { tela: 'calibracao', centradoMs, ausenteMs: 0 };
+    }
+    case 'card': {
+      if (evento.tipo === 'escolha') {
+        const certo = evento.resposta === estado.partida.cards[estado.indice]!.veredito;
+        return registrar(estado, certo ? 'acerto' : 'erro', evento.resposta);
+      }
+      if (evento.tipo === 'saibaMais') return { ...estado, saibaMais: !estado.saibaMais };
+      if (evento.tipo !== 'tick') return estado;
+      // Partida pelo teclado/mouse (AC-1.6) ou nos modos Mão/Cabeça (AC-9.21) não depende de presença.
+      const p = estado.partida.entrada === 'alternativa' || ctx.ignorarAusencia ? null : evento.presenca;
+      if (p && !p.presente) {
+        const ausenteMs = (estado.ausenteMs ?? 0) + evento.dtMs;
+        return ausenteMs >= TEMPOS.ausenciaMs ? ESTADO_INICIAL : { ...estado, ausenteMs };
+      }
+      const base: EstadoCard = { ...estado, ausenteMs: null };
+      const restanteMs = base.restanteMs - evento.dtMs;
+      return restanteMs <= 0 ? registrar(base, 'tempo', null) : { ...base, restanteMs };
+    }
+    case 'feedback': {
+      if (evento.tipo !== 'tick') return estado;
+      const restanteMs = estado.restanteMs - evento.dtMs;
+      if (restanteMs > 0) return { ...estado, restanteMs };
+      const proximo = estado.indice + 1;
+      return proximo < estado.partida.cards.length
+        ? card(estado.partida, proximo, ctx.tempoCardMs)
+        : { tela: 'resumo', partida: estado.partida };
+    }
+    case 'resumo': {
+      if (evento.tipo !== 'enter') return estado;
+      return ctx.cameraAtiva ? CALIBRACAO : iniciarPartida(ctx, 'alternativa');
+    }
+  }
+}
+
+export function pontos(p: Partida): number {
+  return p.resultados.filter((r) => r === 'acerto').length;
+}
+
+/** Mensagem do resumo pela proporção de acertos (AC-5.7). */
+export function mensagemResumo(pontos: number, total: number): string {
+  const p = total > 0 ? pontos / total : 0;
+  if (p >= 1) return 'Imune a fake news!';
+  if (p >= 0.8) return 'Parabéns! Você checa muito bem as notícias.';
+  if (p >= 0.5) return 'Você consegue se proteger, mas ainda pode melhorar.';
+  return 'Cuidado! Você precisa verificar melhor as manchetes.';
+}

@@ -1,0 +1,82 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600&display=swap");
+/* Conectando: estilos do sistema que não são tokens editáveis na página.
+   Cores, espaços fixos, raios, sombras e a família vêm de tokens.css (gerado de tokens.json).
+   Aqui ficam a escala tipográfica fluida (clamp), o ritmo fluido, o movimento, os ajustes de kicker por tema e a base. */
+:root{
+  --fonte:var(--font-sans,"Poppins",system-ui,sans-serif);
+  --fs-display:clamp(44px,5vw,96px); /* @kind font */      /* h1 do portal, 900 */
+  --fs-titulo-curso:clamp(34px,2.95vw,56px); /* @kind font */ /* h1 da página de curso, 700 */
+  --fs-h2:clamp(30px,3vw,56px); /* @kind font */           /* título de seção, 800 */
+  --fs-h3:clamp(28px,2.5vw,48px); /* @kind font */         /* título de formação, 700 */
+  --fs-subtitulo:clamp(19px,1.67vw,32px); /* @kind font */ /* subtítulo / citação, 600 */
+  --fs-lead:clamp(16px,1.25vw,24px); /* @kind font */      /* texto de apoio, 500 */
+  --fs-corpo:clamp(16px,1.15vw,20px); /* @kind font */     /* corpo, 400–500 */
+  --fs-corpo-sm:clamp(15px,1.05vw,20px); /* @kind font */
+  --fs-pequeno:clamp(14px,.9vw,16px); /* @kind font */
+  --fs-kicker:clamp(14px,1.2vw,24px); /* @kind font */
+  --fs-meta:clamp(13px,1vw,20px); /* @kind font */
+  --fs-nav:clamp(14px,1vw,20px); /* @kind font */
+  --fs-botao:clamp(15px,1.1vw,20px); /* @kind font */
+  --fs-fita-valor:clamp(22px,2.5vw,48px); /* @kind font */
+  --fs-fita-rotulo:clamp(13px,1.2vw,24px); /* @kind font */
+  --fs-faq:clamp(17px,1.5vw,28px); /* @kind font */
+  --lh-display:1.13; /* @kind font */
+  --lh-titulo:1.15; /* @kind font */
+  --lh-corpo:1.55; /* @kind font */
+  --peso-light:300; /* @kind font */
+  --peso-regular:400; /* @kind font */
+  --peso-medio:500; /* @kind font */
+  --peso-semi:600; /* @kind font */
+  --peso-bold:700; /* @kind font */
+  --peso-extra:800; /* @kind font */
+  --peso-black:900; /* @kind font */
+  --gutter:clamp(20px,4vw,64px); /* @kind spacing */
+  --esp-secao:clamp(64px,7vw,120px); /* @kind spacing */   /* topo de seção */
+  --esp-bloco:clamp(40px,4vw,72px); /* @kind spacing */    /* título → conteúdo */
+  --esp-curso:clamp(56px,7vw,120px); /* @kind spacing */   /* entre formações */
+  --gap-grid:clamp(24px,6vw,120px); /* @kind spacing */
+  --moldura-borda:clamp(8px,.8vw,14px); /* @kind spacing */
+  --dur-rapida:.2s; /* @kind other */
+  --dur-sublinhado:.25s; /* @kind other */
+  --elevar-hover:translateY(-2px); /* @kind other */
+  --kicker-peso:300;
+  --kicker-caixa:uppercase;
+}
+[data-theme="sobrio"],[data-tema="sobrio"]{--kicker-peso:500;--kicker-caixa:none}
+
+/* Compatibilidade com o atributo das peças originais: data-tema="sobrio" equivale a data-theme="sobrio". */
+[data-tema="sobrio"]{
+  --pagina:var(--cn-grafite-azul);
+  --hero:var(--cn-noite);
+  --hero-texto:var(--cn-creme);
+  --hero-destaque:var(--cn-amarelo);
+  --secao-alt:var(--cn-marinho);
+  --texto:var(--cn-creme);
+  --texto-titulo:var(--cn-creme);
+  --texto-suave:rgba(252,250,241,.85);
+  --texto-destaque:var(--cn-menta);
+  --kicker:var(--cn-amarelo);
+  --kicker-alt:var(--cn-celeste);
+  --marcador:var(--cn-celeste);
+  --lista-texto:var(--cn-creme);
+  --tracejado:rgba(252,250,241,.6);
+  --foco:var(--cn-amarelo);
+  --chip-borda:var(--cn-menta);
+  --fita-fundo:var(--cn-amarelo);
+  --fita-texto:var(--cn-fita-texto);
+  --fita-sombra:rgba(0,0,0,.25);
+  --rodape:var(--cn-azul);
+  --rodape-texto:var(--cn-creme);
+  --placeholder:#3a4a54;
+  --sombra-fita:10px 12px 0 rgba(0,0,0,.25);
+}
+
+/* Base: reset e padrões globais usados pelas duas peças. */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{font-family:var(--fonte);background:var(--pagina);color:var(--texto);font-size:var(--fs-corpo);line-height:var(--lh-corpo);-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+a:hover{color:inherit}
+:focus-visible{outline:3px solid var(--foco);outline-offset:3px}

@@ -1,0 +1,19 @@
+<!-- @dsCard group="Marca" height=230 subtitle="Marcadores chapados no lugar de bullets e ícones" -->
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><title>Marker · prévia</title>
+<style>.m{font:500 11px/1.3 ui-monospace,Menlo,monospace;opacity:.75;margin:0 0 8px}</style></head>
+<body>
+<div id="root" style="padding:20px"></div>
+<script>
+var N = window.ConectandoDesignSystem_a3445e, h = React.createElement, F = React.Fragment, A = '../../assets/';
+function Sobrio(p){ return h('div', {'data-theme':'sobrio', 'data-tema':'sobrio', style:Object.assign({background:'var(--pagina)', color:'var(--texto)', padding:20, borderRadius:12}, p.style)}, p.children); }
+function Rot(p){ return h('div', {className:'m'}, p.children); }
+function App(){ return h('div', {style:{display:'grid', gap:20}},
+  h('div', {style:{display:'flex', gap:28, alignItems:'center'}},
+    h(N.Marker, {shape:'triangulo', size:40}), h(N.Marker, {shape:'estrela-4', size:40, color:'var(--cn-azul)'}), h(N.Marker, {shape:'estrela-5', size:40, color:'var(--cn-amarelo)'}), h(N.Marker, {shape:'estrela-6', size:40, color:'var(--cn-coral)'})),
+  h('div', {style:{display:'grid', gap:8}}, ['triângulo','estrela-4','estrela-5'].map(function(t, i){ return h('div', {key:i, style:{display:'flex', gap:10, alignItems:'center'}}, h(N.Marker, {shape:N.SEQUENCIA[i % 3]}), 'Item ' + (i+1) + ' da lista (' + t + ')'); }))); }
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

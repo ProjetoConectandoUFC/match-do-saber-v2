@@ -1,0 +1,11 @@
+/* Menu ☰ do operador (FR-14) com a identidade Conectando (FR-15): botão de três barras desenhadas e caixa creme. */
+.raiz { position: absolute; top: calc(24 * var(--u)); right: calc(24 * var(--u)); z-index: 11; display: flex; flex-direction: column; align-items: flex-end; gap: calc(12 * var(--u)); }
+.botao { width: calc(52 * var(--u)); height: calc(52 * var(--u)); border-radius: 50%; border: 2px solid var(--cn-creme); background: transparent; display: grid; place-content: center; gap: calc(5 * var(--u)); padding: 0; cursor: pointer; }
+.botao i { display: block; width: calc(22 * var(--u)); height: calc(3 * var(--u)); border-radius: 2px; background: var(--cn-creme); }
+.botao[aria-expanded='true'] { background: var(--cn-creme); }
+.botao[aria-expanded='true'] i { background: var(--cn-azul); }
+.botao:focus-visible { outline: 3px solid var(--cn-amarelo); outline-offset: 3px; }
+.menu { display: flex; flex-direction: column; width: calc(270 * var(--u)); box-sizing: border-box; padding: calc(8 * var(--u)); border: 2px solid var(--cn-azul); border-radius: calc(14 * var(--u)); background: var(--cn-creme); color: var(--cn-tinta); box-shadow: calc(6 * var(--u)) calc(6 * var(--u)) 0 var(--sombra); }
+.item { display: flex; align-items: center; gap: calc(12 * var(--u)); padding: calc(8 * var(--u)) calc(12 * var(--u)); border: 3px solid transparent; border-radius: calc(10 * var(--u)); background: none; color: inherit; font: 600 calc(20 * var(--u)) / 1.3 var(--fonte); text-align: left; cursor: pointer; }
+.item:hover, .item:focus-visible { border-color: var(--cn-coral); outline: none; }
+.marca { color: var(--cn-azul); }

@@ -1,0 +1,152 @@
+/* Três seletores: `:global(html, body, #root)` vira o descendente `html body #root` e não alcança html nem body (AC-4.5). */
+:global(html), :global(body), :global(#root) { margin: 0; height: 100%; }
+:global(body) { background: var(--cn-noite); color: var(--cn-creme); font-family: var(--fonte); overflow: hidden; }
+.app { height: 100%; position: relative; }
+
+/* ===== Identidade Conectando (FR-15). Medidas em --u: 1 --u = 1 px em 1366×768 (tema.css). ===== */
+.tela { position: relative; height: 100%; overflow: hidden; box-sizing: border-box; }
+.claro { background: var(--cn-azul); color: var(--cn-creme); }
+.sobrio { background: var(--cn-noite); color: var(--cn-creme); }
+
+/* Espera (tema Claro): conteúdo centralizado na tela inteira; a prévia da câmera fica por cima (AC-2.6). */
+.anel { position: absolute; color: #fff; opacity: 0.2; pointer-events: none; }
+.anelC { left: calc(-6 * var(--u)); top: calc(-6 * var(--u)); }
+.anelB { right: calc(-6 * var(--u)); top: calc(-6 * var(--u)); }
+.anelA { right: calc(-6 * var(--u)); top: calc(400 * var(--u)); }
+.assinatura { position: absolute; left: calc(40 * var(--u)); top: calc(32 * var(--u)); z-index: 1; }
+.espLinha { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; gap: calc(110 * var(--u)); }
+.espTexto { display: flex; flex-direction: column; align-items: flex-start; gap: calc(24 * var(--u)); }
+.logo { margin: 0; display: inline-flex; flex-direction: column; font-size: calc(72 * var(--u)); font-weight: 900; line-height: 1; color: var(--cn-creme); }
+.logoL1, .logoL2 { display: flex; align-items: center; gap: 0.14em; }
+.logoL2 { padding-left: 0.95em; }
+.logo em { font-style: normal; color: var(--cn-amarelo); }
+.disco { display: grid; place-items: center; width: 0.62em; height: 0.62em; border-radius: 50%; background: var(--cn-noite); flex: none; }
+.discoMentira { color: var(--mentira); }
+.discoVerdade { color: var(--verdade); }
+.chamada { margin: 0; font-size: calc(22 * var(--u)); font-weight: 500; line-height: 1.4; max-width: calc(440 * var(--u)); }
+.aviso { margin: 0; font-size: calc(22 * var(--u)); font-weight: 600; line-height: 1.35; max-width: calc(480 * var(--u)); background: var(--cn-noite); color: var(--cn-creme); padding: calc(10 * var(--u)) calc(20 * var(--u)); border-radius: calc(16 * var(--u)); }
+.botaoIniciar { display: inline-flex; align-items: center; gap: calc(12 * var(--u)); background: var(--cn-amarelo); color: var(--cn-tinta); border: none; border-radius: var(--raio-pilula); padding: calc(12 * var(--u)) calc(36 * var(--u)) calc(12 * var(--u)) calc(30 * var(--u)); font: 700 calc(25 * var(--u)) / 1.2 var(--fonte); box-shadow: calc(6 * var(--u)) calc(6 * var(--u)) 0 var(--cn-noite); cursor: pointer; }
+.botaoIniciar:disabled { opacity: 0.45; cursor: not-allowed; }
+.botaoIniciar:focus-visible { outline: 3px solid var(--cn-creme); outline-offset: 3px; }
+.esquema { width: calc(460 * var(--u)); display: flex; align-items: center; justify-content: space-between; }
+.esquemaLado { display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--u)); }
+.discoP { display: grid; place-items: center; width: calc(58 * var(--u)); height: calc(58 * var(--u)); border-radius: 50%; background: var(--cn-noite); }
+.pilP { border-radius: var(--raio-pilula); padding: calc(3 * var(--u)) calc(16 * var(--u)); font-size: calc(19 * var(--u)); font-weight: 800; border: 2px solid var(--cn-creme); }
+.pilMentira { background: var(--mentira); color: var(--cn-tinta); }
+.pilVerdade { background: var(--verdade); color: var(--cn-noite); }
+.esquemaCard { width: calc(170 * var(--u)); height: calc(210 * var(--u)); box-sizing: border-box; background: var(--cn-creme); border-radius: calc(16 * var(--u)); padding: calc(12 * var(--u)); box-shadow: calc(8 * var(--u)) calc(8 * var(--u)) 0 var(--sombra); display: flex; flex-direction: column; gap: calc(12 * var(--u)); }
+.esquemaCard i { display: block; height: calc(11 * var(--u)); border-radius: calc(6 * var(--u)); background: var(--cn-gelo); }
+.esquemaCard i:first-of-type { background: var(--cn-titulo); height: calc(14 * var(--u)); }
+.esquemaCard i.curta { width: 60%; }
+.esquemaIlu { height: calc(76 * var(--u)); border-radius: calc(8 * var(--u)); display: grid; place-items: center; flex: none; background: var(--cn-roxo); color: var(--cn-amarelo); }
+.dicaConfig { position: absolute; left: calc(40 * var(--u)); bottom: calc(24 * var(--u)); margin: 0; z-index: 1; font-size: calc(17 * var(--u)); font-weight: 500; color: var(--cn-creme); }
+
+/* Calibração (tema Sóbrio) */
+.calibracao { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(28 * var(--u)); text-align: center; padding: calc(32 * var(--u)); }
+.calibracaoTitulo { margin: 0; font-size: calc(48 * var(--u)); font-weight: 800; }
+.calibracaoDica { margin: 0; font-size: calc(22 * var(--u)); font-weight: 500; max-width: calc(900 * var(--u)); line-height: 1.4; }
+.barra { width: calc(540 * var(--u)); height: calc(20 * var(--u)); background: var(--cn-marinho); border-radius: var(--raio-pilula); overflow: hidden; }
+.barra > div { height: 100%; background: var(--cn-amarelo); transition: width 0.1s linear; }
+
+/* Card (tema Sóbrio): laterais e card centralizados na área de jogo, a tela menos a barra da base (AC-4.5). */
+.mesa { position: absolute; left: 0; right: 0; top: 0; bottom: calc(64 * var(--u)); display: flex; align-items: center; justify-content: center; }
+.lado { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: calc(16 * var(--u)); }
+.marcaMentira { color: var(--mentira); }
+.marcaVerdade { color: var(--verdade); }
+.pilula { display: inline-flex; align-items: center; border-radius: var(--raio-pilula); padding: calc(6 * var(--u)) calc(26 * var(--u)); font-size: calc(32 * var(--u)); font-weight: 800; line-height: 1.2; border: calc(3 * var(--u)) solid var(--cn-creme); }
+.pilulaMentira { background: var(--mentira); color: var(--cn-tinta); }
+.pilulaVerdade { background: var(--verdade); color: var(--cn-noite); }
+.card { position: relative; flex: none; width: calc(600 * var(--u)); max-height: calc(642 * var(--u)); box-sizing: border-box; background: var(--cn-creme); color: var(--cn-tinta); border-radius: calc(24 * var(--u)); padding: calc(22 * var(--u)) calc(24 * var(--u)) calc(24 * var(--u)); display: flex; flex-direction: column; gap: calc(12 * var(--u)); box-shadow: calc(14 * var(--u)) calc(14 * var(--u)) 0 var(--sombra); overflow: hidden; touch-action: none; user-select: none; }
+.card img { width: 100%; height: calc(156 * var(--u)); flex: none; object-fit: cover; border-radius: calc(16 * var(--u)); }
+.card h2 { margin: 0; font-size: calc(32 * var(--u)); line-height: 1.15; font-weight: 700; color: var(--cn-titulo); overflow-wrap: anywhere; }
+.card p { margin: 0; font-size: calc(28 * var(--u)); line-height: 1.32; font-weight: 400; overflow-wrap: anywhere; }
+.card p.dicaCard { display: flex; align-items: center; gap: calc(8 * var(--u)); font-size: calc(20 * var(--u)); line-height: 1.3; font-weight: 500; color: var(--cn-grafite); }
+.marcaDica { color: var(--cn-azul); }
+.ilustracaoTema { position: relative; flex: none; width: 100%; height: calc(156 * var(--u)); overflow: hidden; border-radius: calc(16 * var(--u)); }
+.chipTema { position: absolute; left: calc(14 * var(--u)); top: calc(14 * var(--u)); background: var(--cn-creme); color: var(--cn-noite); font-size: calc(20 * var(--u)); font-weight: 700; line-height: 1.4; padding: calc(3 * var(--u)) calc(16 * var(--u)); border-radius: var(--raio-pilula); }
+.saibaMais { display: flex; flex-direction: column; gap: calc(12 * var(--u)); min-height: 0; overflow-y: auto; }
+.faixaTema { flex: none; height: calc(16 * var(--u)); margin: calc(-22 * var(--u)) calc(-24 * var(--u)) calc(4 * var(--u)); }
+.saiDireita, .saiEsquerda { pointer-events: none; }
+.saiDireita { animation: saiDireita 250ms ease-in forwards; }
+.saiEsquerda { animation: saiEsquerda 250ms ease-in forwards; }
+@keyframes saiDireita { to { transform: translateX(120vw) rotate(20deg); } }
+@keyframes saiEsquerda { to { transform: translateX(-120vw) rotate(-20deg); } }
+/* Últimos 5 s (AC-4.7): contorno e brilho coral pulsando ~1 vez por segundo, crescendo levemente. */
+.pulsando { animation: pulsar 1s ease-in-out infinite; }
+@keyframes pulsar {
+  0%, 100% { box-shadow: 0 0 0 calc(6 * var(--u)) var(--alerta), calc(14 * var(--u)) calc(14 * var(--u)) 0 var(--alerta); transform: scale(1); }
+  50% { box-shadow: 0 0 0 calc(10 * var(--u)) var(--alerta), 0 0 calc(36 * var(--u)) calc(14 * var(--u)) rgb(227 74 57 / 0.7); transform: scale(1.03); }
+}
+.barraTempo { position: absolute; left: 0; right: 0; bottom: 0; height: calc(64 * var(--u)); background: var(--cn-marinho); overflow: hidden; }
+.barraPreenchida { position: absolute; top: 0; bottom: 0; left: 0; background: var(--cn-amarelo); transition: width 0.1s linear; }
+.barraAlerta .barraPreenchida { background: var(--alerta); }
+.barraSegundos { position: absolute; left: 50%; top: calc(11 * var(--u)); transform: translateX(-50%); height: calc(42 * var(--u)); line-height: calc(42 * var(--u)); padding: 0 calc(20 * var(--u)); border-radius: var(--raio-pilula); background: var(--cn-creme); color: var(--cn-noite); font-size: calc(26 * var(--u)); font-weight: 800; }
+.pontos { position: absolute; left: calc(24 * var(--u)); bottom: calc(84 * var(--u)); margin: 0; font-size: calc(28 * var(--u)); font-weight: 800; }
+/* Na coluna da esquerda, acima do placar: não cobre o card (FR-4). */
+.dicaModo { position: absolute; left: calc(24 * var(--u)); bottom: calc(136 * var(--u)); max-width: calc(330 * var(--u)); box-sizing: border-box; margin: 0; background: var(--cn-marinho); padding: calc(10 * var(--u)) calc(16 * var(--u)); border-radius: calc(16 * var(--u)); font-size: calc(18 * var(--u)); line-height: 1.35; text-align: left; }
+.sobreposicao { position: absolute; inset: 0; z-index: 5; background: rgb(0 32 54 / 0.9); color: var(--cn-creme); display: grid; place-items: center; font-size: calc(48 * var(--u)); font-weight: 800; }
+.sair { position: absolute; top: calc(16 * var(--u)); left: calc(16 * var(--u)); z-index: 4; display: flex; align-items: center; gap: calc(10 * var(--u)); border: 2px solid currentColor; border-radius: var(--raio-pilula); padding: calc(5 * var(--u)) calc(18 * var(--u)) calc(5 * var(--u)) calc(14 * var(--u)); background: transparent; color: inherit; font: 600 calc(18 * var(--u)) / 1.3 var(--fonte); cursor: pointer; }
+.sair:focus-visible { outline: 3px solid var(--cn-amarelo); outline-offset: 3px; }
+.xis { position: relative; width: calc(14 * var(--u)); height: calc(14 * var(--u)); }
+.xis::before, .xis::after { content: ""; position: absolute; left: calc(-1 * var(--u)); top: calc(5.5 * var(--u)); width: calc(16 * var(--u)); height: calc(3 * var(--u)); border-radius: 2px; background: currentColor; transform: rotate(45deg); }
+.xis::after { transform: rotate(-45deg); }
+.faixa { position: absolute; top: 0; left: 0; right: 0; z-index: 4; margin: 0; background: var(--cn-amarelo); color: var(--cn-tinta); text-align: center; padding: calc(8 * var(--u)); font-size: calc(18 * var(--u)); font-weight: 700; }
+
+/* Feedback (AC-4.1 a AC-4.3, AC-4.9): fundo na cor do veredito; texto noite sobre menta (11,2:1) e tinta sobre coral (5,0:1). */
+.fbVerdade { background: var(--verdade); color: var(--cn-noite); }
+.fbMentira { background: var(--mentira); color: var(--cn-tinta); }
+/* "Sair" fica fora da tela (App); acompanha a cor do texto do feedback. */
+.app:has(> .fbVerdade) { color: var(--cn-noite); }
+.app:has(> .fbMentira) { color: var(--cn-tinta); }
+.feedback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(22 * var(--u)); text-align: center; padding: 0 calc(200 * var(--u)); }
+.veredito { margin: 0; display: inline-flex; align-items: center; gap: calc(12 * var(--u)); font-size: calc(30 * var(--u)); font-weight: 800; line-height: 1.2; }
+.selo { margin: 0; font-size: calc(48 * var(--u)); font-weight: 900; line-height: 1; padding: calc(12 * var(--u)) calc(40 * var(--u)); border-radius: var(--raio-pilula); }
+.seloAcerto { background: var(--cn-noite); color: var(--cn-amarelo); }
+.seloErro { background: var(--cn-creme); color: var(--cn-tinta); border: calc(3 * var(--u)) solid var(--cn-tinta); }
+.explicacao { margin: 0; font-size: calc(30 * var(--u)); line-height: 1.4; font-weight: 500; max-width: calc(860 * var(--u)); }
+.tecnica { margin: 0; border: calc(3 * var(--u)) solid currentColor; border-radius: var(--raio-pilula); padding: calc(4 * var(--u)) calc(24 * var(--u)); font-size: calc(26 * var(--u)); font-weight: 600; }
+
+/* Resumo (tema Claro, AC-5.1, AC-13.2): polaroid 384 (20% maior que os 320 da v9) e texto lado a lado, centralizados. */
+.resumoLinha { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: calc(90 * var(--u)); }
+.resumoTexto { display: flex; flex-direction: column; align-items: center; gap: calc(8 * var(--u)); width: calc(500 * var(--u)); text-align: center; }
+.resumoTexto > * { margin: 0; }
+.resumoTexto h1 { font-size: calc(56 * var(--u)); font-weight: 900; line-height: 1.1; }
+.resumoTexto h1 em { font-style: normal; color: var(--cn-amarelo); }
+.placar { font-size: calc(112 * var(--u)); font-weight: 900; line-height: 1; color: var(--cn-amarelo); }
+.mensagemResumo { font-size: calc(28 * var(--u)); font-weight: 600; line-height: 1.3; }
+.polaroid { position: relative; margin: 0; width: calc(384 * var(--u)); flex: none; }
+.folha { position: absolute; inset: 0; background: var(--cn-amarelo); border-radius: 4px; transform: translate(calc(16 * var(--u)), calc(12 * var(--u))) rotate(2.5deg); }
+.papel { position: relative; background: var(--cn-branco); color: var(--cn-tinta); padding: calc(16 * var(--u)) calc(16 * var(--u)) 0; border-radius: 4px; transform: rotate(-1.4deg); }
+.papel img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.papel figcaption { padding: calc(12 * var(--u)) 0 calc(16 * var(--u)); font-size: calc(22 * var(--u)); font-weight: 700; text-align: center; }
+
+/* Prévia da câmera (AC-2.6, v10.0.0): camada sobreposta e fixa no canto inferior direito, fora do fluxo de centralização. */
+.preview { position: fixed; right: calc(16 * var(--u)); bottom: calc(80 * var(--u)); z-index: 10; width: calc(320 * var(--u)); height: calc(180 * var(--u)); box-sizing: content-box; border-radius: calc(14 * var(--u)); overflow: hidden; border: 2px solid var(--cn-creme); background: var(--cn-grafite-azul); pointer-events: none; }
+.preview[hidden] { display: none; }
+.preview video, .preview canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+
+/* Telas de carregamento e erro */
+.centro { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: calc(16 * var(--u)); padding: calc(32 * var(--u)); box-sizing: border-box; font-size: calc(24 * var(--u)); }
+.dica { font-size: calc(17 * var(--u)); opacity: 0.85; }
+
+/* Painel Configurações (FR-9): caixa creme à direita, borda azul e sombra chapada; item em foco com contorno coral. */
+.painel { position: absolute; inset: 0; z-index: 11; display: flex; justify-content: flex-end; background: rgb(0 32 54 / 0.6); }
+.menu { background: var(--cn-creme); color: var(--cn-tinta); padding: calc(28 * var(--u)); font-size: calc(18 * var(--u)); text-align: left; }
+.painel > .menu { height: 100%; width: min(26rem, 100vw); box-sizing: border-box; overflow-y: auto; border-left: 2px solid var(--cn-azul); box-shadow: calc(-8 * var(--u)) 0 0 var(--sombra); animation: entraPainel 0.2s ease-out; }
+@keyframes entraPainel { from { transform: translateX(100%); } }
+.menu h2 { margin: 0; font-size: calc(30 * var(--u)); font-weight: 800; color: var(--cn-titulo); }
+.menu ul { list-style: none; padding: 0; margin: 0 0 calc(16 * var(--u)); display: grid; gap: calc(10 * var(--u)); }
+.menu li { padding: calc(8 * var(--u)) calc(12 * var(--u)); border: 3px solid transparent; border-radius: calc(14 * var(--u)); }
+.menu li.destacado { border-color: var(--cn-coral); }
+.menu .opcoes button { font: 600 calc(18 * var(--u)) / 1.3 var(--fonte); padding: calc(6 * var(--u)) calc(16 * var(--u)); border-radius: var(--raio-pilula); border: 2px solid var(--cn-azul); background: var(--cn-creme); color: var(--cn-azul); cursor: pointer; }
+.menu .opcoes button[aria-pressed='true'] { background: var(--cn-azul); color: var(--cn-creme); }
+.menu .dica { color: var(--cn-grafite); opacity: 1; }
+.cabecalhoMenu { display: flex; align-items: center; justify-content: space-between; gap: calc(16 * var(--u)); margin-bottom: calc(16 * var(--u)); }
+.fechar { display: grid; place-items: center; width: calc(40 * var(--u)); height: calc(40 * var(--u)); border-radius: 50%; border: 2px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+.rotuloItem { margin: 0 0 calc(6 * var(--u)); font-weight: 700; }
+.opcoes { display: flex; flex-wrap: wrap; gap: calc(8 * var(--u)); }
+
+/* Modo de diagnóstico (FR-12): canto superior esquerdo, abaixo do "Sair", fora da coluna do card. */
+.diagnostico { position: absolute; top: calc(72 * var(--u)); left: calc(16 * var(--u)); z-index: 8; max-width: calc(300 * var(--u)); box-sizing: border-box; padding: calc(10 * var(--u)) calc(12 * var(--u)); border-radius: calc(12 * var(--u)); border: 2px solid var(--cn-menta); background: rgb(0 32 54 / 0.92); color: var(--cn-menta); font: calc(13 * var(--u)) / 1.35 ui-monospace, Menlo, monospace; }
+.diagnostico p { margin: 0; white-space: normal; overflow-wrap: anywhere; }
+.diagnostico button { margin-top: calc(8 * var(--u)); font: 600 calc(13 * var(--u)) / 1.3 var(--fonte); padding: calc(4 * var(--u)) calc(12 * var(--u)); border-radius: var(--raio-pilula); border: 2px solid var(--cn-menta); background: transparent; color: var(--cn-menta); cursor: pointer; }

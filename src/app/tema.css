@@ -1,0 +1,46 @@
+/* Identidade visual Conectando (FR-15): tokens do design system "Conectando #NEW" e a fonte Poppins, servida pelo jogo.
+   Importado uma vez em main.tsx. Os CSS Modules usam var(--…). */
+:root {
+  --cn-azul: #0075c5;
+  --cn-azul-escuro: #035386;
+  --cn-amarelo: #fde31f;
+  --cn-coral: #e34a39;
+  --cn-creme: #fcfaf1;
+  --cn-branco: #ffffff;
+  --cn-tinta: #0c0b0a;
+  --cn-titulo: #001320;
+  --cn-grafite: #3a3a3a;
+  --cn-grafite-azul: #19262e;
+  --cn-marinho: #032942;
+  --cn-noite: #002036;
+  --cn-celeste: #62bfff;
+  --cn-teal: #309f9f;
+  --cn-menta: #a5dede;
+  --cn-gelo: #c8dfe8;
+  --cn-rosa: #ff6776;
+  --cn-laranja: #d86f33;
+  --cn-azul-medio: #4074b2;
+  --cn-roxo: #a740b2;
+  --cn-turquesa: #24c0c0;
+  --cn-ceu: #3bb8ff;
+
+  /* Papéis no jogo */
+  --verdade: var(--cn-menta);
+  --mentira: var(--cn-coral);
+  --alerta: var(--cn-coral);
+  --sombra: var(--cn-teal);
+  --raio-pilula: 999px;
+  --fonte: "Poppins", system-ui, sans-serif;
+
+  /* Unidade de tela: 1 --u = 1 px em 1366×768 (resolução de referência da prévia); cresce junto em 1920×1080. */
+  --u: min(calc(100vw / 1366), calc(100vh / 768));
+}
+
+body {
+  font-family: var(--fonte);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}

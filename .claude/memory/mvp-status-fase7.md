@@ -1,0 +1,34 @@
+---
+name: mvp-status-fase7
+description: MVP 001-jogo-estande (spec v8.2.0, barra de tempo também no card, braço para o lado no modo Corpo, resumo sem lista de técnicas e com mensagem por faixa, foto polaroid no resumo, gestos novos do modo Mão e modo de diagnóstico, modos, Configurações no canto superior direito, Iniciar/Sair, sons, início só manual, card parado, barra de tempo, tempo corre no saiba mais) está na main; verificação manual das Fases 7, 9, 11, 13, 15 e 17 e setup do GitHub/Google pendentes; prazo 2026-11-09
+metadata:
+  type: project
+---
+
+O MVP 001-jogo-estande foi mergeado na `main` em 2026-10-27 (revisão SDD Mode B: SPEC-ALIGNED). Prazo de entrega: 2026-11-09.
+
+Pendente (Fase 7, manual — ver `docs/specs/001-jogo-estande/plan.md`):
+- Teste no notebook real com webcam a 1,5–2 m (gestos, sair do quadro, 2ª pessoa, "saiba mais"); ajustar `CONFIG_GESTOS` se preciso.
+- Partida iniciada por Enter com câmera ligada; câmera negada/desconectada; instalação + offline; desempenho (≥15 fps, gesto ≤1 s); 8 h de operação; confirmar que o auto-update do SW não recarrega no meio de uma partida.
+- Planilha real ponta a ponta (inclusive o separador `;` da fórmula em `apps-script/Code.gs`).
+- (v1.1.0, mergeado em 2026-10-27) Fase 9: testar os modos Mão e Cabeça sentado no notebook real, de preferência com uma pessoa com baixa mobilidade; ajustar `margemMaoOmbro`, `limiarCabecaGraus`, `retornoCabecaGraus` e `limiarQueixo` em `CONFIG_GESTOS`; conferir que o menu aberto bloqueia a calibração.
+- (v2.0.0, mergeado em 2026-10-27) Fase 11: ouvir os sons no barulho do evento (ajustar `volume` em `src/app/audio.ts`), layout na TV, tempos de 10 s e 30 s com o público, "✕ Sair" sobre a faixa "Câmera indisponível" e recalibração logo após Sair com o jogador ainda no quadro.
+- (v3.0.0, mergeado em 2026-10-27) Fase 13: com a câmera real, confirmar que nada começa sozinho na espera, Iniciar → calibração → partida, Sair/ausência deixam na espera, Enter duas vezes com pouca luz; e Iniciar enquanto a câmera ainda carrega (começa direto).
+- (v4.0.0, mergeado em 2026-10-27) Fase 15: com a câmera real, confirmar que o card não treme/inclina antes da escolha; barra e pulso vermelho legíveis a ~2 m na TV; centralização na resolução da TV; checar com a equipe de conteúdo o corte 16:9 das imagens (antes 4:3).
+- (v5.0.0, mergeado em 2026-10-28) Fase 17: abrir o "saiba mais" pelo gesto de cada modo e conferir que a barra continua descendo e que ele só fecha por gesto/↑/escolha/tempo; avaliar se 15 s bastam para ler e decidir (senão, subir o tempo por card até 30 s).
+- (v5.1.0, mergeado em 2026-10-28) Fase 18: na TV do estande, conferir que o botão ⚙ (canto superior direito) é fácil de achar e que o painel lateral de Configurações é legível.
+- (2026-10-28) Relógio do jogo agora segue o tempo real (antes, com a detecção de pose lenta, a barra andava a ~65%). Medido aqui: a detecção deixa o jogo a ~6–7 fps (meta da spec ≥15). Pendente: medir fps e rastreio das mãos no notebook real antes de mudar limites; possível modo de diagnóstico na tela (proposto, não feito).
+- (v5.2.0, mergeado em 2026-10-28) Modo de diagnóstico em `?diagnostico` (painel + "Baixar registro (60 s)").
+- (v6.0.0, mergeado em 2026-10-29) Bug da barra parada no modo Mão RESOLVIDO: causa era a pausa por ausência quando a detecção perdia a pessoa ao levantar a mão (confirmado: Enter duas vezes funcionava). Agora Mão/Cabeça ignoram ausência. Modo Mão ganhou "duas mãos para um lado" e "arrastar do centro". Fase 21 pendente: testar os gestos no notebook com `?diagnostico` (inclusive "V" e braços abertos) e ajustar `duasMaosLadoL`, `centroArrasteL`, `arrasteMinL`, `arrasteMaxMs`.
+- (v6.1.0, mergeado em 2026-10-29) A dica do modo Mão (AC-9.14) agora cita os três jeitos de escolher. Fase 23 pendente: conferir na TV a 1,5–2 m que a dica é legível e não cobre o card nem a barra.
+- (v7.0.0, mergeado em 2026-11-03) Resumo mostra polaroid com quadro da câmera do card do meio (⌈M/2⌉), só em memória (apagado ao fechar o resumo); item "Foto no resumo" no menu (ligado por padrão). A exceção à regra "não guardar imagem da câmera" foi decidida sem emendar o Princípio 3 porque nada é salvo/enviado; baixar/QR ficou fora (exigiria emenda). Fase 25 pendente: enquadramento no recorte quadrado, legibilidade na TV, sem travada no instante da foto.
+- (v7.1.0, mergeado em 2026-11-03) Resumo mostra mensagem por proporção de acertos (AC-5.7). Conferir legibilidade na TV (Fase 27).
+- (v8.0.0, mergeado em 2026-11-03) Resumo não mostra mais "Técnicas que você praticou"; a técnica segue no feedback de cada card (Princípio 2).
+- (2026-11-03, ABERTO, sem novidade) Barra de tempo parada no modo Mão, print sem prévia da câmera; não reproduzido. Achado (2026-11-05): no servidor de dev com câmera falsa, a 1ª detecção de pose trava a página ~8 s (compilação na GPU), o que explicaria uma barra parada no início; não confirmado no notebook dela.
+- (v8.1.0, mergeado em 2026-11-06) "Não lê nenhum movimento" no modo Corpo NÃO era defeito de câmera: vídeo da usuária mostrou câmera ativa e esqueleto ok, mas ela escolhia estendendo os braços e o tronco ficava no centro (a regra só aceitava deslocar o tronco). Agora um braço estendido para o lado (punho > 1,2 L do meio do corpo, ~300 ms) também escolhe; liberação exige punhos < 0,9 L. Fase 30 pendente: no notebook, com `?diagnostico`, conferir "mãos (L)" < 0,9 com braços soltos e ajustar `bracoLadoL`/`retornoBracoL`.
+- Planilha: aba `noticias` criada pela `configurarPlanilha` (2026-10-29); faltam a conta de serviço Google (Parte 2) e o GitHub/secrets/token (Parte 3) do guia.
+- (v8.2.0, mergeado em 2026-11-06) O card tem uma barra de tempo própria embaixo (AC-4.8), com os segundos, além da barra da base da tela; vermelhas juntas nos últimos 5 s. Card no limite em 1366×768 com texto máximo (~12 px de folga). Fase 32 pendente: legibilidade na TV a ~2 m.
+- (2026-11-05) Repositório público criado: https://github.com/Projeto-Conectando/match-do-saber (conta Projeto-Conectando, escolha da usuária; `origin`). Faltam conta de serviço Google, secret `GOOGLE_SERVICE_ACCOUNT_JSON`, variable `SHEET_ID`, Pages = GitHub Actions e token do Apps Script (`docs/operacao.md`); até lá o workflow `publicar.yml` falha. Push só quando a usuária pedir.
+
+**Why:** o código só foi verificado sem câmera e sem contas reais; o jogo ainda não está no ar (repo publicado, Pages não configurado).
+**How to apply:** em sessões futuras, não tratar o MVP como entregue até esses itens serem confirmados; começar por eles antes de novas features.
