@@ -1,92 +1,113 @@
 import { describe, expect, it } from 'vitest';
-import { CONFIG_INCLINACAO_CARD, criarInclinacaoCard, mapearInclinacao, situacaoDoCard } from './inclinacaoCard';
+import { CONFIG_INCLINACAO_CARD, criarInclinacaoCard, deslocamentoCard, fracaoControle, situacaoDoCard } from './inclinacaoCard';
 import { TEMPOS } from './partida';
 
-const { maxDeslocPx, maxGraus, zonaMorta } = CONFIG_INCLINACAO_CARD;
+const { fracaoLargura, maxGraus, zonaMorta, constanteTempoMs } = CONFIG_INCLINACAO_CARD;
+const CARD = { largura: 600, altura: 640 };
+const rad = (g: number) => (g * Math.PI) / 180;
 
-describe('mapearInclinacao (AC-2.10)', () => {
-  it('pontos de partida da spec: 40 px, 6° e zona morta de 15%', () => {
-    expect(CONFIG_INCLINACAO_CARD).toMatchObject({ maxDeslocPx: 40, maxGraus: 6, zonaMorta: 0.15 });
+describe('fracaoControle (AC-2.10 v10.3.0)', () => {
+  it('pontos de partida da spec: 38% da largura, 14°, zona morta de 3% e 100 ms de suavização', () => {
+    expect(CONFIG_INCLINACAO_CARD).toEqual({ fracaoLargura: 0.38, maxGraus: 14, zonaMorta: 0.03, constanteTempoMs: 100 });
   });
 
-  it('no centro e dentro da zona morta, o card não se move', () => {
-    expect(mapearInclinacao(0)).toEqual({ dx: 0, graus: 0 });
-    expect(mapearInclinacao(zonaMorta)).toEqual({ dx: 0, graus: 0 });
-    expect(mapearInclinacao(-zonaMorta * 0.9)).toEqual({ dx: 0, graus: 0 });
+  it('proporcional desde quase o centro: só a zona morta pequena é zero; ±1 no limiar; contínua', () => {
+    expect(fracaoControle(0)).toBe(0);
+    expect(fracaoControle(zonaMorta)).toBe(0);
+    expect(fracaoControle(0.1)).toBeCloseTo((0.1 - zonaMorta) / (1 - zonaMorta), 9);
+    expect(fracaoControle(0.5)).toBeGreaterThan(0.48);
+    expect(fracaoControle(1)).toBe(1);
+    expect(fracaoControle(-1)).toBe(-1);
+    expect(fracaoControle(zonaMorta + 1e-9)).toBeLessThan(1e-6);
   });
 
-  it('no limiar do gesto (±1) chega ao máximo, para o mesmo lado', () => {
-    expect(mapearInclinacao(1)).toEqual({ dx: maxDeslocPx, graus: maxGraus });
-    expect(mapearInclinacao(-1)).toEqual({ dx: -maxDeslocPx, graus: -maxGraus });
-  });
-
-  it('é proporcional entre a zona morta e o limiar, e contínuo na borda da zona morta', () => {
-    const meio = (1 + zonaMorta) / 2;
-    expect(mapearInclinacao(meio).dx).toBeCloseTo(maxDeslocPx / 2, 6);
-    expect(mapearInclinacao(-meio).graus).toBeCloseTo(-maxGraus / 2, 6);
-    expect(mapearInclinacao(zonaMorta + 1e-6).dx).toBeLessThan(0.001);
-  });
-
-  it('limita valores fora de -1..1 e trata NaN como centro', () => {
-    expect(mapearInclinacao(3)).toEqual({ dx: maxDeslocPx, graus: maxGraus });
-    expect(mapearInclinacao(-7)).toEqual({ dx: -maxDeslocPx, graus: -maxGraus });
-    expect(mapearInclinacao(Number.NaN)).toEqual({ dx: 0, graus: 0 });
+  it('limita fora de -1..1 e trata NaN como centro', () => {
+    expect(fracaoControle(4)).toBe(1);
+    expect(fracaoControle(-4)).toBe(-1);
+    expect(fracaoControle(Number.NaN)).toBe(0);
   });
 });
 
-describe('criarInclinacaoCard: suavização (AC-2.10)', () => {
-  const jogando = (inclinacao: number, dtMs: number) => ({ situacao: 'jogando' as const, inclinacao, dtMs, reduzirMovimento: false });
-
-  it('começa no centro e segue a leitura sem saltar', () => {
-    const c = criarInclinacaoCard();
-    const p1 = c.passo(jogando(1, 16));
-    expect(p1.dx).toBeGreaterThan(0);
-    expect(p1.dx).toBeLessThan(maxDeslocPx / 4); // um quadro não leva ao máximo
-    let p = p1;
-    for (let i = 0; i < 120; i++) p = c.passo(jogando(1, 16)); // ~2 s
-    expect(p.dx).toBeCloseTo(maxDeslocPx, 1);
-    expect(p.graus).toBeCloseTo(maxGraus, 1);
+describe('deslocamentoCard: como no Reigns, eixo de giro na base (AC-2.10)', () => {
+  it('no centro, parado e sem rótulos', () => {
+    expect(deslocamentoCard(0, CARD, false)).toEqual({ dx: 0, dy: 0, graus: 0, verdade: 0, mentira: 0 });
   });
 
-  it('não depende da taxa de quadros: 10 quadros de 16 ms ≈ 1 de 160 ms', () => {
+  it('no limiar (+1): base deslocada 38% da largura, 14° para a direita, rótulo Verdade inteiro', () => {
+    const d = deslocamentoCard(1, CARD, false);
+    const h = CARD.altura / 2;
+    expect(d.graus).toBeCloseTo(maxGraus, 9);
+    // o centro do card anda a base + o efeito do giro em torno da base
+    expect(d.dx).toBeCloseTo(fracaoLargura * CARD.largura + h * Math.sin(rad(maxGraus)), 6);
+    expect(d.dy).toBeCloseTo(h * (1 - Math.cos(rad(maxGraus))), 6);
+    expect(d).toMatchObject({ verdade: 1, mentira: 0 });
+  });
+
+  it('para a esquerda é o espelho, com o rótulo Mentira; a meio caminho, rótulo pela metade', () => {
+    const d = deslocamentoCard(-1, CARD, false);
+    const e = deslocamentoCard(1, CARD, false);
+    expect(d.dx).toBeCloseTo(-e.dx, 9);
+    expect(d.dy).toBeCloseTo(e.dy, 9);
+    expect(d.graus).toBeCloseTo(-maxGraus, 9);
+    expect(d).toMatchObject({ verdade: 0, mentira: 1 });
+    expect(deslocamentoCard(-0.5, CARD, false)).toMatchObject({ verdade: 0, mentira: 0.5, graus: -maxGraus / 2 });
+  });
+
+  it('a base do card anda na proporção da fração', () => {
+    const f = 0.4;
+    const d = deslocamentoCard(f, CARD, false);
+    const baseX = d.dx - (CARD.altura / 2) * Math.sin(rad(d.graus));
+    expect(baseX).toBeCloseTo(f * fracaoLargura * CARD.largura, 6);
+  });
+
+  it('prefers-reduced-motion: sem deslocar nem girar, só os rótulos mostram o quanto falta', () => {
+    expect(deslocamentoCard(0.7, CARD, true)).toEqual({ dx: 0, dy: 0, graus: 0, verdade: 0.7, mentira: 0 });
+  });
+
+  it('card sem tamanho (ainda não medido) não se move', () => {
+    expect(deslocamentoCard(1, { largura: 0, altura: 0 }, false)).toMatchObject({ dx: 0, dy: 0 });
+  });
+});
+
+describe('criarInclinacaoCard: interpolação entre as leituras da câmera (AC-2.10c)', () => {
+  const jogando = (inclinacao: number, dtMs: number) => ({ situacao: 'jogando' as const, inclinacao, dtMs });
+
+  it('segue a leitura a cada quadro, sem salto e sem atraso grande: ~63% em 100 ms, ~95% em 300 ms', () => {
+    const c = criarInclinacaoCard();
+    const um = c.passo(jogando(1, 16));
+    expect(um).toBeGreaterThan(0);
+    expect(um).toBeLessThan(0.2);
+    let f = um;
+    for (let t = 16; t < constanteTempoMs; t += 16) f = c.passo(jogando(1, 16));
+    expect(f).toBeGreaterThan(0.55);
+    expect(f).toBeLessThan(0.7);
+    for (let t = 0; t < 200; t += 16) f = c.passo(jogando(1, 16));
+    expect(f).toBeGreaterThan(0.94);
+  });
+
+  it('não depende da taxa de quadros: 10 quadros de 16 ms = 1 de 160 ms', () => {
     const a = criarInclinacaoCard();
     const b = criarInclinacaoCard();
-    let pa = { dx: 0, graus: 0 };
-    for (let i = 0; i < 10; i++) pa = a.passo(jogando(1, 16));
-    const pb = b.passo(jogando(1, 160));
-    expect(pa.dx).toBeCloseTo(pb.dx, 6);
+    let fa = 0;
+    for (let i = 0; i < 10; i++) fa = a.passo(jogando(1, 16));
+    expect(fa).toBeCloseTo(b.passo(jogando(1, 160)), 9);
   });
 
   it('quadro com dt 0 ou negativo não mexe', () => {
     const c = criarInclinacaoCard();
-    c.passo(jogando(1, 100));
-    const antes = c.passo(jogando(1, 0));
-    expect(c.passo(jogando(-1, -50))).toEqual(antes);
+    const antes = c.passo(jogando(1, 100));
+    expect(c.passo(jogando(-1, 0))).toBe(antes);
+    expect(c.passo(jogando(-1, -50))).toBe(antes);
   });
 
-  it('"centro" (sem pessoa, Volte para o centro, feedback, menu) volta suavemente ao zero', () => {
+  it('"centro" volta ao zero e encosta nele; "saindo" mantém a posição da escolha', () => {
     const c = criarInclinacaoCard();
-    for (let i = 0; i < 120; i++) c.passo(jogando(-1, 16));
-    const primeiro = c.passo({ situacao: 'centro', inclinacao: -1, dtMs: 16, reduzirMovimento: false });
-    expect(primeiro.dx).toBeLessThan(0);
-    expect(primeiro.dx).toBeGreaterThan(-maxDeslocPx);
-    let p = primeiro;
-    for (let i = 0; i < 200; i++) p = c.passo({ situacao: 'centro', inclinacao: -1, dtMs: 16, reduzirMovimento: false });
-    expect(p).toEqual({ dx: 0, graus: 0 }); // encosta no zero, sem resto infinitesimal
-  });
-
-  it('"saindo" mantém a posição de onde o card estava ao ser escolhido', () => {
-    const c = criarInclinacaoCard();
-    for (let i = 0; i < 120; i++) c.passo(jogando(1, 16));
+    for (let i = 0; i < 60; i++) c.passo(jogando(1, 16));
     const naEscolha = c.passo(jogando(1, 16));
-    expect(c.passo({ situacao: 'saindo', inclinacao: -1, dtMs: 100, reduzirMovimento: false })).toEqual(naEscolha);
-  });
-
-  it('prefers-reduced-motion: sempre no centro, na hora', () => {
-    const c = criarInclinacaoCard();
-    for (let i = 0; i < 120; i++) c.passo(jogando(1, 16));
-    expect(c.passo({ situacao: 'jogando', inclinacao: 1, dtMs: 16, reduzirMovimento: true })).toEqual({ dx: 0, graus: 0 });
-    expect(c.passo({ situacao: 'saindo', inclinacao: 1, dtMs: 16, reduzirMovimento: true })).toEqual({ dx: 0, graus: 0 });
+    expect(c.passo({ situacao: 'saindo', inclinacao: -1, dtMs: 100 })).toBe(naEscolha);
+    let f = naEscolha;
+    for (let i = 0; i < 100; i++) f = c.passo({ situacao: 'centro', inclinacao: 1, dtMs: 16 });
+    expect(f).toBe(0);
   });
 });
 

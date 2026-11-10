@@ -1,22 +1,29 @@
 import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
-import { criarInclinacaoCard, situacaoDoCard, type Deslocamento } from '../core/inclinacaoCard';
+import { criarInclinacaoCard, deslocamentoCard, situacaoDoCard } from '../core/inclinacaoCard';
 import type { Estado } from '../core/partida';
 import { dtDoQuadro } from '../core/relogio';
 
 const arredondar = (v: number, casas: number) => Math.round(v * 10 ** casas) / 10 ** casas;
 
+function definir(el: HTMLElement, prop: string, valor: string) {
+  if (el.style.getPropertyValue(prop) !== valor) el.style.setProperty(prop, valor);
+}
+
 /**
- * Escreve o deslocamento nas propriedades `translate`/`rotate`, que se somam ao `transform` das animações
- * de saída (AC-2.1/AC-2.2) e do pulso (AC-4.7) sem brigar com elas. Zero = sem estilo.
+ * Escreve a posição nas propriedades `translate`/`rotate`, que se somam ao `transform` das animações de saída
+ * (AC-2.1/AC-2.2) e do pulso (AC-4.7) sem brigar com elas, e a opacidade dos rótulos `[data-rotulo-lado]`
+ * (AC-2.10b). Zero = sem estilo. O tamanho vem de `offsetWidth`/`offsetHeight`, que não mudam com o giro.
  */
-function aplicar(el: HTMLElement | null, d: Deslocamento) {
+function aplicar(el: HTMLElement | null, f: number, reduzir: boolean) {
   if (!el) return;
-  const dx = arredondar(d.dx, 1);
-  const graus = arredondar(d.graus, 2);
-  const translate = dx === 0 ? '' : `${dx}px`;
-  const rotate = graus === 0 ? '' : `${graus}deg`;
-  if (el.style.getPropertyValue('translate') !== translate) el.style.setProperty('translate', translate);
-  if (el.style.getPropertyValue('rotate') !== rotate) el.style.setProperty('rotate', rotate);
+  const d = deslocamentoCard(f, { largura: el.offsetWidth, altura: el.offsetHeight }, reduzir);
+  const dx = arredondar(d.dx, 1), dy = arredondar(d.dy, 1), graus = arredondar(d.graus, 2);
+  definir(el, 'translate', dx === 0 && dy === 0 ? '' : `${dx}px ${dy}px`);
+  definir(el, 'rotate', graus === 0 ? '' : `${graus}deg`);
+  for (const [lado, opacidade] of [['verdade', d.verdade], ['mentira', d.mentira]] as const) {
+    const rotulo = el.querySelector<HTMLElement>(`[data-rotulo-lado="${lado}"]`);
+    if (rotulo) definir(rotulo, 'opacity', String(arredondar(opacidade, 3)));
+  }
 }
 
 /** Consulta criada uma vez; `matches` acompanha a preferência do sistema ao vivo. */
@@ -25,9 +32,9 @@ function consultarMovimentoReduzido(): { matches: boolean } {
 }
 
 /**
- * Card acompanha o corpo (AC-2.10): um laço `requestAnimationFrame` lê `inclinacaoRef` (escrita pelo laço
- * de detecção de `useJogo`), suaviza e move o card direto no DOM, fora do estado do React. A detecção
- * roda a ~6–7 fps; a suavização anda a cada quadro, então o card não salta entre as leituras.
+ * O card mimetiza o controle em tempo real (AC-2.10, como no Reigns): um laço `requestAnimationFrame` lê
+ * `inclinacaoRef` (escrita pelo laço de detecção de `useJogo`, ~6–7 leituras por segundo), interpola a cada
+ * quadro de tela e move o card direto no DOM, fora do estado do React.
  */
 export function useInclinacaoCard({ inclinacaoRef, estado, pausado, cardRef, cardSaindoRef }: {
   inclinacaoRef: RefObject<number>;
@@ -40,28 +47,24 @@ export function useInclinacaoCard({ inclinacaoRef, estado, pausado, cardRef, car
   const situacaoRef = useRef(situacao);
   situacaoRef.current = situacao;
   const motor = useRef(criarInclinacaoCard());
-  const ultimo = useRef<Deslocamento>({ dx: 0, graus: 0 });
+  const ultima = useRef(0);
+  const movimentoReduzido = useRef<{ matches: boolean }>({ matches: false });
   const alvo = () => (situacaoRef.current === 'saindo' ? cardSaindoRef.current : cardRef.current);
 
-  // O card que sai é outro elemento: já nasce na posição em que o card estava, sem esperar o próximo quadro.
+  // O card que sai pode ser outro elemento: já nasce na posição em que o card estava, sem esperar o quadro.
   useLayoutEffect(() => {
-    aplicar(alvo(), ultimo.current);
+    aplicar(alvo(), ultima.current, movimentoReduzido.current.matches);
   }, [situacao, estado.tela]);
 
   useEffect(() => {
     let raf = 0;
     let anterior = performance.now();
-    const movimentoReduzido = consultarMovimentoReduzido();
+    movimentoReduzido.current = consultarMovimentoReduzido();
     const quadro = (agora: number) => {
       const dtMs = dtDoQuadro(agora, anterior);
       anterior = agora;
-      ultimo.current = motor.current.passo({
-        situacao: situacaoRef.current,
-        inclinacao: inclinacaoRef.current ?? 0,
-        dtMs,
-        reduzirMovimento: movimentoReduzido.matches,
-      });
-      aplicar(alvo(), ultimo.current);
+      ultima.current = motor.current.passo({ situacao: situacaoRef.current, inclinacao: inclinacaoRef.current ?? 0, dtMs });
+      aplicar(alvo(), ultima.current, movimentoReduzido.current.matches);
       raf = requestAnimationFrame(quadro);
     };
     raf = requestAnimationFrame(quadro);

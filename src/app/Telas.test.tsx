@@ -264,6 +264,24 @@ describe('v10.0.0: card com a identidade Conectando (FR-15)', () => {
   });
 });
 
+describe('v10.3.0: rótulos que aparecem conforme o card vai para um lado (AC-2.10b)', () => {
+  it('o card tem "Mentira" à esquerda e "Verdade" à direita, invisíveis no centro e só como texto', () => {
+    const { container } = render(<TelaCard noticia={noticia} restanteMs={9000} saibaMais={false} ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
+    const card = container.querySelector('article')!;
+    const verdade = card.querySelector<HTMLElement>('[data-rotulo-lado="verdade"]')!;
+    const mentira = card.querySelector<HTMLElement>('[data-rotulo-lado="mentira"]')!;
+    expect(verdade.textContent).toBe('Verdade');
+    expect(mentira.textContent).toBe('Mentira');
+    expect(verdade.style.opacity).toBe('0');
+    expect(mentira.style.opacity).toBe('0');
+    expect(verdade.style.right).not.toBe('');
+    expect(mentira.style.left).not.toBe('');
+    expect(verdade).toHaveAttribute('aria-hidden', 'true');
+    expect(verdade.style.background).toBe('var(--verdade)');
+    expect(mentira.style.background).toBe('var(--mentira)');
+  });
+});
+
 describe('v10.2.0: telas do tutorial (Story 15, FR-16)', () => {
   const treino: Noticia = {
     id: 'treino-1', titulo: 'Morango Influencer', descricao: 'Acordei assim!', saibaMais: '', tema: 'tecnologia',

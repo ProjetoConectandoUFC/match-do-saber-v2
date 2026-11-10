@@ -180,6 +180,28 @@ export function BarraTempo({ restanteMs, totalMs, alerta }: { restanteMs: number
 }
 
 /** Laterais do gesto (FR-15): Mentira à esquerda (triângulo coral), Verdade à direita (estrela menta). */
+/**
+ * Rótulo do lado para onde o card está indo (AC-2.10b, v10.3.0): só texto e tokens; a opacidade é escrita
+ * por `useInclinacaoCard` a cada quadro. Estilo provisório, inline, até o Agente Visual definir o final.
+ */
+function RotuloLado({ lado }: { lado: 'mentira' | 'verdade' }) {
+  const verdade = lado === 'verdade';
+  return (
+    <span
+      data-rotulo-lado={lado}
+      aria-hidden="true"
+      style={{
+        position: 'absolute', top: 'calc(18 * var(--u))', [verdade ? 'right' : 'left']: 'calc(18 * var(--u))',
+        padding: 'calc(4 * var(--u)) calc(14 * var(--u))', borderRadius: 'var(--raio-pilula)',
+        background: verdade ? 'var(--verdade)' : 'var(--mentira)', color: 'var(--cn-tinta)',
+        font: '800 calc(26 * var(--u)) / 1.2 var(--fonte)', opacity: 0, pointerEvents: 'none', zIndex: 1,
+      }}
+    >
+      {verdade ? 'Verdade' : 'Mentira'}
+    </span>
+  );
+}
+
 function Lado({ lado }: { lado: 'mentira' | 'verdade' }) {
   return (
     <div className={s.lado}>
@@ -245,6 +267,8 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
             {!treino && <p className={s.dicaCard}><Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />{DICA_SAIBA_MAIS[modo]}</p>}
           </>
         )}
+        <RotuloLado lado="mentira" />
+        <RotuloLado lado="verdade" />
       </article>
       <Lado lado="verdade" />
       </div>
