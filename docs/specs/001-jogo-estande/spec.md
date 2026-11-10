@@ -1,9 +1,9 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
 **Status:** Approved
-**Version:** 10.0.0
+**Version:** 10.1.0
 **Created:** 2026-10-26
-**Last Updated:** 2026-11-09
+**Last Updated:** 2026-11-10
 **Branch:** `001-jogo-estande`
 **Origem:** [prd.md](prd.md) · ADRs: [frontend-stack](../../adr/001-frontend-stack.md), [motion-input](../../adr/001-motion-input.md), [content-pipeline](../../adr/001-content-pipeline.md)
 
@@ -30,6 +30,7 @@
 | 8.2.0 | 2026-11-06 | Adicionado AC-4.8: o card ganha uma barra de tempo própria na parte de baixo, com os segundos, além da barra da base da tela (AC-4.6), que continua; FR-4 cita as duas barras |
 | 9.0.0 | 2026-11-09 | Conteúdo gerenciado dentro do jogo e app de desktop. A Planilha Google sai: Story 7, FR-6 e FR-7 reescritos como gerenciador de notícias interno (listar, filtrar, editar, apagar, alterar em massa, adicionar, importar CSV com prévia), no modelo do Prova ou Reprova. FR-8 e Story 8 reescritos: o jogo vira app de desktop (Electron), offline, com o banco num CSV em `Documentos/Match do Saber/` e backup antes de cada gravação; a versão web continua com o banco embutido. FR-4: `imagem` passa a ser opcional e entra o campo `tema`; sem imagem, o card mostra a ilustração do tema. AC-9.1 e FR-9: o botão "⚙" vira o menu ☰ (Story 14, FR-14) com Notícias, Configurações, Diagnóstico e Tela cheia. Removidos a credencial da planilha (Security) e "CMS próprio ou painel administrativo" do fora de escopo |
 | 10.0.0 | 2026-11-09 | Identidade visual do projeto Conectando (FR-15, prévia aprovada em `docs/visual/previa.html`). Removido AC-4.8: o tempo aparece só na barra da base da tela. A interface diz "Verdade" e "Mentira" (AC-4.1 a AC-4.3, AC-9.14). Reescritos AC-4.1 a AC-4.3: o feedback mostra primeiro o veredito ("É verdade"/"É mentira"), menor, e abaixo o selo, com o fundo da tela na cor do veredito. AC-2.6 e AC-4.5: a prévia da câmera é uma camada sobreposta e não conta na centralização. AC-13.2: o resumo não mostra a prévia da câmera e o polaroid fica 20% maior |
+| 10.1.0 | 2026-11-10 | Card acompanha o corpo e dificuldade das notícias (cartões do Trello "Match: mecânicas e movimento do card" e "Conteúdo do Match"). Adicionado AC-2.10: na tela do card, o card desloca-se e gira levemente para o lado em que o jogador pende (no máximo 40 px e 6°), suavizado, com uma zona morta perto do centro, e fica no centro com `prefers-reduced-motion`, sem pessoa, com o menu aberto e em "Volte para o centro"; reescritos AC-2.3, AC-9.13 e as regras de FR-2 e FR-9 que pediam o card parado (decisão da v4.0.0 revista: a suavização e a zona morta tratam o tremor que motivou aquela decisão). Adicionados AC-7.10 e a coluna opcional `dificuldade` (`facil`, `medio`, `dificil` ou vazia) em AC-7.1, AC-7.2, AC-7.3 e FR-6; CSV sem a coluna continua sendo lido. O sorteio ainda não usa a dificuldade |
 
 ---
 
@@ -95,13 +96,14 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 - [ ] **AC-2.1** Given um card está na tela When o jogador desloca o tronco para a **própria direita** além do limiar e se mantém por ~300 ms Then o card é registrado como "match" (resposta "verdadeira") e sai pela direita da tela.
 - [ ] **AC-2.2** Given um card está na tela When o jogador desloca o tronco para a **própria esquerda** além do limiar e se mantém por ~300 ms Then o card é registrado como "descarte" (resposta "falsa") e sai pela esquerda da tela.
-- [ ] **AC-2.3** Given um card está na tela When o jogador se move (inclina o tronco, mexe os braços ou a cabeça) sem completar um gesto Then o card fica parado, sem inclinar nem tremer, e nenhuma escolha é registrada; ele só se move ao sair pela direita ou pela esquerda depois de uma escolha (AC-2.1, AC-2.2).
+- [ ] **AC-2.3** Given um card está na tela When o jogador se move (inclina o tronco, mexe os braços ou a cabeça) sem completar um gesto Then nenhuma escolha é registrada; o card só acompanha levemente a inclinação, como em AC-2.10, sem tremer, e só sai da tela depois de uma escolha (AC-2.1, AC-2.2). (Reescrito v10.1.0; da v4.0.0 à v10.0.0 o card ficava parado.)
 - [ ] **AC-2.4** Given o jogador acabou de fazer uma escolha When o próximo card aparece e o jogador ainda está deslocado para um lado ou com o braço estendido para um lado Then nenhuma nova escolha é aceita até ele voltar à área central com os dois punhos perto do corpo (a menos de 0,9 largura de ombro do meio do corpo).
 - [ ] **AC-2.5** Given um card está na tela When o operador pressiona → ou ← (ou arrasta o card com mouse/toque para a direita ou esquerda) Then o resultado é o mesmo de AC-2.1 ou AC-2.2, respectivamente.
 - [ ] **AC-2.6** Given a câmera está ativa durante a partida When o jogador olha para a tela Then ele vê uma prévia pequena e espelhada de si mesmo com o esqueleto detectado desenhado por cima, num canto inferior da tela, sobreposta ao resto (não empurra nem descentraliza nenhum outro elemento); a prévia não aparece na tela de resumo (v10.0.0).
 - [ ] **AC-2.7** Given o modo Corpo e um card na tela When o jogador estende um braço (qualquer um, em qualquer altura) para o **próprio lado direito** até o punho passar de 1,2 largura de ombro do meio do corpo e segura por ~300 ms Then o card é registrado como "match" e sai pela direita; para o lado esquerdo, como "descarte" e sai pela esquerda. O tronco pode ficar no centro.
 - [ ] **AC-2.8** Given o modo Corpo e um card na tela When os dois braços estão estendidos para lados opostos ao mesmo tempo, ou o tronco vai para um lado e o braço para o outro Then nenhuma escolha é registrada; com os dois punhos acima do nariz vale o "saiba mais" (AC-3.1), não uma escolha.
 - [ ] **AC-2.9** Given o modo Corpo When a tela de calibração aparece Then a instrução mostra "Corpo ou braço para a direita: é verdade · Para a esquerda: é falsa · Duas mãos para cima: saiba mais".
+- [ ] **AC-2.10** Given um card está na tela, com a câmera ativa e uma pessoa detectada When o jogador pende para um lado (no modo Corpo, o tronco; no modo Cabeça, a cabeça; no modo Mão a leitura de inclinação é sempre zero e o card fica no centro) Then o card desloca-se na horizontal para o mesmo lado em que o jogador se vê na prévia espelhada e gira levemente para esse lado, na proporção da inclinação até o limiar do gesto: no máximo 40 px e 6°, com o movimento suavizado (sem saltos entre as leituras da câmera) e sem se mover perto do centro (zona morta de 15% do limiar). O card volta suavemente ao centro quando não há pessoa detectada, em "Volte para o centro" e no feedback; com o menu ☰ ou as Configurações abertos ele fica no centro; se o sistema pede menos movimento (`prefers-reduced-motion: reduce`), o card não se desloca nem gira. Ao sair depois de uma escolha (AC-2.1, AC-2.2), ele parte da posição em que estava. O deslocamento não muda tempos, gestos, pontos nem a centralização de AC-4.5, que é medida com o card no centro. (Adicionado v10.1.0.)
 
 ### Story 3: Ver "saiba mais" antes de decidir
 
@@ -173,15 +175,16 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 **Acceptance criteria:**
 
-- [ ] **AC-7.1** Given o app de desktop na tela de espera When o operador abre ☰ › Notícias Then abre o painel "Notícias" com a lista de todas as notícias do banco (id, título, veredito, tema, status), a contagem total e por veredito, e filtros por texto, veredito, tema e status.
-- [ ] **AC-7.2** Given o painel Notícias When o operador escolhe "Nova notícia" ou edita uma existente e salva Then a notícia é gravada no banco com os campos `id` (gerado automaticamente na nova), `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras`, `imagem` (opcional), `revisado_por` e `status`; `veredito`, `tecnica`, `tema` e `status` só aceitam os valores das listas (`verdadeira`/`falsa`; `fonte`/`data`/`imagem`/`contexto`; `saude`/`ciencia`/`historia`/`tecnologia`/`curiosidades`/`meio-ambiente`; `rascunho`/`aprovada`).
-- [ ] **AC-7.3** Given o editor de uma notícia When falta um campo obrigatório, o `id` é repetido, `fonte_url` não é um link http(s), ou `status = aprovada` sem `revisado_por` Then o editor aponta o campo com o problema e não salva.
+- [ ] **AC-7.1** Given o app de desktop na tela de espera When o operador abre ☰ › Notícias Then abre o painel "Notícias" com a lista de todas as notícias do banco (id, título, veredito, tema, status), a contagem total e por veredito, e filtros por texto, veredito, tema, dificuldade (v10.1.0) e status.
+- [ ] **AC-7.2** Given o painel Notícias When o operador escolhe "Nova notícia" ou edita uma existente e salva Then a notícia é gravada no banco com os campos `id` (gerado automaticamente na nova), `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras`, `imagem` (opcional), `revisado_por`, `status` e `dificuldade` (opcional, v10.1.0); `veredito`, `tecnica`, `tema` e `status` só aceitam os valores das listas (`verdadeira`/`falsa`; `fonte`/`data`/`imagem`/`contexto`; `saude`/`ciencia`/`historia`/`tecnologia`/`curiosidades`/`meio-ambiente`; `rascunho`/`aprovada`), e `dificuldade` aceita `facil`/`medio`/`dificil` ou vazio.
+- [ ] **AC-7.3** Given o editor de uma notícia When falta um campo obrigatório, o `id` é repetido, `fonte_url` não é um link http(s), `status = aprovada` sem `revisado_por`, ou um campo de lista (inclusive `dificuldade`, quando preenchida) tem valor fora da lista Then o editor aponta o campo com o problema e não salva.
 - [ ] **AC-7.4** Given o painel Notícias com notícias selecionadas When o operador escolhe "Apagar" e confirma, ou "Alterar em massa" um campo de lista (`status`, `tema`, `tecnica`) e aplica Then todas as selecionadas são apagadas ou alteradas de uma vez.
 - [ ] **AC-7.5** Given o painel Notícias When o operador escolhe "Importar CSV" e um arquivo no formato de FR-6 Then aparece uma prévia com as linhas novas, as que já existem (mesmo `id`) e as inválidas com o motivo; ao confirmar "Adicionar N", só as novas válidas entram no banco.
 - [ ] **AC-7.6** Given qualquer gravação do banco (salvar, apagar, alterar em massa, importar) When ela termina Then o arquivo anterior foi copiado antes para a pasta de backups (FR-7) e a próxima partida já usa o banco novo, sem reabrir o jogo.
 - [ ] **AC-7.7** Given o banco tem notícias com `status = rascunho` When uma partida é sorteada Then só entram notícias com `status = aprovada`, `fonte_url` e `revisado_por` preenchidos (Princípio 1).
 - [ ] **AC-7.8** Given o painel Notícias When o operador escolhe "Exportar CSV" Then o jogo salva uma cópia do banco no formato de FR-6, que abre no Excel.
 - [ ] **AC-7.9** Given o jogo aberto no navegador (versão web) When o operador abre ☰ › Notícias Then aparece o aviso "O gerenciador de notícias está disponível no app de desktop", e o jogo usa o banco embutido.
+- [ ] **AC-7.10** Given o banco de notícias When uma notícia tem a coluna `dificuldade` vazia, ou o CSV (inclusive um arquivo de antes da v10.1.0) não tem essa coluna Then a notícia continua válida e jogável, com a dificuldade vazia; com um valor fora de `facil`/`medio`/`dificil` ela fica inválida (AC-7.3, AC-8.4). No painel Notícias, o editor mostra a dificuldade como lista (Fácil, Médio, Difícil ou vazia) e o filtro "Dificuldade" mostra só as notícias daquela dificuldade (ou só as sem dificuldade). A partir da v10.1.0 o CSV exportado sempre tem a coluna. O sorteio da partida (AC-6.1 a AC-6.3) ainda não usa a dificuldade. (Adicionado v10.1.0.)
 
 ### Story 8: Jogar offline no estande (reescrito v9.0.0)
 
@@ -217,7 +220,7 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-9.10** Given o modo Cabeça e um card na tela When o jogador inclina a cabeça para o **próprio lado direito** (~15° em relação à posição registrada na calibração) e mantém por ~300 ms Then o card é registrado como "match" e sai pela direita; para o lado esquerdo, como "descarte" e sai pela esquerda.
 - [ ] **AC-9.11** Given o modo Cabeça e um card na tela When o jogador levanta o queixo (olha para cima) e mantém por ~500 ms Then o "saiba mais" abre (ou fecha, se já estiver aberto) e nenhuma escolha é registrada.
 - [ ] **AC-9.12** Given o modo Cabeça e o jogador acabou de fazer uma escolha When o próximo card aparece com a cabeça ainda inclinada Then nenhuma nova escolha é aceita até ele voltar a cabeça ao centro.
-- [ ] **AC-9.13** Given o modo Cabeça e um card na tela When o jogador inclina a cabeça sem atingir o limiar Then o card fica parado (AC-2.3) e nenhuma escolha é registrada.
+- [ ] **AC-9.13** Given o modo Cabeça e um card na tela When o jogador inclina a cabeça sem atingir o limiar Then nenhuma escolha é registrada e o card só acompanha levemente a inclinação (AC-2.3, AC-2.10). (Reescrito v10.1.0.)
 - [ ] **AC-9.14** Given o modo Mão ou Cabeça When a tela de calibração ou um card aparece Then as instruções mostram os gestos do modo ativo: Mão — "É verdade: mão direita para cima, as duas mãos para a direita ou arraste para a direita · É mentira: o mesmo para a esquerda · Duas mãos para cima: saiba mais"; Cabeça — "Cabeça para a direita: é verdade · Cabeça para a esquerda: é mentira · Queixo para cima: saiba mais". ("falsa" virou "mentira" na v10.0.0.)
 - [ ] **AC-9.15** Given o modo Mão ou Cabeça e um jogador sentado diante da câmera, com ombros e rosto visíveis When ele fica no centro por 2 s Then a calibração conclui e a partida começa.
 - [ ] **AC-9.16** Given qualquer modo de jogo When o operador usa as setas, Enter ou o mouse/toque Then a entrada alternativa funciona exatamente como em FR-3.
@@ -316,7 +319,8 @@ Este é o modo padrão (FR-9). Os modos Mão e Cabeça estão em FR-9.
 - Medir o deslocamento em relação à posição central registrada na calibração da partida.
 - Exigir retorno à área central, com os dois punhos perto do corpo, entre duas escolhas (AC-2.4).
 - Seguir só a pessoa mais central e maior no quadro.
-- Mostrar a prévia espelhada com esqueleto. O card não acompanha o movimento do jogador (AC-2.3).
+- Mostrar a prévia espelhada com esqueleto. O card acompanha levemente a inclinação do jogador, suavizado e limitado (AC-2.10, v10.1.0); até a v10.0.0 ficava parado.
+- Calcular o deslocamento e o giro do card fora do estado do React (no laço de quadros), para não refazer a tela a cada leitura da câmera, com a regra de mapeamento e suavização em lógica pura testável.
 
 **Must not:**
 - Gravar ou transmitir imagens ou vídeo da câmera, ou guardá-los em disco ou no navegador. A única imagem da câmera guardada é a foto do resumo (FR-13), só na memória e só até o resumo fechar.
@@ -351,11 +355,12 @@ Este é o modo padrão (FR-9). Os modos Mão e Cabeça estão em FR-9.
 
 ### FR-6: Formato do banco de notícias (reescrito v9.0.0)
 
-Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras` (links separados por espaço, opcional), `imagem` (opcional), `revisado_por`, `status`.
+Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras` (links separados por espaço, opcional), `imagem` (opcional), `revisado_por`, `status`, `dificuldade` (opcional: `facil`, `medio`, `dificil` ou vazia; v10.1.0).
 
 **Must:**
 - Aceitar separador vírgula ou ponto e vírgula e codificação UTF-8 (com ou sem BOM), para abrir e salvar no Excel.
-- Restringir `veredito`, `tecnica`, `tema` e `status` às listas de AC-7.2.
+- Restringir `veredito`, `tecnica`, `tema` e `status` às listas de AC-7.2, e `dificuldade`, quando preenchida, a `facil`/`medio`/`dificil`.
+- Ler um CSV sem a coluna `dificuldade` (arquivos de antes da v10.1.0) como se ela estivesse vazia (AC-7.10).
 - Exportar sempre com cabeçalho, UTF-8 com BOM e ponto e vírgula.
 
 ### FR-7: Gerenciador de notícias (reescrito v9.0.0)
@@ -394,7 +399,7 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 - Guardar as quatro configurações no próprio notebook e reaplicá-las ao reabrir o jogo, inclusive offline; valor ausente ou inválido usa o padrão daquele item.
 - Modo Mão: escolher o lado de três jeitos, qualquer um vale: (1) própria mão direita acima do ombro (~300 ms) = match, mão esquerda = descarte (AC-9.7); (2) as duas mãos, abaixo dos ombros, levadas juntas para um lado além da linha do ombro (~300 ms) (AC-9.19); (3) arrastar uma mão do centro do peito para um lado, ≥ 1 largura de ombro em até ~0,8 s (AC-9.20). As duas mãos acima dos ombros (~500 ms) = saiba mais. Entre duas escolhas, exigir desfazer o gesto (AC-9.22). Medir as distâncias em larguras de ombro, para valer perto ou longe da câmera.
 - Nos modos Mão e Cabeça, ignorar a ausência da pessoa durante o card (AC-9.21); a calibração continua exigindo a pessoa no centro.
-- Modo Cabeça: inclinar a cabeça para o próprio lado direito (~15°, medido em relação à calibração, ~300 ms) = match; para o esquerdo = descarte; levantar o queixo (~500 ms) = saiba mais; exigir voltar a cabeça ao centro entre duas escolhas; manter o card parado até a escolha (AC-2.3, AC-9.13).
+- Modo Cabeça: inclinar a cabeça para o próprio lado direito (~15°, medido em relação à calibração, ~300 ms) = match; para o esquerdo = descarte; levantar o queixo (~500 ms) = saiba mais; exigir voltar a cabeça ao centro entre duas escolhas; o card só acompanha levemente a inclinação até a escolha (AC-2.3, AC-2.10, AC-9.13).
 - Nos modos Mão e Cabeça, detectar presença e centralização pela parte de cima do corpo (ombros e rosto), para que um jogador sentado consiga calibrar.
 - Mostrar nas instruções da calibração e do card os gestos do modo ativo (AC-9.14).
 - Manter, em todos os modos, a entrada alternativa (FR-3), os demais tempos (FR-1), a pontuação e o sorteio (FR-5) e a seleção da pessoa mais central e maior no quadro (FR-2).
@@ -618,6 +623,11 @@ Decisões da v10.0.0, confirmadas pelo responsável pelo projeto em 2026-11-09 (
 - Resumo sem a prévia da câmera e com polaroid 20% maior.
 - A prévia da câmera é uma camada sobreposta e não conta na centralização.
 - "Iniciar" amarelo; alerta dos 5 s em coral; rosa e turquesa mantidos nos temas Saúde e Meio ambiente.
+
+Decisões da v10.1.0, pedidas nos cartões do Trello "Match: mecânicas e movimento do card" e "Conteúdo do Match" (2026-11-10), a confirmar pelo responsável na revisão do PR:
+- O card volta a acompanhar o corpo, mas pouco (40 px e 6° no máximo), suavizado e com zona morta, para não repetir o tremor que levou à decisão da v4.0.0. Os números são pontos de partida, ajustáveis no notebook do estande.
+- No modo Mão o card não se move: esse modo não produz uma medida contínua de inclinação (só gestos).
+- A coluna `dificuldade` entra só como dado (gerenciador e CSV). Usá-la no sorteio fica para outra versão.
 
 ## Out of Scope (Future Considerations)
 

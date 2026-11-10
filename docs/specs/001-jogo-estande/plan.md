@@ -14,7 +14,7 @@
 - (v1.1.0) Modos de jogo: Corpo (padrão), Mão (mão direita = match, esquerda = descarte, as duas = saiba mais) e Cabeça (inclinar para direita/esquerda; queixo para cima = saiba mais). Escolhidos pelo operador na tela de espera (tecla M), guardados no notebook até serem trocados; nunca mudam durante uma partida.
 - (v6.0.0) Modo Mão: escolher por levantar a mão, por duas mãos para um lado ou arrastando do centro para o lado. A pausa por ausência vale só no modo Corpo.
 - (v5.0.0) O cronômetro do card só pausa por "Volte para o centro": com o "saiba mais" aberto o tempo corre e a barra diminui; o "saiba mais" não fecha sozinho.
-- (v4.0.0) Card parado até a escolha (sem inclinar com o corpo/cabeça); cronômetro numa barra grossa na base da tela com os segundos; nos últimos 5 s barra vermelha e card pulsando em vermelho (pausado, não pulsa).
+- (v4.0.0) Card parado até a escolha (sem inclinar com o corpo/cabeça; revisto na v10.1.0: acompanha levemente a inclinação, suavizado, AC-2.10); cronômetro numa barra grossa na base da tela com os segundos; nos últimos 5 s barra vermelha e card pulsando em vermelho (pausado, não pulsa).
 - (v3.0.0) Início só manual: a câmera nunca inicia nada; "▶ Iniciar" ou Enter na espera abre a calibração (câmera ativa) ou começa direto (sem câmera); Enter na calibração a pula. Sair, ausência de 10 s e o fim de calibração vazia deixam o jogo na espera.
 - (v2.0.0) Menu "Configurações": modo, tempo por card (10, 15, 20, 25, 30 s) e som (ligado/desligado). Botões "▶ Iniciar" (= Enter) e "✕ Sair" (= Esc, encerra sem resumo). Sons sintetizados: deslizar na escolha, positivo no acerto, erro no erro e no tempo esgotado. Card centralizado na vertical.
 - Todos os textos em português do Brasil.
@@ -5393,6 +5393,16 @@ Reescrita v10.0.0 (spec FR-15, AC-2.6, AC-4.1, AC-4.5, AC-4.9, AC-9.14, AC-13.2;
 - Editar uma notícia no painel; conferir backup em `Documentos/Match do Saber/backups/`; abrir o CSV no Excel e salvar; Ctrl+R e conferir.
 - Importar o CSV de um lote de notícias aprovado.
 
+## Phase 38 (added v10.1.0): Card acompanha o corpo e dificuldade das notícias
+
+Spec: AC-2.3, AC-2.10, AC-9.13, FR-2, FR-9 (card acompanha a inclinação); AC-7.1, AC-7.2, AC-7.3, AC-7.10, FR-6 (dificuldade). TDD: teste falhando antes do código.
+
+- 38.1 `src/core/inclinacaoCard.ts` (novo, puro): `mapearInclinacao(inclinacao)` → `{ dx, graus }` (zona morta de 15%, máximo 40 px e 6°, limitado a -1..1) e `criarInclinacaoCard()` com suavização exponencial por `dtMs` e as situações `jogando` (segue a leitura), `saindo` (mantém a posição) e `centro` (volta ao zero); `prefers-reduced-motion` zera na hora.
+- 38.2 `src/app/useInclinacaoCard.ts`: laço `requestAnimationFrame` que lê `inclinacaoRef` (de `useJogo`) e escreve `style.translate`/`style.rotate` no card atual (ref), fora do estado do React. Usa as propriedades `translate` e `rotate`, que se somam ao `transform` das animações de saída e do pulso (AC-4.7) sem brigar com elas; sem CSS novo.
+- 38.3 `dificuldade`: `Dificuldade`/`DIFICULDADES` em `types.ts`, última coluna de `COLUNAS_BANCO`; `csv.ts` lê em minúsculas e CSV sem a coluna fica com ela vazia; `banco.ts` valida a lista quando preenchida; `Noticia.dificuldade?`. Editor com lista e painel com filtro "Dificuldade" (inclui "Sem dificuldade").
+- 38.4 `conteudo/noticias.csv`: só o cabeçalho e um `;` vazio no fim de cada linha. `scripts/fixture.ts`: dificuldade nas aprovadas.
+- 38.5 Verificação no hardware (pendente): a ~2 m, conferir que o card não treme com o jogador parado e que segue o corpo sem atraso incômodo nos modos Corpo e Cabeça; ajustar zona morta, máximos e constante de tempo se preciso.
+
 ## Quickstart Validation
 
 ```bash
@@ -5475,3 +5485,5 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 9.0.0 | 37 | Adicionada: verificação no hardware |
 | 10.0.0 | 31 | Invalidada: a barra de tempo do card sai (AC-4.8 removido) |
 | 10.0.0 | 36 | Reescrita: subfases 36.1 a 36.7 conforme a prévia aprovada (revisão 3) |
+| 10.1.0 | 14 | Parcialmente invalidada: o card volta a acompanhar a inclinação, suavizado e limitado (Fase 38) |
+| 10.1.0 | 38 | Adicionada: card acompanha o corpo (AC-2.10) e coluna `dificuldade` (AC-7.10) |
