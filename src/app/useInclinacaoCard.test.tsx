@@ -94,3 +94,45 @@ describe('useInclinacaoCard (AC-2.10 v10.3.0)', () => {
     expect(rotulo(el, 'verdade')).toBe('1');
   });
 });
+
+/** Card dentro da mesa, com os botões redondos fora dele (AC-2.11, v11.0.0). */
+function Mesa({ estado, valor }: { estado: Estado; valor: number }) {
+  inclinacao = useRef(valor);
+  inclinacao.current = valor;
+  const cardRef = useRef<HTMLElement>(null);
+  const saindoRef = useRef<HTMLElement>(null);
+  useInclinacaoCard({ inclinacaoRef: inclinacao, estado, pausado: false, cardRef, cardSaindoRef: saindoRef });
+  return (
+    <div data-mesa>
+      <span data-testid="b-mentira" data-botao-lado="mentira" />
+      <div><article ref={estado.tela === 'card' ? cardRef : saindoRef}><span data-rotulo-lado="mentira" /><span data-rotulo-lado="verdade" /></article></div>
+      <span data-testid="b-verdade" data-botao-lado="verdade" />
+    </div>
+  );
+}
+const acende = (el: HTMLElement) => el.style.getPropertyValue('--acende');
+
+describe('botões redondos (AC-2.11, v11.0.0): a mesma fração dos rótulos, no mesmo quadro', () => {
+  it('no limiar à direita, Verdade aceso por inteiro e Mentira apagado', () => {
+    const { getByTestId } = render(<Mesa estado={CARD} valor={1} />);
+    avancar(150);
+    expect(acende(getByTestId('b-verdade'))).toBe('1');
+    expect(acende(getByTestId('b-mentira'))).toBe('0');
+  });
+
+  it('a meio caminho para a esquerda, Mentira aceso pela metade, igual ao rótulo', () => {
+    const { getByTestId, container } = render(<Mesa estado={CARD} valor={-0.515} />);
+    avancar(150);
+    const rotuloMentira = (container.querySelector('[data-rotulo-lado="mentira"]') as HTMLElement).style.opacity;
+    expect(acende(getByTestId('b-mentira'))).toBe(rotuloMentira);
+    expect(Number(acende(getByTestId('b-mentira')))).toBeCloseTo(0.5, 2);
+  });
+
+  it('durante a saída, o botão continua com a fração em que o card estava', () => {
+    const { getByTestId, rerender } = render(<Mesa estado={CARD} valor={1} />);
+    avancar(150);
+    rerender(<Mesa estado={{ tela: 'feedback', partida, indice: 0, restanteMs: 3250, resposta: 'verdadeira' }} valor={0} />);
+    avancar(5);
+    expect(acende(getByTestId('b-verdade'))).toBe('1');
+  });
+});

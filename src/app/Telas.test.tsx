@@ -59,7 +59,7 @@ describe('telas', () => {
     ['acerto', 'Acertou!'],
     ['erro', 'Errou'],
     ['tempo', 'Tempo esgotado'],
-  ] as const)('AC-4.x/AC-4.9 (v10.0.0): feedback %s mostra veredito, selo, explicação e técnica, nessa ordem', (resultado, selo) => {
+  ] as const)('AC-4.x/AC-4.9 (v10.0.0, v11.0.0): feedback %s mostra veredito, selo, explicação e técnica, nessa ordem', (resultado, selo) => {
     const { container } = render(<TelaFeedback noticia={noticia} resultado={resultado} pontos={0} />);
     const veredito = screen.getByRole('heading', { name: 'É mentira' });
     const elSelo = screen.getByText(selo);
@@ -67,7 +67,7 @@ describe('telas', () => {
     for (let i = 1; i < ordem.length; i++) {
       expect(ordem[i - 1]!.compareDocumentPosition(ordem[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     }
-    expect(elSelo.querySelector('svg')).toBeNull();                       // AC-4.9: selo sem ícones
+    expect(elSelo.querySelector('svg')).toBeNull();                       // AC-4.9 (v11.0.0): o ícone fica ao lado, não dentro do texto do selo
     expect(elSelo.textContent).toBe(selo);
     expect(container.querySelector('main')).toHaveAttribute('data-veredito', 'mentira');
     expect(container.querySelector('main')).toHaveAttribute('data-resultado', resultado);
@@ -274,11 +274,11 @@ describe('v10.3.0: rótulos que aparecem conforme o card vai para um lado (AC-2.
     expect(mentira.textContent).toBe('Mentira');
     expect(verdade.style.opacity).toBe('0');
     expect(mentira.style.opacity).toBe('0');
-    expect(verdade.style.right).not.toBe('');
-    expect(mentira.style.left).not.toBe('');
     expect(verdade).toHaveAttribute('aria-hidden', 'true');
-    expect(verdade.style.background).toBe('var(--verdade)');
-    expect(mentira.style.background).toBe('var(--mentira)');
+    // v11.0.0: visual final do rótulo é o carimbo (classes), no lugar do estilo inline provisório.
+    expect(verdade.className).toMatch(/carimboVerdade/);
+    expect(mentira.className).toMatch(/carimboMentira/);
+    expect(verdade.getAttribute('style')).toBe('opacity: 0;');
   });
 });
 
@@ -294,7 +294,8 @@ describe('v10.2.0: telas do tutorial (Story 15, FR-16)', () => {
     expect(screen.queryByRole('timer')).toBeNull();
     expect(screen.queryByText(/^Pontos:/)).toBeNull();
     expect(screen.queryByText(/Saiba mais/)).toBeNull();
-    expect(container.querySelector('article img')).toBeNull(); // sem imagem final: ilustração do tema
+    // v11.0.0 (AC-15.7): o perfil "recorte chapado" do veredito no lugar da ilustração do tema.
+    expect(container.querySelector('article img')).toHaveAttribute('src', expect.stringContaining('perfil-falso-abacaxi'));
   });
   it('AC-15.3: feedback de treino ensina o gesto, com o veredito, a explicação e a técnica', () => {
     const { container } = render(<TelaFeedbackTutorial noticia={treino} resposta="verdadeira" modo="corpo" treino={{ passo: 0, total: 4 }} />);

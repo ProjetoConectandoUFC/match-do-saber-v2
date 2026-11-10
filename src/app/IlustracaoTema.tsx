@@ -101,10 +101,14 @@ const COMPOSICAO: Record<Tema, () => ReactNode> = {
 /** Cor de ilustração do tema (também a faixa do "saiba mais"). */
 export const corDoTema = (tema: Tema) => COR[tema];
 
-export function IlustracaoTema({ tema }: { tema: Tema }) {
+/**
+ * `imagem`: ilustração "recorte chapado" própria da notícia (v11.0.0, `./ilustracoes.ts`), 552 × 260, recortada na
+ * faixa central de 552 × 156; sem ela, a composição de formas do tema.
+ */
+export function IlustracaoTema({ tema, imagem }: { tema: Tema; imagem?: string }) {
   return (
     <div className={s.ilustracaoTema} data-tema={tema} role="img" aria-label={`Tema: ${TEMA_ROTULO[tema]}`} style={{ background: COR[tema] }}>
-      {COMPOSICAO[tema]()}
+      {imagem ? <img className={s.ilustracaoRecorte} src={imagem} alt="" draggable={false} /> : COMPOSICAO[tema]()}
       <span className={s.chipTema}>{TEMA_ROTULO[tema]}</span>
     </div>
   );

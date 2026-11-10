@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { jogaveis } from '../core/banco';
 import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
+import { enderecoFontes, linhasDoResumo } from '../core/fontesRodada';
+import { URL_PUBLICA } from './enderecoPublico';
 import { TEMPOS, pontos, type Estado } from '../core/partida';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
@@ -84,7 +86,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   telaRef.current = estado.tela;
   useSons(estado, cfg.config.som);
   // Foto do resumo (FR-13): só com a câmera ativa; fica só neste estado React, com as âncoras do rosto
-  // calculadas pela pose do mesmo quadro (AC-13.6). Os filtros ainda não são desenhados (prévia v11 a aprovar).
+  // calculadas pela pose do mesmo quadro (AC-13.6), que posicionam o filtro da faixa no resumo (AC-13.8, v11.0.0).
   const foto = useFotoPartida<FotoPartida>(estado, cfg.config.foto, () =>
     camera === 'ativa' && videoRef.current ? capturarFoto(videoRef.current, poseRef.current) : null);
   const cardRef = useRef<HTMLElement>(null);
@@ -180,9 +182,21 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       );
       break;
     }
-    case 'resumo':
-      tela = <TelaResumo pontos={pontos(estado.partida)} total={estado.partida.cards.length} foto={foto?.imagem} />;
+    case 'resumo': {
+      // v11.0.0: filtro da faixa sobre a foto (AC-13.8), lista da rodada (AC-5.8) e QR só com os ids (AC-5.9).
+      const { cards, resultados } = estado.partida;
+      tela = (
+        <TelaResumo
+          pontos={pontos(estado.partida)}
+          total={cards.length}
+          foto={foto?.imagem}
+          ancoras={foto?.ancoras}
+          linhas={linhasDoResumo(cards, resultados)}
+          enderecoQr={enderecoFontes(URL_PUBLICA, cards.map((c) => c.id))}
+        />
+      );
       break;
+    }
   }
 
   return (

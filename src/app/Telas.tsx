@@ -3,15 +3,25 @@ import {
   CONFIG_PADRAO, DICA_GESTOS, DICA_SAIBA_MAIS, ITENS_CONFIG, OPCOES, ROTULO_ITEM, resumoConfiguracoes, rotuloValor,
   type Configuracoes, type ModoJogo,
 } from '../core/modos';
+import type { AncorasRosto } from '../core/ancorasRosto';
+import { FAIXAS, faixaDeAcertos, type Faixa } from '../core/faixas';
+import type { LinhaResumo } from '../core/fontesRodada';
 import { mensagemResumo, type Resultado } from '../core/partida';
 import { feedbackTutorial } from '../core/tutorial';
 import { TECNICA_ROTULO, type Noticia, type Veredito } from '../core/types';
-import { Forma } from './Forma';
+import { FiltroFoto } from './FiltroFoto';
+import { Forma, type IdForma } from './Forma';
+import { IconeFeedback, type IdIcone } from './IconesFeedback';
 import { IlustracaoTema, corDoTema } from './IlustracaoTema';
+import { ilustracaoDaNoticia, perfilDoTreino } from './ilustracoes';
+import { QrCode } from './QrCode';
 import type { StatusCamera } from './useJogo';
 import s from './App.module.css';
 
 const SELO: Record<Resultado, string> = { acerto: 'Acertou!', erro: 'Errou', tempo: 'Tempo esgotado' };
+/** Frase de app de namoro antes do selo (AC-4.9, v11.0.0); o tempo esgotado não tem match. */
+const MATCH: Record<Resultado, string | null> = { acerto: 'Deu match!', erro: 'Não deu match', tempo: null };
+const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(' ');
 const src = (caminho: string) => (/^(https?:|data:)/.test(caminho) ? caminho : `${import.meta.env.BASE_URL}${caminho}`);
 
 function Placar({ pontos }: { pontos: number }) {
@@ -179,40 +189,54 @@ export function BarraTempo({ restanteMs, totalMs, alerta }: { restanteMs: number
   );
 }
 
-/** Laterais do gesto (FR-15): Mentira à esquerda (triângulo coral), Verdade à direita (estrela menta). */
 /**
- * Rótulo do lado para onde o card está indo (AC-2.10b, v10.3.0): só texto e tokens; a opacidade é escrita
- * por `useInclinacaoCard` a cada quadro. Estilo provisório, inline, até o Agente Visual definir o final.
+ * Rótulo do lado para onde o card está indo (AC-2.10b): o carimbo VERDADE/MENTIRA (v11.0.0), só texto, no alto
+ * do card; a opacidade é escrita por `useInclinacaoCard` a cada quadro. `carimbado`: aceso por inteiro na saída
+ * do card (AC-2.12), por qualquer entrada.
  */
-function RotuloLado({ lado }: { lado: 'mentira' | 'verdade' }) {
+function RotuloLado({ lado, carimbado }: { lado: 'mentira' | 'verdade'; carimbado: boolean }) {
   const verdade = lado === 'verdade';
   return (
     <span
       data-rotulo-lado={lado}
       aria-hidden="true"
-      style={{
-        position: 'absolute', top: 'calc(18 * var(--u))', [verdade ? 'right' : 'left']: 'calc(18 * var(--u))',
-        padding: 'calc(4 * var(--u)) calc(14 * var(--u))', borderRadius: 'var(--raio-pilula)',
-        background: verdade ? 'var(--verdade)' : 'var(--mentira)', color: 'var(--cn-tinta)',
-        font: '800 calc(26 * var(--u)) / 1.2 var(--fonte)', opacity: 0, pointerEvents: 'none', zIndex: 1,
-      }}
+      className={cx(s.carimbo, verdade ? s.carimboVerdade : s.carimboMentira, carimbado && s.carimbado)}
+      style={{ opacity: 0 }}
     >
       {verdade ? 'Verdade' : 'Mentira'}
     </span>
   );
 }
 
-function Lado({ lado }: { lado: 'mentira' | 'verdade' }) {
+/**
+ * Laterais do gesto (FR-15, AC-2.11, v11.0.0): botões redondos, Mentira à esquerda (disco coral, triângulo) e
+ * Verdade à direita (disco menta, estrela), com a pílula do nome. Acendem pela `--acende` que `useInclinacaoCard`
+ * escreve com a mesma fração do card; `escolhido` = aceso por inteiro durante a saída. Não recebem clique (FR-3).
+ */
+function Lado({ lado, escolhido }: { lado: 'mentira' | 'verdade'; escolhido: boolean }) {
+  const mentira = lado === 'mentira';
   return (
     <div className={s.lado}>
-      {lado === 'mentira'
-        ? <MarcaMentira largura={64} className={s.marcaMentira} />
-        : <MarcaVerdade largura={64} className={s.marcaVerdade} />}
-      <span className={`${s.pilula} ${lado === 'mentira' ? s.pilulaMentira : s.pilulaVerdade}`} data-lado={lado}>
-        {lado === 'mentira' ? 'Mentira' : 'Verdade'}
+      <span
+        className={cx(s.botaoLado, mentira ? s.botaoMentira : s.botaoVerdade)}
+        data-botao-lado={lado}
+        data-escolhido={escolhido || undefined}
+        aria-hidden="true"
+      >
+        {mentira ? <MarcaMentira largura={64} /> : <MarcaVerdade largura={64} />}
+      </span>
+      <span className={`${s.pilula} ${mentira ? s.pilulaMentira : s.pilulaVerdade}`} data-lado={lado}>
+        {mentira ? 'Mentira' : 'Verdade'}
       </span>
     </div>
   );
+}
+
+/** Imagem do card (FR-4): a da notícia; senão, a ilustração "recorte chapado" dela; senão, a do tema. Treino: o perfil. */
+function ImagemCard({ noticia, treino }: { noticia: Noticia; treino: boolean }) {
+  if (treino) return <img className={s.imagemPerfil} src={perfilDoTreino(noticia.veredito)} alt="" draggable={false} />;
+  if (noticia.imagem) return <img src={src(noticia.imagem)} alt="" draggable={false} />;
+  return <IlustracaoTema tema={noticia.tema} imagem={ilustracaoDaNoticia(noticia.id)} />;
 }
 
 export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, treino, cardRef, onArrastar }: {
@@ -237,11 +261,15 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
   const pulsando = alerta && !ausente; // AC-4.7: só "Volte para o centro" pausa o cronômetro (v5.0.0)
   return (
     <main className={`${s.tela} ${s.sobrio}`}>
-      <div className={s.mesa}>
-      <Lado lado="mentira" />
+      <div className={s.mesa} data-mesa>
+      <Lado lado="mentira" escolhido={saida === 'esquerda'} />
+      {/* Pilha de cards (AC-2.12, v11.0.0): duas camadas paradas atrás; a pilha tem o tamanho do card (AC-4.5). */}
+      <div className={s.pilha}>
+      <div className={`${s.camadaPilha} ${s.camadaPilha1}`} data-pilha-camada aria-hidden="true" />
+      <div className={`${s.camadaPilha} ${s.camadaPilha2}`} data-pilha-camada aria-hidden="true" />
       <article
         ref={cardRef}
-        className={[s.card, saida && (saida === 'direita' ? s.saiDireita : s.saiEsquerda), pulsando && s.pulsando].filter(Boolean).join(' ')}
+        className={cx(s.card, saida && (saida === 'direita' ? s.saiDireita : s.saiEsquerda), pulsando && s.pulsando)}
         onPointerDown={(e) => { inicioX.current = e.clientX; }}
         onPointerUp={(e) => {
           if (inicioX.current === null) return;
@@ -261,16 +289,17 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
           </>
         ) : (
           <>
-            {noticia.imagem ? <img src={src(noticia.imagem)} alt="" draggable={false} /> : <IlustracaoTema tema={noticia.tema} />}
+            <ImagemCard noticia={noticia} treino={!!treino} />
             <h2>{noticia.titulo}</h2>
             <p>{noticia.descricao}</p>
             {!treino && <p className={s.dicaCard}><Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />{DICA_SAIBA_MAIS[modo]}</p>}
           </>
         )}
-        <RotuloLado lado="mentira" />
-        <RotuloLado lado="verdade" />
+        <RotuloLado lado="mentira" carimbado={saida === 'esquerda'} />
+        <RotuloLado lado="verdade" carimbado={saida === 'direita'} />
       </article>
-      <Lado lado="verdade" />
+      </div>
+      <Lado lado="verdade" escolhido={saida === 'direita'} />
       </div>
       {/* Fora do card, para não tirar espaço do texto da notícia (FR-4). */}
       {modo !== 'corpo' && <p className={s.dicaModo}>{DICA_GESTOS[modo]}</p>}
@@ -282,8 +311,24 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
 }
 
 /**
- * Feedback (AC-4.1 a AC-4.3, AC-4.9, v10.0.0): o fundo da tela inteira acende na cor do veredito; no topo o veredito,
- * menor ("É verdade"/"É mentira"); abaixo o selo, maior e sem ícones; depois a explicação e a técnica.
+ * Ícone e selo do feedback (AC-4.9, v11.0.0): o ícone feito com as formas do design system e, no selo, a frase do
+ * match ("Deu match!"/"Não deu match") e o resultado como texto próprio ("Acertou!", "Errou", "Tempo esgotado").
+ */
+function LinhaSelo({ icone, match, selo, positivo }: { icone: IdIcone; match: string | null; selo: string; positivo: boolean }) {
+  return (
+    <div className={s.linhaSelo}>
+      <IconeFeedback icone={icone} largura={176} />
+      <p className={cx(s.selo, positivo ? s.seloAcerto : s.seloErro)}>
+        {match && <span className={s.seloMatch}>{match}</span>}
+        <span className={s.seloResultado}>{selo}</span>
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Feedback (AC-4.1 a AC-4.3, AC-4.9): o fundo da tela inteira acende na cor do veredito; no topo o veredito,
+ * menor ("É verdade"/"É mentira"); abaixo o ícone e o selo, maior; depois a explicação e a técnica.
  */
 export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia; resultado: Resultado; pontos: number }) {
   const verdade = noticia.veredito === 'verdadeira';
@@ -298,7 +343,7 @@ export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia;
           {verdade ? <MarcaVerdade largura={30} /> : <MarcaMentira largura={30} />}
           {verdade ? 'É verdade' : 'É mentira'}
         </h2>
-        <p className={`${s.selo} ${resultado === 'acerto' ? s.seloAcerto : s.seloErro}`}>{SELO[resultado]}</p>
+        <LinhaSelo icone={resultado} match={MATCH[resultado]} selo={SELO[resultado]} positivo={resultado === 'acerto'} />
         <p className={s.explicacao}>{noticia.explicacao}</p>
         <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
       </div>
@@ -330,7 +375,7 @@ export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
           {verdade ? <MarcaVerdade largura={30} /> : <MarcaMentira largura={30} />}
           {verdade ? 'É verdade' : 'É mentira'}
         </h2>
-        <p className={`${s.selo} ${t.acertou ? s.seloAcerto : s.seloErro}`}>{t.selo}</p>
+        <LinhaSelo icone={t.acertou ? 'acerto' : 'erro'} match={MATCH[t.acertou ? 'acerto' : 'erro']} selo={t.selo} positivo={t.acertou} />
         <p className={s.explicacao}>{t.escolha}</p>
         <p className={s.explicacao}>{t.certo}</p>
         <p className={s.explicacao}>{noticia.explicacao}</p>
@@ -341,29 +386,102 @@ export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
   );
 }
 
-/** `foto`: quadro da câmera do meio da partida (FR-13); sem ela, o resumo fica como em AC-5.1 (AC-13.3). */
-export function TelaResumo({ pontos, total, foto }: { pontos: number; total: number; foto?: string | null }) {
-  const texto = (
-    <div className={s.resumoTexto}>
-      <h1>Fim de <em>jogo!</em></h1>
-      <p className={s.placar}>{`${pontos} de ${total}`}</p>
-      <p className={s.mensagemResumo}>{mensagemResumo(pontos, total)}</p>
-    </div>
+/** Marcador de cada faixa no selo da moldura (prévia v11, seção 2). */
+const MARCA_FAIXA: Record<Faixa, IdForma> = { 1: 'marca-estrela-4', 2: 'marca-estrela-5', 3: 'marca-estrela-6', 4: 'marca-estrela-4' };
+/** O título da faixa em duas linhas no selo redondo. */
+const LINHAS_FAIXA: Record<Faixa, [string, string]> = {
+  1: ['Aprendiz', 'de checagem'], 2: ['Detetive', 'em treino'], 3: ['Faro de', 'repórter'], 4: ['Imune a', 'fake news!'],
+};
+
+/** Polaroid (AC-13.2): foto espelhada, filtro da faixa por cima (AC-13.8) e o selo da faixa na moldura (AC-13.9). */
+function Polaroid({ foto, ancoras, faixa, legenda }: { foto: string; ancoras?: AncorasRosto | null; faixa: Faixa; legenda: string }) {
+  const [l1, l2] = LINHAS_FAIXA[faixa];
+  return (
+    <figure className={s.polaroid}>
+      <div className={s.folha} aria-hidden="true" />
+      <div className={s.papel}>
+        <div className={s.quadroFoto}>
+          <img src={foto} alt="Sua foto na partida" />
+          <FiltroFoto filtro={FAIXAS[faixa].filtro} ancoras={ancoras} />
+        </div>
+        <figcaption>{legenda}</figcaption>
+      </div>
+      <div className={s.seloFaixa} data-selo-faixa={faixa}>
+        <Forma id={MARCA_FAIXA[faixa]} largura={22} />
+        <span><span className={s.seloFaixaLinha}>{l1}</span> <span className={s.seloFaixaLinha}>{l2}</span></span>
+      </div>
+    </figure>
   );
-  // Tema Claro, sem a prévia da câmera (App); polaroid 20% maior que na v9.0.0 (AC-13.2), com a folha amarela atrás.
+}
+
+/** Lista "Notícias da rodada" (AC-5.8, v11.0.0): para ler de perto ou na foto do celular. */
+function ListaRodada({ linhas }: { linhas: readonly LinhaResumo[] }) {
+  return (
+    <section className={s.listaRodada} aria-labelledby="titulo-lista-rodada">
+      <div className={s.listaTopo}>
+        <h2 id="titulo-lista-rodada">Notícias da rodada</h2>
+        <div className={s.legenda} aria-hidden="true">
+          <span><i className={cx(s.resultado, s.resultadoOk, s.resultadoMini)}><Forma id="marca-estrela-4" largura={13} /></i>acertou</span>
+          <span><i className={cx(s.resultado, s.resultadoNao, s.resultadoMini)}><span className={s.xis} /></i>errou</span>
+        </div>
+      </div>
+      <ol className={s.gradeRodada}>
+        {linhas.map((l) => (
+          <li key={l.id} className={s.linhaRodada} data-resultado={l.acertou ? 'acertou' : 'errou'}>
+            <i className={cx(s.resultado, l.acertou ? s.resultadoOk : s.resultadoNao)} role="img" aria-label={l.acertou ? 'Acertou' : 'Errou'}>
+              {l.acertou ? <Forma id="marca-estrela-4" largura={18} /> : <span className={s.xis} />}
+            </i>
+            <div className={s.textoRodada}>
+              <b>{l.titulo}</b>
+              <small>
+                <span className={cx(s.veiculo, l.veredito === 'verdadeira' ? s.veiculoVerdade : s.veiculoMentira)}>
+                  {l.veredito === 'verdadeira' ? 'Verdade' : 'Mentira'}
+                </span>
+                {l.rotuloFonte} <strong>{l.fonte}</strong>
+              </small>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/**
+ * Resumo (AC-5.1, opção B da prévia v11): polaroid de 384 (AC-13.2), placar, mensagem da faixa (AC-5.7), o cartão do
+ * QR das fontes (AC-5.9) e a lista da rodada (AC-5.8). `foto`: quadro da câmera do meio da partida (FR-13), com as
+ * âncoras do rosto (AC-13.6); sem ela, o resumo fica sem polaroid (AC-13.3).
+ */
+export function TelaResumo({ pontos, total, foto, ancoras, linhas = [], enderecoQr }: {
+  pontos: number;
+  total: number;
+  foto?: string | null;
+  ancoras?: AncorasRosto | null;
+  linhas?: readonly LinhaResumo[];
+  enderecoQr?: string;
+}) {
+  const faixa = faixaDeAcertos(pontos, total);
+  // Tema Claro, sem a prévia da câmera (App); polaroid com a folha amarela atrás.
   return (
     <main className={`${s.tela} ${s.claro}`}>
       <div className={s.resumoLinha}>
-        {foto && (
-          <figure className={s.polaroid}>
-            <div className={s.folha} aria-hidden="true" />
-            <div className={s.papel}>
-              <img src={foto} alt="Sua foto na partida" />
-              <figcaption>{`Match do Saber · ${pontos} de ${total}`}</figcaption>
+        {foto && <Polaroid foto={foto} ancoras={ancoras} faixa={faixa} legenda={`Match do Saber · ${pontos} de ${total}`} />}
+        <div className={s.resumoDireita}>
+          <div className={s.resumoTopo}>
+            <div className={s.resumoTexto}>
+              <h1>Fim de <em>jogo!</em></h1>
+              <p className={s.placar}>{`${pontos} de ${total}`}</p>
+              <p className={s.mensagemResumo} data-mensagem-resumo>{mensagemResumo(pontos, total)}</p>
             </div>
-          </figure>
-        )}
-        {texto}
+            {enderecoQr && (
+              <div className={s.cartaoQr} data-cartao-qr>
+                <QrCode texto={enderecoQr} largura={168} rotulo="QR code das fontes da rodada" />
+                <p>Fotografe e veja todas as fontes</p>
+              </div>
+            )}
+          </div>
+          {linhas.length > 0 && <ListaRodada linhas={linhas} />}
+        </div>
       </div>
       <p className={s.dicaConfig}>Operador: Enter para a próxima partida</p>
     </main>

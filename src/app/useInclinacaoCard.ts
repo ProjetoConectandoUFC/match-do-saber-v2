@@ -20,9 +20,14 @@ function aplicar(el: HTMLElement | null, f: number) {
   const dx = arredondar(d.dx, 1), dy = arredondar(d.dy, 1), graus = arredondar(d.graus, 2);
   definir(el, 'translate', dx === 0 && dy === 0 ? '' : `${dx}px ${dy}px`);
   definir(el, 'rotate', graus === 0 ? '' : `${graus}deg`);
+  // Botões redondos das laterais (AC-2.11, v11.0.0): fora do card, na mesma mesa; acendem com a mesma fração.
+  const mesa = el.closest('[data-mesa]');
   for (const [lado, opacidade] of [['verdade', d.verdade], ['mentira', d.mentira]] as const) {
+    const valor = String(arredondar(opacidade, 3));
     const rotulo = el.querySelector<HTMLElement>(`[data-rotulo-lado="${lado}"]`);
-    if (rotulo) definir(rotulo, 'opacity', String(arredondar(opacidade, 3)));
+    if (rotulo) definir(rotulo, 'opacity', valor);
+    const botao = mesa?.querySelector<HTMLElement>(`[data-botao-lado="${lado}"]`);
+    if (botao) definir(botao, '--acende', valor);
   }
 }
 
