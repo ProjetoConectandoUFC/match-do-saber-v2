@@ -1,0 +1,42 @@
+{
+  "status": "rascunho",
+  "origem": "Rascunho do agente de notícias (docs/noticias/tutorial/perfis-tutorial.md, 2026-11-10), aguardando revisão do responsável. Não são notícias: não entram no banco nem na pontuação (FR-16).",
+  "perfis": [
+    {
+      "id": "treino-1",
+      "nome": "Morango Influencer",
+      "frase": "Acordei assim: 1,80 m de altura e pele perfeita, sem filtro nenhum!",
+      "veredito": "falsa",
+      "explicacao": "Mentira! Repare na imagem: brilho demais, olhos enormes e o ícone do filtro no canto. Quando a foto parece boa demais para ser verdade, olhe os detalhes.",
+      "tecnica": "imagem",
+      "tema": "tecnologia"
+    },
+    {
+      "id": "treino-2",
+      "nome": "Professora Abelha",
+      "frase": "As abelhas fazem mel a partir do néctar das flores.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdade! Isso está em qualquer livro de ciências. Nem todo fato curioso é mentira: quando várias fontes sérias dizem a mesma coisa, pode confiar.",
+      "tecnica": "fonte",
+      "tema": "ciencia"
+    },
+    {
+      "id": "treino-3",
+      "nome": "Gato Astronauta",
+      "frase": "Meu gato foi sozinho à Lua hoje de manhã e voltou a tempo do jantar.",
+      "veredito": "falsa",
+      "explicacao": "Mentira! A foto é uma colagem mal feita: dá para ver o recorte em volta do gato. E quem disse isso? Só o dono do gato. Notícia grande assim estaria em todo lugar.",
+      "tecnica": "imagem",
+      "tema": "curiosidades"
+    },
+    {
+      "id": "treino-4",
+      "nome": "Dona Chaleira",
+      "frase": "Na praia, a água ferve a 100 graus Celsius.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdade! Ao nível do mar, a água ferve a 100 °C. Em lugares muito altos ela ferve antes. Por isso o contexto importa: onde e quando algo acontece muda a resposta.",
+      "tecnica": "contexto",
+      "tema": "ciencia"
+    }
+  ]
+}
