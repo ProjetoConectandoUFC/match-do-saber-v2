@@ -29,7 +29,7 @@
 ## Diagnóstico do rastreio (equipe técnica)
 Para medir o rastreio no notebook do estande antes de ajustar os gestos:
 1. Ligar o painel por ☰ › Diagnóstico (vale até recarregar o jogo) ou abrir o jogo com `?diagnostico` no fim do endereço (por exemplo `…/match-do-saber/?diagnostico`).
-2. Com a câmera ligada, ficar a ~1,5–2 m (ou sentado, nos modos Mão e Cabeça) e jogar uma partida em cada modo, levantando cada mão e as duas, inclinando a cabeça e levantando o queixo.
+2. Com a câmera ligada, ficar a ~1,5–2 m (ou sentado, nos modos Mão e Cabeça) e jogar uma partida em cada modo: deslocar o tronco (Corpo), arrastar uma mão à frente do peito para cada lado e levantar as duas (Mão), inclinar a cabeça e levantar o queixo (Cabeça).
 3. Logo depois de cada tentativa, clicar em "Baixar registro (60 s)" e enviar o arquivo `.json` para a equipe técnica, dizendo o modo e o que tentou fazer.
 
 O painel mostra quadros por segundo e tempo de detecção (meta: ≥ 15 quadros/s), e o registro não contém imagens da câmera.

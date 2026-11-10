@@ -47,8 +47,8 @@ describe('feedbackTutorial: ensina o gesto (AC-15.3)', () => {
     expect(feedbackTutorial('corpo', 'falsa', 'falsa')).toEqual({
       acertou: true,
       selo: 'Acertou!',
-      escolha: 'Você foi para a esquerda (corpo ou braço): escolheu Mentira.',
-      certo: 'Era Mentira: corpo ou braço para a esquerda.',
+      escolha: 'Você foi para a esquerda com o corpo: escolheu Mentira.',
+      certo: 'Era Mentira: corpo para a esquerda.',
     });
   });
 
@@ -56,14 +56,16 @@ describe('feedbackTutorial: ensina o gesto (AC-15.3)', () => {
     expect(feedbackTutorial('corpo', 'verdadeira', 'falsa')).toEqual({
       acertou: false,
       selo: 'Quase!',
-      escolha: 'Você foi para a direita (corpo ou braço): escolheu Verdade.',
-      certo: 'Era Mentira: corpo ou braço para a esquerda.',
+      escolha: 'Você foi para a direita com o corpo: escolheu Verdade.',
+      certo: 'Era Mentira: corpo para a esquerda.',
     });
   });
 
   it('modos Mão e Cabeça usam o gesto do modo', () => {
     expect(feedbackTutorial('mao', 'verdadeira', 'verdadeira').escolha)
-      .toBe('Você foi para a direita (mão direita para cima, as duas mãos ou arrastando): escolheu Verdade.');
+      .toBe('Você arrastou a mão para a direita: escolheu Verdade.');
+    expect(feedbackTutorial('mao', 'verdadeira', 'falsa').certo).toBe('Era Mentira: arraste a mão para a esquerda.');
+    expect(feedbackTutorial('cabeca', 'falsa', 'falsa').escolha).toBe('Você inclinou a cabeça para a esquerda: escolheu Mentira.');
     expect(feedbackTutorial('cabeca', 'verdadeira', 'falsa').certo).toBe('Era Mentira: cabeça para a esquerda.');
   });
 });

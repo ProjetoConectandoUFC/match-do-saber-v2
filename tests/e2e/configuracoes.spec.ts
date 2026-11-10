@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
-const DICA_MAO = 'É verdade: mão direita para cima, as duas mãos para a direita ou arraste para a direita · É mentira: o mesmo para a esquerda · Duas mãos para cima: saiba mais';
+const DICA_MAO = 'Arraste a mão para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais';
 
 async function abrirSemCamera(page: Page) {
   await page.addInitScript(() => {

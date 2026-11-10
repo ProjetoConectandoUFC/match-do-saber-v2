@@ -53,20 +53,20 @@ export function perfilComoNoticia(p: PerfilTutorial): Noticia {
   };
 }
 
-const GESTO_LADO: Record<ModoJogo, string> = {
-  corpo: 'corpo ou braço',
-  mao: 'mão direita para cima, as duas mãos ou arrastando',
-  cabeca: 'cabeça',
-};
-const GESTO_LADO_ESQUERDO: Record<ModoJogo, string> = {
-  corpo: 'corpo ou braço',
-  mao: 'mão esquerda para cima, as duas mãos ou arrastando',
-  cabeca: 'cabeça',
-};
-
 const lado = (v: Veredito) => (v === 'verdadeira' ? 'direita' : 'esquerda');
 const rotulo = (v: Veredito) => (v === 'verdadeira' ? 'Verdade' : 'Mentira');
-const gesto = (modo: ModoJogo, v: Veredito) => (v === 'verdadeira' ? GESTO_LADO : GESTO_LADO_ESQUERDO)[modo];
+
+/** v10.3.0: um único controle por modo (AC-2.10): tronco, swipe da mão ou inclinação da cabeça. */
+const FEITO: Record<ModoJogo, (l: string) => string> = {
+  corpo: (l) => `Você foi para a ${l} com o corpo`,
+  mao: (l) => `Você arrastou a mão para a ${l}`,
+  cabeca: (l) => `Você inclinou a cabeça para a ${l}`,
+};
+const COMO: Record<ModoJogo, (l: string) => string> = {
+  corpo: (l) => `corpo para a ${l}`,
+  mao: (l) => `arraste a mão para a ${l}`,
+  cabeca: (l) => `cabeça para a ${l}`,
+};
 
 export interface TextoFeedbackTutorial { acertou: boolean; selo: string; escolha: string; certo: string }
 
@@ -76,7 +76,7 @@ export function feedbackTutorial(modo: ModoJogo, resposta: Veredito, veredito: V
   return {
     acertou,
     selo: acertou ? 'Acertou!' : 'Quase!',
-    escolha: `Você foi para a ${lado(resposta)} (${gesto(modo, resposta)}): escolheu ${rotulo(resposta)}.`,
-    certo: `Era ${rotulo(veredito)}: ${gesto(modo, veredito)} para a ${lado(veredito)}.`,
+    escolha: `${FEITO[modo](lado(resposta))}: escolheu ${rotulo(resposta)}.`,
+    certo: `Era ${rotulo(veredito)}: ${COMO[modo](lado(veredito))}.`,
   };
 }

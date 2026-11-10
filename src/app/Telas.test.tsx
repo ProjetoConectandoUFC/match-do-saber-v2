@@ -126,7 +126,7 @@ describe('telas', () => {
 
 describe('modos de jogo (v1.1.0)', () => {
   it.each([
-    ['mao', 'É verdade: mão direita para cima, as duas mãos para a direita ou arraste para a direita · É mentira: o mesmo para a esquerda · Duas mãos para cima: saiba mais'],
+    ['mao', 'Arraste a mão para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais'],
     ['cabeca', 'Cabeça para a direita: é verdade · Cabeça para a esquerda: é mentira · Queixo para cima: saiba mais'],
   ] as const)('AC-9.14: calibração e card mostram os gestos do modo %s', (modo, dica) => {
     const { unmount } = render(<TelaCalibracao progresso={0} modo={modo} />);
@@ -282,8 +282,8 @@ describe('v10.2.0: telas do tutorial (Story 15, FR-16)', () => {
     const { container } = render(<TelaFeedbackTutorial noticia={treino} resposta="verdadeira" modo="corpo" treino={{ passo: 0, total: 4 }} />);
     expect(screen.getByText('É mentira')).toBeInTheDocument();
     expect(screen.getByText('Quase!')).toBeInTheDocument();
-    expect(screen.getByText('Você foi para a direita (corpo ou braço): escolheu Verdade.')).toBeInTheDocument();
-    expect(screen.getByText('Era Mentira: corpo ou braço para a esquerda.')).toBeInTheDocument();
+    expect(screen.getByText('Você foi para a direita com o corpo: escolheu Verdade.')).toBeInTheDocument();
+    expect(screen.getByText('Era Mentira: corpo para a esquerda.')).toBeInTheDocument();
     expect(screen.getByText('Mentira! Repare na imagem.')).toBeInTheDocument();
     expect(screen.getByText('Verificar a imagem')).toBeInTheDocument();
     expect(screen.getByText('Treino 1 de 4')).toBeInTheDocument();

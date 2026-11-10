@@ -71,7 +71,7 @@ describe('configurações do estande', () => {
     expect(resumoConfiguracoes({ modo: 'mao', tempoCardS: 20, som: false, foto: false, tutorial: true })).toBe('Modo: Mão · Tempo por card: 20 s · Som: desligado · Foto: desligada · Tutorial: ligado');
   });
   it('AC-9.14 (v10.0.0): dicas de cada modo dizem "mentira" no lugar de "falsa"', () => {
-    expect(DICA_GESTOS.mao).toBe('É verdade: mão direita para cima, as duas mãos para a direita ou arraste para a direita · É mentira: o mesmo para a esquerda · Duas mãos para cima: saiba mais');
+    expect(DICA_GESTOS.mao).toBe('Arraste a mão para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais');
     expect(DICA_GESTOS.cabeca).toBe('Cabeça para a direita: é verdade · Cabeça para a esquerda: é mentira · Queixo para cima: saiba mais');
   });
   it('FR-15 (v10.0.0): dica do saiba mais sem emoji', () => {
@@ -81,7 +81,7 @@ describe('configurações do estande', () => {
       cabeca: 'Saiba mais: levante o queixo (ou ↑)',
     });
   });
-  it('AC-2.9: dica do modo Corpo cita o corpo e o braço', () => {
-    expect(DICA_GESTOS.corpo).toBe('Corpo ou braço para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais');
+  it('AC-2.9 (v10.3.0): dica do modo Corpo cita só o corpo', () => {
+    expect(DICA_GESTOS.corpo).toBe('Corpo para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais');
   });
 });

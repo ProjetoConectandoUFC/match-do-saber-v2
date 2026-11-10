@@ -18,19 +18,17 @@ export const CONFIG_GESTOS = {
   limiarCabecaGraus: 15,
   retornoCabecaGraus: 6,
   limiarQueixo: 0.25,
-  /** v6.0.0, modo Mão: distâncias em larguras de ombro (L) a partir do meio do corpo. */
-  duasMaosLadoL: 0.5,
+  /**
+   * Modo Mão, swipe (v10.3.0, AC-9.20): distâncias em larguras de ombro (L) a partir do meio do corpo.
+   * `centroArrasteL`: frente do peito (arma e libera a mão); `arrasteMinL`: limite do swipe, a calibrar no hardware.
+   */
   centroArrasteL: 0.5,
   arrasteMinL: 1,
-  arrasteMaxMs: 800,
-  /** v8.1.0, modo Corpo: braço para o lado, em L a partir do meio do corpo (AC-2.7, AC-2.4). */
-  bracoLadoL: 1.2,
-  retornoBracoL: 0.9,
 };
 export type ConfigGestos = typeof CONFIG_GESTOS;
 type Config = ConfigGestos;
 
-const NARIZ = 0, ORELHA_E = 7, ORELHA_D = 8, OMBRO_E = 11, OMBRO_D = 12, PUNHO_E = 15, PUNHO_D = 16;
+const NARIZ = 0, ORELHA_E = 7, ORELHA_D = 8, OMBRO_E = 11, OMBRO_D = 12, COTOVELO_E = 13, COTOVELO_D = 14, PUNHO_E = 15, PUNHO_D = 16;
 const AUSENTE: LeituraGesto = { presenca: { presente: false, centralizado: false }, inclinacao: 0, gestos: [] };
 
 /** Centro do tronco do ponto de vista do jogador (imagem espelhada) e largura dos ombros. */
@@ -93,6 +91,8 @@ function criarEscolha(cfg: Config) {
   let travado = false;
   return {
     zerar() { lado = null; },
+    /** Depois de uma escolha, até `livre`: o card fica no centro (AC-2.4, AC-2.10). */
+    get travado() { return travado; },
     ler(postura: Lado | null, livre: boolean, tMs: number): Gesto | null {
       if (travado) {
         if (livre) travado = false;
@@ -115,6 +115,7 @@ function criarLado(limiar: number, retorno: number, cfg: Config) {
   const escolha = criarEscolha(cfg);
   return {
     zerar: escolha.zerar,
+    get travado() { return escolha.travado; },
     ler: (d: number, tMs: number): Gesto | null =>
       escolha.ler(d > limiar ? 'direita' : d < -limiar ? 'esquerda' : null, Math.abs(d) < retorno, tMs),
   };
@@ -148,102 +149,60 @@ function interpretadorCorpo(cfg: Config): Interpretador {
       const { cx } = medir(pose);
       ultimoCx = cx;
       const d = cx - (centro ?? 0.5);
-      const m = medirMaos(pose, cfg);
       const nariz = pose[NARIZ]!.y;
       const maosAcima = pose[PUNHO_E]!.y < nariz && pose[PUNHO_D]!.y < nariz;
 
+      // v10.3.0: um único controle, o tronco (AC-2.7/AC-2.8 removidos). AC-2.4: libera com o tronco no centro.
       const tronco: Lado | null = d > cfg.limiar ? 'direita' : d < -cfg.limiar ? 'esquerda' : null;
-      // AC-2.7: um punho além de `bracoLadoL`, sem depender da calibração. AC-2.8: um para cada lado
-      // não escolhe; as duas mãos acima do nariz são o "saiba mais".
-      const ladoPunho = (desloc: number): Lado | null =>
-        desloc > cfg.bracoLadoL ? 'direita' : desloc < -cfg.bracoLadoL ? 'esquerda' : null;
-      const pd = ladoPunho(m.deslocD), pe = ladoPunho(m.deslocE);
-      const braco = maosAcima || (pd && pe && pd !== pe) ? null : pd ?? pe;
-      // AC-2.8: tronco e braço para lados diferentes não escolhem.
-      const postura = tronco && braco && tronco !== braco ? null : tronco ?? braco;
-      // AC-2.4: libera com o tronco no centro e os dois punhos perto do corpo.
-      const livre = Math.abs(d) < cfg.zonaRetorno
-        && Math.abs(m.deslocD) < cfg.retornoBracoL && Math.abs(m.deslocE) < cfg.retornoBracoL;
-      const g = escolha.ler(postura, livre, tMs);
+      const g = escolha.ler(tronco, Math.abs(d) < cfg.zonaRetorno, tMs);
       if (g) gestos.push(g);
       if (maos.ler(maosAcima, tMs)) gestos.push('maosParaCima');
-      return { presenca: presenca(cx, cfg), inclinacao: limitar(d / cfg.limiar), gestos };
+      // AC-2.10: fração do tronco até o limiar; travado depois de uma escolha, o card fica no centro.
+      return { presenca: presenca(cx, cfg), inclinacao: escolha.travado ? 0 : limitar(d / cfg.limiar), gestos };
     },
   };
 }
 
-/** Postura que escolhe um lado: uma mão levantada (AC-9.7) ou as duas mãos baixas além da linha de um ombro (AC-9.19). */
-function posturaLado(m: MedidaMaos, cfg: Config): Lado | null {
-  if (m.direita !== m.esquerda) return m.direita ? 'direita' : 'esquerda';
-  if (m.direita) return null; // as duas levantadas: "saiba mais"
-  if (m.deslocD > cfg.duasMaosLadoL && m.deslocE > cfg.duasMaosLadoL) return 'direita';
-  if (m.deslocD < -cfg.duasMaosLadoL && m.deslocE < -cfg.duasMaosLadoL) return 'esquerda';
-  return null;
+/** Mão ativa do swipe (AC-9.20): punho acima do cotovelo; com as duas, a mais longe do meio do corpo. */
+function maoAtiva(pose: Pose, m: MedidaMaos): number | null {
+  const ativas: number[] = [];
+  if (pose[PUNHO_D]!.y < pose[COTOVELO_D]!.y) ativas.push(m.deslocD);
+  if (pose[PUNHO_E]!.y < pose[COTOVELO_E]!.y) ativas.push(m.deslocE);
+  if (ativas.length === 0) return null;
+  return ativas.reduce((a, b) => (Math.abs(b) > Math.abs(a) ? b : a));
 }
 
-/** Arraste de uma mão do centro do peito para um lado (AC-9.20). Guarda, por punho, o último instante no centro. */
-function criarArraste(cfg: Config) {
-  const centro: Record<'d' | 'e', { t: number; desloc: number } | null> = { d: null, e: null };
-  return {
-    zerar() { centro.d = null; centro.e = null; },
-    ler(m: MedidaMaos, tMs: number): Lado | null {
-      const lados: Lado[] = [];
-      for (const [k, desloc, alta] of [['d', m.deslocD, m.direita], ['e', m.deslocE, m.esquerda]] as const) {
-        // Mão levantada não arrasta: a regra de levantar a mão (AC-9.7) ou o "saiba mais" (AC-9.8) decide.
-        if (alta) { centro[k] = null; continue; }
-        if (Math.abs(desloc) < cfg.centroArrasteL) { centro[k] = { t: tMs, desloc }; continue; }
-        const c = centro[k];
-        const andou = desloc - (c?.desloc ?? 0);
-        if (c && tMs - c.t <= cfg.arrasteMaxMs && Math.abs(andou) >= cfg.arrasteMinL && Math.sign(andou) === Math.sign(desloc)) {
-          lados.push(desloc > 0 ? 'direita' : 'esquerda');
-          centro[k] = null; // um novo arraste precisa voltar ao centro (AC-9.22)
-        }
-      }
-      // As duas mãos saindo do centro para lados opostos no mesmo quadro é ambíguo: não escolhe.
-      if (lados.length === 2 && lados[0] !== lados[1]) return null;
-      return lados[0] ?? null;
-    },
-  };
-}
-
+/**
+ * Modo Mão v10.3.0: um único controle, o swipe (AC-9.20, AC-9.22). A mão ativa arma quando passa pela
+ * frente do peito (< `centroArrasteL`); armada, o card segue o punho (fração = deslocamento ÷ `arrasteMinL`)
+ * e a escolha sai na hora ao passar do limite. Depois de escolher, de abrir o "saiba mais" ou de baixar a mão,
+ * desarma, com o card no centro, até a mão voltar à frente do peito.
+ */
 function interpretadorMao(cfg: Config): Interpretador {
-  let lado: { gesto: Lado; desde: number } | null = null;
-  let travadoLado = false;
+  let armada = false;
   const ambas = criarGatilho(cfg.permanenciaMaosMs);
-  const arraste = criarArraste(cfg);
   return {
     calibrar() {},
     ler(pose, tMs) {
-      if (!pose) { lado = null; ambas.zerar(); arraste.zerar(); return AUSENTE; }
+      if (!pose) { armada = false; ambas.zerar(); return AUSENTE; }
       const gestos: Gesto[] = [];
       const { cx } = medir(pose);
       const m = medirMaos(pose, cfg);
+      const duasAcima = m.direita && m.esquerda;
+      if (ambas.ler(duasAcima, tMs)) gestos.push('maosParaCima');
 
-      if (ambas.ler(m.direita && m.esquerda, tMs)) {
-        gestos.push('maosParaCima');
-        travadoLado = true; // baixar uma mão por vez depois do "saiba mais" não escolhe
+      // As duas mãos acima dos ombros são o "saiba mais" (AC-9.8): não há mão ativa nesse quadro.
+      const desloc = duasAcima ? null : maoAtiva(pose, m);
+      if (desloc === null) {
+        armada = false;
+        return { presenca: presenca(cx, cfg), inclinacao: 0, gestos };
       }
-      const postura = posturaLado(m, cfg);
-      const arrastou = arraste.ler(m, tMs);
-
-      if (travadoLado) {
-        // Libera só quando as mãos estão baixas e não há "duas mãos para um lado" (AC-9.22).
-        if (!m.direita && !m.esquerda && !postura) travadoLado = false;
-        lado = null;
-      } else if (arrastou) {
-        gestos.push(arrastou);
-        travadoLado = true;
-        lado = null;
-      } else if (!postura) {
-        lado = null;
-      } else if (lado?.gesto !== postura) {
-        lado = { gesto: postura, desde: tMs };
-      } else if (tMs - lado.desde >= cfg.permanenciaLadoMs) {
-        gestos.push(postura);
-        travadoLado = true;
-        lado = null;
+      if (!armada && Math.abs(desloc) < cfg.centroArrasteL) armada = true;
+      if (armada && Math.abs(desloc) >= cfg.arrasteMinL) {
+        gestos.push(desloc > 0 ? 'direita' : 'esquerda');
+        armada = false;
       }
-      return { presenca: presenca(cx, cfg), inclinacao: 0, gestos };
+      return { presenca: presenca(cx, cfg), inclinacao: armada ? limitar(desloc / cfg.arrasteMinL) : 0, gestos };
     },
   };
 }
@@ -273,7 +232,8 @@ function interpretadorCabeca(cfg: Config): Interpretador {
       const g = lado.ler(d, tMs);
       if (g) gestos.push(g);
       if (queixo.ler(q - queixoCentro > cfg.limiarQueixo, tMs)) gestos.push('maosParaCima');
-      return { presenca: presenca(cx, cfg), inclinacao: limitar(d / cfg.limiarCabecaGraus), gestos };
+      // AC-2.10: inclinação contínua até o limiar; depois de uma escolha, 0 até a cabeça voltar (AC-9.12).
+      return { presenca: presenca(cx, cfg), inclinacao: lado.travado ? 0 : limitar(d / cfg.limiarCabecaGraus), gestos };
     },
   };
 }

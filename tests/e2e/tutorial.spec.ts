@@ -32,13 +32,13 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, 4 treinos com feedback didático
   await expect(page.getByText(/^Pontos:/)).toHaveCount(0);
   await page.keyboard.press('ArrowLeft');
   await expect(page.getByText('Acertou!')).toBeVisible();
-  await expect(page.getByText('Você foi para a esquerda (corpo ou braço): escolheu Mentira.')).toBeVisible();
+  await expect(page.getByText('Você foi para a esquerda com o corpo: escolheu Mentira.')).toBeVisible();
 
   // Treino 2 aparece sozinho depois do feedback (3 s + saída).
   await expect(page.getByText('Treino 2 de 4')).toBeVisible({ timeout: 6000 });
   await page.keyboard.press('ArrowLeft'); // Professora Abelha é verdade: errar ensina o gesto certo
   await expect(page.getByText('Quase!')).toBeVisible();
-  await expect(page.getByText('Era Verdade: corpo ou braço para a direita.')).toBeVisible();
+  await expect(page.getByText('Era Verdade: corpo para a direita.')).toBeVisible();
 
   // AC-15.5: Enter pula o resto do treino; a partida começa com o cronômetro cheio e o placar zerado (AC-15.4).
   await page.keyboard.press('Enter');
