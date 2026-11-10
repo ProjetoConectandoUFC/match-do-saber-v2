@@ -14,7 +14,7 @@
 3. Só entram nas partidas notícias com status **aprovada**, fonte e "revisado por" preenchidos. Notícias novas começam como rascunho.
 4. Para várias de uma vez: marque as linhas e use "Apagar" ou mude status, tema ou técnica em massa.
 5. "Importar CSV": mostra a prévia (novas, já existentes pelo id e inválidas com o motivo); "Adicionar N" grava só as novas válidas. "Exportar CSV" salva uma cópia que abre no Excel.
-6. Também dá para editar `Documentos/Match do Saber/noticias.csv` no Excel (colunas `id;titulo;descricao;saiba_mais;veredito;explicacao;tecnica;tema;fonte_url;fontes_extras;imagem;revisado_por;status`). Feche o Excel antes de salvar pelo painel e aperte Ctrl+R no jogo para ler o arquivo novo; linhas inválidas aparecem no painel com o motivo e não entram nas partidas.
+6. Também dá para editar `Documentos/Match do Saber/noticias.csv` no Excel (colunas `id;titulo;descricao;saiba_mais;veredito;explicacao;tecnica;tema;fonte_url;fontes_extras;imagem;revisado_por;status;dificuldade`; a `dificuldade`, da v10.1.0, é opcional — `facil`, `medio`, `dificil` ou vazia — e um CSV antigo sem ela continua valendo). Feche o Excel antes de salvar pelo painel e aperte Ctrl+R no jogo para ler o arquivo novo; linhas inválidas aparecem no painel com o motivo e não entram nas partidas.
 7. Na versão web (navegador), ☰ › Notícias só avisa que o gerenciador está no app de desktop.
 
 ## No dia do evento (operador)
