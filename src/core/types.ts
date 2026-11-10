@@ -42,6 +42,10 @@ export interface Noticia {
   tecnica: Tecnica;
   fonteUrl: string;
   dificuldade?: Dificuldade;
+  /** v11.0.0 (AC-7.11): opcionais, para a lista do resumo e a página das fontes (AC-5.8, AC-5.10). */
+  tituloCurto?: string;
+  fonteNome?: string;
+  fontesExtras?: string[];
 }
 
 export interface Catalogo {
@@ -50,13 +54,17 @@ export interface Catalogo {
 }
 
 /**
- * Colunas do CSV do banco, na ordem em que são exportadas (FR-6). `dificuldade` (v10.1.0) é opcional e vem
- * por último: um CSV antigo, sem ela, é lido com a coluna vazia (AC-7.10).
+ * Colunas do CSV do banco, na ordem em que são exportadas (FR-6). `dificuldade` (v10.1.0), `titulo_curto` e
+ * `fonte_nome` (v11.0.0) são opcionais e vêm por último: um CSV antigo, sem elas, é lido com elas vazias (AC-7.10, AC-7.11).
  */
 export const COLUNAS_BANCO = [
   'id', 'titulo', 'descricao', 'saiba_mais', 'veredito', 'explicacao', 'tecnica', 'tema',
   'fonte_url', 'fontes_extras', 'imagem', 'revisado_por', 'status', 'dificuldade',
+  'titulo_curto', 'fonte_nome',
 ] as const;
+
+/** Limite de `titulo_curto` (AC-7.3, AC-7.11): cabe numa linha da lista do resumo. */
+export const MAX_TITULO_CURTO = 34;
 export type ColunaBanco = (typeof COLUNAS_BANCO)[number];
 
 /**

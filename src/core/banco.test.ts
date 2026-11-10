@@ -8,7 +8,26 @@ import type { NoticiaBanco } from './types';
 const n = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org/a',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
+});
+
+describe('título curto e veículo da fonte (AC-7.11, v11.0.0)', () => {
+  it('opcionais; o título curto vale até 34 caracteres', () => {
+    expect(validarNoticia(n('a'))).toEqual({});
+    expect(validarNoticia(n('a', { titulo_curto: 'x'.repeat(34), fonte_nome: 'Aos Fatos' }))).toEqual({});
+    expect(validarNoticia(n('a', { titulo_curto: 'x'.repeat(35) })).titulo_curto).toBe('use até 34 caracteres');
+  });
+
+  it('a notícia jogável leva o título curto, o veículo e os links extras; vazios não viram campo', () => {
+    const [com, sem] = jogaveis([
+      n('a', { titulo_curto: 'Curto', fonte_nome: 'Aos Fatos', fontes_extras: 'https://a.org/x  https://b.org/y' }),
+      n('b'),
+    ]);
+    expect(com).toMatchObject({ tituloCurto: 'Curto', fonteNome: 'Aos Fatos', fontesExtras: ['https://a.org/x', 'https://b.org/y'] });
+    expect(sem).not.toHaveProperty('tituloCurto');
+    expect(sem).not.toHaveProperty('fonteNome');
+    expect(sem).not.toHaveProperty('fontesExtras');
+  });
 });
 
 describe('dificuldade (AC-7.10, v10.1.0)', () => {

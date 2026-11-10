@@ -1,5 +1,5 @@
 import {
-  COLUNAS_BANCO, DIFICULDADES, STATUS, TECNICAS, TEMAS, VEREDITOS,
+  COLUNAS_BANCO, DIFICULDADES, MAX_TITULO_CURTO, STATUS, TECNICAS, TEMAS, VEREDITOS,
   type ColunaBanco, type Dificuldade, type Noticia, type NoticiaBanco, type Tecnica, type Tema, type Veredito,
 } from './types';
 
@@ -28,6 +28,8 @@ export function validarNoticia(n: NoticiaBanco, outrosIds: Iterable<string> = []
   // AC-7.10: opcional; quando preenchida, só os valores da lista.
   const dificuldade = n.dificuldade ?? '';
   if (dificuldade && !DIFICULDADES.includes(dificuldade as Dificuldade)) p.dificuldade = `use ${DIFICULDADES.join(', ')}`;
+  // AC-7.11 (v11.0.0): opcional; cabe numa linha da lista do resumo.
+  if ((n.titulo_curto ?? '').length > MAX_TITULO_CURTO) p.titulo_curto = `use até ${MAX_TITULO_CURTO} caracteres`;
   if (!p.fonte_url && !LINK.test(n.fonte_url)) p.fonte_url = 'precisa ser um link http(s)';
   const extras = (n.fontes_extras ?? '').split(/\s+/).filter(Boolean);
   if (extras.some((l) => !LINK.test(l))) p.fontes_extras = 'cada link precisa ser http(s), separados por espaço';
@@ -65,6 +67,10 @@ function paraNoticia(n: NoticiaBanco): Noticia {
   };
   if (n.imagem) x.imagem = n.imagem;
   if (n.dificuldade) x.dificuldade = n.dificuldade as Dificuldade;
+  if (n.titulo_curto) x.tituloCurto = n.titulo_curto;
+  if (n.fonte_nome) x.fonteNome = n.fonte_nome;
+  const extras = (n.fontes_extras ?? '').split(/\s+/).filter(Boolean);
+  if (extras.length) x.fontesExtras = extras;
   return x;
 }
 

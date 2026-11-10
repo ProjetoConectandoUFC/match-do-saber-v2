@@ -5,7 +5,7 @@ import { COLUNAS_BANCO, type NoticiaBanco } from './types';
 const noticia = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
 });
 
 describe('lerTabela (FR-6)', () => {
@@ -35,6 +35,13 @@ describe('lerCsv', () => {
       + 'mds-0001;T;D;S;falsa;E;fonte;saude;https://exemplo.org;;;Ana;aprovada\n';
     expect(lerCsv(antigo)[0]).toMatchObject({ id: 'mds-0001', status: 'aprovada', dificuldade: '' });
     expect(lerCsv('id;titulo;dificuldade\nx;T;MEDIO\n')[0]!.dificuldade).toBe('medio');
+  });
+
+  it('AC-7.11 (v11.0.0): CSV sem `titulo_curto` e `fonte_nome` carrega com elas vazias; com elas, sem mudar maiúsculas', () => {
+    expect(lerCsv('id;titulo\nx;T\n')[0]).toMatchObject({ titulo_curto: '', fonte_nome: '' });
+    expect(lerCsv('id;titulo;Titulo Curto;fonte_nome\nx;T;Banana radioativa;Correio Braziliense\n')[0])
+      .toMatchObject({ titulo_curto: 'Banana radioativa', fonte_nome: 'Correio Braziliense' });
+    expect(COLUNAS_BANCO.slice(-3)).toEqual(['dificuldade', 'titulo_curto', 'fonte_nome']);
   });
 
   it('apara espaços dos campos', () => {

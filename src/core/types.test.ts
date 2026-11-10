@@ -9,10 +9,11 @@ describe('tipos do banco de notícias (v9.0.0)', () => {
     expect(TEMA_ROTULO['meio-ambiente']).toBe('Meio ambiente');
   });
 
-  it('FR-6: colunas do CSV, na ordem; `dificuldade` (v10.1.0) é a última, para CSVs antigos só ganharem uma coluna no fim', () => {
+  it('FR-6: colunas do CSV, na ordem; as opcionais vêm no fim (`dificuldade` v10.1.0, `titulo_curto` e `fonte_nome` v11.0.0), para CSVs antigos só ganharem colunas no fim', () => {
     expect(COLUNAS_BANCO).toEqual([
       'id', 'titulo', 'descricao', 'saiba_mais', 'veredito', 'explicacao', 'tecnica', 'tema',
       'fonte_url', 'fontes_extras', 'imagem', 'revisado_por', 'status', 'dificuldade',
+      'titulo_curto', 'fonte_nome',
     ]);
   });
 

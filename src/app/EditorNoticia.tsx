@@ -24,6 +24,9 @@ const CAMPOS: Campo[] = [
   { coluna: 'status', rotulo: 'Status', tipo: 'lista', opcoes: STATUS, rotulos: { rascunho: 'Rascunho', aprovada: 'Aprovada' } },
   // v10.1.0 (AC-7.10): vazia é válida ("—"); ainda não muda o sorteio.
   { coluna: 'dificuldade', rotulo: 'Dificuldade (opcional)', tipo: 'lista', opcoes: DIFICULDADES, rotulos: DIFICULDADE_ROTULO },
+  // v11.0.0 (AC-7.11): para a lista do resumo; sem eles, o título cortado e o domínio da fonte.
+  { coluna: 'titulo_curto', rotulo: 'Título curto (opcional)', tipo: 'texto', dica: 'até 34 caracteres, para a lista do fim da partida' },
+  { coluna: 'fonte_nome', rotulo: 'Veículo da fonte (opcional)', tipo: 'texto', dica: 'ex.: Aos Fatos; nas falsas, quem desmentiu' },
 ];
 
 /** Editor de uma notícia (AC-7.2, AC-7.3): aponta cada campo com problema; quem valida e grava é o painel. */

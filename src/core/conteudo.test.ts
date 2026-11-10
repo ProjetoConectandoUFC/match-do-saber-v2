@@ -11,7 +11,7 @@ const texto = readFileSync('conteudo/noticias.csv', 'utf8');
 const banco = lerCsv(texto);
 
 describe('banco padrão conteudo/noticias.csv', () => {
-  it('FR-6 (v10.1.0): tem o cabeçalho completo, inclusive `dificuldade`', () => {
+  it('FR-6 (v10.1.0, v11.0.0): tem o cabeçalho completo, inclusive `dificuldade`, `titulo_curto` e `fonte_nome`', () => {
     expect(texto.replace(/^﻿/, '').split(/\r?\n/, 1)[0]).toBe(COLUNAS_BANCO.join(';'));
   });
 

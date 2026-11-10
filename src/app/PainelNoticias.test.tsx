@@ -10,7 +10,7 @@ import type { EstadoBanco, RepositorioNoticias } from './repositorio';
 const n = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org/a',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
 });
 
 const BANCO = [
@@ -109,6 +109,20 @@ describe('PainelNoticias no app de desktop', () => {
     fireEvent.change(campo, { target: { value: 'medio' } });
     await act(async () => fireEvent.click(within(editor).getByRole('button', { name: 'Salvar' })));
     expect(repo.salvar).toHaveBeenCalledWith([{ ...BANCO[0], dificuldade: 'medio' }, BANCO[1], BANCO[2], BANCO[3]], 'v1');
+  });
+
+  it('AC-7.11 (v11.0.0): o editor tem título curto e veículo da fonte, opcionais; título curto longo é apontado', async () => {
+    const repo = await montar();
+    fireEvent.click(within(linhas()[0]!).getByRole('button', { name: 'Editar' }));
+    const editor = screen.getByRole('dialog', { name: 'Editar notícia' });
+    fireEvent.change(within(editor).getByLabelText('Título curto (opcional)'), { target: { value: 'x'.repeat(35) } });
+    fireEvent.change(within(editor).getByLabelText('Veículo da fonte (opcional)'), { target: { value: 'Aos Fatos' } });
+    fireEvent.click(within(editor).getByRole('button', { name: 'Salvar' }));
+    expect(within(editor).getByLabelText('Título curto (opcional)')).toHaveAttribute('aria-invalid', 'true');
+    expect(repo.salvar).not.toHaveBeenCalled();
+    fireEvent.change(within(editor).getByLabelText('Título curto (opcional)'), { target: { value: 'Curto' } });
+    await act(async () => fireEvent.click(within(editor).getByRole('button', { name: 'Salvar' })));
+    expect(repo.salvar).toHaveBeenCalledWith([{ ...BANCO[0], titulo_curto: 'Curto', fonte_nome: 'Aos Fatos' }, BANCO[1], BANCO[2], BANCO[3]], 'v1');
   });
 
   it('AC-7.3/AC-7.10: dificuldade fora da lista (vinda do Excel) aparece e é apontada', async () => {

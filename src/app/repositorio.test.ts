@@ -5,7 +5,7 @@ import { criarRepositorio, repositorioDesktop, repositorioWeb } from './reposito
 
 const n: NoticiaBanco = {
   id: 'mds-0001', titulo: 'T', descricao: 'D', saiba_mais: 'S', veredito: 'falsa', explicacao: 'E', tecnica: 'fonte',
-  tema: 'saude', fonte_url: 'https://exemplo.org', fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '',
+  tema: 'saude', fonte_url: 'https://exemplo.org', fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '',
 };
 
 function respostas(mapa: Record<string, () => Response>) {
