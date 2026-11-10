@@ -4,7 +4,7 @@ import { criarRegistro } from '../core/diagnostico';
 import { TEMPOS, pontos, type Estado } from '../core/partida';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
-import { capturarQuadro } from './foto';
+import { capturarFoto, type FotoPartida } from './foto';
 import { MenuOperador, type ItemMenu } from './MenuOperador';
 import { PainelNoticias } from './PainelNoticias';
 import { PainelDiagnostico } from './PainelDiagnostico';
@@ -81,9 +81,10 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   }, [cfg.abrir]);
   telaRef.current = estado.tela;
   useSons(estado, cfg.config.som);
-  // Foto do resumo (FR-13): só com a câmera ativa; fica só neste estado React.
-  const foto = useFotoPartida(estado, cfg.config.foto, () =>
-    camera === 'ativa' && videoRef.current ? capturarQuadro(videoRef.current) : null);
+  // Foto do resumo (FR-13): só com a câmera ativa; fica só neste estado React, com as âncoras do rosto
+  // calculadas pela pose do mesmo quadro (AC-13.6). Os filtros ainda não são desenhados (prévia v11 a aprovar).
+  const foto = useFotoPartida<FotoPartida>(estado, cfg.config.foto, () =>
+    camera === 'ativa' && videoRef.current ? capturarFoto(videoRef.current, poseRef.current) : null);
   const cardRef = useRef<HTMLElement>(null);
   const cardSaindoRef = useRef<HTMLElement>(null); // card que está saindo (AC-2.1/AC-2.2)
   // AC-2.10: o card acompanha levemente a inclinação, direto no DOM (sem re-renderizar a cada leitura).
@@ -152,7 +153,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       break;
     }
     case 'resumo':
-      tela = <TelaResumo pontos={pontos(estado.partida)} total={estado.partida.cards.length} foto={foto} />;
+      tela = <TelaResumo pontos={pontos(estado.partida)} total={estado.partida.cards.length} foto={foto?.imagem} />;
       break;
   }
 

@@ -93,6 +93,27 @@ describe('useFotoPartida (FR-13)', () => {
     expect(result.current).toBeNull();
   });
 
+  it('AC-13.7: foto e âncoras são um objeto só, guardado e apagado inteiro', () => {
+    const comAncoras = { imagem: FOTO, largura: 480, altura: 270, ancoras: { rosto: { x: 1, y: 2, escala: 0.5, graus: 0 } } };
+    const capturar = vi.fn(() => comAncoras);
+    const { result, rerender } = renderHook(
+      ({ estado }: { estado: Estado }) => useFotoPartida<typeof comAncoras>(estado, true, capturar),
+      { initialProps: { estado: espera as Estado } },
+    );
+    jogar(rerender);
+    expect(result.current).toBe(comAncoras);
+    rerender({ estado: calibracao });
+    expect(result.current).toBeNull();
+  });
+
+  it('AC-13.4 (v10.2.0): o treino de uma nova partida também apaga a foto', () => {
+    const capturar = vi.fn(() => FOTO);
+    const { result, rerender } = montar(true, capturar);
+    jogar(rerender);
+    rerender({ estado: { tela: 'tutorial', passo: 0, entrada: 'alternativa' } });
+    expect(result.current).toBeNull();
+  });
+
   it('AC-13.4: partida encerrada antes do resumo (Esc no card 7) não leva a foto adiante', () => {
     const capturar = vi.fn(() => FOTO);
     const { result, rerender } = montar(true, capturar);
