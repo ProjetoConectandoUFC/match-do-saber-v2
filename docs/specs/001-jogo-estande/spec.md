@@ -1,7 +1,7 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
 **Status:** Approved
-**Version:** 10.2.0
+**Version:** 10.3.0
 **Created:** 2026-10-26
 **Last Updated:** 2026-11-10
 **Branch:** `001-jogo-estande`
@@ -32,6 +32,7 @@
 | 10.0.0 | 2026-11-09 | Identidade visual do projeto Conectando (FR-15, prévia aprovada em `docs/visual/previa.html`). Removido AC-4.8: o tempo aparece só na barra da base da tela. A interface diz "Verdade" e "Mentira" (AC-4.1 a AC-4.3, AC-9.14). Reescritos AC-4.1 a AC-4.3: o feedback mostra primeiro o veredito ("É verdade"/"É mentira"), menor, e abaixo o selo, com o fundo da tela na cor do veredito. AC-2.6 e AC-4.5: a prévia da câmera é uma camada sobreposta e não conta na centralização. AC-13.2: o resumo não mostra a prévia da câmera e o polaroid fica 20% maior |
 | 10.1.0 | 2026-11-10 | Card acompanha o corpo e dificuldade das notícias (cartões do Trello "Match: mecânicas e movimento do card" e "Conteúdo do Match"). Adicionado AC-2.10: na tela do card, o card desloca-se e gira levemente para o lado em que o jogador pende (no máximo 40 px e 6°), suavizado, com uma zona morta perto do centro, e fica no centro com `prefers-reduced-motion`, sem pessoa, com o menu aberto e em "Volte para o centro"; reescritos AC-2.3, AC-9.13 e as regras de FR-2 e FR-9 que pediam o card parado (decisão da v4.0.0 revista: a suavização e a zona morta tratam o tremor que motivou aquela decisão). Adicionados AC-7.10 e a coluna opcional `dificuldade` (`facil`, `medio`, `dificil` ou vazia) em AC-7.1, AC-7.2, AC-7.3 e FR-6; CSV sem a coluna continua sendo lido. O sorteio ainda não usa a dificuldade |
 | 10.2.0 | 2026-11-10 | Base mecânica para os filtros da foto e para o tutorial, sem nada visual novo (decisões a confirmar pelo responsável). Adicionados AC-13.6 e AC-13.7 e regras de FR-13: no instante da foto, o jogo calcula e guarda com ela, só na memória, as âncoras do rosto (centro, escala e giro pelos olhos; chapéu pelas orelhas; capa pelos ombros; com reserva quando faltam pontos) e as apaga junto com a foto; nenhum filtro é desenhado ainda. AC-13.5 passa a cobrir também os pontos, IndexedDB e o corpo das requisições. Adicionados Story 15 e FR-16: modo tutorial com 4 cards de treino (perfis cômicos, fora do banco e da pontuação), feedback que ensina o gesto, desligado por padrão; AC-9.1, AC-9.2, AC-9.4, FR-9 ganham o item "Tutorial" nas Configurações. Corrigido (NFR Security): o MediaPipe enviava métricas de uso para `odml.pa.googleapis.com` durante a partida com câmera; a página passa a só se conectar à própria origem |
+| 10.3.0 | 2026-11-10 | Decisões do responsável (Levi) depois de testar o app. O card mimetiza o controle em tempo real, como no Reigns: AC-2.10 reescrito (deslocamento proporcional desde o centro, até 38% da largura e 14° com eixo embaixo no limiar, rótulo "Verdade"/"Mentira" aparecendo aos poucos, suavização de ~100 ms, saída a partir da posição; com `prefers-reduced-motion`, só os rótulos). Um único controle por modo: no Corpo, só o tronco (AC-2.7 e AC-2.8 removidos; AC-2.4 e AC-2.9 reescritos); na Cabeça, a inclinação; na Mão, o swipe da mão ativa (AC-9.7 e AC-9.19 removidos; AC-9.9, AC-9.14, AC-9.20 e AC-9.22 reescritos). FR-2 e FR-9 acompanham. Diagnóstico liga e desliga pelo menu ☰ (AC-12.7; FR-12 e FR-14 sem o "até recarregar") |
 
 ---
 
@@ -48,7 +49,7 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - Uma pessoa não programadora cadastra, edita e importa notícias pelo próprio jogo, sem ajuda técnica, e só notícias aprovadas, com fonte e revisor, chegam às partidas (v9.0.0).
 - Nenhuma imagem da câmera e nenhum dado de jogador sai do notebook ou fica salvo.
 - No fim da partida, o jogador vê um card polaroid com uma foto dele tirada no meio da partida; a foto some quando o resumo fecha.
-- Jogadores com baixa mobilidade completam uma partida sem tocar no notebook, usando o modo Mão (levantar uma mão) ou o modo Cabeça (inclinar a cabeça), escolhido pelo operador.
+- Jogadores com baixa mobilidade completam uma partida sem tocar no notebook, usando o modo Mão (arrastar uma mão para o lado; até a v10.2.0, levantar uma mão) ou o modo Cabeça (inclinar a cabeça), escolhido pelo operador.
 - O operador ajusta o tempo por card ao público (de 10 a 30 s), liga ou desliga o som, e inicia ou encerra uma partida com um clique.
 
 ## Non-Goals
@@ -98,13 +99,13 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-2.1** Given um card está na tela When o jogador desloca o tronco para a **própria direita** além do limiar e se mantém por ~300 ms Then o card é registrado como "match" (resposta "verdadeira") e sai pela direita da tela.
 - [ ] **AC-2.2** Given um card está na tela When o jogador desloca o tronco para a **própria esquerda** além do limiar e se mantém por ~300 ms Then o card é registrado como "descarte" (resposta "falsa") e sai pela esquerda da tela.
 - [ ] **AC-2.3** Given um card está na tela When o jogador se move (inclina o tronco, mexe os braços ou a cabeça) sem completar um gesto Then nenhuma escolha é registrada; o card só acompanha levemente a inclinação, como em AC-2.10, sem tremer, e só sai da tela depois de uma escolha (AC-2.1, AC-2.2). (Reescrito v10.1.0; da v4.0.0 à v10.0.0 o card ficava parado.)
-- [ ] **AC-2.4** Given o jogador acabou de fazer uma escolha When o próximo card aparece e o jogador ainda está deslocado para um lado ou com o braço estendido para um lado Then nenhuma nova escolha é aceita até ele voltar à área central com os dois punhos perto do corpo (a menos de 0,9 largura de ombro do meio do corpo).
+- [ ] **AC-2.4** Given o jogador acabou de fazer uma escolha When o próximo card aparece e o jogador ainda está deslocado para um lado Then nenhuma nova escolha é aceita e o card fica no centro até ele voltar à área central; só então o card volta a acompanhar o tronco (AC-2.10). (Reescrito v10.3.0: os punhos deixaram de contar com a saída do braço para o lado.)
 - [ ] **AC-2.5** Given um card está na tela When o operador pressiona → ou ← (ou arrasta o card com mouse/toque para a direita ou esquerda) Then o resultado é o mesmo de AC-2.1 ou AC-2.2, respectivamente.
 - [ ] **AC-2.6** Given a câmera está ativa durante a partida When o jogador olha para a tela Then ele vê uma prévia pequena e espelhada de si mesmo com o esqueleto detectado desenhado por cima, num canto inferior da tela, sobreposta ao resto (não empurra nem descentraliza nenhum outro elemento); a prévia não aparece na tela de resumo (v10.0.0).
-- [ ] **AC-2.7** Given o modo Corpo e um card na tela When o jogador estende um braço (qualquer um, em qualquer altura) para o **próprio lado direito** até o punho passar de 1,2 largura de ombro do meio do corpo e segura por ~300 ms Then o card é registrado como "match" e sai pela direita; para o lado esquerdo, como "descarte" e sai pela esquerda. O tronco pode ficar no centro.
-- [ ] **AC-2.8** Given o modo Corpo e um card na tela When os dois braços estão estendidos para lados opostos ao mesmo tempo, ou o tronco vai para um lado e o braço para o outro Then nenhuma escolha é registrada; com os dois punhos acima do nariz vale o "saiba mais" (AC-3.1), não uma escolha.
-- [ ] **AC-2.9** Given o modo Corpo When a tela de calibração aparece Then a instrução mostra "Corpo ou braço para a direita: é verdade · Para a esquerda: é falsa · Duas mãos para cima: saiba mais".
-- [ ] **AC-2.10** Given um card está na tela, com a câmera ativa e uma pessoa detectada When o jogador pende para um lado (no modo Corpo, o tronco; no modo Cabeça, a cabeça; no modo Mão a leitura de inclinação é sempre zero e o card fica no centro) Then o card desloca-se na horizontal para o mesmo lado em que o jogador se vê na prévia espelhada e gira levemente para esse lado, na proporção da inclinação até o limiar do gesto: no máximo 40 px e 6°, com o movimento suavizado (sem saltos entre as leituras da câmera) e sem se mover perto do centro (zona morta de 15% do limiar). O card volta suavemente ao centro quando não há pessoa detectada, em "Volte para o centro" e no feedback; com o menu ☰ ou as Configurações abertos ele fica no centro; se o sistema pede menos movimento (`prefers-reduced-motion: reduce`), o card não se desloca nem gira. Ao sair depois de uma escolha (AC-2.1, AC-2.2), ele parte da posição em que estava. O deslocamento não muda tempos, gestos, pontos nem a centralização de AC-4.5, que é medida com o card no centro. (Adicionado v10.1.0.)
+- [ ] ~~**AC-2.7**~~ (Removido na v10.3.0 por decisão do responsável: no modo Corpo o único controle é o tronco.) Texto anterior: estender um braço para o lado, com o punho além de 1,2 largura de ombro do meio do corpo por ~300 ms, escolhia o lado.
+- [ ] ~~**AC-2.8**~~ (Removido na v10.3.0, junto com AC-2.7.) Texto anterior: braços para lados opostos, ou tronco e braço para lados diferentes, não escolhiam.
+- [ ] **AC-2.9** Given o modo Corpo When a tela de calibração aparece Then a instrução mostra "Corpo para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais". (Reescrito v10.3.0.)
+- [ ] **AC-2.10** Given um card está na tela (inclusive um card de treino, FR-16) When o controle do modo se move (Corpo: o tronco, pelo meio dos ombros; Cabeça: a inclinação da cabeça; Mão: a posição horizontal da mão ativa no swipe, AC-9.20) Then o card mimetiza o controle em tempo real, como no jogo Reigns: (a) a fração do controle vai de 0 no centro a ±1 no limiar do gesto, e o card se desloca na proporção, sem zona morta além de 3%; no limiar, a base do card está deslocada 38% da largura do card e ele está girado 14° para aquele lado, com o eixo de giro na base; (b) conforme o card se aproxima de um lado, aparece o rótulo daquele lado ("Verdade" à direita, "Mentira" à esquerda) com opacidade igual à fração; (c) o movimento é interpolado a cada quadro de tela entre as leituras da câmera (~6–7 por segundo), com constante de tempo de 100 ms, para não andar aos saltos sem ficar atrasado; (d) ao chegar a ±1, vale a regra de escolha do modo (Corpo e Cabeça: mantido ~300 ms, AC-2.1, AC-9.10; Mão: na hora, AC-9.20) e o card sai pelo lado a partir da posição em que está; (e) o card fica no centro, sem rótulo, sem pessoa detectada, em "Volte para o centro", com o menu aberto e depois de uma escolha até o controle voltar ao centro (AC-2.4, AC-9.12, AC-9.22); (f) se o sistema pede menos movimento (`prefers-reduced-motion: reduce`), o card não se desloca nem gira, e só os rótulos mostram o quanto falta. O deslocamento não muda tempos, gestos, pontos nem a centralização de AC-4.5, medida com o card no centro. Os números são pontos de partida a ajustar no notebook do estande. (Reescrito v10.3.0; decidido pelo responsável.)
 
 ### Story 3: Ver "saiba mais" antes de decidir
 
@@ -215,22 +216,22 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-9.4** Given nada foi configurado antes neste notebook When o jogo é aberto Then as configurações são: modo Corpo, 15 s por card, som ligado, foto no resumo ligada e tutorial desligado.
 - [ ] **AC-9.5** Given o operador mudou as configurações When o jogo é fechado e reaberto, inclusive sem internet Then as mesmas configurações continuam ativas.
 - [ ] **AC-9.6** Given o jogo não está na tela de espera When o operador pressiona M Then nada acontece: as configurações só mudam entre partidas.
-- [ ] **AC-9.7** Given o modo Mão e um card na tela When o jogador mantém a **própria mão direita** acima do ombro por ~300 ms Then o card é registrado como "match" e sai pela direita; com a **mão esquerda**, como "descarte" e sai pela esquerda.
+- [ ] ~~**AC-9.7**~~ (Removido na v10.3.0 por decisão do responsável: no modo Mão o único controle é o swipe, AC-9.20.) Texto anterior: mão direita acima do ombro por ~300 ms = match; mão esquerda = descarte.
 - [ ] **AC-9.8** Given o modo Mão e um card na tela When o jogador mantém as duas mãos acima dos ombros por ~500 ms Then o "saiba mais" abre (ou fecha, se já estiver aberto) e nenhuma escolha é registrada.
-- [ ] **AC-9.9** Given o modo Mão e o jogador acabou de fazer uma escolha When o próximo card aparece com a mão ainda levantada Then nenhuma nova escolha é aceita até ele baixar as duas mãos.
+- [ ] **AC-9.9** Given o modo Mão e o jogador acabou de fazer uma escolha When o próximo card aparece com a mão ainda longe do centro Then nenhuma nova escolha é aceita e o card fica no centro até ele trazer a mão de volta para a frente do peito (a menos de 0,5 largura de ombro do meio do corpo) ou baixá-la. (Reescrito v10.3.0.)
 - [ ] **AC-9.10** Given o modo Cabeça e um card na tela When o jogador inclina a cabeça para o **próprio lado direito** (~15° em relação à posição registrada na calibração) e mantém por ~300 ms Then o card é registrado como "match" e sai pela direita; para o lado esquerdo, como "descarte" e sai pela esquerda.
 - [ ] **AC-9.11** Given o modo Cabeça e um card na tela When o jogador levanta o queixo (olha para cima) e mantém por ~500 ms Then o "saiba mais" abre (ou fecha, se já estiver aberto) e nenhuma escolha é registrada.
 - [ ] **AC-9.12** Given o modo Cabeça e o jogador acabou de fazer uma escolha When o próximo card aparece com a cabeça ainda inclinada Then nenhuma nova escolha é aceita até ele voltar a cabeça ao centro.
 - [ ] **AC-9.13** Given o modo Cabeça e um card na tela When o jogador inclina a cabeça sem atingir o limiar Then nenhuma escolha é registrada e o card só acompanha levemente a inclinação (AC-2.3, AC-2.10). (Reescrito v10.1.0.)
-- [ ] **AC-9.14** Given o modo Mão ou Cabeça When a tela de calibração ou um card aparece Then as instruções mostram os gestos do modo ativo: Mão — "É verdade: mão direita para cima, as duas mãos para a direita ou arraste para a direita · É mentira: o mesmo para a esquerda · Duas mãos para cima: saiba mais"; Cabeça — "Cabeça para a direita: é verdade · Cabeça para a esquerda: é mentira · Queixo para cima: saiba mais". ("falsa" virou "mentira" na v10.0.0.)
+- [ ] **AC-9.14** Given o modo Mão ou Cabeça When a tela de calibração ou um card aparece Then as instruções mostram os gestos do modo ativo: Mão — "Arraste a mão para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais" (v10.3.0); Cabeça — "Cabeça para a direita: é verdade · Cabeça para a esquerda: é mentira · Queixo para cima: saiba mais". ("falsa" virou "mentira" na v10.0.0.)
 - [ ] **AC-9.15** Given o modo Mão ou Cabeça e um jogador sentado diante da câmera, com ombros e rosto visíveis When ele fica no centro por 2 s Then a calibração conclui e a partida começa.
 - [ ] **AC-9.16** Given qualquer modo de jogo When o operador usa as setas, Enter ou o mouse/toque Then a entrada alternativa funciona exatamente como em FR-3.
 - [ ] **AC-9.17** Given o tempo por card configurado em N s When um card aparece Then o cronômetro começa em N s e o tempo esgota depois de N s; no menu, ← em 10 s e → em 30 s não mudam o valor.
 - [ ] **AC-9.18** Given a tela de espera When o menu "Configurações" abre Then ele aparece como um painel encostado na borda direita, com a altura da tela inteira e largura de até 26rem, sobre o restante da tela escurecido; o título "Configurações" e o "✕" ficam no topo do painel, e o botão "▶ Iniciar" continua no mesmo lugar.
-- [ ] **AC-9.19** Given o modo Mão e um card na tela When o jogador leva as duas mãos juntas, abaixo da altura dos ombros, para o **próprio lado direito** até os dois punhos passarem da linha do ombro direito (mais de 0,5 largura de ombro do meio do corpo) e segura por ~300 ms Then o card é registrado como "match"; para o lado esquerdo, como "descarte".
-- [ ] **AC-9.20** Given o modo Mão e um card na tela When o jogador arrasta uma mão (qualquer uma) do centro do peito (a menos de 0,5 largura de ombro do meio do corpo) para o **próprio lado direito**, andando pelo menos 1 largura de ombro em até ~0,8 s Then o card é registrado como "match"; para o lado esquerdo, como "descarte".
+- [ ] ~~**AC-9.19**~~ (Removido na v10.3.0, junto com AC-9.7.) Texto anterior: as duas mãos juntas, abaixo dos ombros, além da linha de um ombro por ~300 ms escolhiam o lado.
+- [ ] **AC-9.20** Given o modo Mão e um card na tela When o jogador levanta uma mão à frente do corpo (punho acima do cotovelo; essa é a mão ativa; com as duas, vale a que está mais longe do meio do corpo) e a arrasta para o **próprio lado direito** Then o card segue a mão (AC-2.10), com a fração = deslocamento do punho a partir do meio do corpo ÷ 1 largura de ombro, e, quando o punho passa de 1 largura de ombro, o card é registrado como "match" na hora e sai pela direita; para o lado esquerdo, como "descarte". O limite de 1 largura de ombro é um ponto de partida, a calibrar no hardware. (Reescrito v10.3.0: era o arraste em até ~0,8 s, um de três jeitos de escolher.)
 - [ ] **AC-9.21** Given o modo Mão ou Cabeça e uma partida iniciada pela calibração When a câmera deixa de detectar a pessoa por qualquer tempo durante o card Then o cronômetro continua correndo, "Volte para o centro" não aparece e a partida não é encerrada por ausência.
-- [ ] **AC-9.22** Given o modo Mão e o jogador acabou de escolher por qualquer um dos três gestos (AC-9.7, AC-9.19, AC-9.20) When o próximo card aparece Then nenhuma nova escolha é aceita até ele baixar as mãos e desfazer a posição de "duas mãos para um lado"; uma nova escolha por arraste precisa partir de novo do centro do peito.
+- [ ] **AC-9.22** Given o modo Mão When o jogador acabou de escolher pelo swipe ou de abrir o "saiba mais" com as duas mãos Then nenhuma nova escolha é aceita até a mão ativa voltar para a frente do peito (a menos de 0,5 largura de ombro do meio do corpo) ou não haver mão ativa. (Reescrito v10.3.0.)
 
 ### Story 10: Iniciar e sair com um clique (adicionado v2.0.0)
 
@@ -275,6 +276,7 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-12.4** Given o painel de diagnóstico está na tela When o operador clica em "Baixar registro (60 s)" Then o navegador salva no notebook um arquivo `match-do-saber-diagnostico-<data e hora>.json` com as medições, quadro a quadro, dos últimos 60 s: horário, intervalo do quadro, tempo de detecção, pessoas, modo, tela, os pontos nariz, orelhas, ombros e punhos (x, y, confiança), as medidas das mãos e da cabeça e os gestos reconhecidos.
 - [ ] **AC-12.5** Given o modo de diagnóstico está ligado When o jogo roda Then nenhuma medição sai do notebook nem fica guardada no navegador; o arquivo só existe se o operador clicar em "Baixar registro", e nenhuma imagem da câmera entra no registro.
 - [ ] **AC-12.6** Given o modo de diagnóstico está ligado When uma partida acontece Then o jogo se comporta exatamente como sem ele: mesmos tempos, gestos, pontos e telas.
+- [ ] **AC-12.7** Given a tela de espera When o operador escolhe ☰ › Diagnóstico Then o painel de diagnóstico liga se estava desligado e desliga se estava ligado (o registro em memória é descartado ao desligar); o item mostra "Diagnóstico: ligado" ou "Diagnóstico: desligado". Aberto com `?diagnostico`, o jogo começa com ele ligado e também pode desligá-lo pelo menu. (Adicionado v10.3.0; decidido pelo responsável: até a v10.2.0 o item só ligava, até recarregar.)
 
 ### Story 13: Ver minha foto no fim da partida (adicionado v7.0.0)
 
@@ -333,10 +335,10 @@ Este é o modo padrão (FR-9). Os modos Mão e Cabeça estão em FR-9.
 
 **Must:**
 - Reconhecer três gestos: tronco deslocado para a própria direita (match), para a própria esquerda (descarte) e dois punhos acima do nariz (saiba mais), com os tempos de permanência de AC-2.1, AC-2.2 e AC-3.1.
-- Aceitar também um braço estendido para o lado como match ou descarte (AC-2.7), medido em larguras de ombro a partir do meio do corpo, sem depender da calibração; sinais contrários de tronco e braço, ou de um braço para cada lado, não escolhem (AC-2.8).
+- Usar um único controle: o tronco inteiro (meio dos ombros), medido em relação à calibração; estender um braço não escolhe (AC-2.7 e AC-2.8 removidos na v10.3.0).
 - Tomar "direita" e "esquerda" do ponto de vista do jogador, coerentes com a prévia espelhada e com as setas do teclado.
 - Medir o deslocamento em relação à posição central registrada na calibração da partida.
-- Exigir retorno à área central, com os dois punhos perto do corpo, entre duas escolhas (AC-2.4).
+- Exigir retorno do tronco à área central entre duas escolhas (AC-2.4).
 - Seguir só a pessoa mais central e maior no quadro.
 - Mostrar a prévia espelhada com esqueleto. O card acompanha levemente a inclinação do jogador, suavizado e limitado (AC-2.10, v10.1.0); até a v10.0.0 ficava parado.
 - Calcular o deslocamento e o giro do card fora do estado do React (no laço de quadros), para não refazer a tela a cada leitura da câmera, com a regra de mapeamento e suavização em lógica pura testável.
@@ -417,7 +419,7 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 - Mostrar na tela de espera o resumo "Modo: <modo> · Tempo por card: <N> s · Som: <ligado|desligado> · Foto: <ligada|desligada> · Tutorial: <ligado|desligado>".
 - Aplicar o tempo por card a todos os cards da partida (AC-1.2, AC-4.4, AC-9.17).
 - Guardar as cinco configurações no próprio notebook e reaplicá-las ao reabrir o jogo, inclusive offline; valor ausente ou inválido usa o padrão daquele item.
-- Modo Mão: escolher o lado de três jeitos, qualquer um vale: (1) própria mão direita acima do ombro (~300 ms) = match, mão esquerda = descarte (AC-9.7); (2) as duas mãos, abaixo dos ombros, levadas juntas para um lado além da linha do ombro (~300 ms) (AC-9.19); (3) arrastar uma mão do centro do peito para um lado, ≥ 1 largura de ombro em até ~0,8 s (AC-9.20). As duas mãos acima dos ombros (~500 ms) = saiba mais. Entre duas escolhas, exigir desfazer o gesto (AC-9.22). Medir as distâncias em larguras de ombro, para valer perto ou longe da câmera.
+- Modo Mão: um único controle, o swipe da mão ativa (punho acima do cotovelo): o card segue a posição horizontal do punho e a escolha acontece quando ele passa de 1 largura de ombro do meio do corpo, a calibrar no hardware (AC-9.20); as duas mãos acima dos ombros (~500 ms) = saiba mais; entre duas escolhas, a mão volta à frente do peito ou baixa (AC-9.22). Medir as distâncias em larguras de ombro, para valer perto ou longe da câmera. (Reescrito v10.3.0.)
 - Nos modos Mão e Cabeça, ignorar a ausência da pessoa durante o card (AC-9.21); a calibração continua exigindo a pessoa no centro.
 - Modo Cabeça: inclinar a cabeça para o próprio lado direito (~15°, medido em relação à calibração, ~300 ms) = match; para o esquerdo = descarte; levantar o queixo (~500 ms) = saiba mais; exigir voltar a cabeça ao centro entre duas escolhas; o card só acompanha levemente a inclinação até a escolha (AC-2.3, AC-2.10, AC-9.13).
 - Nos modos Mão e Cabeça, detectar presença e centralização pela parte de cima do corpo (ombros e rosto), para que um jogador sentado consiga calibrar.
@@ -457,7 +459,7 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 ### FR-12: Modo de diagnóstico (adicionado v5.2.0)
 
 **Must:**
-- Ligar o modo só quando o endereço tiver `?diagnostico`; sem isso, nada muda (AC-12.1).
+- Ligar o modo quando o endereço tiver `?diagnostico` ou pelo menu ☰ › Diagnóstico, que também o desliga (AC-12.1, AC-12.7).
 - Mostrar o painel com as medidas de AC-12.3, atualizado ao menos 2 vezes por segundo, sem cobrir o card.
 - Guardar em memória só os últimos 60 s de medições e oferecer "Baixar registro (60 s)" em JSON (AC-12.4).
 - Calcular as medidas das mãos e da cabeça com as mesmas regras que o jogo usa para reconhecer os gestos.
@@ -483,7 +485,7 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 ### FR-14: Menu ☰ do operador (adicionado v9.0.0)
 
 **Must:**
-- Mostrar na tela de espera um botão ☰ discreto num canto (nome acessível "Menu"), que abre uma lista com: "Notícias" (FR-7), "Configurações" (FR-9), "Diagnóstico" (liga o painel de FR-12 até o jogo ser recarregado) e "Tela cheia".
+- Mostrar na tela de espera um botão ☰ discreto num canto (nome acessível "Menu"), que abre uma lista com: "Notícias" (FR-7), "Configurações" (FR-9), "Diagnóstico" (liga e desliga o painel de FR-12, AC-12.7) e "Tela cheia".
 - Fechar o menu com Esc, com um clique fora dele ou ao escolher um item.
 - Ignorar a câmera (presença e gestos) enquanto o menu ou um painel aberto por ele estiver aberto.
 
@@ -667,6 +669,12 @@ Decisões da v10.2.0, pedidas nos cartões "Tela final: posicionar o filtro no r
 - As âncoras seguem a tabela da prévia `docs/visual/previa-v11.html` (ainda não aprovada); só a parte mecânica entra agora, sem desenhar filtros. A reserva pelas orelhas usa as posições do quadro de referência (orelhas a 2,1 vezes a distância entre os olhos), um ponto de partida a conferir com fotos reais.
 - O tutorial fica desligado por padrão e usa os 4 perfis do rascunho do agente de notícias, marcados como rascunho até a revisão; sem imagens finais (ilustração do tema).
 - No treino não há cronômetro, pausa por ausência nem "saiba mais"; Enter pula o treino.
+
+Decisões da v10.3.0, tomadas pelo responsável (Levi) em 2026-11-10, depois de testar o app:
+- O card é o feedback contínuo do gesto e segue o controle em tempo real, como no Reigns; ao passar do limiar, a escolha acontece com o card saindo para aquele lado.
+- Um único controle por modo: tronco (Corpo), inclinação da cabeça (Cabeça) e swipe da mão (Mão). Saem o braço para o lado (Corpo) e a mão levantada e as duas mãos para o lado (Mão). O "saiba mais" de cada modo continua.
+- O diagnóstico liga e desliga pelo menu.
+- Escolhas da implementação, a conferir no teste: limiares do tronco e da cabeça e os ~300 ms de permanência mantidos (sem gravações do estande); swipe com limite de 1 largura de ombro, sem tempo máximo e sem permanência; mão ativa = punho acima do cotovelo; 38% e 14° no limiar, zona morta de 3% e 100 ms de suavização; com `prefers-reduced-motion`, só os rótulos.
 
 ## Out of Scope (Future Considerations)
 

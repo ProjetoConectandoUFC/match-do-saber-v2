@@ -5415,6 +5415,16 @@ Spec: AC-13.5 a AC-13.7, FR-13; Story 15, AC-15.1 a AC-15.7, FR-16; AC-9.1, AC-9
 - 39.6 `data-model.md` reescrito para o banco CSV.
 - 39.7 Depois da aprovação da prévia v11: desenhar os filtros por cima da foto com as âncoras e decidir quando o tutorial entra.
 
+## Phase 40 (added v10.3.0): Card que mimetiza o controle, um controle por modo, diagnóstico liga/desliga
+
+Spec: AC-2.4, AC-2.9, AC-2.10, AC-9.9, AC-9.14, AC-9.20, AC-9.22, AC-12.7, FR-2, FR-9, FR-12, FR-14. Decisões do responsável (Levi). TDD.
+
+- 40.1 Diagnóstico: `alternarDiagnostico` (core) e o item "Diagnóstico: ligado/desligado" no menu ☰.
+- 40.2 `src/core/inclinacaoCard.ts`: fração suavizada (100 ms, zona morta 3%) e `deslocamentoCard(fracao, { largura, altura }, reduzir)` com base deslocada 38% da largura e giro de 14° com eixo na base (convertido em `translate`/`rotate` sem mudar CSS), mais a opacidade dos rótulos Verdade/Mentira.
+- 40.3 `useInclinacaoCard` lê o tamanho do card e escreve `translate`, `rotate` e a opacidade dos rótulos; `TelaCard` ganha os dois rótulos (só texto e tokens).
+- 40.4 `gestos.ts`: Corpo só pelo tronco (sai o braço); Mão por swipe contínuo (mão ativa = punho acima do cotovelo, limite = `arrasteMinL`, a calibrar); a inclinação fica 0 enquanto a escolha está travada. Dicas e textos do tutorial.
+- 40.5 Verificação no hardware: ver o que testar no relatório da rodada.
+
 ## Quickstart Validation
 
 ```bash
@@ -5500,4 +5510,6 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 10.1.0 | 14 | Parcialmente invalidada: o card volta a acompanhar a inclinação, suavizado e limitado (Fase 38) |
 | 10.1.0 | 38 | Adicionada: card acompanha o corpo (AC-2.10) e coluna `dificuldade` (AC-7.10) |
 | 10.2.0 | 24 | Parcialmente estendida: a foto do resumo leva as âncoras do rosto (Fase 39) |
+| 10.3.0 | 29, 20, 38 | Parcialmente invalidadas: braço para o lado (Corpo), mão levantada e duas mãos para o lado (Mão) saem; o card passa a mimetizar o controle (Fase 40) |
+| 10.3.0 | 40 | Adicionada: card como no Reigns, um controle por modo e diagnóstico liga/desliga |
 | 10.2.0 | 39 | Adicionada: âncoras do rosto, privacidade da foto, tutorial, E2E do relógio em série e modelo de dados |
