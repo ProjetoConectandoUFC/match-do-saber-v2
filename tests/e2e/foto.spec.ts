@@ -48,9 +48,35 @@ test('AC-13.1/AC-13.2/AC-13.4/AC-13.5: com câmera, polaroid do card do meio no 
     };
     Object.defineProperty(navigator, 'mediaDevices', { value: { getUserMedia } });
   });
+  // AC-13.5 (v10.2.0): vigia todos os canais de saída da página (antes de qualquer script do jogo).
+  await page.addInitScript(() => {
+    const saidas: { canal: string; dados: string }[] = [];
+    (window as unknown as { __saidas: typeof saidas }).__saidas = saidas;
+    const texto = (v: unknown) => {
+      if (typeof v === 'string') return v;
+      if (v instanceof Blob) return `[blob ${v.type} ${v.size}]`;
+      try { return JSON.stringify(v) ?? String(v); } catch { return String(v); }
+    };
+    const vigiar = <T extends object>(alvo: T, nome: keyof T, canal: string) => {
+      const original = alvo[nome] as unknown as (...a: unknown[]) => unknown;
+      (alvo as Record<keyof T, unknown>)[nome] = function (this: unknown, ...a: unknown[]) {
+        saidas.push({ canal, dados: a.map(texto).join(' ') });
+        return original.apply(this, a);
+      };
+    };
+    vigiar(window, 'fetch', 'fetch');
+    vigiar(XMLHttpRequest.prototype, 'open', 'xhr.open');
+    vigiar(XMLHttpRequest.prototype, 'send', 'xhr.send');
+    vigiar(Storage.prototype, 'setItem', 'storage');
+    vigiar(IDBFactory.prototype, 'open', 'indexedDB');
+    vigiar(WebSocket.prototype, 'send', 'websocket');
+    vigiar(navigator, 'sendBeacon', 'sendBeacon');
+  });
   const requisicoes: string[] = [];
-  page.on('request', (r) => {
+  const comCorpo: string[] = [];
+  page.context().on('request', (r) => {
     if (r.url().startsWith('http')) requisicoes.push(`${r.url()} ${r.postData() ?? ''}`);
+    if (r.postData()) comCorpo.push(`${r.method()} ${r.url()}`);
   });
   await page.goto('/');
   await expect(page.locator('video')).toBeVisible({ timeout: 60_000 }); // câmera "ativa": modelo carregado
@@ -97,6 +123,19 @@ test('AC-13.1/AC-13.2/AC-13.4/AC-13.5: com câmera, polaroid do card do meio no 
   expect(requisicoes.filter((r) => r.includes('data:image'))).toEqual([]);
   expect(await page.evaluate(() => Object.values(localStorage).filter((v) => v.includes('data:image')))).toEqual([]);
   expect(await page.evaluate(() => Object.values(sessionStorage).filter((v) => v.includes('data:image')))).toEqual([]);
+  // AC-13.5 (v10.2.0): nenhuma requisição com corpo durante a partida; nenhum canal de saída levou imagem ou âncoras;
+  // o armazenamento só recebeu as configurações; o jogo não abre IndexedDB.
+  expect(comCorpo).toEqual([]);
+  const saidas = await page.evaluate(() => (window as unknown as { __saidas: { canal: string; dados: string }[] }).__saidas);
+  expect(saidas.filter((s) => /data:image|\/9j\/|ancoras|escala|olhoDireito/.test(s.dados))).toEqual([]);
+  expect(saidas.filter((s) => s.canal === 'storage' && !s.dados.startsWith('match-do-saber:'))).toEqual([]);
+  expect(saidas.filter((s) => ['indexedDB', 'xhr.open', 'xhr.send', 'websocket', 'sendBeacon'].includes(s.canal))).toEqual([]);
+  // O MediaPipe tenta mandar métricas de uso (protobuf, sem imagem) para odml.pa.googleapis.com; a CSP de
+  // index.html bloqueia antes da rede. Qualquer outra chamada fora dos arquivos do jogo é erro.
+  expect(saidas.filter((s) => s.canal === 'fetch'
+    && !/content\/noticias\.csv|mediapipe|\.task|\.wasm|^https:\/\/odml\.pa\.googleapis\.com\/v1\/log /.test(s.dados))).toEqual([]);
+  const origem = new URL(page.url()).origin;
+  expect(requisicoes.filter((r) => !r.startsWith(origem))).toEqual([]); // nada saiu do próprio site (NFR Security)
 
   // AC-13.4: Enter no resumo vai à calibração e apaga a foto; Esc volta à espera.
   await page.keyboard.press('Enter');
