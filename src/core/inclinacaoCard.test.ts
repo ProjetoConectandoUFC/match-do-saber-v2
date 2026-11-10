@@ -33,7 +33,7 @@ describe('deslocamentoCard: como no Reigns, eixo de giro na base (AC-2.10)', () 
     expect(deslocamentoCard(0, CARD)).toEqual({ dx: 0, dy: 0, graus: 0, verdade: 0, mentira: 0 });
   });
 
-  it('no limiar (+1): base deslocada 38% da largura, 14° para a direita, rótulo Verdade inteiro', () => {
+  it('no limiar (+1): girado 15° para a direita, base deslocada 8% da largura, rótulo Verdade inteiro', () => {
     const d = deslocamentoCard(1, CARD);
     const h = CARD.altura / 2;
     expect(d.graus).toBeCloseTo(maxGraus, 9);
