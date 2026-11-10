@@ -1,30 +1,30 @@
 ---
 name: estado-v10
-description: Estado do Match do Saber em 2026-11-09 (spec v10.0.0, first commit no repo match-do-saber-v2) e o que falta; ponto de partida para retomar de outro dispositivo
+description: Estado do Match do Saber em 2026-11-10 (spec v10.2.0 em branches, aguardando aprovação) e o que falta; ponto de partida para retomar de outro dispositivo
 metadata:
   type: project
 ---
 
-# Estado em 2026-11-09 (spec v10.0.0)
+# Estado em 2026-11-10 (spec v10.2.0, ainda não integrada)
 
-Repositório oficial: https://github.com/ProjetoConectandoUFC/match-do-saber-v2 — `main` começa num único "first commit" (sem histórico; o histórico anterior está no repo antigo Projeto-Conectando/match-do-saber). `develop` criada a partir da `main`. Fluxo: [[git-flow]].
+Repositório oficial: https://github.com/ProjetoConectandoUFC/match-do-saber-v2. `main` = "first commit" (v10.0.0). **Atenção:** `origin/develop` tem o histórico ANTIGO (v8.2, topo 553a346, de 2026-11-06) sem base comum com a `main`; PRs para a `develop` não funcionam até o responsável decidir recriá-la a partir da `main`. Fluxo: [[git-flow]].
 
-Entrega ao gestor: 2026-11-10 às 13h.
+Tarefas vêm do Trello, quadro "Produtos" (https://trello.com/b/weBotV4G), cartões com etiqueta Match atribuídos a levi ribeiro; o MCP do Trello é só leitura (não marca checklists).
 
-## Feito
-- **v9.0.0** (Agente Mecânico): banco de notícias em CSV (`conteudo/noticias.csv` é o banco padrão versionado; `prepare-assets` copia para `public/content/`), campo `tema`, imagem opcional, validação do Princípio 1; menu ☰ (Notícias, Configurações, Diagnóstico, Tela cheia); painel Notícias (filtrar, editar, apagar, alterar em massa, importar/exportar CSV); app de desktop Electron (`npm run desktop`, `npm run package:win` → `out/Match do Saber-win32-x64/`), banco em `Documentos/Match do Saber/noticias.csv` com backups. Planilha Google desativada (arquivos de `scripts/sync/` mantidos).
-- **v10.0.0** (Agente Visual): identidade do Conectando Design System #NEW conforme `docs/visual/previa.html` (revisão 3 aprovada): Poppins local, Verdade/Mentira, tempo só na barra da base, feedback com veredito no topo e fundo menta/coral, resumo sem câmera e polaroid +20%, câmera como overlay, anéis nas bordas da espera. Capturas reais em `docs/visual/capturas/`.
-- **Conteúdo** (Agente de Notícias): lote 1 com 10 notícias (5 V / 5 F) aprovadas pelo responsável ("Produção CNTM - Levi") — `docs/noticias/lotes/2026-11-09-lote-1.json` e no banco padrão. Página de revisão: https://claude.ai/artifact/6YxiUz31KxuZQ4Zg3yiTuw (decisões na coleção `decisoes`).
-- Verificação final antes do first commit: `npm test` 305/305, `npm run build` ok, `npm run e2e` 43/43.
+## Feito antes (v9–v10.0)
+Banco CSV + painel Notícias + app Electron (v9); identidade Conectando (v10.0, `docs/visual/previa.html`); lote 1 (10 notícias aprovadas).
 
-## Pendente
-- Fase 37 (hardware, no notebook do estande): câmera real dentro do Electron, abrir sem internet, editar o CSV no Excel e recarregar (Ctrl+R), importar CSV de lote. Fases antigas de hardware (7–32) seguem em [[mvp-status-fase7]].
-- `npm run e2e:desktop` não foi rodado depois do visual (passou na v9, 2/2). Rodar num terminal sem `ELECTRON_RUN_AS_NODE`.
-- Executável sem ícone próprio (falta um `.ico`).
-- `partida.spec.ts:122` (animação de saída) é instável só sob carga na suíte inteira; isolado passa.
-- ADR `docs/adr/001-content-pipeline.md` ainda descreve a planilha (superada pela v9); steering `tech-stack.md` atualizado nesta data.
-- Workflow `publicar.yml` publica a web no GitHub Pages a cada push na `main`; no repo novo o Pages precisa ser ativado (Settings › Pages › GitHub Actions).
-- Próximos lotes de notícias: rodar o `agente-noticias` (ids a partir de `mds-0011`), revisar numa página de revisão e importar pelo painel ou acrescentar ao `conteudo/noticias.csv`.
+## Rodada de 2026-11-10 (três branches, todas a partir de 9a4cf9b, sem PR)
+- `001-v10-1-movimento-card` (agente-mecanico): spec v10.1.0 + v10.2.0. Card acompanha a inclinação (AC-2.10, `src/core/inclinacaoCard.ts`); coluna opcional `dificuldade` (AC-7.10); README; âncoras do rosto guardadas com a foto (AC-13.6/13.7, `src/core/ancorasRosto.ts`), sem desenhar filtro; testes de privacidade; CSP `connect-src 'self'` no `index.html` (o MediaPipe mandava métricas para odml.pa.googleapis.com a cada 60 s); modo tutorial (Story 15/FR-16, desligado por padrão, perfis rascunho em `conteudo/tutorial.json`); `relogio-real` no projeto Playwright `em-serie`; `data-model.md` reescrito. Verificado: 377/377 unitários, build ok, e2e 46/46 (agente, 2×). `camera-overlay.spec.ts:29` falha sob carga paralela e passa em série (4/4).
+- `001-visual-propostas-v11` (agente-visual): `docs/visual/previa-v11.html` com 5 seções (tela final, faixas+filtros, interface tipo app de namoro, nomes, estilo de imagens) e 10 perguntas para o responsável. Recomendações: tela final B (QR único), filtros C, interface A + feedback "Deu match!", nome "Match ou Mico".
+- `001-lote-2-noticias-niveis` (agente-noticias): lote 2 `mds-0011`..`mds-0022` (rascunho, 4 por nível, 6 V/6 F), classificação proposta do lote 1, perfis do tutorial.
+
+## Pendente (depende do responsável)
+- Recriar a `develop` remota; aprovar PRs.
+- Aprovar prévia v11 (10 perguntas), lote 2, níveis do lote 1, perfis do tutorial, AC-2.10 (desfaz decisão da v4.0.0 de card parado).
+- Depois da aprovação: desenhar filtros com as âncoras, tela final com fontes/QR, interface nova, som de fim de partida, imagens dos cards, dificuldade no sorteio.
+- Hardware (notebook do estande): AC-2.10 (tremor), CSP no Electron, `npm run e2e:desktop` sem `ELECTRON_RUN_AS_NODE`, Fase 37; testar tutorial com quem nunca jogou.
+- Executável sem `.ico`.
 
 ## Agentes
 Ver [[agentes]].
