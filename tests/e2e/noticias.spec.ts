@@ -9,7 +9,7 @@ test.use({ serviceWorkers: 'block' });
 const n = (i: number, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id: `mds-${String(i).padStart(4, '0')}`, titulo: `Notícia ${i}`, descricao: 'Descrição', saiba_mais: 'Saiba mais',
   veredito: i % 2 ? 'falsa' : 'verdadeira', explicacao: 'Explicação', tecnica: 'fonte', tema: 'ciencia',
-  fonte_url: 'https://exemplo.org', fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', ...extra,
+  fonte_url: 'https://exemplo.org', fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', ...extra,
 });
 
 async function abrirDesktop(page: Page, banco: NoticiaBanco[]) {

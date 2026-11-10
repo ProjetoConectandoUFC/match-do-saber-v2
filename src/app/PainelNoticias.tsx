@@ -5,7 +5,7 @@ import {
 } from '../core/banco';
 import { decodificar, escreverCsv, lerCsv } from '../core/csv';
 import {
-  STATUS, TECNICAS, TECNICA_ROTULO, TEMAS, TEMA_ROTULO, VEREDITOS, type NoticiaBanco,
+  DIFICULDADES, DIFICULDADE_ROTULO, STATUS, TECNICAS, TECNICA_ROTULO, TEMAS, TEMA_ROTULO, VEREDITOS, type NoticiaBanco,
 } from '../core/types';
 import { baixarTexto } from './baixar';
 import { EditorNoticia } from './EditorNoticia';
@@ -56,6 +56,7 @@ export function PainelNoticias({ repo, estado, onBancoAlterado = () => {}, onFec
   const [veredito, setVeredito] = useState('');
   const [tema, setTema] = useState('');
   const [status, setStatus] = useState('');
+  const [dificuldade, setDificuldade] = useState(''); // '' = todas; 'sem' = sem dificuldade (AC-7.10)
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [campoMassa, setCampoMassa] = useState<CampoEmMassa | ''>('');
   const [valorMassa, setValorMassa] = useState('');
@@ -107,8 +108,9 @@ export function PainelNoticias({ repo, estado, onBancoAlterado = () => {}, onFec
         (!q || normalizar(`${n.id} ${n.titulo} ${n.descricao} ${n.revisado_por}`).includes(q))
         && (!veredito || n.veredito === veredito)
         && (!tema || n.tema === tema)
+        && (!dificuldade || (dificuldade === 'sem' ? !n.dificuldade : n.dificuldade === dificuldade))
         && (!status || (status === 'invalida' ? !!motivo : n.status === status)));
-  }, [banco, busca, veredito, tema, status, motivoPorLinha]);
+  }, [banco, busca, veredito, tema, dificuldade, status, motivoPorLinha]);
 
   if (!desktop) {
     return (
@@ -271,6 +273,13 @@ export function PainelNoticias({ repo, estado, onBancoAlterado = () => {}, onFec
             <select value={tema} onChange={(e) => setTema(e.target.value)}>
               <option value="">Todos</option>
               {TEMAS.map((t) => <option key={t} value={t}>{TEMA_ROTULO[t]}</option>)}
+            </select>
+          </label>
+          <label>Dificuldade
+            <select value={dificuldade} onChange={(e) => setDificuldade(e.target.value)}>
+              <option value="">Todas</option>
+              {DIFICULDADES.map((d) => <option key={d} value={d}>{DIFICULDADE_ROTULO[d]}</option>)}
+              <option value="sem">Sem dificuldade</option>
             </select>
           </label>
           <label>Status

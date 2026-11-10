@@ -2,11 +2,16 @@ export type Veredito = 'verdadeira' | 'falsa';
 export type Tecnica = 'fonte' | 'data' | 'imagem' | 'contexto';
 export type Tema = 'saude' | 'ciencia' | 'historia' | 'tecnologia' | 'curiosidades' | 'meio-ambiente';
 export type Status = 'rascunho' | 'aprovada';
+/** v10.1.0 (AC-7.10): opcional; ainda não muda o sorteio. */
+export type Dificuldade = 'facil' | 'medio' | 'dificil';
 
 export const VEREDITOS: readonly Veredito[] = ['verdadeira', 'falsa'];
 export const TECNICAS: readonly Tecnica[] = ['fonte', 'data', 'imagem', 'contexto'];
 export const TEMAS: readonly Tema[] = ['saude', 'ciencia', 'historia', 'tecnologia', 'curiosidades', 'meio-ambiente'];
 export const STATUS: readonly Status[] = ['rascunho', 'aprovada'];
+export const DIFICULDADES: readonly Dificuldade[] = ['facil', 'medio', 'dificil'];
+
+export const DIFICULDADE_ROTULO: Record<Dificuldade, string> = { facil: 'Fácil', medio: 'Médio', dificil: 'Difícil' };
 
 export const TECNICA_ROTULO: Record<Tecnica, string> = {
   fonte: 'Checar a fonte',
@@ -36,6 +41,7 @@ export interface Noticia {
   explicacao: string;
   tecnica: Tecnica;
   fonteUrl: string;
+  dificuldade?: Dificuldade;
 }
 
 export interface Catalogo {
@@ -43,10 +49,13 @@ export interface Catalogo {
   noticias: Noticia[];
 }
 
-/** Colunas do CSV do banco, na ordem em que são exportadas (FR-6). */
+/**
+ * Colunas do CSV do banco, na ordem em que são exportadas (FR-6). `dificuldade` (v10.1.0) é opcional e vem
+ * por último: um CSV antigo, sem ela, é lido com a coluna vazia (AC-7.10).
+ */
 export const COLUNAS_BANCO = [
   'id', 'titulo', 'descricao', 'saiba_mais', 'veredito', 'explicacao', 'tecnica', 'tema',
-  'fonte_url', 'fontes_extras', 'imagem', 'revisado_por', 'status',
+  'fonte_url', 'fontes_extras', 'imagem', 'revisado_por', 'status', 'dificuldade',
 ] as const;
 export type ColunaBanco = (typeof COLUNAS_BANCO)[number];
 

@@ -5,7 +5,7 @@ import { COLUNAS_BANCO, type NoticiaBanco } from './types';
 const noticia = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', ...extra,
 });
 
 describe('lerTabela (FR-6)', () => {
@@ -30,6 +30,13 @@ describe('lerCsv', () => {
     expect(Object.keys(n!).sort()).toEqual([...COLUNAS_BANCO].sort());
   });
 
+  it('AC-7.10: CSV antigo, sem a coluna `dificuldade`, carrega com ela vazia; a coluna é lida em minúsculas', () => {
+    const antigo = 'id;titulo;descricao;saiba_mais;veredito;explicacao;tecnica;tema;fonte_url;fontes_extras;imagem;revisado_por;status\n'
+      + 'mds-0001;T;D;S;falsa;E;fonte;saude;https://exemplo.org;;;Ana;aprovada\n';
+    expect(lerCsv(antigo)[0]).toMatchObject({ id: 'mds-0001', status: 'aprovada', dificuldade: '' });
+    expect(lerCsv('id;titulo;dificuldade\nx;T;MEDIO\n')[0]!.dificuldade).toBe('medio');
+  });
+
   it('apara espaços dos campos', () => {
     expect(lerCsv('id,titulo\n  x1 , T  \n')[0]).toMatchObject({ id: 'x1', titulo: 'T' });
   });
@@ -51,7 +58,7 @@ describe('escreverCsv', () => {
     const banco = [
       noticia('mds-0001'),
       noticia('mds-0002', { titulo: 'Com ; e "aspas"', saiba_mais: 'Linha 1\nLinha 2', fontes_extras: 'https://a.org https://b.org' }),
-      noticia('mds-0003', { status: 'rascunho', revisado_por: '', imagem: 'content/img/x.webp', tema: 'meio-ambiente' }),
+      noticia('mds-0003', { status: 'rascunho', revisado_por: '', imagem: 'content/img/x.webp', tema: 'meio-ambiente', dificuldade: 'dificil' }),
     ];
     expect(lerCsv(escreverCsv(banco))).toEqual(banco);
   });

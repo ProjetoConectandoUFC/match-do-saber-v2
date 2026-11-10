@@ -8,7 +8,26 @@ import type { NoticiaBanco } from './types';
 const n = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org/a',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', ...extra,
+});
+
+describe('dificuldade (AC-7.10, v10.1.0)', () => {
+  it('vazia ou da lista é válida; fora da lista invalida a notícia', () => {
+    expect(validarNoticia(n('a', { dificuldade: '' }))).toEqual({});
+    for (const d of ['facil', 'medio', 'dificil']) expect(validarNoticia(n('a', { dificuldade: d }))).toEqual({});
+    expect(validarNoticia(n('a', { dificuldade: 'impossivel' })).dificuldade).toBe('use facil, medio, dificil');
+  });
+
+  it('notícia com dificuldade fora da lista não entra na partida; com a lista, leva a dificuldade', () => {
+    const jogo = jogaveis([n('a', { dificuldade: 'dificil' }), n('b'), n('c', { dificuldade: 'extrema' })]);
+    expect(jogo.map((x) => x.id)).toEqual(['a', 'b']);
+    expect(jogo[0]!.dificuldade).toBe('dificil');
+    expect(jogo[1]).not.toHaveProperty('dificuldade');
+  });
+
+  it('nova notícia começa sem dificuldade', () => {
+    expect(novaNoticia([]).dificuldade).toBe('');
+  });
 });
 
 describe('validarNoticia (AC-7.3)', () => {
