@@ -12,6 +12,7 @@ import { criarRepositorio, repositorioWeb, type EstadoBanco, type RepositorioNot
 import { BotaoSair, MenuConfiguracoes, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaResumo } from './Telas';
 import { useConfiguracoes } from './useConfiguracoes';
 import { useFotoPartida } from './useFotoPartida';
+import { useInclinacaoCard } from './useInclinacaoCard';
 import { useJogo } from './useJogo';
 import { useSons } from './useSons';
 import s from './App.module.css';
@@ -67,7 +68,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     (new URLSearchParams(window.location.search).has('diagnostico') ? criarRegistro() : undefined));
   // Com o menu ☰, um painel dele ou as Configurações abertos, câmera e teclas não chegam ao jogo (FR-14).
   const pausado = cfg.menuAberto || operador !== 'fechado';
-  const { estado, despachar, camera, videoRef, poseRef } = useJogo(noticias, cfg.config, pausado, diagnostico);
+  const { estado, despachar, camera, videoRef, poseRef, inclinacaoRef } = useJogo(noticias, cfg.config, pausado, diagnostico);
   const fecharOperador = useCallback(() => setOperador('fechado'), []);
   const escolherNoMenu = useCallback((item: ItemMenu) => {
     if (item === 'configuracoes') {
@@ -85,6 +86,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     camera === 'ativa' && videoRef.current ? capturarQuadro(videoRef.current) : null);
   const cardRef = useRef<HTMLElement>(null);
   const cardSaindoRef = useRef<HTMLElement>(null); // card que está saindo (AC-2.1/AC-2.2)
+  // AC-2.10: o card acompanha levemente a inclinação, direto no DOM (sem re-renderizar a cada leitura).
+  useInclinacaoCard({ inclinacaoRef, estado, pausado, cardRef, cardSaindoRef });
 
   let tela;
   switch (estado.tela) {
