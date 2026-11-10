@@ -10,7 +10,7 @@ const partida = { cards: [], resultados: [], entrada: 'corpo' as const };
 const CARD: Estado = { tela: 'card', partida, indice: 0, restanteMs: 10000, saibaMais: false, ausenteMs: null };
 const TAMANHO = { largura: 600, altura: 640 };
 const px = (v: number) => `${Math.round(v * 10) / 10}px`;
-const NO_LIMIAR = deslocamentoCard(1, TAMANHO, false);
+const NO_LIMIAR = deslocamentoCard(1, TAMANHO);
 
 let quadros: FrameRequestCallback[] = [];
 let agora = 0;
@@ -56,7 +56,7 @@ describe('useInclinacaoCard (AC-2.10 v10.3.0)', () => {
     avancar(150);
     const el = getByTestId('card');
     expect(el.style.getPropertyValue('translate')).toBe(`${px(NO_LIMIAR.dx)} ${px(NO_LIMIAR.dy)}`);
-    expect(el.style.getPropertyValue('rotate')).toBe('14deg');
+    expect(el.style.getPropertyValue('rotate')).toBe('15deg');
     expect(el.style.transform).toBe(''); // não briga com as animações de saída e do pulso (AC-4.7)
     expect(rotulo(el, 'verdade')).toBe('1');
     expect(rotulo(el, 'mentira')).toBe('0');
@@ -67,7 +67,7 @@ describe('useInclinacaoCard (AC-2.10 v10.3.0)', () => {
     avancar(150);
     const el = getByTestId('card');
     expect(Number(rotulo(el, 'mentira'))).toBeCloseTo(0.5, 2);
-    expect(el.style.getPropertyValue('rotate')).toBe('-7deg');
+    expect(el.style.getPropertyValue('rotate')).toBe('-7.5deg');
   });
 
   it('menu aberto: card no centro, sem rótulo', () => {
@@ -81,16 +81,16 @@ describe('useInclinacaoCard (AC-2.10 v10.3.0)', () => {
     const { getByTestId, rerender } = render(<Card estado={CARD} />);
     avancar(150);
     rerender(<Card estado={{ tela: 'feedback', partida, indice: 0, restanteMs: 3250, resposta: 'verdadeira' }} />);
-    expect(getByTestId('saindo').style.getPropertyValue('rotate')).toBe('14deg');
+    expect(getByTestId('saindo').style.getPropertyValue('rotate')).toBe('15deg');
   });
 
-  it('prefers-reduced-motion: o card não se move nem gira, mas o rótulo mostra o quanto falta', () => {
+  it('prefers-reduced-motion: o card continua seguindo o gesto (movimento comandado pelo jogador, AC-2.10f)', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('reduce'), media: q }));
     const { getByTestId } = render(<Card estado={CARD} />);
     avancar(150);
     const el = getByTestId('card');
-    expect(el.style.getPropertyValue('translate')).toBe('');
-    expect(el.style.getPropertyValue('rotate')).toBe('');
+    expect(el.style.getPropertyValue('rotate')).toBe('15deg');
+    expect(el.style.getPropertyValue('translate')).not.toBe('');
     expect(rotulo(el, 'verdade')).toBe('1');
   });
 });

@@ -7,10 +7,10 @@
 import { TEMPOS, type Estado } from './partida';
 
 export const CONFIG_INCLINACAO_CARD = {
-  /** Deslocamento da base do card no limiar, em fração da largura do card. */
-  fracaoLargura: 0.38,
-  /** Giro no limiar, em torno da base do card. */
-  maxGraus: 14,
+  /** Deslocamento lateral do centro da base no limiar, em fração da largura do card ("um pouco", v10.3.1). */
+  fracaoLargura: 0.08,
+  /** Giro no limiar, em torno do centro da base do card (v10.3.1). */
+  maxGraus: 15,
   /** Só o tremor de leitura parada; fora disso, proporcional desde o centro. */
   zonaMorta: 0.03,
   /** Interpolação entre as leituras da câmera (~6–7 por segundo), a cada quadro de tela. */
@@ -42,14 +42,15 @@ export function fracaoControle(inclinacao: number, cfg: ConfigInclinacaoCard = C
 /**
  * Posição do card para a fração `f` (+ = direita do jogador = direita da tela, prévia espelhada). A base anda
  * `f × fracaoLargura × largura` e o card gira `f × maxGraus` em torno dela; como o CSS gira em torno do centro,
- * o centro recebe o efeito do eixo na base: (h/2·sen θ, h/2·(1 − cos θ)). Com `reduzirMovimento`, só os rótulos.
+ * o centro recebe o efeito do eixo na base: (h/2·sen θ, h/2·(1 − cos θ)). O movimento é comandado pelo jogador
+ * e é o retorno visual do gesto, por isso vale também com `prefers-reduced-motion` (AC-2.10f, v10.3.1).
  */
 export function deslocamentoCard(
-  f: number, tamanho: TamanhoCard, reduzirMovimento: boolean, cfg: ConfigInclinacaoCard = CONFIG_INCLINACAO_CARD,
+  f: number, tamanho: TamanhoCard, cfg: ConfigInclinacaoCard = CONFIG_INCLINACAO_CARD,
 ): Deslocamento {
   const verdade = Math.max(0, f);
   const mentira = Math.max(0, -f);
-  if (reduzirMovimento || f === 0 || !(tamanho.largura > 0)) return { dx: 0, dy: 0, graus: 0, verdade, mentira };
+  if (f === 0 || !(tamanho.largura > 0)) return { dx: 0, dy: 0, graus: 0, verdade, mentira };
   const graus = f * cfg.maxGraus;
   const t = (graus * Math.PI) / 180;
   const meia = tamanho.altura / 2;

@@ -7,8 +7,8 @@ const CARD = { largura: 600, altura: 640 };
 const rad = (g: number) => (g * Math.PI) / 180;
 
 describe('fracaoControle (AC-2.10 v10.3.0)', () => {
-  it('pontos de partida da spec: 38% da largura, 14°, zona morta de 3% e 100 ms de suavização', () => {
-    expect(CONFIG_INCLINACAO_CARD).toEqual({ fracaoLargura: 0.38, maxGraus: 14, zonaMorta: 0.03, constanteTempoMs: 100 });
+  it('pontos de partida da spec: 8% da largura, 15°, zona morta de 3% e 100 ms de suavização', () => {
+    expect(CONFIG_INCLINACAO_CARD).toEqual({ fracaoLargura: 0.08, maxGraus: 15, zonaMorta: 0.03, constanteTempoMs: 100 });
   });
 
   it('proporcional desde quase o centro: só a zona morta pequena é zero; ±1 no limiar; contínua', () => {
@@ -30,11 +30,11 @@ describe('fracaoControle (AC-2.10 v10.3.0)', () => {
 
 describe('deslocamentoCard: como no Reigns, eixo de giro na base (AC-2.10)', () => {
   it('no centro, parado e sem rótulos', () => {
-    expect(deslocamentoCard(0, CARD, false)).toEqual({ dx: 0, dy: 0, graus: 0, verdade: 0, mentira: 0 });
+    expect(deslocamentoCard(0, CARD)).toEqual({ dx: 0, dy: 0, graus: 0, verdade: 0, mentira: 0 });
   });
 
   it('no limiar (+1): base deslocada 38% da largura, 14° para a direita, rótulo Verdade inteiro', () => {
-    const d = deslocamentoCard(1, CARD, false);
+    const d = deslocamentoCard(1, CARD);
     const h = CARD.altura / 2;
     expect(d.graus).toBeCloseTo(maxGraus, 9);
     // o centro do card anda a base + o efeito do giro em torno da base
@@ -44,28 +44,33 @@ describe('deslocamentoCard: como no Reigns, eixo de giro na base (AC-2.10)', () 
   });
 
   it('para a esquerda é o espelho, com o rótulo Mentira; a meio caminho, rótulo pela metade', () => {
-    const d = deslocamentoCard(-1, CARD, false);
-    const e = deslocamentoCard(1, CARD, false);
+    const d = deslocamentoCard(-1, CARD);
+    const e = deslocamentoCard(1, CARD);
     expect(d.dx).toBeCloseTo(-e.dx, 9);
     expect(d.dy).toBeCloseTo(e.dy, 9);
     expect(d.graus).toBeCloseTo(-maxGraus, 9);
     expect(d).toMatchObject({ verdade: 0, mentira: 1 });
-    expect(deslocamentoCard(-0.5, CARD, false)).toMatchObject({ verdade: 0, mentira: 0.5, graus: -maxGraus / 2 });
+    expect(deslocamentoCard(-0.5, CARD)).toMatchObject({ verdade: 0, mentira: 0.5, graus: -maxGraus / 2 });
   });
 
   it('a base do card anda na proporção da fração', () => {
     const f = 0.4;
-    const d = deslocamentoCard(f, CARD, false);
+    const d = deslocamentoCard(f, CARD);
     const baseX = d.dx - (CARD.altura / 2) * Math.sin(rad(d.graus));
     expect(baseX).toBeCloseTo(f * fracaoLargura * CARD.largura, 6);
   });
 
-  it('prefers-reduced-motion: sem deslocar nem girar, só os rótulos mostram o quanto falta', () => {
-    expect(deslocamentoCard(0.7, CARD, true)).toEqual({ dx: 0, dy: 0, graus: 0, verdade: 0.7, mentira: 0 });
+  it('giro em torno do centro da base: o ponto central inferior só anda o deslocamento lateral', () => {
+    const f = -0.6;
+    const d = deslocamentoCard(f, CARD);
+    const t = rad(d.graus), h = CARD.altura / 2;
+    // centro da base = centro do card + rotação de (0, h) = (−h·sen θ, h·cos θ)
+    expect(d.dx - h * Math.sin(t)).toBeCloseTo(f * fracaoLargura * CARD.largura, 6);
+    expect(d.dy + h * Math.cos(t)).toBeCloseTo(h, 6);
   });
 
   it('card sem tamanho (ainda não medido) não se move', () => {
-    expect(deslocamentoCard(1, { largura: 0, altura: 0 }, false)).toMatchObject({ dx: 0, dy: 0 });
+    expect(deslocamentoCard(1, { largura: 0, altura: 0 })).toMatchObject({ dx: 0, dy: 0 });
   });
 });
 
