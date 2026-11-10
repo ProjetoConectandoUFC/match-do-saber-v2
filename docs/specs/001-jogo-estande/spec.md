@@ -1,7 +1,7 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
 **Status:** Approved
-**Version:** 10.1.0
+**Version:** 10.2.0
 **Created:** 2026-10-26
 **Last Updated:** 2026-11-10
 **Branch:** `001-jogo-estande`
@@ -31,6 +31,7 @@
 | 9.0.0 | 2026-11-09 | Conteúdo gerenciado dentro do jogo e app de desktop. A Planilha Google sai: Story 7, FR-6 e FR-7 reescritos como gerenciador de notícias interno (listar, filtrar, editar, apagar, alterar em massa, adicionar, importar CSV com prévia), no modelo do Prova ou Reprova. FR-8 e Story 8 reescritos: o jogo vira app de desktop (Electron), offline, com o banco num CSV em `Documentos/Match do Saber/` e backup antes de cada gravação; a versão web continua com o banco embutido. FR-4: `imagem` passa a ser opcional e entra o campo `tema`; sem imagem, o card mostra a ilustração do tema. AC-9.1 e FR-9: o botão "⚙" vira o menu ☰ (Story 14, FR-14) com Notícias, Configurações, Diagnóstico e Tela cheia. Removidos a credencial da planilha (Security) e "CMS próprio ou painel administrativo" do fora de escopo |
 | 10.0.0 | 2026-11-09 | Identidade visual do projeto Conectando (FR-15, prévia aprovada em `docs/visual/previa.html`). Removido AC-4.8: o tempo aparece só na barra da base da tela. A interface diz "Verdade" e "Mentira" (AC-4.1 a AC-4.3, AC-9.14). Reescritos AC-4.1 a AC-4.3: o feedback mostra primeiro o veredito ("É verdade"/"É mentira"), menor, e abaixo o selo, com o fundo da tela na cor do veredito. AC-2.6 e AC-4.5: a prévia da câmera é uma camada sobreposta e não conta na centralização. AC-13.2: o resumo não mostra a prévia da câmera e o polaroid fica 20% maior |
 | 10.1.0 | 2026-11-10 | Card acompanha o corpo e dificuldade das notícias (cartões do Trello "Match: mecânicas e movimento do card" e "Conteúdo do Match"). Adicionado AC-2.10: na tela do card, o card desloca-se e gira levemente para o lado em que o jogador pende (no máximo 40 px e 6°), suavizado, com uma zona morta perto do centro, e fica no centro com `prefers-reduced-motion`, sem pessoa, com o menu aberto e em "Volte para o centro"; reescritos AC-2.3, AC-9.13 e as regras de FR-2 e FR-9 que pediam o card parado (decisão da v4.0.0 revista: a suavização e a zona morta tratam o tremor que motivou aquela decisão). Adicionados AC-7.10 e a coluna opcional `dificuldade` (`facil`, `medio`, `dificil` ou vazia) em AC-7.1, AC-7.2, AC-7.3 e FR-6; CSV sem a coluna continua sendo lido. O sorteio ainda não usa a dificuldade |
+| 10.2.0 | 2026-11-10 | Base mecânica para os filtros da foto e para o tutorial, sem nada visual novo (decisões a confirmar pelo responsável). Adicionados AC-13.6 e AC-13.7 e regras de FR-13: no instante da foto, o jogo calcula e guarda com ela, só na memória, as âncoras do rosto (centro, escala e giro pelos olhos; chapéu pelas orelhas; capa pelos ombros; com reserva quando faltam pontos) e as apaga junto com a foto; nenhum filtro é desenhado ainda. AC-13.5 passa a cobrir também os pontos, IndexedDB e o corpo das requisições. Adicionados Story 15 e FR-16: modo tutorial com 4 cards de treino (perfis cômicos, fora do banco e da pontuação), feedback que ensina o gesto, desligado por padrão; AC-9.1, AC-9.2, AC-9.4, FR-9 ganham o item "Tutorial" nas Configurações |
 
 ---
 
@@ -208,10 +209,10 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 **Acceptance criteria:**
 
-- [ ] **AC-9.1** Given o jogo está na tela de espera When o operador pressiona M (ou escolhe ☰ › Configurações, FR-14; até a v8.2.0 era o botão "⚙") Then abre o menu "Configurações" com quatro itens e os valores atuais marcados: "Modo de jogo" (Corpo, Mão, Cabeça), "Tempo por card" (10, 15, 20, 25 ou 30 s), "Som" (Ligado, Desligado) e "Foto no resumo" (Ligada, Desligada).
-- [ ] **AC-9.2** Given o menu "Configurações" está aberto When o operador muda um valor (↑/↓ escolhem o item, ←/→ mudam o valor; ou clique no valor) Then o valor muda na hora, fica guardado, e a tela de espera passa a mostrar o resumo "Modo: <modo> · Tempo por card: <N> s · Som: <ligado|desligado> · Foto: <ligada|desligada>".
+- [ ] **AC-9.1** Given o jogo está na tela de espera When o operador pressiona M (ou escolhe ☰ › Configurações, FR-14; até a v8.2.0 era o botão "⚙") Then abre o menu "Configurações" com cinco itens e os valores atuais marcados: "Modo de jogo" (Corpo, Mão, Cabeça), "Tempo por card" (10, 15, 20, 25 ou 30 s), "Som" (Ligado, Desligado), "Foto no resumo" (Ligada, Desligada) e "Tutorial" (Ligado, Desligado; v10.2.0, FR-16).
+- [ ] **AC-9.2** Given o menu "Configurações" está aberto When o operador muda um valor (↑/↓ escolhem o item, ←/→ mudam o valor; ou clique no valor) Then o valor muda na hora, fica guardado, e a tela de espera passa a mostrar o resumo "Modo: <modo> · Tempo por card: <N> s · Som: <ligado|desligado> · Foto: <ligada|desligada> · Tutorial: <ligado|desligado>" (o trecho do tutorial entrou na v10.2.0).
 - [ ] **AC-9.3** Given o menu está aberto When o operador pressiona Esc, M ou Enter, ou clica no "✕" do painel (nome acessível "Fechar") Then o menu fecha mantendo os valores escolhidos, e nenhuma partida começa.
-- [ ] **AC-9.4** Given nada foi configurado antes neste notebook When o jogo é aberto Then as configurações são: modo Corpo, 15 s por card, som ligado e foto no resumo ligada.
+- [ ] **AC-9.4** Given nada foi configurado antes neste notebook When o jogo é aberto Then as configurações são: modo Corpo, 15 s por card, som ligado, foto no resumo ligada e tutorial desligado.
 - [ ] **AC-9.5** Given o operador mudou as configurações When o jogo é fechado e reaberto, inclusive sem internet Then as mesmas configurações continuam ativas.
 - [ ] **AC-9.6** Given o jogo não está na tela de espera When o operador pressiona M Then nada acontece: as configurações só mudam entre partidas.
 - [ ] **AC-9.7** Given o modo Mão e um card na tela When o jogador mantém a **própria mão direita** acima do ombro por ~300 ms Then o card é registrado como "match" e sai pela direita; com a **mão esquerda**, como "descarte" e sai pela esquerda.
@@ -287,13 +288,31 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-13.2** Given uma foto foi guardada na partida When a tela de resumo aparece Then, junto com os pontos e a mensagem (AC-5.1, AC-5.7), aparece um card no estilo polaroid com a foto, espelhada como a prévia (AC-2.6) e sem o esqueleto, e a faixa "Match do Saber · N de M"; nada do resumo fica cortado ou coberto em 1366×768 (FR-4). Na v10.0.0 o polaroid fica 20% maior que na v9.0.0 e o resumo não mostra a prévia da câmera.
 - [ ] **AC-13.3** Given a câmera estava indisponível ou não autorizada no card do meio, "Foto no resumo" está Desligada, ou a captura falhou When a tela de resumo aparece Then ela fica como sem a foto (AC-5.1): sem polaroid e sem espaço vazio no lugar dele.
 - [ ] **AC-13.4** Given há uma foto guardada When o operador inicia uma nova partida pelo resumo (Enter), usa "✕ Sair" ou Esc, ou a partida termina sem resumo Then a foto é apagada da memória e não aparece em nenhuma partida seguinte.
-- [ ] **AC-13.5** Given "Foto no resumo" está Ligada When uma partida acontece, com ou sem `?diagnostico` Then a foto não aparece em nenhuma requisição de rede, no armazenamento do navegador nem no registro do diagnóstico.
+- [ ] **AC-13.5** Given "Foto no resumo" está Ligada When uma partida acontece, com ou sem `?diagnostico` Then nem a foto nem as âncoras do rosto (AC-13.6) aparecem em nenhuma requisição de rede (URL ou corpo, por `fetch`, XHR, `sendBeacon` ou WebSocket), no armazenamento do navegador (`localStorage`, `sessionStorage`, IndexedDB) nem no registro do diagnóstico. (Ampliado v10.2.0.)
+- [ ] **AC-13.6** Given a foto do resumo é tirada (AC-13.1) When a câmera detecta a pessoa naquele quadro Then o jogo guarda com a foto, só na memória, as âncoras do rosto na foto espelhada, em pixels da foto, no quadro de referência dos filtros (olhos em (−50, 0) e (50, 0), 100 unidades = distância entre os olhos): (a) rosto: origem no meio dos olhos (pontos 2 e 5), escala = distância entre os olhos ÷ 100 e giro = ângulo da linha dos olhos; sem os dois olhos com visibilidade ≥ 0,5, a reserva é pelas orelhas (7 e 8, que no quadro ficam em (−105, 15) e (105, 15)); (b) chapéu: pelas orelhas quando as duas são vistas, senão igual ao rosto; (c) capa: pelos ombros (11 e 12, em (−200, 255) e (200, 255)), ou nenhuma; (d) cada olho e a orelha direita (8), ou nenhum. Sem olhos nem orelhas vistos (ou sem pessoa), fica registrado "sem filtro" e a foto aparece como antes. Nenhum filtro é desenhado ainda (a aparência depende da aprovação da prévia `docs/visual/previa-v11.html`). (Adicionado v10.2.0; a confirmar pelo responsável.)
+- [ ] **AC-13.7** Given há uma foto com âncoras guardada When ela seria apagada (AC-13.4) Then as âncoras são apagadas junto, no mesmo instante, e não aparecem em nenhuma partida seguinte. (Adicionado v10.2.0.)
+
+### Story 15: Treinar o gesto antes de valer (adicionado v10.2.0, a confirmar pelo responsável)
+
+**As a** jogador que nunca jogou
+**I want** treinar o gesto com alguns cards fáceis antes da partida
+**So that** eu entenda para que lado vai cada resposta sem perder pontos
+
+**Acceptance criteria:**
+
+- [ ] **AC-15.1** Given "Tutorial" está Desligado (padrão) When uma partida começa por qualquer caminho (AC-1.2, AC-1.6, AC-1.8, AC-5.6) Then o jogo vai direto ao primeiro card da partida, como antes da v10.2.0.
+- [ ] **AC-15.2** Given "Tutorial" está Ligado When a partida começaria (fim da calibração, Enter na calibração, Enter na espera sem câmera ou Enter no resumo sem câmera) Then aparecem antes 4 cards de treino, na ordem do arquivo de perfis (`conteudo/tutorial.json`), com a indicação "Treino N de 4", sem barra de tempo e sem placar; depois do 4º começa a partida, sorteada como em AC-6.1 a AC-6.3, com o cronômetro cheio.
+- [ ] **AC-15.3** Given um card de treino When o jogador escolhe por gesto, seta ou arraste Then o card sai pelo lado escolhido e aparece por 3 s um feedback de treino que ensina o gesto: o selo ("Acertou!" ou "Quase!"), qual lado ele escolheu e com que gesto do modo ativo, a resposta certa com o gesto que leva a ela, e a explicação do perfil.
+- [ ] **AC-15.4** Given o tutorial When ele termina Then nenhum resultado dele entra no placar, nos "N de M" do resumo, na foto (AC-13.1) nem no sorteio; os perfis nunca aparecem como notícias e não entram em `jogaveis` (AC-7.7).
+- [ ] **AC-15.5** Given um card ou feedback de treino When o operador pressiona Enter Then o tutorial é pulado e a partida começa na hora; com Esc ou "✕ Sair", o jogo volta à espera (AC-10.3).
+- [ ] **AC-15.6** Given um card de treino When ninguém é detectado, ou o jogador faz o gesto de "saiba mais" Then nada muda: o treino não pausa, não encerra por ausência e não tem "saiba mais".
+- [ ] **AC-15.7** Given o arquivo de perfis When ele é carregado Then cada perfil tem `id`, `nome`, `frase`, `veredito`, `explicacao`, `tecnica` e `tema` válidos e o arquivo diz se é rascunho; os cards de treino usam a ilustração do `tema` (sem imagem final por enquanto).
 
 ## Functional Requirements
 
 ### FR-1: Fluxo de estados da partida
 
-O jogo passa por estes estados: espera → calibração → card → (saiba mais) → feedback → … → resumo → espera, além do estado "Volte para o centro" durante a partida.
+O jogo passa por estes estados: espera → calibração → card → (saiba mais) → feedback → … → resumo → espera, além do estado "Volte para o centro" durante a partida. Com o tutorial ligado (FR-16, v10.2.0), entre a calibração (ou o início sem câmera) e o primeiro card vêm card de treino → feedback de treino, 4 vezes.
 
 **Must:**
 - Começar a partida só por ação do operador: Enter ou "▶ Iniciar" na espera (AC-1.6, AC-1.7), ou Enter na calibração (AC-1.8). Com a câmera ativa, a partida só começa depois de 2 s contínuos de calibração, a menos que o operador pule a calibração.
@@ -388,15 +407,16 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 ### FR-9: Configurações do estande — modos acessíveis, tempo e som (reescrito v2.0.0)
 
 **Must:**
-- Oferecer, na tela de espera, o menu "Configurações" (tecla M ou ☰ › Configurações, FR-14), aberto como painel lateral à direita (AC-9.18), com quatro itens:
+- Oferecer, na tela de espera, o menu "Configurações" (tecla M ou ☰ › Configurações, FR-14), aberto como painel lateral à direita (AC-9.18), com cinco itens:
   - "Modo de jogo": Corpo (padrão, FR-2), Mão ou Cabeça.
   - "Tempo por card": 10, 15 (padrão), 20, 25 ou 30 s.
   - "Som": Ligado (padrão) ou Desligado.
   - "Foto no resumo": Ligada (padrão) ou Desligada (FR-13).
+  - "Tutorial": Desligado (padrão) ou Ligado (FR-16, v10.2.0).
 - Navegar no menu com ↑/↓ (item) e ←/→ (valor), ou com clique; fechar com Esc, M, Enter ou o "✕" do painel ("Fechar"), sem iniciar partida.
-- Mostrar na tela de espera o resumo "Modo: <modo> · Tempo por card: <N> s · Som: <ligado|desligado> · Foto: <ligada|desligada>".
+- Mostrar na tela de espera o resumo "Modo: <modo> · Tempo por card: <N> s · Som: <ligado|desligado> · Foto: <ligada|desligada> · Tutorial: <ligado|desligado>".
 - Aplicar o tempo por card a todos os cards da partida (AC-1.2, AC-4.4, AC-9.17).
-- Guardar as quatro configurações no próprio notebook e reaplicá-las ao reabrir o jogo, inclusive offline; valor ausente ou inválido usa o padrão daquele item.
+- Guardar as cinco configurações no próprio notebook e reaplicá-las ao reabrir o jogo, inclusive offline; valor ausente ou inválido usa o padrão daquele item.
 - Modo Mão: escolher o lado de três jeitos, qualquer um vale: (1) própria mão direita acima do ombro (~300 ms) = match, mão esquerda = descarte (AC-9.7); (2) as duas mãos, abaixo dos ombros, levadas juntas para um lado além da linha do ombro (~300 ms) (AC-9.19); (3) arrastar uma mão do centro do peito para um lado, ≥ 1 largura de ombro em até ~0,8 s (AC-9.20). As duas mãos acima dos ombros (~500 ms) = saiba mais. Entre duas escolhas, exigir desfazer o gesto (AC-9.22). Medir as distâncias em larguras de ombro, para valer perto ou longe da câmera.
 - Nos modos Mão e Cabeça, ignorar a ausência da pessoa durante o card (AC-9.21); a calibração continua exigindo a pessoa no centro.
 - Modo Cabeça: inclinar a cabeça para o próprio lado direito (~15°, medido em relação à calibração, ~300 ms) = match; para o esquerdo = descarte; levantar o queixo (~500 ms) = saiba mais; exigir voltar a cabeça ao centro entre duas escolhas; o card só acompanha levemente a inclinação até a escolha (AC-2.3, AC-2.10, AC-9.13).
@@ -407,7 +427,7 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 
 **Must not:**
 - Mudar qualquer configuração durante uma partida.
-- Guardar no notebook qualquer coisa além das quatro configurações e do banco de notícias com seus backups (FR-7).
+- Guardar no notebook qualquer coisa além das cinco configurações e do banco de notícias com seus backups (FR-7).
 - Usar outra fonte de imagem além da câmera já autorizada, nem enviar imagens para fora do notebook.
 
 ### FR-10: Iniciar e sair (adicionado v2.0.0)
@@ -453,9 +473,10 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 - Mostrar no resumo um card polaroid com a foto espelhada, sem esqueleto, e a faixa "Match do Saber · N de M", ao lado dos pontos e da mensagem, sem cortar nada em 1366×768 (AC-13.2).
 - Mostrar o resumo sem polaroid quando não houver foto (AC-13.3).
 - Apagar a foto ao iniciar nova partida, ao sair (Sair ou Esc) e em qualquer fim de partida sem resumo (AC-13.4).
+- Calcular, com os pontos da pose do mesmo instante da foto, as âncoras do rosto de AC-13.6, em lógica pura testável, e guardá-las no mesmo objeto da foto, que é apagado inteiro (AC-13.7). (v10.2.0)
 
 **Must not:**
-- Salvar a foto em disco ou no navegador, enviá-la pela rede ou incluí-la no registro do diagnóstico (AC-13.5).
+- Salvar a foto ou as âncoras em disco ou no navegador, enviá-las pela rede ou incluí-las no registro do diagnóstico (AC-13.5).
 - Oferecer download, impressão, envio ou QR code da foto.
 - Atrasar ou pausar a partida para tirar a foto.
 
@@ -485,6 +506,18 @@ Referência aprovada: `docs/visual/previa.html` (revisão 3), derivada do "Conec
 - Usar emoji ou caracteres unicode como ícone (✓, ✗, ▶, 🙌): viram formas do design system.
 - Usar as ondas com mãos como divisor.
 - Distorcer ou cortar SVG fora das bordas da tela.
+
+### FR-16: Modo tutorial (adicionado v10.2.0, a confirmar pelo responsável)
+
+**Must:**
+- Oferecer "Tutorial" nas Configurações (FR-9), desligado por padrão. Ligado, toda partida começa por 4 cards de treino (AC-15.2); quando e para quem ele entra (sempre, só na primeira partida, escolha do operador) é decisão do responsável.
+- Ler os perfis de treino de um arquivo de dados próprio (`conteudo/tutorial.json`), separado do banco de notícias, validado ao carregar (AC-15.7).
+- Tratar o treino como telas do fluxo da partida (FR-1): card de treino → feedback de treino → … → primeiro card da partida, com o feedback de 3 s mais a saída do card, como em AC-4.1.
+- Ensinar o gesto no feedback de treino, com o texto do modo ativo (AC-15.3).
+
+**Must not:**
+- Contar o treino no placar, no resumo, na foto ou no sorteio (AC-15.4).
+- Usar cronômetro, pausa por ausência ou "saiba mais" no treino (AC-15.6).
 
 ## Non-Functional Requirements
 
@@ -628,6 +661,11 @@ Decisões da v10.1.0, pedidas nos cartões do Trello "Match: mecânicas e movime
 - O card volta a acompanhar o corpo, mas pouco (40 px e 6° no máximo), suavizado e com zona morta, para não repetir o tremor que levou à decisão da v4.0.0. Os números são pontos de partida, ajustáveis no notebook do estande.
 - No modo Mão o card não se move: esse modo não produz uma medida contínua de inclinação (só gestos).
 - A coluna `dificuldade` entra só como dado (gerenciador e CSV). Usá-la no sorteio fica para outra versão.
+
+Decisões da v10.2.0, pedidas nos cartões "Tela final: posicionar o filtro no rosto e congelar a imagem", "Garantir que a imagem não seja salva nem enviada" e "Modo tutorial" (2026-11-10), todas a confirmar pelo responsável:
+- As âncoras seguem a tabela da prévia `docs/visual/previa-v11.html` (ainda não aprovada); só a parte mecânica entra agora, sem desenhar filtros. A reserva pelas orelhas usa as posições do quadro de referência (orelhas a 2,1 vezes a distância entre os olhos), um ponto de partida a conferir com fotos reais.
+- O tutorial fica desligado por padrão e usa os 4 perfis do rascunho do agente de notícias, marcados como rascunho até a revisão; sem imagens finais (ilustração do tema).
+- No treino não há cronômetro, pausa por ausência nem "saiba mais"; Enter pula o treino.
 
 ## Out of Scope (Future Considerations)
 

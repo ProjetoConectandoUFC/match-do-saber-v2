@@ -5403,6 +5403,18 @@ Spec: AC-2.3, AC-2.10, AC-9.13, FR-2, FR-9 (card acompanha a inclinação); AC-7
 - 38.4 `conteudo/noticias.csv`: só o cabeçalho e um `;` vazio no fim de cada linha. `scripts/fixture.ts`: dificuldade nas aprovadas.
 - 38.5 Verificação no hardware (pendente): a ~2 m, conferir que o card não treme com o jogador parado e que segue o corpo sem atraso incômodo nos modos Corpo e Cabeça; ajustar zona morta, máximos e constante de tempo se preciso.
 
+## Phase 39 (added v10.2.0): Âncoras do rosto, privacidade da foto e tutorial (só mecânica)
+
+Spec: AC-13.5 a AC-13.7, FR-13; Story 15, AC-15.1 a AC-15.7, FR-16; AC-9.1, AC-9.2, AC-9.4, FR-9. TDD. Nada visual novo além do mínimo para as telas de treino funcionarem.
+
+- 39.1 `src/core/ancorasRosto.ts` (novo, puro): `calcularAncoras(pontos, { largura, altura, espelhada })` → quadros (origem, escala, giro) de rosto, chapéu e capa, pontos dos olhos e da orelha 8, ou `null` ("sem filtro"); visibilidade mínima 0,5; reserva do rosto pelas orelhas.
+- 39.2 `src/app/foto.ts`: `capturarFoto(video, pose)` devolve `{ imagem, largura, altura, ancoras }`; `useFotoPartida` fica genérico e guarda o objeto inteiro (apagado inteiro, AC-13.7).
+- 39.3 Privacidade: teste de componente que vigia `localStorage`, `sessionStorage`, IndexedDB, `fetch`, XHR e `sendBeacon` numa partida inteira com foto; E2E de `foto.spec.ts` com o mesmo vigia instalado na página e checagem do corpo de todas as requisições.
+- 39.4 Tutorial: `conteudo/tutorial.json` (perfis do rascunho, `"status": "rascunho"`), `src/core/tutorial.ts` (validação e textos didáticos por modo), telas `tutorial` e `tutorialFeedback` no reducer com testes de fronteira; item "Tutorial" nas Configurações (padrão desligado); `TelaCard` em modo treino (sem barra, "Treino N de 4") e `TelaFeedbackTutorial` com as classes existentes.
+- 39.5 E2E `relogio-real.spec.ts` num projeto do Playwright que roda sozinho, depois dos outros (mesmo critério de FR-1).
+- 39.6 `data-model.md` reescrito para o banco CSV.
+- 39.7 Depois da aprovação da prévia v11: desenhar os filtros por cima da foto com as âncoras e decidir quando o tutorial entra.
+
 ## Quickstart Validation
 
 ```bash
@@ -5487,3 +5499,5 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 10.0.0 | 36 | Reescrita: subfases 36.1 a 36.7 conforme a prévia aprovada (revisão 3) |
 | 10.1.0 | 14 | Parcialmente invalidada: o card volta a acompanhar a inclinação, suavizado e limitado (Fase 38) |
 | 10.1.0 | 38 | Adicionada: card acompanha o corpo (AC-2.10) e coluna `dificuldade` (AC-7.10) |
+| 10.2.0 | 24 | Parcialmente estendida: a foto do resumo leva as âncoras do rosto (Fase 39) |
+| 10.2.0 | 39 | Adicionada: âncoras do rosto, privacidade da foto, tutorial, E2E do relógio em série e modelo de dados |
