@@ -28,3 +28,9 @@ Banco CSV + painel Notícias + app Electron (v9); identidade Conectando (v10.0, 
 
 ## Agentes
 Ver [[agentes]].
+
+## Atualização 2026-11-10 (tarde): v10.3.x e v11.0.0
+- `001-v10-1-movimento-card` chegou a v10.3.1: um controle por modo (Corpo = tronco, Cabeça = inclinação, Mão = swipe; braço estendido e gestos antigos da Mão removidos), diagnóstico liga/desliga (AC-12.7), card estilo Reigns (15° no centro da base, 8% de deslocamento, rótulos com opacidade) que também se move com `prefers-reduced-motion` (o Windows do responsável está com animações desligadas; era por isso que o card ficava parado).
+- `001-v11-visual-aplicado` (a partir da anterior + prévia mesclada): spec v11.0.0 aplica as recomendações da prévia v11 por ordem do responsável — pilha + botões redondos + carimbo, "Deu match!", resumo opção B (lista + polaroid 384 + QR único via `qrcode-generator` 1.4.4 para `fontes.html` na web), filtros SVG por faixa sobre a foto (`src/core/filtrosFoto.ts`), vinheta de fim de partida, colunas opcionais `titulo_curto`/`fonte_nome`, tutorial com 2 perfis da prévia (4 do agente de notícias em `perfisReserva`). Nome continua "Match do Saber". 449/449 unitários, build ok, e2e 48/48 (agente); `foto.spec.ts:29` e `camera-overlay` falham só sob carga paralela (passam em série) e o foto.spec ficou lento (~2 min).
+- `vite dev` em worktree com node_modules por junction não serve a Poppins; use build + `vite preview`.
+- Trello: o MCP é só leitura; escrever exige MCP com escrita ou `TRELLO_API_KEY`/`TRELLO_TOKEN` no env do Claude Code.
