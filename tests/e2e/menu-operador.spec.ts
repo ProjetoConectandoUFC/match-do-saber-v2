@@ -29,14 +29,26 @@ test('FR-14: ☰ abre Notícias, Configurações, Diagnóstico e Tela cheia; Esc
   await expect(page.getByRole('dialog', { name: 'Configurações' })).toBeVisible();
 });
 
-test('FR-14: Diagnóstico liga o painel de FR-12 até recarregar', async ({ page }) => {
+test('FR-14/AC-12.7 (v10.3.0): ☰ › Diagnóstico liga e desliga o painel de FR-12', async ({ page }) => {
   await abrirSemCamera(page);
   const diag = page.getByRole('complementary', { name: 'Diagnóstico' });
+  const item = () => page.getByRole('menuitem', { name: /Diagnóstico/ });
   await expect(diag).toHaveCount(0);
   await page.getByRole('button', { name: 'Menu' }).click();
-  await page.getByRole('menuitem', { name: /Diagnóstico/ }).click();
+  await expect(item()).toHaveText(/Diagnóstico: desligado/);
+  await item().click();
   await expect(diag).toBeVisible();
-  await page.reload();
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await expect(item()).toHaveText(/Diagnóstico: ligado/);
+  await item().click();
+  await expect(diag).toHaveCount(0);
+  // Com ?diagnostico começa ligado e também desliga pelo menu.
+  await page.goto('/?diagnostico');
+  await expect(diag).toBeVisible();
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await item().click();
+  await expect(diag).toHaveCount(0);
+  await page.goto('/');
   await expect(page.getByText(CAMERA_OFF)).toBeVisible();
   await expect(diag).toHaveCount(0);
 });

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { jogaveis } from '../core/banco';
-import { criarRegistro } from '../core/diagnostico';
+import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
 import { TEMPOS, pontos, type Estado } from '../core/partida';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
@@ -65,7 +65,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   operadorRef.current = operador;
   const podeAbrirMenu = useCallback(() => telaRef.current === 'espera' && operadorRef.current === 'fechado', []);
   const cfg = useConfiguracoes(podeAbrirMenu);
-  // Modo de diagnóstico (FR-12): com ?diagnostico no endereço ou pelo menu ☰, até recarregar.
+  // Modo de diagnóstico (FR-12): começa ligado com ?diagnostico; o menu ☰ liga e desliga (AC-12.7).
   const [diagnostico, setDiagnostico] = useState(() =>
     (new URLSearchParams(window.location.search).has('diagnostico') ? criarRegistro() : undefined));
   // Com o menu ☰, um painel dele ou as Configurações abertos, câmera e teclas não chegam ao jogo (FR-14).
@@ -77,7 +77,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       operadorRef.current = 'fechado'; // o menu ☰ acabou de fechar; o setState ainda não chegou ao ref
       cfg.abrir();
     }
-    else if (item === 'diagnostico') setDiagnostico((d) => d ?? criarRegistro());
+    else if (item === 'diagnostico') setDiagnostico(alternarDiagnostico);
     else if (item === 'telaCheia') alternarTelaCheia();
     else if (item === 'noticias') setOperador('noticias');
   }, [cfg.abrir]);
@@ -105,6 +105,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
               aberto={operador === 'menu'}
               onAbrir={() => setOperador('menu')}
               onFechar={fecharOperador}
+              diagnosticoLigado={!!diagnostico}
               onEscolher={escolherNoMenu}
             />
           )}

@@ -46,6 +46,33 @@ describe('MenuOperador (FR-14)', () => {
     expect(screen.queryByRole('menu')).toBeNull();
   });
 
+  it('AC-12.7 (v10.3.0): o item Diagnóstico mostra se está ligado e alterna a cada escolha', () => {
+    function ComDiagnostico() {
+      const [aberto, setAberto] = useState(false);
+      const [ligado, setLigado] = useState(false);
+      return (
+        <MenuOperador
+          aberto={aberto}
+          diagnosticoLigado={ligado}
+          onAbrir={() => setAberto(true)}
+          onFechar={() => setAberto(false)}
+          onEscolher={(i) => { if (i === 'diagnostico') setLigado((l) => !l); }}
+        />
+      );
+    }
+    render(<ComDiagnostico />);
+    const abrirE = () => { fireEvent.click(screen.getByRole('button', { name: 'Menu' })); return screen.getByRole('menuitem', { name: /Diagnóstico/ }); };
+    let item = abrirE();
+    expect(item).toHaveTextContent('Diagnóstico: desligado');
+    expect(item).toHaveAttribute('title', 'liga e desliga o painel de medição');
+    fireEvent.click(item);
+    item = abrirE();
+    expect(item).toHaveTextContent('Diagnóstico: ligado');
+    expect(item).toHaveAttribute('data-ligado', 'true');
+    fireEvent.click(item);
+    expect(abrirE()).toHaveTextContent('Diagnóstico: desligado');
+  });
+
   it('clicar no botão com o menu aberto fecha', () => {
     render(<Montado onEscolher={() => {}} />);
     const botao = screen.getByRole('button', { name: 'Menu' });
