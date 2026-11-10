@@ -1,0 +1,20 @@
+/* Página das fontes (AC-5.10, v11.0.0), no celular: tema Claro do Conectando (tokens de src/app/tema.css). */
+:global(html), :global(body) { margin: 0; }
+:global(body) { background: var(--cn-creme); color: var(--cn-tinta); font-family: var(--fonte); font-size: 16px; line-height: 1.45; }
+.topo { background: var(--cn-azul); color: var(--cn-creme); padding: 22px 18px 18px; }
+.topo p { margin: 0; font-size: 13px; font-weight: 600; }
+.topo h1 { margin: 4px 0 0; font-size: 26px; line-height: 1.15; font-weight: 800; }
+.topo h1 em { font-style: normal; color: var(--cn-amarelo); }
+.conteudo { max-width: 680px; margin: 0 auto; padding: 8px 16px 32px; }
+.lista { list-style: none; margin: 0; padding: 0; }
+.item { padding: 14px 0; border-bottom: 1.5px dashed rgb(56 46 0 / 0.35); }
+.item:last-child { border-bottom: 0; }
+.veredito { display: inline-block; border-radius: 999px; padding: 1px 10px; font-size: 13px; font-weight: 800; }
+.verdade { background: var(--cn-menta); color: var(--cn-noite); }
+.mentira { background: var(--cn-coral); color: var(--cn-tinta); }
+.titulo { margin: 6px 0 4px; font-size: 17px; line-height: 1.3; font-weight: 700; color: var(--cn-titulo); }
+.fontes { margin: 0; font-size: 15px; }
+.fontes a { color: var(--cn-azul-escuro); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.naoEncontrada { margin: 0; color: var(--cn-grafite); font-style: italic; }
+.aviso { margin: 20px 0; font-size: 16px; font-weight: 500; color: var(--cn-grafite); }
+.rodape { max-width: 680px; margin: 0 auto; padding: 0 16px 28px; font-size: 13px; color: var(--cn-grafite); }
