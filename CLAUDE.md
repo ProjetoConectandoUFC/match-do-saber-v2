@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Projeto
 
 Match do Saber — jogo educativo de checagem de notícias para estudantes do ensino médio e jovens adultos, jogado num **estande de evento**: um notebook com webcam, um jogador por vez a ~1,5–2 m, escolhendo "verdadeira"/"falsa" por movimento do corpo. Roda como app de desktop (Electron, offline) e como PWA (versão web, GitHub Pages).
-Missão e princípios: `.claude/memory/foundation.md`. Fluxo SDD: `.claude/CLAUDE.md`. Status do MVP e pendências manuais: `.claude/memory/mvp-status-fase7.md`.
+Missão e princípios: `.claude/memory/foundation.md`. Fluxo SDD: `.claude/CLAUDE.md`. Estado atual (v10.0.0) e pendências: `.claude/memory/estado-v10.md` (comece por aqui); histórico até a v8.2.0 e verificações de hardware antigas: `.claude/memory/mvp-status-fase7.md`.
 
 ## Comandos
 
@@ -29,7 +29,7 @@ npm run package:win    # executável Windows em out/ (com o banco padrão; rode 
 
 **Banco de notícias (v9.0.0, spec FR-6 a FR-8):** um CSV (`;`, UTF-8 com BOM) com as colunas de `COLUNAS_BANCO` (`src/core/types.ts`). O banco padrão embutido é `conteudo/noticias.csv` → `content/noticias.csv` no build. O jogo carrega por um `RepositorioNoticias` (`src/app/repositorio.ts`): na **web** só lê o embutido (o painel Notícias mostra o aviso de AC-7.9); no **desktop** (o preload do Electron expõe `window.matchDoSaber.desktop`) fala com `GET/PUT /api/noticias`. Só `jogaveis(banco)` (válidas, `aprovada`, com fonte e revisor; princípio 1) entram nas partidas. A Planilha Google e `scripts/sync/` estão desativados (o ADR 001-content-pipeline descreve o caminho antigo).
 
-**Desktop (`electron/`):** `main.cjs` (modelo: Prova ou Reprova) serve `dist/` num HTTP local em 127.0.0.1:37425 e as rotas `/api`; `banco-local.cjs` cuida de `Documentos/Match do Saber/noticias.csv` (cria do embutido, backups com data e hora antes de gravar, recusa gravar se o arquivo mudou fora do painel). `MATCH_DO_SABER_DADOS` troca a pasta (testes).
+**Desktop (`electron/`):** `main.cjs` (modelo: Prova ou Reprova) serve `dist/` num HTTP local em 127.0.0.1:37425 e as rotas `/api` (porta fixa de propósito: o `localStorage` das configurações é por origem; só cai para outra se estiver ocupada); `banco-local.cjs` cuida de `Documentos/Match do Saber/noticias.csv` (cria do embutido, backups com data e hora antes de gravar, recusa gravar se o arquivo mudou fora do painel). `MATCH_DO_SABER_DADOS` troca a pasta (testes).
 
 **`src/core/` — lógica pura, sem React** (para sobreviver a uma troca de framework e ser testável sem câmera):
 - `partida.ts` — reducer da partida (`reduzir(estado, evento, contexto)`); telas `espera → calibracao → card → feedback → … → resumo`; todos os tempos em `TEMPOS` e avançados por eventos `tick` com `dtMs`.
@@ -39,7 +39,9 @@ npm run package:win    # executável Windows em out/ (com o banco padrão; rode 
 
 **`src/app/` — React:** `useJogo.ts` é o centro: liga o reducer, o teclado (→ verdadeira, ← falsa, ↑ saiba mais, Enter, Esc) e um laço `requestAnimationFrame` que roda a detecção de pose (`rastreador.ts`) **fora do estado do React** (refs), despachando só eventos já interpretados. `App.tsx` carrega o banco e compõe as telas de `Telas.tsx`. Na tela de espera, o menu ☰ (`MenuOperador.tsx`) abre Notícias (`PainelNoticias.tsx`/`EditorNoticia.tsx`), Configurações, Diagnóstico e Tela cheia; com o menu ou um painel aberto, câmera e teclas não chegam ao jogo. `?diagnostico` na URL (ou ☰ › Diagnóstico) ativa o painel de medição (`PainelDiagnostico.tsx`). Configurações (modo, tempo por card, som, foto) ficam no `localStorage` via `useConfiguracoes.ts`.
 
-**PWA:** `vite-plugin-pwa` faz precache de tudo (incluindo `noticias.csv`, modelo `.task` e WASM, até 40 MB) para rodar offline. No desktop o service worker não é registrado.
+**PWA:** `vite-plugin-pwa` faz precache de tudo (incluindo `noticias.csv`, modelo `.task` e WASM, até 40 MB) para rodar offline. No desktop o service worker não é registrado. `.github/workflows/publicar.yml` roda `npm test` + `npm run build` e publica no GitHub Pages a cada push na `main`.
+
+**Visual (v10.0.0):** identidade do Conectando Design System; a referência aprovada é `docs/visual/previa.html` (capturas em `docs/visual/capturas/`). Tokens em `src/app/tema.css`.
 
 ## Armadilhas já conhecidas (ver `docs/lessons/`)
 
@@ -58,7 +60,8 @@ Público inclui menores (LGPD): a imagem da câmera nunca é gravada nem enviada
 
 - Features seguem SDD: specs em `docs/specs/NNN-slug/` (`spec.md`, `plan.md`, `prd.md`, `data-model.md`, `contracts/`), versionadas (ex.: v8.2.0) com fases numeradas no `plan.md`. ACs/FRs (ex.: AC-4.8, FR-9) são citados em código e nomes de testes.
 - Decisões de arquitetura em `docs/adr/`.
-- Git: `docs/git-convention.md` (branches `NNN-slug`, Conventional Commits, prefixo ClickUp `CU-`).
+- Git: `docs/git-convention.md` (branches `NNN-slug`, Conventional Commits, prefixo ClickUp `CU-`). Tudo entra pela `develop` via PR aprovado pelo responsável (`.claude/memory/git-flow.md`); push na `main` publica a web.
+- Subagentes do projeto em `.claude/agents/`: `agente-mecanico` (mecânica, gestos, reducer, Electron), `agente-visual` (identidade visual) e `agente-noticias` (redige lotes de notícias com fontes; só rascunhos, revisão humana obrigatória). Orquestração: `.claude/memory/agentes.md`.
 - Operação do estande, app de desktop e gerenciador de notícias: `docs/operacao.md`.
 
 ## Idioma
