@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ESTADO_INICIAL, TEMPOS, pontos, reduzir, type Contexto, type Estado, type Evento, type Presenca } from './partida';
+import { ESTADO_INICIAL, TEMPOS, calibrarAoSair, pontos, reduzir, type Contexto, type Estado, type Evento, type Presenca } from './partida';
 import type { PerfilTutorial } from './tutorial';
 import type { Noticia, Veredito } from './types';
 
@@ -43,6 +43,16 @@ describe('tutorial: entrada (AC-15.1, AC-15.2)', () => {
 
   it('sem notícias, nem o treino começa (AC-6.4)', () => {
     expect(rodar(ESTADO_INICIAL, [enter], ctx({ noticias: [], cameraAtiva: false }))).toEqual(ESTADO_INICIAL);
+  });
+});
+
+describe('calibrarAoSair (FR-2: centro medido na calibração)', () => {
+  it('calibra ao sair da calibração para o card ou, com o tutorial, para o treino; nunca do treino para o card', () => {
+    expect(calibrarAoSair('calibracao', 'card')).toBe(true);
+    expect(calibrarAoSair('calibracao', 'tutorial')).toBe(true);
+    expect(calibrarAoSair('tutorialFeedback', 'card')).toBe(false);
+    expect(calibrarAoSair('calibracao', 'espera')).toBe(false);
+    expect(calibrarAoSair('feedback', 'card')).toBe(false);
   });
 });
 

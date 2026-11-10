@@ -4,7 +4,8 @@ import {
   type Configuracoes, type ModoJogo,
 } from '../core/modos';
 import { mensagemResumo, type Resultado } from '../core/partida';
-import { TECNICA_ROTULO, type Noticia } from '../core/types';
+import { feedbackTutorial } from '../core/tutorial';
+import { TECNICA_ROTULO, type Noticia, type Veredito } from '../core/types';
 import { Forma } from './Forma';
 import { IlustracaoTema, corDoTema } from './IlustracaoTema';
 import type { StatusCamera } from './useJogo';
@@ -15,6 +16,12 @@ const src = (caminho: string) => (/^(https?:|data:)/.test(caminho) ? caminho : `
 
 function Placar({ pontos }: { pontos: number }) {
   return <p className={s.pontos}>{`Pontos: ${pontos}`}</p>;
+}
+
+/** Passo do tutorial (FR-16): no lugar do placar, que o treino não tem (AC-15.4). */
+export interface PassoTreino { passo: number; total: number }
+function MarcaTreino({ treino }: { treino: PassoTreino }) {
+  return <p className={s.pontos} data-treino>{`Treino ${treino.passo + 1} de ${treino.total}`}</p>;
 }
 
 /** Marcadores do gesto (FR-15): Mentira = triângulo coral apontando para a esquerda; Verdade = estrela de 4 pontas menta. */
@@ -186,7 +193,9 @@ function Lado({ lado }: { lado: 'mentira' | 'verdade' }) {
   );
 }
 
-export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, cardRef, onArrastar }: {
+export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, treino, cardRef, onArrastar }: {
+  /** Card de treino do tutorial (FR-16): sem barra de tempo, sem placar e sem "saiba mais" (AC-15.2, AC-15.6). */
+  treino?: PassoTreino;
   noticia: Noticia;
   restanteMs: number;
   /** Duração do card, para a fração da barra de tempo (AC-4.6). */
@@ -202,7 +211,7 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
   onArrastar: (lado: 'direita' | 'esquerda') => void;
 }) {
   const inicioX = useRef<number | null>(null);
-  const alerta = !saida && restanteMs <= 5000;
+  const alerta = !saida && !treino && restanteMs <= 5000;
   const pulsando = alerta && !ausente; // AC-4.7: só "Volte para o centro" pausa o cronômetro (v5.0.0)
   return (
     <main className={`${s.tela} ${s.sobrio}`}>
@@ -233,7 +242,7 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
             {noticia.imagem ? <img src={src(noticia.imagem)} alt="" draggable={false} /> : <IlustracaoTema tema={noticia.tema} />}
             <h2>{noticia.titulo}</h2>
             <p>{noticia.descricao}</p>
-            <p className={s.dicaCard}><Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />{DICA_SAIBA_MAIS[modo]}</p>
+            {!treino && <p className={s.dicaCard}><Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />{DICA_SAIBA_MAIS[modo]}</p>}
           </>
         )}
       </article>
@@ -241,8 +250,8 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
       </div>
       {/* Fora do card, para não tirar espaço do texto da notícia (FR-4). */}
       {modo !== 'corpo' && <p className={s.dicaModo}>{DICA_GESTOS[modo]}</p>}
-      <Placar pontos={pontos} />
-      {!saida && <BarraTempo restanteMs={restanteMs} totalMs={totalMs} alerta={alerta} />}
+      {treino ? <MarcaTreino treino={treino} /> : <Placar pontos={pontos} />}
+      {!saida && !treino && <BarraTempo restanteMs={restanteMs} totalMs={totalMs} alerta={alerta} />}
       {ausente && <div className={s.sobreposicao}>Volte para o centro</div>}
     </main>
   );
@@ -270,6 +279,40 @@ export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia;
         <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
       </div>
       <Placar pontos={pontos} />
+    </main>
+  );
+}
+
+/**
+ * Feedback do treino (AC-15.3, FR-16): mesma estrutura do feedback (AC-4.1), com o selo "Acertou!"/"Quase!",
+ * o gesto que o jogador fez e o que leva à resposta certa. Estilo provisório (classes do feedback), sem visual novo.
+ */
+export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
+  noticia: Noticia;
+  resposta: Veredito;
+  modo: ModoJogo;
+  treino: PassoTreino;
+}) {
+  const verdade = noticia.veredito === 'verdadeira';
+  const t = feedbackTutorial(modo, resposta, noticia.veredito);
+  return (
+    <main
+      className={`${s.tela} ${verdade ? s.fbVerdade : s.fbMentira}`}
+      data-veredito={verdade ? 'verdade' : 'mentira'}
+      data-resultado={t.acertou ? 'treino-acerto' : 'treino-erro'}
+    >
+      <div className={s.feedback}>
+        <h2 className={s.veredito}>
+          {verdade ? <MarcaVerdade largura={30} /> : <MarcaMentira largura={30} />}
+          {verdade ? 'É verdade' : 'É mentira'}
+        </h2>
+        <p className={`${s.selo} ${t.acertou ? s.seloAcerto : s.seloErro}`}>{t.selo}</p>
+        <p className={s.explicacao}>{t.escolha}</p>
+        <p className={s.explicacao}>{t.certo}</p>
+        <p className={s.explicacao}>{noticia.explicacao}</p>
+        <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
+      </div>
+      <MarcaTreino treino={treino} />
     </main>
   );
 }

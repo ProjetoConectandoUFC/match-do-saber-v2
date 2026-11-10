@@ -155,6 +155,11 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
   }
 }
 
+/** O centro do jogador é medido ao sair da calibração (FR-2), para o card ou, com o tutorial, para o treino. */
+export function calibrarAoSair(antes: Estado['tela'], depois: Estado['tela']): boolean {
+  return antes === 'calibracao' && (depois === 'card' || depois === 'tutorial');
+}
+
 export function pontos(p: Partida): number {
   return p.resultados.filter((r) => r === 'acerto').length;
 }

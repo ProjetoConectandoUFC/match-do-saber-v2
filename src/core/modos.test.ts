@@ -17,33 +17,35 @@ describe('configurações do estande', () => {
   it('itens e opções', () => {
     expect(MODOS).toEqual(['corpo', 'mao', 'cabeca']);
     expect(TEMPOS_CARD_S).toEqual([10, 15, 20, 25, 30]);
-    expect(ITENS_CONFIG).toEqual(['modo', 'tempoCardS', 'som', 'foto']);
+    expect(ITENS_CONFIG).toEqual(['modo', 'tempoCardS', 'som', 'foto', 'tutorial']); // v10.2.0
   });
-  it('AC-9.4: sem nada guardado, usa Corpo, 15 s, som ligado e foto ligada', () => {
-    expect(CONFIG_PADRAO).toEqual({ modo: 'corpo', tempoCardS: 15, som: true, foto: true });
+  it('AC-9.4: sem nada guardado, usa Corpo, 15 s, som ligado, foto ligada e tutorial desligado', () => {
+    expect(CONFIG_PADRAO).toEqual({ modo: 'corpo', tempoCardS: 15, som: true, foto: true, tutorial: false });
     expect(lerConfiguracoes(memoria())).toEqual(CONFIG_PADRAO);
     expect(lerConfiguracoes(null)).toEqual(CONFIG_PADRAO);
   });
-  it('AC-9.5: guarda e lê as quatro configurações', () => {
+  it('AC-9.5: guarda e lê as cinco configurações', () => {
     const a = memoria();
-    salvarConfiguracoes(a, { modo: 'cabeca', tempoCardS: 25, som: false, foto: false });
-    expect(lerConfiguracoes(a)).toEqual({ modo: 'cabeca', tempoCardS: 25, som: false, foto: false });
+    salvarConfiguracoes(a, { modo: 'cabeca', tempoCardS: 25, som: false, foto: false, tutorial: true });
+    expect(lerConfiguracoes(a)).toEqual({ modo: 'cabeca', tempoCardS: 25, som: false, foto: false, tutorial: true });
   });
   it('mantém o modo guardado pela v1.1.0 (mesma chave)', () => {
     expect(lerConfiguracoes(memoria({ 'match-do-saber:modo': 'mao' }))).toEqual({ ...CONFIG_PADRAO, modo: 'mao' });
   });
   it('valor inválido vale o padrão só daquele item; armazenamento bloqueado não quebra', () => {
     const a = memoria({ 'match-do-saber:modo': 'pe', 'match-do-saber:tempoCard': '12', 'match-do-saber:som': 'desligado', 'match-do-saber:foto': 'talvez' });
-    expect(lerConfiguracoes(a)).toEqual({ modo: 'corpo', tempoCardS: 15, som: false, foto: true });
+    expect(lerConfiguracoes(a)).toEqual({ modo: 'corpo', tempoCardS: 15, som: false, foto: true, tutorial: false });
+    expect(lerConfiguracoes(memoria({ 'match-do-saber:tutorial': 'ligado' })).tutorial).toBe(true);
+    expect(lerConfiguracoes(memoria({ 'match-do-saber:tutorial': 'sim' })).tutorial).toBe(false);
     expect(lerConfiguracoes(memoria({ 'match-do-saber:foto': 'desligada' })).foto).toBe(false);
     expect(lerConfiguracoes(memoria({ 'match-do-saber:foto': 'ligada' })).foto).toBe(true);
     expect(lerConfiguracoes(quebrado)).toEqual(CONFIG_PADRAO);
     expect(() => salvarConfiguracoes(quebrado, CONFIG_PADRAO)).not.toThrow();
   });
-  it('FR-9: guarda só as quatro chaves', () => {
+  it('FR-9: guarda só as cinco chaves', () => {
     const a = memoria();
-    salvarConfiguracoes(a, { modo: 'mao', tempoCardS: 20, som: true, foto: false });
-    expect(a.dados).toEqual({ 'match-do-saber:modo': 'mao', 'match-do-saber:tempoCard': '20', 'match-do-saber:som': 'ligado', 'match-do-saber:foto': 'desligada' });
+    salvarConfiguracoes(a, { modo: 'mao', tempoCardS: 20, som: true, foto: false, tutorial: false });
+    expect(a.dados).toEqual({ 'match-do-saber:modo': 'mao', 'match-do-saber:tempoCard': '20', 'match-do-saber:som': 'ligado', 'match-do-saber:foto': 'desligada', 'match-do-saber:tutorial': 'desligado' });
     salvarConfiguracoes(a, CONFIG_PADRAO);
     expect(a.dados['match-do-saber:foto']).toBe('ligada');
   });
@@ -56,6 +58,8 @@ describe('configurações do estande', () => {
     expect(mudarValor(CONFIG_PADRAO, 'modo', -1).modo).toBe('corpo');
     expect(mudarValor(CONFIG_PADRAO, 'som', 1).som).toBe(false);
     expect(mudarValor(CONFIG_PADRAO, 'foto', 1).foto).toBe(false);
+    expect(mudarValor(CONFIG_PADRAO, 'tutorial', -1).tutorial).toBe(true);
+    expect(mudarValor(CONFIG_PADRAO, 'tutorial', 1).tutorial).toBe(false);
   });
   it('AC-9.2: rótulos e resumo', () => {
     expect(rotuloValor('tempoCardS', 20)).toBe('20 s');
@@ -63,7 +67,8 @@ describe('configurações do estande', () => {
     expect(rotuloValor('modo', 'cabeca')).toBe('Cabeça');
     expect(rotuloValor('foto', true)).toBe('Ligada');
     expect(rotuloValor('foto', false)).toBe('Desligada');
-    expect(resumoConfiguracoes({ modo: 'mao', tempoCardS: 20, som: false, foto: false })).toBe('Modo: Mão · Tempo por card: 20 s · Som: desligado · Foto: desligada');
+    expect(rotuloValor('tutorial', true)).toBe('Ligado');
+    expect(resumoConfiguracoes({ modo: 'mao', tempoCardS: 20, som: false, foto: false, tutorial: true })).toBe('Modo: Mão · Tempo por card: 20 s · Som: desligado · Foto: desligada · Tutorial: ligado');
   });
   it('AC-9.14 (v10.0.0): dicas de cada modo dizem "mentira" no lugar de "falsa"', () => {
     expect(DICA_GESTOS.mao).toBe('É verdade: mão direita para cima, as duas mãos para a direita ou arraste para a direita · É mentira: o mesmo para a esquerda · Duas mãos para cima: saiba mais');

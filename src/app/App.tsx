@@ -9,7 +9,9 @@ import { MenuOperador, type ItemMenu } from './MenuOperador';
 import { PainelNoticias } from './PainelNoticias';
 import { PainelDiagnostico } from './PainelDiagnostico';
 import { criarRepositorio, repositorioWeb, type EstadoBanco, type RepositorioNoticias } from './repositorio';
-import { BotaoSair, MenuConfiguracoes, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaResumo } from './Telas';
+import { BotaoSair, MenuConfiguracoes, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
+import { perfilComoNoticia } from '../core/tutorial';
+import { PERFIS_TUTORIAL } from './perfisTutorial';
 import { useConfiguracoes } from './useConfiguracoes';
 import { useFotoPartida } from './useFotoPartida';
 import { useInclinacaoCard } from './useInclinacaoCard';
@@ -149,6 +151,31 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
         />
       ) : (
         <TelaFeedback noticia={noticia} resultado={estado.partida.resultados[estado.indice]!} pontos={pontos(estado.partida)} />
+      );
+      break;
+    }
+    case 'tutorial':
+    case 'tutorialFeedback': {
+      // Treino (FR-16): mesmas telas do card e do feedback, sem tempo nem placar; depois da escolha, o card sai.
+      const noticia = perfilComoNoticia(PERFIS_TUTORIAL[estado.passo]!);
+      const treino = { passo: estado.passo, total: PERFIS_TUTORIAL.length };
+      const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > TEMPOS.feedbackMs;
+      tela = estado.tela === 'tutorialFeedback' && !saindo ? (
+        <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.config.modo} treino={treino} />
+      ) : (
+        <TelaCard
+          key={`treino-${estado.passo}`}
+          noticia={noticia}
+          restanteMs={0}
+          saibaMais={false}
+          ausente={false}
+          pontos={0}
+          modo={cfg.config.modo}
+          treino={treino}
+          saida={estado.tela === 'tutorialFeedback' ? (estado.resposta === 'verdadeira' ? 'direita' : 'esquerda') : undefined}
+          cardRef={saindo ? cardSaindoRef : cardRef}
+          onArrastar={saindo ? () => {} : (lado) => despachar({ tipo: 'escolha', resposta: lado === 'direita' ? 'verdadeira' : 'falsa' })}
+        />
       );
       break;
     }

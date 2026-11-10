@@ -112,6 +112,14 @@ describe('situacaoDoCard (AC-2.10)', () => {
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs, null), false)).toBe('centro');
   });
 
+  it('v10.2.0: o card de treino segue a leitura e sai da mesma forma; o feedback de treino volta ao centro', () => {
+    expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, false)).toBe('jogando');
+    expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, true)).toBe('centro');
+    const fb = (restanteMs: number) => ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, resposta: 'falsa' as const });
+    expect(situacaoDoCard(fb(TEMPOS.feedbackMs + 1), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(TEMPOS.feedbackMs), false)).toBe('centro');
+  });
+
   it('outras telas ficam no centro', () => {
     expect(situacaoDoCard({ tela: 'espera' }, false)).toBe('centro');
     expect(situacaoDoCard({ tela: 'calibracao', centradoMs: 0, ausenteMs: 0 }, false)).toBe('centro');
