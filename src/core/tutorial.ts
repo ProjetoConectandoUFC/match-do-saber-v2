@@ -15,7 +15,13 @@ export interface PerfilTutorial {
   explicacao: string;
   tecnica: Tecnica;
   tema: Tema;
+  /** Desenho próprio do perfil, estilo "recorte chapado" (v11.0.0, AC-15.7); sem ele, a ilustração do tema. */
+  ilustracao?: IlustracaoPerfil;
 }
+
+/** Desenhos de perfil da prévia v11 (`docs/visual/estilo-imagens/`). */
+export const ILUSTRACOES_PERFIL = ['perfil-falso-abacaxi', 'perfil-verdadeiro-caju'] as const;
+export type IlustracaoPerfil = (typeof ILUSTRACOES_PERFIL)[number];
 
 export interface ArquivoTutorial { status: 'rascunho' | 'aprovado'; perfis: PerfilTutorial[] }
 
@@ -38,9 +44,14 @@ export function lerTutorial(dados: unknown): ArquivoTutorial {
     }
     if (vistos.has(p.id as string)) throw new Error(`perfil ${i + 1}: id repetido`);
     vistos.add(p.id as string);
-    return {
+    if (p.ilustracao !== undefined && !(ILUSTRACOES_PERFIL as readonly unknown[]).includes(p.ilustracao)) {
+      throw new Error(`perfil ${i + 1}: ilustracao fora da lista`);
+    }
+    const lido = {
       id: p.id, nome: p.nome, frase: p.frase, veredito: p.veredito, explicacao: p.explicacao, tecnica: p.tecnica, tema: p.tema,
     } as PerfilTutorial;
+    if (p.ilustracao) lido.ilustracao = p.ilustracao as IlustracaoPerfil;
+    return lido;
   });
   return { status, perfis: lidos };
 }

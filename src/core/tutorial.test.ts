@@ -11,11 +11,25 @@ const perfil = {
 };
 
 describe('arquivo de perfis do tutorial (AC-15.7, FR-16)', () => {
-  it('tem os 4 perfis do rascunho, na ordem sugerida (falso, verdadeiro, falso, verdadeiro), marcado como rascunho', () => {
+  it('v11.0.0: o treino tem os 2 perfis da prévia v11 (falso, verdadeiro), com o desenho de cada um, marcado como rascunho', () => {
     const t = lerTutorial(arquivo);
     expect(t.status).toBe('rascunho');
-    expect(t.perfis.map((p) => p.nome)).toEqual(['Morango Influencer', 'Professora Abelha', 'Gato Astronauta', 'Dona Chaleira']);
-    expect(t.perfis.map((p) => p.veredito)).toEqual(['falsa', 'verdadeira', 'falsa', 'verdadeira']);
+    expect(t.perfis.map((p) => p.nome)).toEqual(['Abacaxi Perfeito, 19', 'Seu Caju, 52']);
+    expect(t.perfis.map((p) => p.veredito)).toEqual(['falsa', 'verdadeira']);
+    expect(t.perfis.map((p) => p.ilustracao)).toEqual(['perfil-falso-abacaxi', 'perfil-verdadeiro-caju']);
+  });
+
+  it('v11.0.0: os 4 perfis do rascunho do agente de notícias ficam guardados no arquivo, fora do treino', () => {
+    const reserva = (arquivo as { perfisReserva: { nome: string }[] }).perfisReserva;
+    expect(reserva.map((p) => p.nome)).toEqual(['Morango Influencer', 'Professora Abelha', 'Gato Astronauta', 'Dona Chaleira']);
+    expect(lerTutorial({ status: 'rascunho', perfis: reserva }).perfis).toHaveLength(4); // continuam válidos
+  });
+
+  it('AC-15.7 (v11.0.0): `ilustracao` é opcional e só aceita os desenhos que existem', () => {
+    expect(lerTutorial({ status: 'rascunho', perfis: [perfil] }).perfis[0]).not.toHaveProperty('ilustracao');
+    expect(lerTutorial({ status: 'rascunho', perfis: [{ ...perfil, ilustracao: 'perfil-falso-abacaxi' }] }).perfis[0]!.ilustracao)
+      .toBe('perfil-falso-abacaxi');
+    expect(() => lerTutorial({ status: 'rascunho', perfis: [{ ...perfil, ilustracao: 'foto.png' }] })).toThrow(/ilustracao/);
   });
 
   it('AC-15.4: os perfis não estão no banco de notícias nem entram em jogaveis', () => {

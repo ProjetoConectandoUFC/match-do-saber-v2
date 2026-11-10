@@ -83,13 +83,20 @@ describe('v11.0.0: card de app de namoro (FR-15)', () => {
   });
 
   it.each([
-    ['falsa', 'perfil-falso-abacaxi'],
-    ['verdadeira', 'perfil-verdadeiro-caju'],
-  ] as const)('AC-15.7 (v11.0.0): card de treino %s mostra o perfil do veredito', (veredito, arquivo) => {
-    const { container } = render(card(noticia('treino-1', { veredito }), { treino: { passo: 0, total: 4 } }));
+    ['perfil-falso-abacaxi'],
+    ['perfil-verdadeiro-caju'],
+  ] as const)('AC-15.7 (v11.0.0): card de treino com o desenho %s mostra o perfil, maior', (ilustracao) => {
+    const { container } = render(card(noticia('treino-1'), { treino: { passo: 0, total: 2, ilustracao } }));
     const img = container.querySelector('article img')!;
-    expect(img).toHaveAttribute('src', expect.stringContaining(arquivo));
+    expect(img).toHaveAttribute('src', expect.stringContaining(ilustracao));
     expect(img).toHaveAttribute('alt', '');
+    expect(img.className).toMatch(/imagemPerfil/);
+  });
+
+  it('AC-15.7: perfil sem desenho próprio fica com a composição do tema (nunca o desenho de outro perfil)', () => {
+    const { container } = render(card(noticia('treino-9', { tema: 'curiosidades' }), { treino: { passo: 0, total: 2 } }));
+    expect(container.querySelector('article img')).toBeNull();
+    expect(screen.getByRole('img', { name: 'Tema: Curiosidades' })).toBeInTheDocument();
   });
 });
 

@@ -294,8 +294,7 @@ describe('v10.2.0: telas do tutorial (Story 15, FR-16)', () => {
     expect(screen.queryByRole('timer')).toBeNull();
     expect(screen.queryByText(/^Pontos:/)).toBeNull();
     expect(screen.queryByText(/Saiba mais/)).toBeNull();
-    // v11.0.0 (AC-15.7): o perfil "recorte chapado" do veredito no lugar da ilustração do tema.
-    expect(container.querySelector('article img')).toHaveAttribute('src', expect.stringContaining('perfil-falso-abacaxi'));
+    expect(container.querySelector('article img')).toBeNull(); // sem desenho próprio (AC-15.7): ilustração do tema
   });
   it('AC-15.3: feedback de treino ensina o gesto, com o veredito, a explicação e a técnica', () => {
     const { container } = render(<TelaFeedbackTutorial noticia={treino} resposta="verdadeira" modo="corpo" treino={{ passo: 0, total: 4 }} />);

@@ -7,13 +7,13 @@ import type { AncorasRosto } from '../core/ancorasRosto';
 import { FAIXAS, faixaDeAcertos, type Faixa } from '../core/faixas';
 import type { LinhaResumo } from '../core/fontesRodada';
 import { mensagemResumo, type Resultado } from '../core/partida';
-import { feedbackTutorial } from '../core/tutorial';
+import { feedbackTutorial, type IlustracaoPerfil } from '../core/tutorial';
 import { TECNICA_ROTULO, type Noticia, type Veredito } from '../core/types';
 import { FiltroFoto } from './FiltroFoto';
 import { Forma, type IdForma } from './Forma';
 import { IconeFeedback, type IdIcone } from './IconesFeedback';
 import { IlustracaoTema, corDoTema } from './IlustracaoTema';
-import { ilustracaoDaNoticia, perfilDoTreino } from './ilustracoes';
+import { ilustracaoDaNoticia, ilustracaoDoPerfil } from './ilustracoes';
 import { QrCode } from './QrCode';
 import type { StatusCamera } from './useJogo';
 import s from './App.module.css';
@@ -29,7 +29,7 @@ function Placar({ pontos }: { pontos: number }) {
 }
 
 /** Passo do tutorial (FR-16): no lugar do placar, que o treino não tem (AC-15.4). */
-export interface PassoTreino { passo: number; total: number }
+export interface PassoTreino { passo: number; total: number; ilustracao?: IlustracaoPerfil }
 function MarcaTreino({ treino }: { treino: PassoTreino }) {
   return <p className={s.pontos} data-treino>{`Treino ${treino.passo + 1} de ${treino.total}`}</p>;
 }
@@ -232,9 +232,12 @@ function Lado({ lado, escolhido }: { lado: 'mentira' | 'verdade'; escolhido: boo
   );
 }
 
-/** Imagem do card (FR-4): a da notícia; senão, a ilustração "recorte chapado" dela; senão, a do tema. Treino: o perfil. */
-function ImagemCard({ noticia, treino }: { noticia: Noticia; treino: boolean }) {
-  if (treino) return <img className={s.imagemPerfil} src={perfilDoTreino(noticia.veredito)} alt="" draggable={false} />;
+/**
+ * Imagem do card (FR-4): a da notícia; senão, a ilustração "recorte chapado" dela; senão, a do tema.
+ * Treino (AC-15.7): o desenho do próprio perfil, maior; sem ele, a do tema.
+ */
+function ImagemCard({ noticia, treino }: { noticia: Noticia; treino?: PassoTreino }) {
+  if (treino?.ilustracao) return <img className={s.imagemPerfil} src={ilustracaoDoPerfil(treino.ilustracao)} alt="" draggable={false} />;
   if (noticia.imagem) return <img src={src(noticia.imagem)} alt="" draggable={false} />;
   return <IlustracaoTema tema={noticia.tema} imagem={ilustracaoDaNoticia(noticia.id)} />;
 }
@@ -289,7 +292,7 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
           </>
         ) : (
           <>
-            <ImagemCard noticia={noticia} treino={!!treino} />
+            <ImagemCard noticia={noticia} treino={treino} />
             <h2>{noticia.titulo}</h2>
             <p>{noticia.descricao}</p>
             {!treino && <p className={s.dicaCard}><Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />{DICA_SAIBA_MAIS[modo]}</p>}

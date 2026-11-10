@@ -16,18 +16,19 @@ test('AC-15.1: com o tutorial desligado (padrão), Enter vai direto ao primeiro 
   await abrir(page, null);
   await page.keyboard.press('Enter');
   await expect(page.getByRole('timer', { name: 'Tempo restante' })).toBeVisible();
-  await expect(page.getByText(/^Treino \d de 4$/)).toHaveCount(0);
+  await expect(page.getByText(/^Treino \d de \d$/)).toHaveCount(0);
 });
 
-test('AC-15.2 a AC-15.5: com o tutorial ligado, 4 treinos com feedback didático e Enter pula para a partida', async ({ page }) => {
+test('AC-15.2 a AC-15.5: com o tutorial ligado, os treinos do arquivo (2 na v11.0.0) com feedback didático e Enter pula para a partida', async ({ page }) => {
   test.setTimeout(30_000);
   await abrir(page, 'ligado');
   await expect(page.getByText(/Tutorial: ligado$/)).toBeVisible();
   await page.keyboard.press('Enter');
 
-  // Treino 1: Morango Influencer (mentira), sem barra de tempo e sem placar.
-  await expect(page.getByText('Treino 1 de 4')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Morango Influencer' })).toBeVisible();
+  // Treino 1: Abacaxi Perfeito (mentira, v11.0.0), com o desenho do perfil, sem barra de tempo e sem placar.
+  await expect(page.getByText('Treino 1 de 2')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Abacaxi Perfeito, 19' })).toBeVisible();
+  await expect(page.locator('article img')).toHaveAttribute('src', /perfil-falso-abacaxi/);
   await expect(page.getByRole('timer')).toHaveCount(0);
   await expect(page.getByText(/^Pontos:/)).toHaveCount(0);
   await page.keyboard.press('ArrowLeft');
@@ -35,8 +36,9 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, 4 treinos com feedback didático
   await expect(page.getByText('Você foi para a esquerda com o corpo: escolheu Mentira.')).toBeVisible();
 
   // Treino 2 aparece sozinho depois do feedback (3 s + saída).
-  await expect(page.getByText('Treino 2 de 4')).toBeVisible({ timeout: 6000 });
-  await page.keyboard.press('ArrowLeft'); // Professora Abelha é verdade: errar ensina o gesto certo
+  await expect(page.getByText('Treino 2 de 2')).toBeVisible({ timeout: 6000 });
+  await expect(page.locator('article img')).toHaveAttribute('src', /perfil-verdadeiro-caju/);
+  await page.keyboard.press('ArrowLeft'); // Seu Caju é verdade: errar ensina o gesto certo
   await expect(page.getByText('Quase!')).toBeVisible();
   await expect(page.getByText('Era Verdade: corpo para a direita.')).toBeVisible();
 
@@ -44,13 +46,13 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, 4 treinos com feedback didático
   await page.keyboard.press('Enter');
   await expect(page.getByRole('timer', { name: 'Tempo restante' })).toHaveText(/^1[45] s$/);
   await expect(page.getByText('Pontos: 0')).toBeVisible();
-  await expect(page.getByText(/^Treino \d de 4$/)).toHaveCount(0);
+  await expect(page.getByText(/^Treino \d de \d$/)).toHaveCount(0);
 });
 
 test('AC-15.5: Esc no treino volta à espera', async ({ page }) => {
   await abrir(page, 'ligado');
   await page.keyboard.press('Enter');
-  await expect(page.getByText('Treino 1 de 4')).toBeVisible();
+  await expect(page.getByText('Treino 1 de 2')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Iniciar', exact: true })).toBeVisible();
 });

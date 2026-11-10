@@ -160,8 +160,9 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     case 'tutorial':
     case 'tutorialFeedback': {
       // Treino (FR-16): mesmas telas do card e do feedback, sem tempo nem placar; depois da escolha, o card sai.
-      const noticia = perfilComoNoticia(PERFIS_TUTORIAL[estado.passo]!);
-      const treino = { passo: estado.passo, total: PERFIS_TUTORIAL.length };
+      const perfil = PERFIS_TUTORIAL[estado.passo]!;
+      const noticia = perfilComoNoticia(perfil);
+      const treino = { passo: estado.passo, total: PERFIS_TUTORIAL.length, ilustracao: perfil.ilustracao };
       const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > TEMPOS.feedbackMs;
       tela = estado.tela === 'tutorialFeedback' && !saindo ? (
         <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.config.modo} treino={treino} />

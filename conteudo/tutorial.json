@@ -1,7 +1,29 @@
 {
   "status": "rascunho",
-  "origem": "Rascunho do agente de notícias (docs/noticias/tutorial/perfis-tutorial.md, 2026-11-10), aguardando revisão do responsável. Não são notícias: não entram no banco nem na pontuação (FR-16).",
+  "origem": "v11.0.0: os 2 perfis da prévia visual v11 (docs/visual/previa-v11.html, seção 5), Abacaxi Perfeito e Seu Caju, com os desenhos de docs/visual/estilo-imagens/, aplicados por ordem do responsável; textos a revisar. Os 4 perfis do rascunho do agente de notícias (2026-11-10) ficam em perfisReserva, fora do treino, aguardando revisão. Não são notícias: não entram no banco nem na pontuação (FR-16).",
   "perfis": [
+    {
+      "id": "treino-abacaxi",
+      "nome": "Abacaxi Perfeito, 19",
+      "frase": "CEO de mim mesmo. Milionário. Médico, astronauta e campeão mundial. Sem tempo para perguntas.",
+      "veredito": "falsa",
+      "explicacao": "Mentira! Filtro em tudo: óculos de estrela, coroa, orelhas de gatinho e brilho por toda parte. E a bio não tem nada que dê para conferir. Promessa demais e nenhum detalhe verificável são sinais de perfil falso.",
+      "tecnica": "imagem",
+      "tema": "curiosidades",
+      "ilustracao": "perfil-falso-abacaxi"
+    },
+    {
+      "id": "treino-caju",
+      "nome": "Seu Caju, 52",
+      "frase": "Feirante no Mercado São Sebastião, Fortaleza. Banca 14, desde 1998. Pode passar lá.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdade! Foto simples, no lugar onde ele trabalha, sem filtro, e detalhes que dá para conferir: o mercado, o número da banca e desde quando. Nada de promessa: só quem ele é.",
+      "tecnica": "fonte",
+      "tema": "curiosidades",
+      "ilustracao": "perfil-verdadeiro-caju"
+    }
+  ],
+  "perfisReserva": [
     {
       "id": "treino-1",
       "nome": "Morango Influencer",
