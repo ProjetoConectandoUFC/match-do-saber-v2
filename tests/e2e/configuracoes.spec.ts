@@ -80,6 +80,9 @@ test('AC-9.1/AC-9.18 (v9.0.0): ☰ no canto superior direito; Configurações ab
   expect(b.x + b.width).toBeGreaterThan(vp.width - 48);
   expect(b.y).toBeLessThan(48);
   const iniciar = page.getByRole('button', { name: 'Iniciar', exact: true });
+  // A Poppins (local) pode terminar de carregar depois da primeira pintura e mudar a largura do botão
+  // (visto: 170,7 → 179,8 px); mede só com as fontes prontas, para comparar o lugar e não a fonte.
+  await page.evaluate(() => document.fonts.ready);
   const antes = (await iniciar.boundingBox())!;
 
   await botao.click();
