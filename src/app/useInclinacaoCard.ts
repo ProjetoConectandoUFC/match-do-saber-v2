@@ -19,8 +19,9 @@ function aplicar(el: HTMLElement | null, d: Deslocamento) {
   if (el.style.getPropertyValue('rotate') !== rotate) el.style.setProperty('rotate', rotate);
 }
 
-function reduzirMovimento(): boolean {
-  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** Consulta criada uma vez; `matches` acompanha a preferência do sistema ao vivo. */
+function consultarMovimentoReduzido(): { matches: boolean } {
+  return typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 }
 
 /**
@@ -50,6 +51,7 @@ export function useInclinacaoCard({ inclinacaoRef, estado, pausado, cardRef, car
   useEffect(() => {
     let raf = 0;
     let anterior = performance.now();
+    const movimentoReduzido = consultarMovimentoReduzido();
     const quadro = (agora: number) => {
       const dtMs = dtDoQuadro(agora, anterior);
       anterior = agora;
@@ -57,7 +59,7 @@ export function useInclinacaoCard({ inclinacaoRef, estado, pausado, cardRef, car
         situacao: situacaoRef.current,
         inclinacao: inclinacaoRef.current ?? 0,
         dtMs,
-        reduzirMovimento: reduzirMovimento(),
+        reduzirMovimento: movimentoReduzido.matches,
       });
       aplicar(alvo(), ultimo.current);
       raf = requestAnimationFrame(quadro);
