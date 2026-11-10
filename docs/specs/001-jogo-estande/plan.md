@@ -5425,6 +5425,20 @@ Spec: AC-2.4, AC-2.9, AC-2.10, AC-9.9, AC-9.14, AC-9.20, AC-9.22, AC-12.7, FR-2,
 - 40.4 `gestos.ts`: Corpo só pelo tronco (sai o braço); Mão por swipe contínuo (mão ativa = punho acima do cotovelo, limite = `arrasteMinL`, a calibrar); a inclinação fica 0 enquanto a escolha está travada. Dicas e textos do tutorial.
 - 40.5 Verificação no hardware: ver o que testar no relatório da rodada.
 
+## Phase 41 (added v11.0.0): Prévia v11 aplicada (tela final, filtros, interface de app de namoro, som de fim)
+
+Spec: AC-2.10b, AC-2.11, AC-2.12, AC-4.1 a AC-4.3, AC-4.9, AC-5.1, AC-5.8 a AC-5.10, AC-7.2, AC-7.3, AC-7.11, AC-11.6, AC-13.2, AC-13.6, AC-13.8, AC-13.9, AC-15.7; FR-4, FR-5, FR-6, FR-11, FR-13, FR-15. Aplicado por ordem do responsável; detalhes a confirmar. TDD. Sem mexer em `gestos.ts`, `partida.ts`, `useJogo.ts` nem na geometria de `inclinacaoCard.ts`.
+
+- 41.1 `src/core/faixas.ts` (novo, puro): `faixaDeAcertos(pontos, total)` → 1..4, igual às faixas de `mensagemResumo`, e o título de cada faixa.
+- 41.2 Banco: `titulo_curto` e `fonte_nome` no fim de `COLUNAS_BANCO`; `titulo_curto` até 34 caracteres; `Noticia.tituloCurto?`, `fonteNome?`, `fontesExtras?`. `src/core/fontesRodada.ts` (novo, puro): título curto, nome do veículo pelo domínio, linhas do resumo, ids ↔ fragmento do QR, endereço da página e itens da página das fontes. `conteudo/noticias.csv` só ganha as duas colunas vazias; editor com os dois campos.
+- 41.3 QR: `qrcode-generator` 1.4.4 (fixado), matriz gerada em `src/app/QrCode.tsx` e desenhada em SVG; página `fontes.html` + `src/fontes/main.ts` (entrada nova do Vite), com a mesma CSP; PWA sem `navigateFallback` para ela.
+- 41.4 `src/core/filtrosFoto.ts` (novo, puro): partes de cada filtro (rosto, chapéu, capa, lápis) e o `transform` SVG de cada uma a partir das âncoras; `src/app/filtros/*.svg` (cópias de `docs/visual/filtros/` com as partes marcadas por comentários, sem mudar o desenho); `FiltroFoto` e o selo da faixa no polaroid.
+- 41.5 Sons: `fim1`..`fim4` em `sonsDaTransicao` (entrada no resumo vinda do feedback) e as notas em `audio.ts`.
+- 41.6 Card: pilha, botões redondos com `--acende` escrita por `useInclinacaoCard` (mesma fração dos rótulos), carimbo como visual final do rótulo, aceso por inteiro na saída; ilustrações "recorte chapado" por id de notícia e perfis do treino por veredito.
+- 41.7 Feedback: ícones (acerto, erro, ampulheta) com as formas do design system e "Deu match!"/"Não deu match"; "Acertou!", "Errou" e "Tempo esgotado" continuam como texto próprio.
+- 41.8 Resumo: opção B (polaroid 384, placar, mensagem, cartão do QR e lista em duas colunas), 1366×768 e 1920×1080; E2E de layout, da página das fontes e capturas reais em `docs/visual/capturas/v11-aplicado/`.
+- 41.9 Verificação no hardware (pendente): ler o QR a 50–80 cm da TV com dois celulares; conferir os filtros com fotos reais (de frente, de lado, de boné); conferir a vinheta no som do estande.
+
 ## Quickstart Validation
 
 ```bash
@@ -5513,3 +5527,5 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 10.3.0 | 29, 20, 38 | Parcialmente invalidadas: braço para o lado (Corpo), mão levantada e duas mãos para o lado (Mão) saem; o card passa a mimetizar o controle (Fase 40) |
 | 10.3.0 | 40 | Adicionada: card como no Reigns, um controle por modo e diagnóstico liga/desliga |
 | 10.2.0 | 39 | Adicionada: âncoras do rosto, privacidade da foto, tutorial, E2E do relógio em série e modelo de dados |
+| 11.0.0 | 39.7 | Concluída pela Fase 41 (filtros desenhados com as âncoras) |
+| 11.0.0 | 41 | Adicionada: prévia v11 aplicada (tela final com lista e QR, filtros por faixa, pilha, botões redondos, carimbo, "Deu match!", som de fim de partida, recorte chapado) |
