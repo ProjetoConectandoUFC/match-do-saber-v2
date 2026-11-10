@@ -20,7 +20,7 @@ npm run build          # checagem de tipos (tsc) + build de produção em dist/
 npm run e2e            # notícias de teste + build + testes E2E (Playwright) no navegador
 ```
 
-Um teste só: `npx vitest run src/core/partida.test.ts` ou `npx vitest run -t "trecho do nome"`. Um E2E só (depois de `npm run fixture` e `npm run build`): `npx playwright test tests/e2e/partida.spec.ts`.
+Um teste só: `npx vitest run src/core/partida.test.ts` ou `npx vitest run -t "trecho do nome"`. Um E2E só (depois de `npm run fixture` e `npm run build`): `npx playwright test tests/e2e/partida.spec.ts`. O `relogio-real.spec.ts` mede tempo real com a detecção rodando e por isso roda sozinho, depois dos outros (projeto `em-serie`); para rodar só ele: `npx playwright test --project=em-serie --no-deps`.
 
 ### App de desktop (Windows)
 
@@ -50,7 +50,7 @@ Para voltar ao banco padrão, apague `public/content/` (o `npm run dev`/`build` 
 | `src/core/` | Lógica pura, sem React e testável sem câmera: reducer da partida (`partida.ts`), gestos (`gestos.ts`, `modos.ts`), card que acompanha o corpo (`inclinacaoCard.ts`), CSV e validação do banco (`csv.ts`, `banco.ts`), sorteio, sons, diagnóstico |
 | `src/app/` | Interface em React: `useJogo.ts` (laço de quadros com a detecção de pose, teclado), `App.tsx`, telas (`Telas.tsx`), menu ☰, painel Notícias, Configurações, diagnóstico; tokens visuais em `tema.css` |
 | `electron/` | App de desktop: `main.cjs` (servidor HTTP local + janela + permissão da câmera) e `banco-local.cjs` (banco em `Documentos/Match do Saber/` com backups) |
-| `conteudo/` | Banco padrão de notícias (`noticias.csv`), embutido no build |
+| `conteudo/` | Banco padrão de notícias (`noticias.csv`) e perfis do tutorial (`tutorial.json`, rascunho; v10.2.0), embutidos no build |
 | `scripts/` | `preparar-assets.ts` (WASM, modelo e ícones), `fixture.ts` (notícias de teste); `sync/` está desativado (Planilha Google, até a v8) |
 | `tests/e2e/`, `tests/desktop/` | Testes Playwright no navegador e no app Electron |
 | `docs/specs/` | Especificação (`spec.md`, com ACs e FRs citados no código e nos testes), plano e modelo de dados |
@@ -87,6 +87,8 @@ O público inclui menores de idade, então:
 
 - A imagem da câmera **nunca é gravada nem enviada**: a detecção de pose (MediaPipe) roda no próprio notebook e só usa os pontos do corpo de cada quadro.
 - A única exceção é a foto polaroid do resumo (pode ser desligada em Configurações): fica só na memória e é apagada quando o resumo fecha. Nunca vai para disco, rede ou o registro de diagnóstico.
+- Junto com a foto ficam, também só na memória, os pontos do rosto onde um filtro seria posicionado (v10.2.0); são apagados com ela.
+- A página só se conecta à própria origem (`connect-src 'self'` em `index.html`), o que bloqueia as métricas de uso que a biblioteca MediaPipe tentaria enviar ao Google.
 - O jogo não guarda dados de jogadores, não usa cookies nem rastreadores. No notebook ficam só as configurações do estande e o banco de notícias com seus backups.
 - O registro do modo de diagnóstico tem só medidas numéricas e só existe se o operador clicar em "Baixar registro".
 
