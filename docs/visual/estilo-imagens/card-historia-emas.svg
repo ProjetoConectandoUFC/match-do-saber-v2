@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 552 260" width="552" height="260">
+  <title>Card · História: "Exército da Austrália declarou guerra contra emas e perdeu"</title>
+  <desc>Estilo "recorte chapado": fundo na cor do tema (laranja, história), um anel do design system (anel-a, 20% branco) cortado na borda, personagem de formas simples com contorno noite, sombra chapada e marcadores do design system. Conteúdo importante na faixa central (y 52 a 208), que é o recorte de 552x156 do card.</desc>
+  <defs>
+    <path id="ce-e4" d="M17 1L21.3 12.7L33 17L21.3 21.3L17 33L12.7 21.3L1 17L12.7 12.7L17 1"/>
+    <path id="ce-e5" d="M16.2 1L19.8 12.1L31.4 12.1L22 18.9L25.6 29.9L16.2 23.1L6.8 29.9L10.4 18.9L1 12.1L12.6 12.1L16.2 1"/>
+  </defs>
+  <rect width="552" height="260" fill="#d86f33"/>
+  <svg x="-8" y="-10" width="120" height="270" viewBox="0 0 165 370" preserveAspectRatio="none">
+    <path transform="translate(173.7 0) scale(-1 1)" d="M173.7 365.5C91.9 334.7 49.6 294.8 31.9 256.4C5.9 199.7 24.4 138.7 68.4 88.3C96.6 55.9 135.2 28.1 173.7 10L173.7 108.2C158.5 118.7 144.4 131 132.7 144.4C112.4 167.8 97.5 194.4 109.6 220.7C116.8 236.5 132.4 250.7 156.5 264.5C161.8 267.5 167.6 270.5 173.7 273.4L173.7 365.5" fill="#ffffff" fill-rule="evenodd" fill-opacity="0.2"/>
+  </svg>
+  <line x1="0" y1="214" x2="552" y2="214" stroke="#002036" stroke-width="3" stroke-dasharray="10 8"/>
+  <g fill="#032942">
+    <ellipse cx="128" cy="176" rx="34" ry="22"/>
+    <path d="M150 168 C160 150 162 130 166 118" fill="none" stroke="#032942" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="168" cy="114" r="9"/>
+    <path d="M118 196 L114 214 M136 196 L140 214" stroke="#032942" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="200" cy="186" rx="26" ry="17"/>
+    <path d="M216 180 C224 166 226 150 229 142" fill="none" stroke="#032942" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="230" cy="139" r="7"/>
+  </g>
+  <ellipse cx="314" cy="166" rx="86" ry="44" fill="#002036" transform="translate(10 8)"/>
+  <path d="M290 200 L280 238 M330 200 L342 238" stroke="#19262e" stroke-width="10" stroke-linecap="round"/>
+  <path d="M270 238 H290 M332 238 H354" stroke="#19262e" stroke-width="8" stroke-linecap="round"/>
+  <ellipse cx="314" cy="166" rx="86" ry="44" fill="#19262e"/>
+  <path d="M252 160 Q290 150 330 168 M262 180 Q300 172 340 186" fill="none" stroke="#3a4a54" stroke-width="5" stroke-linecap="round"/>
+  <path d="M376 150 C392 128 396 100 398 84" fill="none" stroke="#19262e" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="402" cy="76" r="22" fill="#19262e"/>
+  <path d="M420 70 L450 78 L420 86 Z" fill="#fde31f" stroke="#002036" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="408" cy="70" r="6" fill="#ffffff"/>
+  <circle cx="410" cy="70" r="3" fill="#002036"/>
+  <path d="M376 62 Q400 30 428 60 Z" fill="#309f9f" stroke="#002036" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M370 62 H434" stroke="#002036" stroke-width="5" stroke-linecap="round"/>
+  <use href="#ce-e5" fill="#fde31f" stroke="#002036" stroke-width="1.6" transform="translate(338 130) scale(1.4)"/>
+  <use href="#ce-e4" fill="#fcfaf1" transform="translate(470 70) scale(1.6)"/>
+  <use href="#ce-e4" fill="#fcfaf1" transform="translate(498 140) scale(0.8)"/>
+  <use href="#ce-e4" fill="#002036" transform="translate(250 84) scale(0.8)"/>
+</svg>

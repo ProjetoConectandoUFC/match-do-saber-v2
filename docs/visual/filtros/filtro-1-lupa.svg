@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-300 -260 600 600" width="600" height="600">
+  <title>Filtro da faixa 1 (menos de 50%): Lupa de aprendiz</title>
+  <desc>Quadro do rosto: olhos em (-50,0) e (50,0); 100 unidades = distância entre os olhos (pontos 2 e 5 do MediaPipe Pose). Âncora: olho direito da pessoa (ponto 5), que aparece à direita na foto espelhada. Estrelas: marca-estrela-4 do Conectando Design System.</desc>
+  <defs>
+    <path id="f1-e4" d="M17 1L21.3 12.7L33 17L21.3 21.3L17 33L12.7 21.3L1 17L12.7 12.7L17 1"/>
+  </defs>
+  <g transform="translate(10 10)">
+    <line x1="105" y1="55" x2="205" y2="155" stroke="#309f9f" stroke-width="36" stroke-linecap="round"/>
+    <circle cx="50" cy="0" r="72" fill="none" stroke="#309f9f" stroke-width="20"/>
+  </g>
+  <line x1="105" y1="55" x2="205" y2="155" stroke="#d86f33" stroke-width="36" stroke-linecap="round"/>
+  <line x1="98" y1="48" x2="124" y2="74" stroke="#002036" stroke-width="44"/>
+  <circle cx="50" cy="0" r="72" fill="#ffffff" fill-opacity="0.3"/>
+  <circle cx="50" cy="4" r="26" fill="#19262e"/>
+  <circle cx="60" cy="-6" r="9" fill="#ffffff"/>
+  <circle cx="50" cy="0" r="72" fill="none" stroke="#002036" stroke-width="20"/>
+  <path d="M8 -38 A56 56 0 0 1 40 -56" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round"/>
+  <use href="#f1-e4" fill="#fde31f" transform="translate(-230 -215) scale(2.4)"/>
+  <use href="#f1-e4" fill="#fde31f" transform="translate(150 -170) scale(1.4)"/>
+  <use href="#f1-e4" fill="#fcfaf1" transform="translate(-165 -120) scale(1)"/>
+</svg>

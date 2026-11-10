@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-300 -260 600 600" width="600" height="600">
+  <title>Filtro da faixa 2 (de 50% a menos de 80%): Detetive em treino</title>
+  <desc>Quadro do rosto: olhos em (-50,0) e (50,0); 100 unidades = distância entre os olhos (pontos 2 e 5). Chapéu de detetive apoiado acima das orelhas (pontos 7 e 8) e óculos redondos nos olhos. Estrela: marca-estrela-5 do Conectando Design System.</desc>
+  <defs>
+    <path id="f2-e5" d="M16.2 1L19.8 12.1L31.4 12.1L22 18.9L25.6 29.9L16.2 23.1L6.8 29.9L10.4 18.9L1 12.1L12.6 12.1L16.2 1"/>
+    <clipPath id="f2-copa"><path d="M-130 -58 C-136 -218 136 -218 130 -58 Z"/></clipPath>
+  </defs>
+  <path d="M-130 -58 C-136 -218 136 -218 130 -58 Z" fill="#309f9f" transform="translate(12 10)"/>
+  <path d="M-130 -58 C-136 -218 136 -218 130 -58 Z" fill="#d86f33"/>
+  <g clip-path="url(#f2-copa)" stroke="#002036" stroke-opacity="0.3" stroke-width="10">
+    <path d="M-100 -230 V-40 M-60 -230 V-40 M-20 -230 V-40 M20 -230 V-40 M60 -230 V-40 M100 -230 V-40"/>
+    <path d="M-140 -175 H140 M-140 -140 H140 M-140 -105 H140 M-140 -75 H140"/>
+  </g>
+  <path d="M0 -176 V-60" stroke="#002036" stroke-width="5"/>
+  <path d="M-96 -62 Q0 -28 96 -62 L106 -44 Q0 0 -106 -44 Z" fill="#d86f33" stroke="#002036" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="0" cy="-178" r="11" fill="#fde31f" stroke="#002036" stroke-width="4"/>
+  <g fill="#ffffff" fill-opacity="0.15" stroke="#002036" stroke-width="9">
+    <circle cx="-50" cy="0" r="34"/>
+    <circle cx="50" cy="0" r="34"/>
+  </g>
+  <path d="M-16 -4 Q0 -14 16 -4 M-84 -4 L-104 -2 M84 -4 L104 -2" fill="none" stroke="#002036" stroke-width="9" stroke-linecap="round"/>
+  <use href="#f2-e5" fill="#fde31f" transform="translate(150 -200) scale(2)"/>
+</svg>
