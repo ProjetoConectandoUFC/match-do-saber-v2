@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Match do Saber · propostas visuais v11</title>
+<meta name="color-scheme" content="light">
+<!-- Gerado por docs/visual/montar-previa-v11.mjs a partir de previa-v11.fonte.html. Edite a fonte e rode o script. -->
+<style>
+{{fontes}}
+:root{
+  --azul:#0075c5;--azul-escuro:#035386;--amarelo:#fde31f;--coral:#e34a39;--creme:#fcfaf1;--branco:#fff;--tinta:#0c0b0a;
+  --titulo:#001320;--grafite:#3a3a3a;--grafite-azul:#19262e;--marinho:#032942;--noite:#002036;--teal:#309f9f;--menta:#a5dede;
+  --gelo:#c8dfe8;--celeste:#62bfff;--rosa:#ff6776;--turquesa:#24c0c0;--laranja:#d86f33;--roxo:#a740b2;--azul-medio:#4074b2;--ceu:#3bb8ff;
+  --tracejado:rgba(56,46,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--creme);color:var(--tinta);font-family:"Poppins",system-ui,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+svg.u{display:inline-block;flex:none;overflow:visible;vertical-align:middle}
+.container{max-width:1320px;margin:0 auto;padding:0 24px}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em}
+em.d{font-style:normal;background:var(--amarelo);padding:0 .2em;border-radius:4px}
+
+/* ===== página ===== */
+.topo{background:var(--azul);color:var(--creme);padding:36px 0 32px}
+.topo .kicker{margin:0 0 6px;font-weight:500;font-size:15px;text-transform:uppercase;letter-spacing:.04em}
+.topo h1{margin:0;font-size:clamp(30px,4vw,50px);line-height:1.12;font-weight:800}
+.topo h1 em{font-style:normal;color:var(--amarelo)}
+.topo .lead{font-size:clamp(16px,1.4vw,19px);font-weight:500;max-width:880px;margin:12px 0 0}
+.indice{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0;padding:0;list-style:none}
+.indice a{display:inline-flex;align-items:center;gap:8px;color:var(--noite);background:var(--creme);text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:5px 16px}
+.indice a:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
+section{padding:40px 0 12px;border-bottom:2px dashed var(--tracejado)}
+section:last-of-type{border-bottom:0}
+.sec{display:flex;align-items:center;gap:14px;font-size:clamp(26px,2.8vw,36px);line-height:1.15;font-weight:800;color:var(--titulo);margin:0 0 6px}
+.sec .n{display:grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--noite);color:var(--amarelo);font-size:.8em;flex:none}
+.sec em{font-style:normal;color:var(--azul)}
+.intro{max-width:980px;margin:0 0 18px;color:var(--grafite)}
+.sub{font-size:21px;font-weight:800;color:var(--titulo);margin:28px 0 12px}
+.nota{font-size:15px;color:var(--grafite);margin:6px 0 0}
+
+.refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin:0 0 8px}
+.ref{background:var(--branco);border:2px solid var(--azul);border-radius:16px;padding:12px 16px;box-shadow:6px 6px 0 var(--teal)}
+.ref h4{margin:0 0 2px;font-size:17px;font-weight:800;color:var(--titulo)}
+.ref p{margin:0;font-size:15px;line-height:1.45}
+.ref .leva{display:block;margin-top:6px;font-weight:700;color:var(--azul-escuro)}
+
+.opcoes{display:grid;grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:22px;align-items:start}
+@media (max-width:1100px){.opcoes{grid-template-columns:1fr}}
+.opcao{min-width:0}
+.opcao h3{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:19px;font-weight:800;color:var(--titulo)}
+.opcao h3 .letra{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--azul);color:var(--creme);font-size:17px;flex:none}
+.opcao.rec h3 .letra{background:var(--amarelo);color:var(--noite);box-shadow:0 0 0 3px var(--noite)}
+.tag-rec{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--noite);color:var(--amarelo);border-radius:999px;padding:2px 10px}
+.opcao ul{margin:10px 0 0;padding:0 0 0 18px;font-size:15px;line-height:1.45}
+.opcao li{margin:2px 0}
+.opcao li.contra{color:#8b2a1f}
+.opcao li.contra::marker{content:"– "}
+.opcao li.pro::marker{content:"+ "}
+
+.recomendo{margin:26px 0 8px;background:var(--noite);color:var(--creme);border-radius:24px;padding:22px 26px;box-shadow:12px 12px 0 var(--teal);display:flex;gap:22px;align-items:flex-start}
+.recomendo .k{margin:0 0 4px;color:var(--amarelo);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.05em}
+.recomendo p{margin:0 0 8px}
+.recomendo b{color:var(--amarelo)}
+.recomendo .txt{flex:1;min-width:0}
+
+table{width:100%;border-collapse:collapse;font-size:15px;background:var(--branco);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1.5px dashed var(--tracejado);vertical-align:top}
+th{font-weight:800;color:var(--titulo);background:var(--gelo)}
+.rolagem{overflow-x:auto;border:2px solid var(--azul);border-radius:14px}
+
+/* tela em miniatura: escala ajustada ao espaço; clique abre no tamanho da tela */
+.mock{position:relative;width:100%;aspect-ratio:1366/768;overflow:hidden;border-radius:10px;box-shadow:6px 6px 0 var(--teal);cursor:zoom-in;background:var(--noite)}
+.mock>.tv{position:absolute;left:0;top:0;transform:scale(var(--s,.3));transform-origin:0 0}
+.mock:focus-visible{outline:4px solid var(--coral);outline-offset:3px}
+.mock-leg{font-size:14px;color:var(--grafite);margin:6px 0 0}
+dialog.zoom{border:0;padding:0;margin:0;max-width:none;max-height:none;width:100vw;height:100vh;background:var(--noite)}
+dialog.zoom::backdrop{background:var(--noite)}
+dialog.zoom .palco-z{position:absolute;left:50%;top:50%;width:1366px;height:768px;transform:translate(-50%,-50%) scale(var(--z,1))}
+dialog.zoom .fechar{position:fixed;top:12px;right:12px;z-index:30;font:700 16px/1 "Poppins",sans-serif;background:var(--creme);color:var(--noite);border:2px solid var(--noite);border-radius:999px;padding:8px 16px;cursor:pointer}
+
+/* ===== TV 1366×768 ===== */
+.tv{position:relative;width:1366px;height:768px;overflow:hidden;font-family:"Poppins",system-ui,sans-serif;line-height:1.3}
+.tv h1,.tv h2,.tv p,.tv figure,.tv ul,.tv ol{margin:0}
+.tv ol{list-style:none;padding:0}
+.sobrio{background:var(--noite);color:var(--creme)}
+.claro{background:var(--azul);color:var(--creme)}
+.sair{position:absolute;top:16px;left:16px;z-index:4;display:flex;align-items:center;gap:10px;border:2px solid currentColor;border-radius:999px;padding:5px 18px 5px 14px;font-size:18px;font-weight:600}
+.xis{position:relative;width:14px;height:14px;display:inline-block;flex:none}
+.xis::before,.xis::after{content:"";position:absolute;left:-1px;top:5.5px;width:16px;height:3px;border-radius:2px;background:currentColor;transform:rotate(45deg)}
+.xis::after{transform:rotate(-45deg)}
+.pontos{position:absolute;left:24px;bottom:84px;font-size:28px;font-weight:800}
+.cam{position:absolute;right:16px;bottom:80px;width:320px;height:180px;border-radius:14px;overflow:hidden;border:2px solid var(--creme);z-index:10;background:#26343d}
+.barra-base{position:absolute;left:0;right:0;bottom:0;height:64px;background:var(--marinho)}
+.barra-base .enche{position:absolute;left:0;top:0;bottom:0;background:var(--amarelo)}
+.barra-base .seg{position:absolute;left:50%;top:11px;transform:translateX(-50%);height:42px;line-height:42px;padding:0 20px;border-radius:999px;background:var(--creme);color:var(--noite);font-size:26px;font-weight:800}
+.dica-config{position:absolute;left:40px;bottom:20px;font-size:18px;font-weight:500;color:var(--creme);z-index:2}
+.pilula{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:6px 26px;font-size:32px;font-weight:800;line-height:1.2;border:3px solid var(--creme)}
+.p-verdade{background:var(--menta);color:var(--noite)}
+.p-mentira{background:var(--coral);color:var(--tinta)}
+
+/* card (igual à v10) */
+.mesa-linha{position:absolute;left:0;right:0;top:0;height:704px;display:flex;align-items:center;justify-content:center}
+.aba{width:383px;display:flex;flex-direction:column;align-items:center;gap:16px;flex:none}
+.card{position:relative;width:600px;max-height:642px;background:var(--creme);color:var(--tinta);border-radius:24px;padding:22px 24px 24px;display:flex;flex-direction:column;gap:12px;box-shadow:14px 14px 0 var(--teal);overflow:hidden;flex:none}
+.card h2{font-size:32px;line-height:1.15;font-weight:700;color:var(--titulo)}
+.card .desc{font-size:28px;line-height:1.32;font-weight:400}
+.dica-card{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:500;color:var(--grafite)}
+.img-card{position:relative;flex:none;width:552px;height:156px;border-radius:16px;overflow:hidden}
+.img-card>svg{position:absolute;left:0;top:-52px;width:552px;height:260px}
+.chip-tema{position:absolute;left:14px;top:14px;background:var(--creme);color:var(--noite);font-size:20px;font-weight:700;padding:3px 16px;border-radius:999px;line-height:1.4;z-index:1}
+
+/* feedback (igual à v10) */
+.fb-verdade{background:var(--menta);color:var(--noite)}
+.fb-mentira{background:var(--coral);color:var(--tinta)}
+.fb{position:absolute;inset:0 0 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center}
+.veredito{display:inline-flex;align-items:center;gap:12px;font-size:30px;font-weight:800;line-height:1.2}
+.selo{font-size:48px;font-weight:900;line-height:1;padding:12px 40px;border-radius:999px}
+.s-acerto{background:var(--noite);color:var(--amarelo)}
+.s-erro{background:var(--creme);color:var(--tinta);border:3px solid var(--tinta)}
+.explicacao{font-size:30px;line-height:1.4;font-weight:500;max-width:860px}
+.tecnica{border:3px solid currentColor;border-radius:999px;padding:4px 24px;font-size:26px;font-weight:600}
+
+/* polaroid (resumo) */
+.pol{position:relative;margin:0;width:var(--w);flex:none}
+.pol .folha{position:absolute;inset:0;background:var(--amarelo);border-radius:4px;transform:translate(calc(var(--w)*.042),calc(var(--w)*.031)) rotate(2.5deg)}
+.pol .papel{position:relative;background:var(--branco);padding:calc(var(--w)*.042) calc(var(--w)*.042) 0;border-radius:4px;transform:rotate(-1.4deg)}
+.pol .foto{position:relative;aspect-ratio:1/1;overflow:hidden}
+.pol .foto>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pol figcaption{padding:calc(var(--w)*.031) 0 calc(var(--w)*.042);font-size:calc(var(--w)*.057);font-weight:700;text-align:center;color:var(--tinta);line-height:1.2}
+.selo-f{position:absolute;right:calc(var(--w)*-.07);top:calc(var(--w)*-.08);width:calc(var(--w)*.4);aspect-ratio:1/1;border-radius:50%;background:var(--amarelo);color:var(--noite);border:3px solid var(--noite);box-shadow:5px 5px 0 var(--noite);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;font-weight:800;font-size:calc(var(--w)*.043);line-height:1.08;transform:rotate(8deg)}
+
+/* resumo: textos */
+.fim{font-size:48px;font-weight:900;line-height:1.1}
+.fim em{font-style:normal;color:var(--amarelo)}
+.placar{font-weight:900;line-height:1;color:var(--amarelo)}
+.msg{font-size:26px;font-weight:600;line-height:1.3}
+
+/* lista de notícias da rodada */
+.painel{background:var(--creme);color:var(--tinta);border-radius:24px;box-shadow:12px 12px 0 var(--teal)}
+.lista-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 0 8px;border-bottom:2px solid var(--azul)}
+.lista-topo h2{font-size:22px;font-weight:800;color:var(--titulo)}
+.legenda{display:flex;align-items:center;gap:14px;font-size:15px;font-weight:600;color:var(--grafite)}
+.legenda span{display:inline-flex;align-items:center;gap:6px}
+.res{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;flex:none}
+.res.ok{background:var(--amarelo);border:2px solid var(--noite)}
+.res.no{background:var(--creme);border:3px solid var(--noite);color:var(--noite)}
+.res.mini{width:24px;height:24px}
+.res.mini .xis{transform:scale(.75)}
+.veic{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:1px 10px;font-size:13px;font-weight:800;line-height:1.5;flex:none}
+.veic.v{background:var(--menta);color:var(--noite)}
+.veic.m{background:var(--coral);color:var(--tinta)}
+.linha-n{display:flex;align-items:center;gap:12px;border-bottom:1.5px dashed var(--tracejado)}
+.linha-n:last-child{border-bottom:0}
+.linha-n .t{min-width:0;flex:1}
+.linha-n .t b{display:block;font-size:19px;font-weight:700;color:var(--titulo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.linha-n .t small{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:var(--grafite);line-height:1.4;white-space:nowrap}
+.linha-n .t small strong{font-weight:700;color:var(--tinta)}
+.qr{display:block;flex:none;border-radius:4px}
+
+/* S1 A */
+.r-a{position:absolute;left:40px;right:40px;top:24px;bottom:56px;display:grid;grid-template-columns:360px 1fr;gap:44px;align-items:center}
+.r-a-esq{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.r-a .lista{padding:16px 22px 12px}
+.r-a .linha-n{height:58px}
+/* S1 B */
+.r-b{position:absolute;left:40px;right:40px;top:0;bottom:52px;display:flex;align-items:center;gap:40px}
+.r-b-dir{flex:1;min-width:0;display:flex;flex-direction:column;gap:22px}
+.r-b-topo{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.r-b-texto{display:flex;flex-direction:column;gap:6px}
+.qr-card{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--creme);color:var(--noite);border-radius:20px;padding:14px 16px 12px;box-shadow:10px 10px 0 var(--noite);width:216px;text-align:center;flex:none}
+.qr-card p{font-size:17px;font-weight:800;line-height:1.2}
+.r-b .lista{padding:14px 22px 10px}
+.grade2{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}
+.grade2 .linha-n .t small{font-size:14px;gap:6px}
+.grade2 .veic{font-size:12px;padding:1px 8px}
+.grade2 .linha-n{height:60px}
+.grade2 .linha-n:nth-child(5){border-bottom:0}
+/* S1 C */
+.r-c1{position:absolute;inset:0 0 52px;display:flex;align-items:center;justify-content:center;gap:80px}
+.r-c1-texto{display:flex;flex-direction:column;gap:10px;width:520px}
+.aviso-prox{display:inline-flex;align-items:center;gap:10px;align-self:flex-start;margin-top:14px;border:2px solid var(--creme);border-radius:999px;padding:6px 18px;font-size:20px;font-weight:600}
+.r-c2{position:absolute;left:40px;right:40px;top:26px;bottom:56px;display:flex;flex-direction:column;gap:18px}
+.r-c2 h1{font-size:40px;font-weight:900;line-height:1.1}
+.r-c2 h1 em{font-style:normal;color:var(--amarelo)}
+.grade5{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;flex:1}
+.mini-n{background:var(--creme);color:var(--tinta);border-radius:18px;padding:12px 12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;box-shadow:6px 6px 0 var(--teal)}
+.mini-n .topo-n{display:flex;align-items:center;gap:6px;align-self:stretch;justify-content:space-between}
+.mini-n b{font-size:17px;line-height:1.2;font-weight:700;color:var(--titulo);height:41px;overflow:hidden}
+.mini-n small{font-size:13px;font-weight:500;color:var(--grafite);line-height:1.3}
+
+/* celular (página do QR) */
+.cel{width:300px;flex:none;background:var(--noite);border-radius:36px;padding:12px;box-shadow:10px 10px 0 var(--teal)}
+.cel-tela{background:var(--creme);border-radius:26px;overflow:hidden;height:560px;color:var(--tinta)}
+.cel-topo{background:var(--azul);color:var(--creme);padding:18px 16px 14px}
+.cel-topo p{margin:0;font-size:12px;font-weight:600}
+.cel-topo h4{margin:2px 0 0;font-size:20px;line-height:1.15;font-weight:800}
+.cel-topo h4 em{font-style:normal;color:var(--amarelo)}
+.cel-lista{list-style:none;margin:0;padding:6px 14px}
+.cel-lista li{padding:8px 0;border-bottom:1.5px dashed var(--tracejado);font-size:13px;line-height:1.35}
+.cel-lista li b{display:block;font-size:14px;color:var(--titulo)}
+.cel-lista a{color:var(--azul-escuro);font-weight:700}
+
+/* S2 */
+.linha-pol{display:flex;align-items:flex-start;justify-content:center;gap:34px;padding:22px 10px 10px;background:var(--azul);border-radius:20px;box-shadow:8px 8px 0 var(--teal)}
+.faixas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+@media (max-width:1100px){.faixas{grid-template-columns:1fr 1fr}}
+.faixa{background:var(--azul);color:var(--creme);border-radius:20px;padding:26px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;box-shadow:8px 8px 0 var(--teal);text-align:center}
+.faixa .intervalo{font-size:14px;font-weight:700;background:var(--noite);color:var(--amarelo);border-radius:999px;padding:2px 12px}
+.faixa h4{margin:0;font-size:21px;font-weight:800;line-height:1.15}
+.faixa p{margin:0;font-size:15px;font-weight:600;line-height:1.35}
+.faixa .filtro-nome{font-size:13px;font-weight:500;opacity:.92}
+.ancora-caixa{display:grid;grid-template-columns:380px 1fr;gap:26px;align-items:start}
+@media (max-width:1000px){.ancora-caixa{grid-template-columns:1fr}}
+.ancora-caixa>svg{width:100%;height:auto;border-radius:16px;box-shadow:8px 8px 0 var(--teal);display:block}
+
+/* S3 */
+.botao-red{display:grid;place-items:center;width:140px;height:140px;border-radius:50%;border:4px solid var(--creme);box-shadow:8px 8px 0 rgba(0,0,0,.35)}
+.botao-red.m{background:var(--coral)}
+.botao-red.v{background:var(--menta)}
+.botao-red.ativo{transform:scale(1.1);box-shadow:0 0 0 8px var(--amarelo),8px 8px 0 rgba(0,0,0,.35)}
+.pilha{position:relative;flex:none}
+.pilha .atras{position:absolute;inset:0;border-radius:24px;background:var(--marinho);border:2px solid rgba(252,250,241,.25)}
+.carimbo{position:absolute;top:34px;right:26px;z-index:3;font-size:46px;font-weight:900;letter-spacing:.04em;color:var(--coral);border:6px solid var(--coral);border-radius:14px;padding:2px 16px;transform:rotate(14deg);background:rgba(252,250,241,.92)}
+.img-perfil{position:relative;flex:none;width:552px;height:236px;border-radius:16px;overflow:hidden}
+.img-perfil>svg{position:absolute;left:0;top:-56px;width:552px;height:260px}
+.img-perfil h2{position:absolute;left:0;right:0;bottom:0;background:var(--noite);color:var(--creme)!important;padding:10px 18px 12px;font-size:30px!important}
+.match-emb{position:relative;width:300px;height:150px;flex:none}
+.match-emb .d{position:absolute;top:0;width:150px;height:150px;border-radius:50%;border:5px solid var(--noite);display:grid;place-items:center}
+.icones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:900px){.icones{grid-template-columns:1fr}}
+.icone{border-radius:20px;padding:20px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;box-shadow:8px 8px 0 var(--teal)}
+.icone h4{margin:0;font-size:22px;font-weight:900}
+.icone p{margin:0;font-size:15px;line-height:1.4}
+.linha-tempo{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin:8px 0 16px;background:var(--noite);color:var(--creme);border-radius:18px;padding:16px 10px;box-shadow:8px 8px 0 var(--teal)}
+.linha-tempo div{position:relative;padding:0 10px;text-align:center;font-size:14px;line-height:1.35}
+.linha-tempo div+div{border-left:2px dashed rgba(252,250,241,.35)}
+.linha-tempo b{display:block;font-size:15px;color:var(--amarelo)}
+.linha-tempo .som{display:inline-block;margin-top:6px;background:var(--menta);color:var(--noite);border-radius:999px;padding:1px 10px;font-weight:700;font-size:13px}
+.linha-tempo .som.novo{background:var(--amarelo)}
+@media (max-width:900px){.linha-tempo{grid-template-columns:1fr 1fr}}
+
+/* S4 */
+.nomes{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.nome{border-radius:20px;overflow:hidden;background:var(--branco);border:2px solid var(--azul);box-shadow:8px 8px 0 var(--teal)}
+.nome.rec{border:3px solid var(--noite);box-shadow:8px 8px 0 var(--amarelo)}
+.nome .palco-n{background:var(--noite);padding:22px 20px;min-height:150px;display:flex;align-items:center;justify-content:center;position:relative}
+.nome .palco-n .tag-rec{position:absolute;top:10px;right:10px}
+.nome .txt-n{padding:12px 16px 14px;font-size:15px;line-height:1.45}
+.nome .txt-n b{display:block;font-size:17px;color:var(--titulo)}
+.logo{display:inline-flex;flex-direction:column;font-weight:900;line-height:1.02;color:var(--creme);font-size:var(--lf,44px)}
+.logo span{display:flex;align-items:center;gap:.16em}
+.logo .l2{padding-left:.9em}
+.logo em{font-style:normal;color:var(--amarelo)}
+.disco{display:grid;place-items:center;width:.66em;height:.66em;border-radius:50%;background:var(--marinho);flex:none}
+
+/* S5 */
+.regras{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:0 0 20px;padding:0;list-style:none}
+.regras li{background:var(--branco);border:2px solid var(--azul);border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.45;display:flex;gap:10px;align-items:flex-start}
+.regras li b{color:var(--titulo)}
+.regras li svg{margin-top:4px}
+.galeria{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:1100px){.galeria{grid-template-columns:1fr}}
+.galeria figure{margin:0}
+.corte{position:relative;border-radius:14px;overflow:hidden;box-shadow:6px 6px 0 var(--teal)}
+.corte>svg{display:block;width:100%;height:auto}
+.corte::after{content:"";position:absolute;left:0;right:0;top:20%;height:60%;border-top:3px dashed var(--noite);border-bottom:3px dashed var(--noite);pointer-events:none}
+.galeria figcaption{font-size:14px;color:var(--grafite);margin-top:8px;line-height:1.4}
+.galeria figcaption b{color:var(--titulo)}
+.perfis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+@media (max-width:900px){.perfis{grid-template-columns:1fr}}
+.perfil{display:flex;gap:18px;align-items:flex-start}
+.perfil-card{width:300px;flex:none;background:var(--creme);border-radius:22px;overflow:hidden;border:2px solid var(--azul);box-shadow:10px 10px 0 var(--teal)}
+.perfil-card>svg{display:block;width:100%;height:auto}
+.perfil-card .info{padding:10px 16px 14px}
+.perfil-card h4{margin:0;display:flex;align-items:center;gap:8px;font-size:22px;font-weight:800;color:var(--titulo);line-height:1.2}
+.perfil-card p{margin:4px 0 0;font-size:14px;line-height:1.4}
+.sinais{flex:1;min-width:0}
+.sinais h5{margin:0 0 6px;font-size:17px;font-weight:800}
+.sinais ul{margin:0;padding:0 0 0 18px;font-size:15px;line-height:1.45}
+.selo-perfil{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 12px;font-size:14px;font-weight:800;margin-bottom:8px}
+
+.perguntas{counter-reset:p;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.perguntas li{counter-increment:p;background:var(--branco);border:2px solid var(--azul);border-radius:14px;padding:10px 14px 10px 56px;position:relative;font-size:16px;line-height:1.45}
+.perguntas li::before{content:counter(p);position:absolute;left:12px;top:9px;width:32px;height:32px;border-radius:50%;background:var(--noite);color:var(--amarelo);display:grid;place-items:center;font-weight:800;font-size:15px}
+.perguntas li b{color:var(--titulo)}
+.rodape{background:var(--azul);color:var(--creme);padding:22px 0;margin-top:36px;font-size:15px}
+.rodape p{margin:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="e4" viewBox="1 1 32 32"><path d="M17 1L21.3 12.7L33 17L21.3 21.3L17 33L12.7 21.3L1 17L12.7 12.7L17 1" fill="currentColor"/></symbol>
+  <symbol id="e5" viewBox="1 1 30.4 28.9"><path d="M16.2 1L19.8 12.1L31.4 12.1L22 18.9L25.6 29.9L16.2 23.1L6.8 29.9L10.4 18.9L1 12.1L12.6 12.1L16.2 1" fill="currentColor"/></symbol>
+  <symbol id="e6" viewBox="1 1 23.9 27.6"><path d="M12.9 1L15.6 10.2L24.9 7.9L18.2 14.8L24.9 21.7L15.6 19.3L12.9 28.6L10.3 19.3L1 21.7L7.7 14.8L1 7.9L10.3 10.2L12.9 1" fill="currentColor"/></symbol>
+  <symbol id="tri" viewBox="1 1 27.7 24"><path d="M14.9 1L20.1 13.9L28.7 25L14.9 23.1L1 25L9.6 13.9L14.9 1" fill="currentColor"/></symbol>
+  <symbol id="exp" viewBox="10 10 356 430"><path d="M366 438.5L366 41L339.5 10.5L338 57.6C338 57.6 218.5 35.7 202.5 37.2C186.4 38.8 268.8 118.8 268.8 118.8C268.8 118.8 154.1 139.2 132.1 148.7C110.1 158.2 217 198.9 217 198.9L10 354.3L240.5 305.6L228 396.6L311.2 329.1L366 438.5" fill="currentColor" fill-rule="evenodd"/></symbol>
+</defs></svg>
+
+<header class="topo"><div class="container">
+  <p class="kicker">Propostas para a v11 · para aprovação</p>
+  <h1>Match do Saber: <em>o que vem depois</em></h1>
+  <p class="lead">Cinco decisões, cada uma com duas ou três opções lado a lado e a minha recomendação. Clique em qualquer tela para vê-la no tamanho real (1366×768); Esc fecha. Nada aqui foi aplicado ao jogo ainda.</p>
+  <ul class="indice">
+    <li><a href="#s1">1 · Tela final</a></li>
+    <li><a href="#s2">2 · Faixas e filtros</a></li>
+    <li><a href="#s3">3 · Interface de app de namoro</a></li>
+    <li><a href="#s4">4 · Nome do jogo</a></li>
+    <li><a href="#s5">5 · Estilo das imagens</a></li>
+    <li><a href="#perguntas">Perguntas para aprovar</a></li>
+  </ul>
+</div></header>
+
+<main class="container">
+
+<!-- ================= 1 ================= -->
+<section id="s1">
+  <h2 class="sec"><span class="n">1</span>Tela final <em>do Match</em></h2>
+  <p class="intro">Hoje o resumo mostra "Fim de jogo!", o "N de M", a mensagem da faixa e a polaroid. A proposta acrescenta o resultado de cada notícia e onde conferir: a fonte das verdadeiras e quem desmentiu as falsas. No estande, quem quer saber mais não lê de longe: chega perto e fotografa com o celular. Por isso a lista pode ser menor que o resto da tela, e o QR code tem de ler de primeira.</p>
+
+  <h3 class="sub">Referências de telas de resultado</h3>
+  <div class="refs">
+    <div class="ref"><h4>Kahoot!</h4><p>O fim do quiz separa a festa (pódio) do relatório pergunta por pergunta.</p><span class="leva">Leva: celebrar primeiro, revisar depois, sem misturar os dois na mesma área.</span></div>
+    <div class="ref"><h4>Duolingo (fim de lição)</h4><p>Dois ou três números grandes em cartões coloridos, mascote reagindo ao desempenho.</p><span class="leva">Leva: poucos números, enormes; a reação muda com a faixa.</span></div>
+    <div class="ref"><h4>Wordle</h4><p>Uma grade de quadradinhos resume a partida inteira num relance, sem texto.</p><span class="leva">Leva: um marcador por notícia (acertou ou errou) lido de longe.</span></div>
+    <div class="ref"><h4>Correção de quiz (Google Forms, Quizlet)</h4><p>Lista das questões com a resposta certa e o porquê.</p><span class="leva">Leva: a linha "título curto + quem confirma" para cada notícia.</span></div>
+    <div class="ref"><h4>Retrospectivas (Spotify Wrapped)</h4><p>Telas pensadas para virar foto e circular no celular.</p><span class="leva">Leva: a tela final é desenhada para ser fotografada, com a marca do projeto na foto.</span></div>
+    <div class="ref"><h4>Placas de museu e cardápios com QR</h4><p>Um QR grande, com margem branca e uma chamada direta ("Aponte a câmera").</p><span class="leva">Leva: um QR único e grande lê de primeira a 50–80 cm; dez QRs pequenos, não.</span></div>
+  </div>
+
+  <h3 class="sub">Opções (rodada de exemplo: 7 de 10, errou as notícias 4, 6 e 8)</h3>
+  <div class="opcoes">
+    <div class="opcao">
+      <h3><span class="letra">A</span>Lista com um QR por notícia</h3>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar opção A da tela final"><div class="tv claro">
+        <div class="r-a">
+          <div class="r-a-esq">
+            <h1 class="fim">Fim de <em>jogo!</em></h1>
+            <p class="placar" style="font-size:96px">7 de 10</p>
+            <p class="msg" style="font-size:24px">Você consegue se proteger, mas ainda pode melhorar.</p>
+            <div style="margin-top:14px">{{pol:270|2|Match do Saber · 7 de 10|0}}</div>
+          </div>
+          <div class="painel lista">
+            <div class="lista-topo"><h2>Notícias da rodada</h2><div class="legenda"><span><i class="res ok mini">{{m:e4:13:#002036}}</i>acertou</span><span><i class="res no mini"><span class="xis"></span></i>errou</span></div></div>
+            <ol>
+              <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Austrália perdeu guerra para emas</b><small><span class="veic v">Verdade</span>Fonte: <strong>Correio Braziliense</strong></small></div>{{qr:1:52}}</li>
+              <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Limão com água quente cura câncer</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>Aos Fatos</strong></small></div>{{qr:2:52}}</li>
+              <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Cleópatra, mais perto da Lua</b><small><span class="veic v">Verdade</span>Fonte: <strong>Olhar Digital</strong></small></div>{{qr:3:52}}</li>
+              <li class="linha-n"><i class="res no"><span class="xis"></span></i><div class="t"><b>Terra seis dias no escuro</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>Diário de Notícias</strong></small></div>{{qr:4:52}}</li>
+              <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Cachoeira de "lava" nos EUA</b><small><span class="veic v">Verdade</span>Fonte: <strong>Olhar Digital</strong></small></div>{{qr:5:52}}</li>
+              <li class="linha-n"><i class="res no"><span class="xis"></span></i><div class="t"><b>Tubarão na rodovia alagada</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>National Geographic</strong></small></div>{{qr:6:52}}</li>
+              <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Banana é radioativa</b><small><span class="veic v">Verdade</span>Fonte: <strong>Correio Braziliense</strong></small></div>{{qr:7:52}}</li>
+              <li class="linha-n"><i class="res no"><span class="xis"></span></i><div class="t"><b>Amazônia: 20% do oxigênio</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>National Geographic</strong></small></div>{{qr:8:52}}</li>
+              <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Pele de tilápia em queimaduras</b><small><span class="veic v">Verdade</span>Fonte: <strong>Diário do Nordeste</strong></small></div>{{qr:9:52}}</li>
+              <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>iPhone carrega no micro-ondas</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>Canaltech</strong></small></div>{{qr:10:52}}</li>
+            </ol>
+          </div>
+        </div>
+        <p class="dica-config">Operador: Enter para a próxima partida</p>
+      </div></div>
+      <ul>
+        <li class="pro">Cada link a um toque: a pessoa escolhe a notícia que quer.</li>
+        <li class="contra">Dez QRs de 52 px: o celular confunde os vizinhos e precisa chegar a ~20 cm.</li>
+        <li class="contra">A polaroid encolhe para 270 px (hoje AC-13.2 pede 384).</li>
+      </ul>
+    </div>
+
+    <div class="opcao rec">
+      <h3><span class="letra">B</span>Lista + um QR para todas <span class="tag-rec">Recomendo</span></h3>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar opção B da tela final"><div class="tv claro">
+        <div class="r-b">
+          {{pol:384|2|Match do Saber · 7 de 10|2}}
+          <div class="r-b-dir">
+            <div class="r-b-topo">
+              <div class="r-b-texto">
+                <h1 class="fim" style="font-size:44px">Fim de <em>jogo!</em></h1>
+                <p class="placar" style="font-size:92px">7 de 10</p>
+                <p class="msg" style="font-size:25px;max-width:520px">Você consegue se proteger, mas ainda pode melhorar.</p>
+              </div>
+              <div class="qr-card">{{qr:42:168}}<p>Fotografe e veja todas as fontes</p></div>
+            </div>
+            <div class="painel lista">
+              <div class="lista-topo"><h2>Notícias da rodada</h2><div class="legenda"><span><i class="res ok mini">{{m:e4:13:#002036}}</i>acertou</span><span><i class="res no mini"><span class="xis"></span></i>errou</span></div></div>
+              <ol class="grade2">
+                <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Austrália perdeu guerra para emas</b><small><span class="veic v">Verdade</span>Fonte: <strong>Correio Braziliense</strong></small></div></li>
+                <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Limão com água quente cura câncer</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>Aos Fatos</strong></small></div></li>
+                <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Cleópatra, mais perto da Lua</b><small><span class="veic v">Verdade</span>Fonte: <strong>Olhar Digital</strong></small></div></li>
+                <li class="linha-n"><i class="res no"><span class="xis"></span></i><div class="t"><b>Terra seis dias no escuro</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>Diário de Notícias</strong></small></div></li>
+                <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Cachoeira de "lava" nos EUA</b><small><span class="veic v">Verdade</span>Fonte: <strong>Olhar Digital</strong></small></div></li>
+                <li class="linha-n"><i class="res no"><span class="xis"></span></i><div class="t"><b>Tubarão na rodovia alagada</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>National Geographic</strong></small></div></li>
+                <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Banana é radioativa</b><small><span class="veic v">Verdade</span>Fonte: <strong>Correio Braziliense</strong></small></div></li>
+                <li class="linha-n"><i class="res no"><span class="xis"></span></i><div class="t"><b>Amazônia: 20% do oxigênio</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>National Geographic</strong></small></div></li>
+                <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>Pele de tilápia em queimaduras</b><small><span class="veic v">Verdade</span>Fonte: <strong>Diário do Nordeste</strong></small></div></li>
+                <li class="linha-n"><i class="res ok">{{m:e4:18:#002036}}</i><div class="t"><b>iPhone carrega no micro-ondas</b><small><span class="veic m">Mentira</span>Desmentido por: <strong>Canaltech</strong></small></div></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <p class="dica-config">Operador: Enter para a próxima partida</p>
+      </div></div>
+      <ul>
+        <li class="pro">Um QR de 168 px lê de primeira a 50–80 cm, mesmo com a tela da TV refletindo.</li>
+        <li class="pro">Polaroid mantém os 384 px de AC-13.2; tudo numa tela só, sem nova etapa.</li>
+        <li class="pro">A foto da tela inteira com o celular já leva a lista: serve até sem abrir o link.</li>
+        <li class="contra">Precisa de uma página pública com as fontes (web do jogo).</li>
+      </ul>
+    </div>
+
+    <div class="opcao">
+      <h3><span class="letra">C</span>Duas etapas: festa, depois fontes</h3>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar opção C, etapa 1"><div class="tv claro">
+        <div class="r-c1">
+          {{pol:440|2|Match do Saber · 7 de 10|2}}
+          <div class="r-c1-texto">
+            <h1 class="fim" style="font-size:56px">Fim de <em>jogo!</em></h1>
+            <p class="placar" style="font-size:132px">7 de 10</p>
+            <p class="msg" style="font-size:30px">Você consegue se proteger, mas ainda pode melhorar.</p>
+            <p class="aviso-prox">{{m:e5:22:#fde31f}}Levante as mãos para ver as fontes</p>
+          </div>
+        </div>
+        <p class="dica-config">Operador: Enter para a próxima partida</p>
+      </div></div>
+      <p class="mock-leg">Etapa 1: a celebração, maior que hoje.</p>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar opção C, etapa 2" style="margin-top:12px"><div class="tv claro">
+        <div class="r-c2">
+          <h1>Confira as <em>fontes</em> da rodada</h1>
+          <div class="grade5">
+            <div class="mini-n"><div class="topo-n"><span class="veic v">Verdade</span><i class="res ok mini">{{m:e4:13:#002036}}</i></div><b>Austrália perdeu guerra para emas</b><small>Fonte: Correio Braziliense</small>{{qr:1:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic m">Mentira</span><i class="res ok mini">{{m:e4:13:#002036}}</i></div><b>Limão com água quente cura câncer</b><small>Desmentido por: Aos Fatos</small>{{qr:2:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic v">Verdade</span><i class="res ok mini">{{m:e4:13:#002036}}</i></div><b>Cleópatra, mais perto da Lua</b><small>Fonte: Olhar Digital</small>{{qr:3:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic m">Mentira</span><i class="res no mini"><span class="xis"></span></i></div><b>Terra seis dias no escuro</b><small>Desmentido por: Diário de Notícias</small>{{qr:4:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic v">Verdade</span><i class="res ok mini">{{m:e4:13:#002036}}</i></div><b>Cachoeira de "lava" nos EUA</b><small>Fonte: Olhar Digital</small>{{qr:5:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic m">Mentira</span><i class="res no mini"><span class="xis"></span></i></div><b>Tubarão na rodovia alagada</b><small>Desmentido por: National Geographic</small>{{qr:6:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic v">Verdade</span><i class="res ok mini">{{m:e4:13:#002036}}</i></div><b>Banana é radioativa</b><small>Fonte: Correio Braziliense</small>{{qr:7:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic m">Mentira</span><i class="res no mini"><span class="xis"></span></i></div><b>Amazônia: 20% do oxigênio</b><small>Desmentido por: National Geographic</small>{{qr:8:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic v">Verdade</span><i class="res ok mini">{{m:e4:13:#002036}}</i></div><b>Pele de tilápia em queimaduras</b><small>Fonte: Diário do Nordeste</small>{{qr:9:118}}</div>
+            <div class="mini-n"><div class="topo-n"><span class="veic m">Mentira</span><i class="res ok mini">{{m:e4:13:#002036}}</i></div><b>iPhone carrega no micro-ondas</b><small>Desmentido por: Canaltech</small>{{qr:10:118}}</div>
+          </div>
+        </div>
+        <p class="dica-config">Operador: Enter para a próxima partida</p>
+      </div></div>
+      <p class="mock-leg">Etapa 2: dez cartões com QR de 118 px.</p>
+      <ul>
+        <li class="pro">Cada etapa respira: festa grande, fontes legíveis.</li>
+        <li class="contra">Pede um gesto ou tempo novo no resumo (mexe no reducer) e a foto some na etapa 2.</li>
+        <li class="contra">Muita gente sai antes da etapa 2.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="recomendo">
+    <div class="txt">
+      <p class="k">Recomendação</p>
+      <p><b>Opção B.</b> Uma tela só, a polaroid no tamanho atual e <b>um QR grande</b> que abre uma página da versão web com as dez notícias da rodada, cada uma com o link da fonte ou do desmentido. O QR leva só os ids das notícias (ex.: <code>…/fontes?r=mds-0001.mds-0002…</code>): nenhum dado da pessoa, nenhuma foto (FR-13 continua proibindo QR da foto). O jogo continua offline; quem precisa de internet é o celular de quem escaneia.</p>
+      <p>A lista usa texto de 19 px, abaixo dos 28 px da regra de leitura a 2 m, de propósito: ela é para ler de perto ou na foto. Placar, mensagem e QR continuam grandes.</p>
+      <p>Precisa de dois dados novos por notícia: <b>título curto</b> (até 34 caracteres) e <b>nome do veículo</b> (hoje só temos a URL). QRs desta prévia são ilustrativos.</p>
+    </div>
+    <div class="cel" aria-label="Página aberta pelo QR, no celular">
+      <div class="cel-tela">
+        <div class="cel-topo"><p>Match do Saber · Conectando</p><h4>Fontes da <em>sua rodada</em></h4></div>
+        <ul class="cel-lista">
+          <li><span class="veic v">Verdade</span><b>Exército da Austrália declarou guerra contra emas e perdeu</b>Fonte: <a>Correio Braziliense</a> · <a>National Geographic</a></li>
+          <li><span class="veic m">Mentira</span><b>Médico revela: água quente com limão cura o câncer</b>Desmentido por: <a>Aos Fatos</a> · <a>Observador</a></li>
+          <li><span class="veic v">Verdade</span><b>Cleópatra viveu mais perto da ida à Lua do que das pirâmides</b>Fonte: <a>Olhar Digital</a></li>
+          <li><span class="veic m">Mentira</span><b>NASA confirma: a Terra vai ficar seis dias no escuro</b>Desmentido por: <a>Diário de Notícias</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2 ================= -->
+<section id="s2">
+  <h2 class="sec"><span class="n">2</span>Faixas de desempenho <em>e filtros</em></h2>
+  <p class="intro">As quatro faixas de AC-5.7 continuam, com as mesmas mensagens. Cada faixa ganha um título curto e um filtro desenhado no estilo do design system, aplicado ao rosto na foto congelada da polaroid. A foto fica parada na tela para a pessoa fotografar com o próprio celular; o jogo não salva, não imprime e não envia nada (LGPD, FR-13). O filtro é uma camada SVG por cima da imagem, não altera os pixels da foto.</p>
+
+  <h3 class="sub">Opções (exemplo: faixa 2, 7 de 10)</h3>
+  <div class="opcoes">
+    <div class="opcao">
+      <h3><span class="letra">A</span>Filtro no rosto</h3>
+      <div class="linha-pol">{{pol:300|2|Match do Saber · 7 de 10|0}}</div>
+      <ul>
+        <li class="pro">É a graça da foto: a pessoa se vê de detetive.</li>
+        <li class="contra">Depende dos pontos do rosto; de lado ou de boné, o filtro pode sair torto.</li>
+      </ul>
+    </div>
+    <div class="opcao">
+      <h3><span class="letra">B</span>Selo na moldura</h3>
+      <div class="linha-pol">{{pol:300|0|Detetive em treino · 7 de 10|2}}</div>
+      <ul>
+        <li class="pro">Nunca falha: não depende da pose.</li>
+        <li class="contra">Menos divertido; o rosto fica igual em todas as faixas.</li>
+      </ul>
+    </div>
+    <div class="opcao rec">
+      <h3><span class="letra">C</span>Filtro + selo <span class="tag-rec">Recomendo</span></h3>
+      <div class="linha-pol">{{pol:300|2|Match do Saber · 7 de 10|2}}</div>
+      <ul>
+        <li class="pro">O selo sempre aparece; o filtro entra quando os pontos do rosto estão confiáveis.</li>
+        <li class="pro">Se o filtro falhar, a foto continua boa (fica igual à opção B).</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub">As quatro faixas (opção C)</h3>
+  <div class="faixas">
+    <div class="faixa"><span class="intervalo">menos de 50% · 0 a 4 de 10</span>{{pol:220|1|Match do Saber · 3 de 10|1}}<h4>Aprendiz de checagem</h4><p>Cuidado! Você precisa verificar melhor as manchetes.</p><span class="filtro-nome">Filtro: lupa gigante no olho</span></div>
+    <div class="faixa"><span class="intervalo">50% a menos de 80% · 5 a 7</span>{{pol:220|2|Match do Saber · 7 de 10|2}}<h4>Detetive em treino</h4><p>Você consegue se proteger, mas ainda pode melhorar.</p><span class="filtro-nome">Filtro: chapéu de detetive e óculos</span></div>
+    <div class="faixa"><span class="intervalo">80% a menos de 100% · 8 e 9</span>{{pol:220|3|Match do Saber · 9 de 10|3}}<h4>Faro de repórter</h4><p>Parabéns! Você checa muito bem as notícias.</p><span class="filtro-nome">Filtro: chapéu "CHECADO" e lápis na orelha</span></div>
+    <div class="faixa"><span class="intervalo">100% · 10 de 10</span>{{pol:220|4|Match do Saber · 10 de 10|4}}<h4>Imune a fake news!</h4><p>Imune a fake news!</p><span class="filtro-nome">Filtro: máscara e capa de herói</span></div>
+  </div>
+  <p class="nota">Na faixa 4 o título e a mensagem coincidem; sugiro trocar a mensagem por "Nenhuma notícia te enganou." e deixar "Imune a fake news!" como título (exige mudar AC-5.7 e o teste).</p>
+
+  <h3 class="sub">Âncoras no rosto</h3>
+  <div class="ancora-caixa">
+    {{ancoras}}
+    <div>
+      <p style="margin:0 0 12px">Todos os filtros usam o mesmo quadro de referência (os SVGs em <code>docs/visual/filtros/</code>): olhos em (−50, 0) e (50, 0), então <b>100 unidades = distância entre os olhos</b>. No jogo: centro = meio dos pontos 2 e 5; escala = distância 2–5 ÷ 100; giro = ângulo da linha 2–5. Os pontos vêm do MediaPipe Pose no quadro da foto, guardados junto com ela na memória e apagados junto (FR-13). Como a foto aparece espelhada, x vira 1 − x.</p>
+      <div class="rolagem"><table>
+        <thead><tr><th>Filtro</th><th>Âncoras (MediaPipe Pose)</th><th>Se o ponto faltar</th></tr></thead>
+        <tbody>
+          <tr><td><b>Lupa</b></td><td>Olho direito (5) no centro da lente; escala por 2–5</td><td>Sem olhos com visibilidade ≥ 0,5: só o selo</td></tr>
+          <tr><td><b>Detetive</b></td><td>Óculos em 2 e 5; chapéu acima das orelhas 7 e 8</td><td>Sem orelhas: chapéu pela escala dos olhos</td></tr>
+          <tr><td><b>Repórter</b></td><td>Chapéu acima de 7 e 8; lápis atrás da orelha 8</td><td>Sem a orelha 8: sem lápis</td></tr>
+          <tr><td><b>Herói</b></td><td>Máscara em 2 e 5; capa e emblema nos ombros 11 e 12 (escala própria)</td><td>Sem ombros: só a máscara</td></tr>
+        </tbody>
+      </table></div>
+      <p class="nota">Nariz (0) e boca (9, 10) ficam livres de propósito: os filtros não cobrem o sorriso, que é o que a pessoa quer na foto.</p>
+    </div>
+  </div>
+
+  <div class="recomendo"><div class="txt">
+    <p class="k">Recomendação</p>
+    <p><b>Opção C</b> com os quatro filtros acima. A foto continua sendo tirada no card do meio (antes de se saber a faixa); o filtro só é escolhido no resumo. Precisa de uma mudança mecânica pequena: guardar, junto com a foto, os pontos 0 a 12 daquele quadro. Os títulos das faixas são texto novo na tela (avisar os testes).</p>
+  </div></div>
+</section>
+
+<!-- ================= 3 ================= -->
+<section id="s3">
+  <h2 class="sec"><span class="n">3</span>Interface do jogo <em>de app de namoro</em></h2>
+  <p class="intro">O nome já é "Match": a pessoa decide, notícia por notícia, se dá match ou não. Os apps de namoro ensinaram a uma geração inteira a decidir com um gesto para o lado, e essa linguagem cabe no jogo sem explicação.</p>
+
+  <h3 class="sub">Referências</h3>
+  <div class="refs">
+    <div class="ref"><h4>Tinder: pilha e carimbo</h4><p>Cartões empilhados; ao arrastar, o cartão gira e ganha o carimbo LIKE ou NOPE.</p><span class="leva">Leva: pilha atrás do card, giro na saída e carimbo VERDADE/MENTIRA.</span></div>
+    <div class="ref"><h4>Tinder: "It's a Match!"</h4><p>As duas fotos se encontram no meio e a tela inteira comemora.</p><span class="leva">Leva: "Deu match!" quando a resposta bate com o fato (dois discos se encontrando).</span></div>
+    <div class="ref"><h4>Bumble e Tinder: botões redondos</h4><p>Botões grandes e redondos, um para cada lado, que respondem ao arrastar.</p><span class="leva">Leva: as laterais viram botões redondos que acendem conforme o corpo inclina.</span></div>
+    <div class="ref"><h4>Hinge: perfil em blocos</h4><p>Foto grande com o nome por cima; texto curto em blocos.</p><span class="leva">Leva: notícia como "perfil" (testado na opção B).</span></div>
+  </div>
+  <div class="rolagem" style="margin:10px 0 0"><table>
+    <thead><tr><th>No app de namoro</th><th>No jogo</th></tr></thead>
+    <tbody>
+      <tr><td>Deslizar para a esquerda (não curti)</td><td>Corpo para a esquerda: <b>Mentira</b>. Botão coral com o triângulo do design system no lugar do X</td></tr>
+      <tr><td>Deslizar para a direita (curti)</td><td>Corpo para a direita: <b>Verdade</b>. Botão menta com a estrela de 4 pontas no lugar do coração</td></tr>
+      <tr><td>Carimbo LIKE / NOPE</td><td>Carimbo VERDADE / MENTIRA no card durante a saída (os mesmos 250 ms de <code>TEMPOS.saidaMs</code>)</td></tr>
+      <tr><td>"It's a Match!"</td><td>"Deu match!" no feedback de acerto; "Não deu match" no erro</td></tr>
+      <tr><td>Abrir o perfil</td><td>Saiba mais (mãos para cima)</td></tr>
+      <tr><td>Perfis do tutorial</td><td>Dois perfis cômicos antes da primeira notícia (seção 5)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Opções para o card</h3>
+  <div class="opcoes">
+    <div class="opcao rec">
+      <h3><span class="letra">A</span>Pilha, botões redondos e carimbo <span class="tag-rec">Recomendo</span></h3>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar opção A da interface"><div class="tv sobrio">
+        <div class="mesa-linha">
+          <div class="aba"><span class="botao-red m ativo">{{m:tri:64:#002036:-90}}</span><span class="pilula p-mentira">Mentira</span></div>
+          <div class="pilha">
+            <div class="atras" style="transform:rotate(4deg) translate(14px,10px)"></div>
+            <div class="atras" style="transform:rotate(-2.5deg) translate(-8px,6px);background:var(--grafite-azul)"></div>
+            <article class="card" style="box-shadow:none;transform:translateX(-70px) rotate(-8deg)">
+              <span class="carimbo">MENTIRA</span>
+              <div class="img-card"><span class="chip-tema">Tecnologia</span>{{svg:estilo-imagens/card-tecnologia-microondas.svg}}</div>
+              <h2>Novo recurso do iPhone permite carregar a bateria no micro-ondas</h2>
+              <p class="desc">Anúncio diz que a atualização do sistema do iPhone permite recarregar o celular em 60 segundos dentro do forno de micro-ondas.</p>
+              <p class="dica-card">{{m:e5:18:#0075c5}}Saiba mais: levante as duas mãos (ou ↑)</p>
+            </article>
+          </div>
+          <div class="aba"><span class="botao-red v">{{m:e4:64:#002036}}</span><span class="pilula p-verdade">Verdade</span></div>
+        </div>
+        <div class="sair"><span class="xis"></span>Sair</div><p class="pontos">Pontos: 3</p>
+        <div class="barra-base"><div class="enche" style="width:60%"></div><span class="seg">9 s</span></div>
+        <div class="cam"></div>
+      </div></div>
+      <ul>
+        <li class="pro">O card e o texto não mudam de tamanho: cabe nos ~12 px de folga.</li>
+        <li class="pro">O botão do lado para onde o corpo vai acende antes da escolha: dá retorno do gesto.</li>
+        <li class="contra">A pilha atrás substitui a sombra teal do card (muda FR-15 "sem decoração no card").</li>
+      </ul>
+    </div>
+
+    <div class="opcao">
+      <h3><span class="letra">B</span>Notícia como perfil</h3>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar opção B da interface"><div class="tv sobrio">
+        <div class="mesa-linha">
+          <div class="aba">{{m:tri:64:#e34a39:-90}}<span class="pilula p-mentira">Mentira</span></div>
+          <article class="card">
+            <div class="img-perfil"><span class="chip-tema">Ciência</span>{{svg:estilo-imagens/card-ciencia-banana.svg}}<h2>Cientistas confirmam: a banana é uma fruta radioativa</h2></div>
+            <p class="desc">A banana comum, vendida em qualquer feira, emite radiação. A informação é confirmada por agências de proteção radiológica.</p>
+            <p class="dica-card">{{m:e5:18:#0075c5}}Ver perfil completo: levante as duas mãos (ou ↑)</p>
+          </article>
+          <div class="aba">{{m:e4:64:#a5dede}}<span class="pilula p-verdade">Verdade</span></div>
+        </div>
+        <div class="sair"><span class="xis"></span>Sair</div><p class="pontos">Pontos: 3</p>
+        <div class="barra-base"><div class="enche" style="width:60%"></div><span class="seg">9 s</span></div>
+        <div class="cam"></div>
+      </div></div>
+      <ul>
+        <li class="pro">Imagem 50% maior, título sobre a foto como nome de perfil; a altura total cabe (o título sai do corpo do card).</li>
+        <li class="contra">Título de 3 linhas cobre metade da imagem; nas notícias de técnica "imagem", esconde justamente a pista.</li>
+        <li class="contra">Muda o texto da dica de "saiba mais" (testes).</li>
+      </ul>
+    </div>
+
+    <div class="opcao">
+      <h3><span class="letra">C</span>Card igual, feedback "Deu match!"</h3>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar opção C da interface"><div class="tv fb-verdade">
+        <div class="fb">
+          <h2 class="veredito">{{m:e4:30:currentColor}}É verdade</h2>
+          <div class="match-emb" aria-hidden="true">
+            <span class="d" style="left:10px;background:var(--noite)"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="28" r="16" fill="#fcfaf1"/><path d="M12 76 C14 54 26 48 40 48 C54 48 66 54 68 76 Z" fill="#fcfaf1"/></svg></span>
+            <span class="d" style="left:140px;background:var(--creme)">{{m:e6:70:#002036}}</span>
+            <span style="position:absolute;left:122px;top:-14px">{{m:e4:56:#fde31f}}</span>
+          </div>
+          <p class="selo s-acerto">Deu match! Acertou!</p>
+          <p class="explicacao">A banana tem potássio-40, que é radioativo em dose mínima: seria preciso comer milhões de uma vez para fazer mal.</p>
+          <p class="tecnica">Ver o contexto</p>
+        </div>
+        <div class="sair"><span class="xis"></span>Sair</div><p class="pontos">Pontos: 4</p>
+      </div></div>
+      <ul>
+        <li class="pro">Muda só o feedback: menor risco, entra rápido.</li>
+        <li class="contra">Sozinha não traz a sensação de "deslizar" do app.</li>
+        <li class="contra">Texto novo no selo (testes buscam "Acertou!").</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub">Ícones de ganho e perda no feedback</h3>
+  <p class="intro">Emoji e caracteres como ícone continuam proibidos (FR-15): cada "emoji" é desenhado com as formas do design system.</p>
+  <div class="icones">
+    <div class="icone fb-verdade">
+      <svg width="220" height="120" viewBox="0 0 220 120" aria-hidden="true"><circle cx="78" cy="64" r="48" fill="#002036"/><circle cx="142" cy="64" r="48" fill="#fcfaf1" stroke="#002036" stroke-width="5"/><circle cx="78" cy="52" r="13" fill="#fcfaf1"/><path d="M54 104 C56 86 66 80 78 80 C90 80 98 84 100 92" fill="#fcfaf1"/><use href="#e6" x="122" y="40" width="40" height="46" style="color:#002036"/><use href="#e4" x="88" y="0" width="44" height="44" style="color:#fde31f"/></svg>
+      <h4>Acertou: "Deu match!"</h4><p>Você (disco noite) e o fato (disco creme) se encontram; estrela amarela no ponto de encontro. Pulsa uma vez quando aparece.</p>
+    </div>
+    <div class="icone fb-mentira">
+      <svg width="220" height="120" viewBox="0 0 220 120" aria-hidden="true"><circle cx="56" cy="64" r="44" fill="#002036"/><circle cx="164" cy="64" r="44" fill="#fcfaf1" stroke="#002036" stroke-width="5"/><circle cx="56" cy="52" r="12" fill="#fcfaf1"/><path d="M34 100 C36 84 46 78 56 78 C66 78 74 82 76 90" fill="#fcfaf1"/><use href="#e6" x="146" y="42" width="36" height="42" style="color:#002036"/><path d="M106 34 L82 86 L102 86 L96 70 L106 58 Z" fill="#fcfaf1" stroke="#002036" stroke-width="3" stroke-linejoin="round"/><path d="M116 40 L110 62 L120 74 L110 90 L140 90 Z" fill="#fcfaf1" stroke="#002036" stroke-width="3" stroke-linejoin="round"/></svg>
+      <h4>Errou: "Não deu match"</h4><p>Os discos ficam separados e, entre eles, um triângulo partido em dois. Engraçado, não punitivo.</p>
+    </div>
+    <div class="icone" style="background:var(--creme);border:3px solid var(--noite)">
+      <svg width="220" height="120" viewBox="0 0 220 120" aria-hidden="true"><use href="#tri" x="80" y="8" width="60" height="52" transform="rotate(180 110 34)" style="color:#002036"/><use href="#tri" x="80" y="60" width="60" height="52" style="color:#002036"/><use href="#tri" x="96" y="76" width="28" height="24" style="color:#fde31f"/><rect x="70" y="4" width="80" height="8" rx="4" fill="#002036"/><rect x="70" y="108" width="80" height="8" rx="4" fill="#002036"/></svg>
+      <h4>Tempo esgotado</h4><p>Ampulheta feita de dois triângulos do design system, com areia amarela embaixo.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Onde entram os sons</h3>
+  <div class="linha-tempo">
+    <div><b>Card aparece</b>sem som (FR-11)</div>
+    <div><b>Corpo inclina</b>botão do lado acende<br><span class="som novo">opcional: "tic" leve</span></div>
+    <div><b>Escolha registrada</b>card sai com carimbo, 250 ms<br><span class="som">deslizar</span></div>
+    <div><b>Resultado aparece</b>"Deu match!" ou "Não deu match"<br><span class="som">acerto / erro</span></div>
+    <div><b>Últimos 5 s</b>barra coral<br><span class="som novo">opcional: tique por segundo</span></div>
+    <div><b>Resumo aparece</b>placar, filtro e selo<br><span class="som novo">fim de partida</span></div>
+  </div>
+  <div class="rolagem"><table>
+    <thead><tr><th>Som</th><th>Quando</th><th>Caráter</th><th>Na spec hoje</th></tr></thead>
+    <tbody>
+      <tr><td><b>Deslizar</b></td><td>Escolha registrada, por qualquer entrada</td><td>"Fuuup" curto (~150 ms): ruído suave que desce, como um cartão escorregando na mesa. Pode sair pelo lado da escolha (esquerda/direita no estéreo).</td><td>Existe (FR-11); o estéreo é novo</td></tr>
+      <tr><td><b>Acerto</b></td><td>"Acertou!" aparece, ao fim da saída do card</td><td>"Plim-plim" brilhante (~300 ms): duas notas subindo (dó → sol), timbre limpo. É o som do "deu match".</td><td>Existe (FR-11)</td></tr>
+      <tr><td><b>Erro / tempo</b></td><td>"Errou" ou "Tempo esgotado"</td><td>"Bóin" grave descendo (~350 ms), com leve balanço: cômico, de desenho animado, nunca uma buzina de castigo.</td><td>Existe (FR-11)</td></tr>
+      <tr><td><b>Fim de partida</b></td><td>Resumo aparece</td><td>Vinheta de 1 a 1,5 s que cresce com a faixa: faixa 1, duas notas de "quase lá"; faixa 2, arpejo de três notas; faixa 3, quatro notas; faixa 4, fanfarra curta com brilho no final ("tcharam"). Nunca triste.</td><td>Novo: FR-11 hoje proíbe sons fora de três momentos</td></tr>
+      <tr><td><b>Tique (opcional)</b></td><td>Cada segundo dos últimos 5 s</td><td>Clique seco e baixo (~40 ms). Recomendo deixar fora: no estande barulhento atrapalha mais do que ajuda.</td><td>Novo, proibido hoje</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="recomendo"><div class="txt">
+    <p class="k">Recomendação</p>
+    <p><b>Opção A com o feedback da C</b>: pilha atrás do card, laterais como botões redondos que acendem com a inclinação do corpo, carimbo na saída e "Deu match!"/"Não deu match" com os ícones acima. Card e textos ficam do tamanho atual. A opção B fica de fora porque o título por cima esconde a imagem, que em parte das notícias é a pista a checar. Sons: manter os três de hoje com o caráter acima e acrescentar só o de fim de partida (exige mudar FR-11).</p>
+  </div></div>
+</section>
+
+<!-- ================= 4 ================= -->
+<section id="s4">
+  <h2 class="sec"><span class="n">4</span>Nome <em>do jogo</em></h2>
+  <p class="intro">Curtos, em português, fáceis de gritar no estande. Não fiz busca de marca: antes de escolher, vale consultar o INPI e as lojas de aplicativo.</p>
+  <div class="nomes">
+    <div class="nome rec"><div class="palco-n"><span class="tag-rec">Recomendo</span><div class="logo"><span><i class="disco">{{m:tri:20:#e34a39:-90}}</i>Match</span><span class="l2">ou <em>Mico</em><i class="disco">{{m:e4:20:#a5dede}}</i></span></div></div><div class="txt-n"><b>Match ou Mico</b>Mantém o "Match" que já circula e fecha a metáfora do app de namoro: ou você dá match com o fato, ou paga mico.</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span>Faro</span><span class="l2">de <em>Fato</em><i class="disco">{{m:e5:20:#fde31f}}</i></span></div></div><div class="txt-n"><b>Faro de Fato</b>Fala do instinto de checar; a aliteração gruda na memória. Segunda opção se a interface de namoro não for aprovada.</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span>Checa</span><span class="l2"><em>Aí!</em><i class="disco">{{m:e4:20:#a5dede}}</i></span></div></div><div class="txt-n"><b>Checa Aí</b>Imperativo e curto: a frase que a gente quer que o jogador repita no grupo da família.</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span>Mexe</span><span class="l2">e <em>Checa</em></span></div></div><div class="txt-n"><b>Mexe e Checa</b>Junta o movimento do corpo com a checagem, numa rima interna.</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span>Bate ou</span><span class="l2">Não <em>Bate?</em></span></div></div><div class="txt-n"><b>Bate ou Não Bate?</b>A pergunta do checador: a informação bate com a fonte?</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span>Crush ou</span><span class="l2"><em>Cilada</em></span></div></div><div class="txt-n"><b>Crush ou Cilada</b>A notícia é um crush confiável ou uma cilada? Muito jovem; pode lembrar a série "Cilada", então conferir.</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span>Pra Lá</span><span class="l2">ou Pra <em>Cá</em></span></div></div><div class="txt-n"><b>Pra Lá ou Pra Cá</b>Descreve o gesto e se entende sem explicação; fala pouco de checagem.</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span><em>Desconfia!</em></span></div></div><div class="txt-n"><b>Desconfia!</b>Uma palavra, a atitude que o jogo ensina; forte num cartaz.</div></div>
+    <div class="nome"><div class="palco-n"><div class="logo"><span>Confere<em>?</em><i class="disco">{{m:e6:18:#fde31f}}</i></span></div></div><div class="txt-n"><b>Confere?</b>Curto e em forma de pergunta; vira chamada no estande ("Confere?").</div></div>
+  </div>
+  <div class="recomendo"><div class="txt">
+    <p class="k">Recomendação</p>
+    <p><b>Match ou Mico</b>, se a interface de namoro (seção 3) for aprovada: o nome e a interface contam a mesma piada. Se não for, <b>Faro de Fato</b>. Evitei de propósito "Fato ou Fake" (seção do g1) e qualquer coisa com "Lupa" (Agência Lupa).</p>
+  </div></div>
+</section>
+
+<!-- ================= 5 ================= -->
+<section id="s5">
+  <h2 class="sec"><span class="n">5</span>Estilo das imagens <em>dos cartões e perfis</em></h2>
+  <p class="intro">Um estilo único para todas as imagens que o projeto desenhar: <b>recorte chapado</b>, ilustração vetorial plana com a paleta do design system. As notícias com foto real (com crédito) continuam podendo usar a foto; este estilo vale para as imagens desenhadas e para o tutorial.</p>
+  <ul class="regras">
+    <li>{{m:e4:16:#0075c5}}<span><b>Cor chapada.</b> Sem gradiente, sem textura de foto, sem desfoque.</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>Fundo do tema.</b> A mesma cor de ilustração do tema da notícia (rosa saúde, céu ciência, laranja história, azul médio tecnologia, roxo curiosidades, turquesa meio ambiente).</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>Uma forma do design system no fundo.</b> Anel, arco ou explosão, cortado na borda.</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>Personagem de formas simples.</b> Círculos, pílulas e triângulos; contorno noite de 4–5 px; olhos de ponto.</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>Sombra chapada.</b> Cópia deslocada 8–12 px em noite, teal ou azul-escuro.</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>Acentos só com os marcadores.</b> Estrelas de 4, 5 e 6 pontas e triângulo; nunca emoji.</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>Sem pessoas reais.</b> O humor vem de bichos e objetos personificados. Sem texto nas imagens de card (o card já tem título); placas curtas só nos perfis.</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>552 × 260, miolo no centro.</b> O card mostra a faixa de 552 × 156 do meio (tracejado nos exemplos).</span></li>
+    <li>{{m:e4:16:#0075c5}}<span><b>Ilustração não é prova.</b> A imagem ilustra o assunto, nunca imita uma foto "de evidência", nem nas falsas.</span></li>
+  </ul>
+
+  <h3 class="sub">Três imagens de card</h3>
+  <div class="galeria">
+    <figure><div class="corte">{{svg:estilo-imagens/card-historia-emas.svg}}</div><figcaption><b>História · Verdade.</b> "Exército da Austrália declarou guerra contra emas e perdeu": a ema vencedora com o capacete do soldado e uma medalha.</figcaption></figure>
+    <figure><div class="corte">{{svg:estilo-imagens/card-ciencia-banana.svg}}</div><figcaption><b>Ciência · Verdade.</b> "A banana é uma fruta radioativa": banana tranquila ao lado do símbolo de radiação feito com três triângulos do design system.</figcaption></figure>
+    <figure><div class="corte">{{svg:estilo-imagens/card-tecnologia-microondas.svg}}</div><figcaption><b>Tecnologia · Mentira.</b> "iPhone carrega no micro-ondas": celular genérico (sem marca) no micro-ondas, aviso rosa e explosão amarela cortada na borda.</figcaption></figure>
+  </div>
+
+  <h3 class="sub">Dois perfis cômicos do tutorial</h3>
+  <p class="intro">Antes da primeira notícia, dois "perfis" ensinam o gesto sem valer ponto: o falso vai para a esquerda, o verdadeiro para a direita. O falso é obviamente cheio de filtros; o verdadeiro é simples e tem o que dá para conferir.</p>
+  <div class="perfis">
+    <div class="perfil">
+      <div class="perfil-card">{{svg:estilo-imagens/perfil-falso-abacaxi.svg}}<div class="info"><h4>Abacaxi Perfeito, 19 {{m:e6:20:#62bfff}}</h4><p>"CEO de mim mesmo. Milionário. Médico, astronauta e campeão mundial. Sem tempo para perguntas."</p></div></div>
+      <div class="sinais"><span class="selo-perfil p-mentira" style="border:0">{{m:tri:16:#0c0b0a:-90}}Perfil falso</span><h5>Sinais para o jogador perceber</h5><ul><li>Filtro em tudo: óculos de estrela, coroa, orelhas de gatinho, brilhos por toda parte.</li><li>"Selo de verificado" que ele mesmo colou ao lado do nome.</li><li>Bio sem nada que dê para conferir, e promessas demais.</li></ul></div>
+    </div>
+    <div class="perfil">
+      <div class="perfil-card">{{svg:estilo-imagens/perfil-verdadeiro-caju.svg}}<div class="info"><h4>Seu Caju, 52</h4><p>"Feirante no Mercado São Sebastião, Fortaleza. Banca 14, desde 1998. Pode passar lá."</p></div></div>
+      <div class="sinais"><span class="selo-perfil p-verdade">{{m:e4:16:#002036}}Perfil verdadeiro</span><h5>Sinais para o jogador perceber</h5><ul><li>Foto simples, no lugar onde ele trabalha, sem filtro.</li><li>Detalhes que dá para conferir: mercado, número da banca, desde quando.</li><li>Nada de promessa: só quem ele é.</li></ul></div>
+    </div>
+  </div>
+  <div class="opcoes" style="--cols:1;margin-top:22px">
+    <div class="opcao" style="max-width:820px">
+      <h3>Tutorial no jogo, perfil 1 de 2</h3>
+      <div class="mock" tabindex="0" role="button" aria-label="Ampliar o tutorial"><div class="tv sobrio">
+        <div class="mesa-linha">
+          <div class="aba"><span class="botao-red m">{{m:tri:64:#002036:-90}}</span><span class="pilula p-mentira">Mentira</span></div>
+          <article class="card" style="width:430px;padding:16px 16px 18px;gap:8px">
+            <p style="font-size:20px;font-weight:700;color:var(--azul-escuro);display:flex;align-items:center;gap:8px">{{m:e5:18:#0075c5}}Treino · perfil 1 de 2</p>
+            <div style="border-radius:16px;overflow:hidden;height:420px"><div style="margin-top:-30px">{{svg:estilo-imagens/perfil-falso-abacaxi.svg}}</div></div>
+            <h2 style="display:flex;align-items:center;gap:8px">Abacaxi Perfeito, 19 {{m:e6:26:#62bfff}}</h2>
+            <p style="font-size:24px;line-height:1.3">Esse perfil é de verdade?</p>
+          </article>
+          <div class="aba"><span class="botao-red v">{{m:e4:64:#002036}}</span><span class="pilula p-verdade">Verdade</span></div>
+        </div>
+        <div class="sair"><span class="xis"></span>Sair</div>
+        <div class="cam"></div>
+      </div></div>
+      <p class="mock-leg">O perfil ocupa o lugar do card, sem barra de tempo e sem ponto.</p>
+    </div>
+  </div>
+  <div class="recomendo"><div class="txt">
+    <p class="k">Recomendação</p>
+    <p><b>Recorte chapado</b> para todas as imagens desenhadas, com as regras acima, e o tutorial com dois perfis (Abacaxi Perfeito e Seu Caju). As imagens ficam como SVG (leves, nítidas na TV e offline). O tutorial é uma mudança mecânica (duas telas antes do primeiro card) e precisa de decisão: sempre, só na primeira partida, ou pulável pelo operador.</p>
+  </div></div>
+</section>
+
+<section id="perguntas">
+  <h2 class="sec"><span class="n">?</span>Perguntas <em>para aprovar</em></h2>
+  <ol class="perguntas">
+    <li><b>Tela final:</b> aprova a opção B (lista + um QR para todas)? A página das fontes pode ficar na versão web pública do jogo (GitHub Pages)?</li>
+    <li><b>Dados novos:</b> podemos acrescentar ao banco as colunas <code>titulo_curto</code> (até 34 caracteres) e <code>fonte_nome</code> (nome do veículo da fonte ou do desmentido)? O agente de notícias preencheria nas 10 atuais.</li>
+    <li><b>Banco do desktop:</b> no desktop o operador pode editar notícias que a web não tem. A página do QR mostraria a versão embutida; aceitamos essa diferença ou o QR deve levar as URLs das fontes direto?</li>
+    <li><b>Filtros:</b> aprova a opção C (filtro no rosto + selo) e os quatro filtros (lupa, detetive, repórter, herói)? Os títulos das faixas ("Aprendiz de checagem", "Detetive em treino", "Faro de repórter", "Imune a fake news!") estão bons?</li>
+    <li><b>Faixa 4:</b> troca a mensagem para "Nenhuma notícia te enganou." para não repetir o título?</li>
+    <li><b>Interface:</b> aprova a opção A (pilha, botões redondos, carimbo) com o feedback "Deu match!"/"Não deu match"? Isso muda o FR-15 ("sem formas decorativas no card e no feedback") e textos que os testes procuram.</li>
+    <li><b>Sons:</b> acrescenta o som de fim de partida (muda FR-11)? E o tique dos últimos 5 s: fica de fora, como recomendo?</li>
+    <li><b>Nome:</b> qual nome segue para checagem de marca? Recomendo "Match ou Mico" (ou "Faro de Fato").</li>
+    <li><b>Tutorial:</b> os dois perfis entram sempre, só na primeira partida do dia ou com opção nas Configurações?</li>
+    <li><b>Estilo:</b> aprova o "recorte chapado" para as imagens desenhadas? Notícias com foto real continuam permitidas?</li>
+  </ol>
+</section>
+</main>
+
+<footer class="rodape"><div class="container"><p>Conectando · Ciências, Tecnologias e Artes · UFC Virtual / MCTI. Prévia de propostas v11; QR codes e foto são ilustrativos. Referência visual aprovada: <code>docs/visual/previa.html</code>.</p></div></footer>
+
+<dialog class="zoom" aria-label="Tela no tamanho real"><button class="fechar" type="button">Fechar (Esc)</button><div class="palco-z"></div></dialog>
+<script>
+(function(){
+  var mocks = document.querySelectorAll('.mock');
+  function ajustar(){ mocks.forEach(function(m){ m.style.setProperty('--s', m.clientWidth / 1366); }); }
+  if ('ResizeObserver' in window) { var ro = new ResizeObserver(ajustar); mocks.forEach(function(m){ ro.observe(m); }); }
+  window.addEventListener('resize', ajustar); ajustar();
+  var dlg = document.querySelector('dialog.zoom'), palco = dlg.querySelector('.palco-z');
+  function escalaZ(){ palco.style.setProperty('--z', Math.min(innerWidth / 1366, innerHeight / 768)); }
+  function abrir(m){ palco.innerHTML = ''; var c = m.querySelector('.tv').cloneNode(true); c.style.transform = 'none'; palco.appendChild(c); escalaZ(); dlg.showModal(); }
+  mocks.forEach(function(m){
+    m.addEventListener('click', function(){ abrir(m); });
+    m.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(m); } });
+  });
+  dlg.addEventListener('click', function(){ dlg.close(); });
+  window.addEventListener('resize', escalaZ);
+})();
+</script>
+</body>
+</html>
