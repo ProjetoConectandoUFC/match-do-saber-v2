@@ -1,0 +1,228 @@
+{
+  "criterioDificuldade": {
+    "facil": "O palpite de bom senso acerta. Falsa com absurdo evidente (promessa impossível, foto ou alerta exagerado) ou verdadeira muito conhecida, ensinada na escola ou famosa.",
+    "medio": "Soa estranho, mas é plausível. O jogador precisa de uma pista do card (quem diz, quando, como é a foto) ou de uma informação que nem todo mundo tem.",
+    "dificil": "O palpite intuitivo tende a errar: falsa repetida como fato por muita gente, ou verdadeira que parece invenção. Só checando fonte, data ou contexto dá para acertar.",
+    "observacao": "Cada nível tem 2 verdadeiras e 2 falsas. As verdadeiras difíceis foram escolhidas para soar absurdas, para o jogador não aprender que absurdo = falso."
+  },
+  "noticias": [
+    {
+      "id": "mds-0011",
+      "titulo": "Polvo tem três corações e sangue azul",
+      "descricao": "Segundo biólogos, o polvo tem três corações batendo no corpo e um sangue de cor azul, diferente do nosso.",
+      "saibaMais": "O polvo é um molusco, parente da lula. Ele vive no mar, não tem ossos e consegue mudar de cor para se esconder. Nos humanos, um único coração bombeia o sangue, que é vermelho por causa do ferro.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Olhar Digital e Metrópoles explicam: dois corações levam o sangue às brânquias e um terceiro o espalha pelo corpo. O sangue é azul por causa da hemocianina, uma proteína com cobre no lugar do ferro. Para checar, veja quem afirma: um biólogo ou um veículo de ciência que explique o porquê.",
+      "tecnica": "fonte",
+      "tema": "ciencia",
+      "dificuldade": "facil",
+      "fonteUrl": "https://olhardigital.com.br/curiosidades/2026/06/21/por-que-os-polvos-tem-tres-coracoes-e-sangue-azul/",
+      "fontesExtras": [
+        "https://www.metropoles.com/ciencia/tres-coracoes-anatomia-polvo"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0012",
+      "titulo": "Foto mostra dunas de areia cheias de lagoas azuis no Maranhão",
+      "descricao": "Imagem aérea de um \"deserto\" brasileiro com areia branca a perder de vista e centenas de lagoas azuis entre as dunas.",
+      "saibaMais": "A paisagem fica no litoral do Maranhão, no Nordeste do Brasil. Fotos do lugar viralizam nas redes, e muita gente acha que são montagem ou filtro de cor. A região recebe turistas que fazem passeios e caminhadas pelas dunas.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. É o Parque Nacional dos Lençóis Maranhenses, maior campo de dunas da América do Sul. Na época das chuvas, a água se acumula entre as dunas e forma lagoas cristalinas. Em 2024 o parque virou Patrimônio Natural da Humanidade pela Unesco, como noticiaram O POVO e Diário do Nordeste. Busque outras fotos do mesmo lugar: se muitas fontes mostram, é real.",
+      "tecnica": "imagem",
+      "tema": "meio-ambiente",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.opovo.com.br/noticias/brasil/2024/07/26/unesco-declara-parque-dos-lencois-maranhenses-patrimonio-da-humanidade.html",
+      "fontesExtras": [
+        "https://diariodonordeste.verdesmares.com.br/ultima-hora/ma/lencois-maranhenses-ganham-titulo-de-patrimonio-natural-da-humanidade-pela-unesco-1.3538953"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0013",
+      "titulo": "Marte vai aparecer no céu do tamanho da Lua cheia",
+      "descricao": "Mensagem avisa que, numa noite de agosto, Marte vai ficar tão perto da Terra que parecerá uma segunda Lua no céu.",
+      "saibaMais": "A mensagem diz que Marte vai fazer uma aproximação rara da Terra e pede que todos olhem para o céu na data marcada. Ela costuma circular no mês de agosto, por e-mail, redes sociais e aplicativos de mensagem.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O boato nasceu em 2003, quando Marte fez de fato sua maior aproximação em 60 mil anos, como registrou a Agência FAPESP. Mesmo assim, era só um ponto brilhante. Segundo o Universe Today, a mensagem volta todo agosto com a data trocada, e a Lua parece de 70 a 130 vezes mais larga que Marte. Confira a data original: alerta que volta todo ano é requentado.",
+      "tecnica": "data",
+      "tema": "ciencia",
+      "dificuldade": "facil",
+      "fonteUrl": "https://universetoday.com/104362/the-cyber-myth-that-just-wont-die-see-mars-as-large-as-a-full-moon",
+      "fontesExtras": [
+        "https://agencia.fapesp.br/marte-chegou-e-ainda-nao-foi-embora/495"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0014",
+      "titulo": "Comer manga e tomar leite juntos faz mal e pode até matar",
+      "descricao": "Muita gente ouviu dos avós: misturar manga com leite causa congestão e pode levar à morte.",
+      "saibaMais": "A crença é antiga e muito conhecida no Brasil, passada de geração em geração. A manga é uma fruta comum em quintais e feiras do país, e o leite faz parte da alimentação de muitas famílias. Ainda assim, há quem evite a combinação até hoje, com medo de passar mal.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. A Secretaria da Saúde de São Paulo chama isso de superstição: se a mistura fizesse mal, ninguém poderia tomar sorvete nem comer mousse de manga. O Tua Saúde diz que não há registro científico de risco. Uma explicação comum, sem documento que a prove, liga o mito à época da escravidão. Pergunte: de onde veio essa regra e existe estudo?",
+      "tecnica": "contexto",
+      "tema": "saude",
+      "dificuldade": "facil",
+      "fonteUrl": "https://prefeitura.sp.gov.br/web/saude/w/noticias/156263",
+      "fontesExtras": [
+        "https://www.tuasaude.com/news/2026/10/11/manga-com-leite-faz-mal/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0015",
+      "titulo": "Camelos da Argélia foram levados para o sertão do Ceará",
+      "descricao": "Em 1859, 14 camelos vindos da Argélia desembarcaram em Fortaleza para substituir as mulas no transporte pelo sertão.",
+      "saibaMais": "Na época, o Brasil era governado por Dom Pedro II, que tinha interesse por ciência. Uma comissão científica viajou pelo Ceará entre 1859 e 1861 para estudar a natureza e o povo da região. O sertão nordestino é seco e quente, e a carga era levada por mulas e jumentos.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. O Diário do Nordeste conta que 14 camelos saíram de Argel e chegaram a Fortaleza em junho de 1859, numa expedição ligada ao Instituto Histórico e Geográfico Brasileiro. A Revista Pesquisa FAPESP diz que os animais se adaptaram mal e acabaram trocados por jumentos. Para checar, procure historiadores e jornais da região, não só posts.",
+      "tecnica": "fonte",
+      "tema": "historia",
+      "dificuldade": "medio",
+      "fonteUrl": "https://diariodonordeste.verdesmares.com.br/verso/camelos-ja-desembarcaram-no-ceara-para-substituir-mulas-conheca-detalhes-dessa-expedicao-cientifica-1.3148361",
+      "fontesExtras": [
+        "https://revistapesquisa.fapesp.br/en/treasures-of-the-sertao/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0016",
+      "titulo": "Existe uma água-viva que é imortal e volta a ser jovem",
+      "descricao": "Cientistas estudam uma pequena água-viva que, em vez de morrer de velhice, consegue voltar à fase de \"bebê\" e recomeçar a vida.",
+      "saibaMais": "A espécie se chama Turritopsis dohrnii e mede poucos milímetros. Águas-vivas passam por fases: começam como pólipo, uma forma presa no fundo do mar, e depois viram medusas que nadam. Pesquisadores da Universidade de Oviedo, na Espanha, publicaram um estudo sobre os genes dela em 2022.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira, com ressalva. Olhar Digital e Correio Braziliense contam que, diante de fome, lesões ou estresse, a medusa adulta volta a ser pólipo e recomeça o ciclo. Mas \"imortal\" não quer dizer indestrutível: ela pode ser comida por predadores ou morrer por mudanças no ambiente. O contexto importa: veja o que a palavra quer dizer na pesquisa.",
+      "tecnica": "contexto",
+      "tema": "ciencia",
+      "dificuldade": "medio",
+      "fonteUrl": "https://olhardigital.com.br/2022/08/30/ciencia-e-espaco/agua-viva-imortal-pode-ajudar-a-entender-o-envelhecimento-humano/",
+      "fontesExtras": [
+        "https://www.correiobraziliense.com.br/aqui/?p=6526"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0017",
+      "titulo": "Publique este aviso ou o Instagram poderá usar suas fotos",
+      "descricao": "Corrente diz que, a partir de amanhã, tudo o que você postar vira público, a menos que publique: \"Não autorizo o uso das minhas fotos\".",
+      "saibaMais": "O texto aparece como imagem ou post, muitas vezes com cara de documento jurídico. Celebridades já compartilharam versões dele. Existem variações para Facebook, Instagram e WhatsApp, e uma mais recente cita a inteligência artificial da Meta, dona dessas redes.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O Olhar Digital mostra que uma versão para o Facebook circula desde 2012 e que postar o aviso não muda os termos de uso. Em 2025, o Boatos.org desmentiu a versão sobre a IA da Meta: essas declarações não têm valor legal. Repare no \"a partir de amanhã\" sem data: procure quando o texto surgiu. Corrente que volta todo ano é sinal de boato.",
+      "tecnica": "data",
+      "tema": "tecnologia",
+      "dificuldade": "medio",
+      "fonteUrl": "https://olhardigital.com.br/2019/08/22/noticias/celebridades-compartilham-aviso-falso-sobre-privacidade-do-instagram/",
+      "fontesExtras": [
+        "https://www.boatos.org/?p=69194"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0018",
+      "titulo": "Arqueólogos desenterram esqueleto de gigante humano",
+      "descricao": "Foto mostra pesquisadores ao lado de um esqueleto humano enorme, muitas vezes maior que eles, numa escavação.",
+      "saibaMais": "A imagem circula na internet desde 2004, em e-mails, blogs e redes sociais. Algumas versões dizem que uma equipe da National Geographic fez a descoberta. Uma revista da Índia chegou a publicar a história em 2007. Na foto, um homem com uma pá ajuda a dar a noção do tamanho.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. É montagem. Segundo a National Geographic, a foto mais famosa foi criada em 2002 para um concurso de Photoshop do site Worth1000, que pedia uma \"descoberta arqueológica\" falsa. O Lead Stories achou outra versão, feita em 2011 em outro concurso, com a marca d'água do site. Faça busca reversa da imagem: ela pode levar ao autor original.",
+      "tecnica": "imagem",
+      "tema": "curiosidades",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.nationalgeographic.com/news/2007/12/skeleton-giant-photo-hoax/",
+      "fontesExtras": [
+        "https://leadstories.com/hoax-alert/2021/12/fact-check-image-of-giant-skeleton-is-not-real-it-was-a-photoshop-contest-entry.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0019",
+      "titulo": "Ketchup já foi vendido como remédio nos Estados Unidos",
+      "descricao": "No século XIX, o molho de tomate era recomendado por médicos para tratar diarreia e indigestão.",
+      "saibaMais": "Hoje o ketchup é um dos molhos mais populares do mundo, servido com batata frita e hambúrguer. O tomate é originário das Américas. Médicos e farmacêuticos da época vendiam muitos produtos com promessas de cura para problemas do estômago.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Diario de Pernambuco e Popular Science contam que, na década de 1830, o médico John Cook Bennett dizia que o tomate tratava diarreia e indigestão e recomendava comê-lo até em ketchup. Logo surgiram \"pílulas de tomate\" vendidas em farmácias, que depois se viu que nem tinham tomate. Pense na data: o que soa absurdo hoje era comum em outra época.",
+      "tecnica": "data",
+      "tema": "curiosidades",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.diariodepernambuco.com.br/dptrends/o-ketchup-ja-foi-vendido-como-medicamento-e-prometia-combater-problemas-digestivos-no-seculo-xix/",
+      "fontesExtras": [
+        "https://www.popsci.com/science/ketchup-history-medicine/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0020",
+      "titulo": "Rio de Janeiro já foi a capital de um país europeu",
+      "descricao": "Por 13 anos, uma cidade brasileira teria sido a sede do governo de Portugal, de onde o rei comandava todo o império.",
+      "saibaMais": "No começo do século XIX, o exército de Napoleão Bonaparte avançava pela Europa. Portugal tinha colônias em vários continentes, e o Brasil era a maior delas. A família real portuguesa e sua corte cruzaram o oceano Atlântico em navios.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Fugindo da invasão de Napoleão, a corte portuguesa se mudou para o Rio e ficou de 1808 a 1821. O Diário de Notícias, de Portugal, lembra que nunca antes um império europeu tivera capital fora da Europa, e o History Facts a chama de única capital europeia fora da Europa. O contexto histórico explica o fato que parece impossível.",
+      "tecnica": "contexto",
+      "tema": "historia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.dn.pt/1864/como-em-13-anos-d-joao-vi-reinventou-o-brasil-9943975.html",
+      "fontesExtras": [
+        "https://historyfacts.com/?p=5857"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0021",
+      "titulo": "Cientistas dizem que usamos só 10% da capacidade do cérebro",
+      "descricao": "Frase atribuída a cientistas e até a Albert Einstein diz que o ser humano só usa 10% do cérebro e poderia aprender a usar o resto.",
+      "saibaMais": "A ideia aparece em filmes, propagandas de cursos e livros de autoajuda, quase sempre com a promessa de \"liberar\" o resto do cérebro. Numa pesquisa feita no Brasil, quase 60% de 2,2 mil entrevistados disseram que a frase estava certa.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Exames de ressonância mostram atividade em todo o cérebro, explica o neurocientista João Relvas ao Observador, que também diz que a frase não é de Einstein. O Correio Braziliense lembra que o cérebro gasta cerca de 20% da energia do corpo. Pergunte: qual cientista disse isso, e em que estudo? A frase não tem uma pesquisa por trás.",
+      "tecnica": "fonte",
+      "tema": "saude",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://observador.pt/?p=109246",
+      "fontesExtras": [
+        "https://www.correiobraziliense.com.br/aqui/?p=17331",
+        "https://revistapesquisa.fapesp.br/n%C3%BAmeros-em-revis%C3%A3o/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0022",
+      "titulo": "Einstein, o gênio da física, foi reprovado em matemática",
+      "descricao": "Albert Einstein teria ido mal em matemática na escola, prova de que até gênios tiram nota baixa.",
+      "saibaMais": "A história é usada em palestras e posts para animar estudantes que vão mal na escola. Em 1935, uma coluna de curiosidades de um jornal publicou a manchete \"o maior matemático vivo foi reprovado em matemática\". Einstein ficou famoso pela teoria da relatividade.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo a revista TIME, quando viu a coluna de 1935, Einstein riu e respondeu que nunca foi reprovado em matemática e que dominava cálculo antes dos 15 anos. O WorldAtlas explica a confusão: ele foi mal nas partes de outras matérias numa prova de admissão em Zurique, mas foi bem em matemática e física. Busque o contexto e a fonte original.",
+      "tecnica": "contexto",
+      "tema": "ciencia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://content.time.com/time/specials/packages/article/0,28804,1936731_1936743_1936758,00.html",
+      "fontesExtras": [
+        "https://www.worldatlas.com/articles/did-einstein-really-fail-math-class.html",
+        "https://van.physics.illinois.edu/ask/listing/31273"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    }
+  ]
+}
