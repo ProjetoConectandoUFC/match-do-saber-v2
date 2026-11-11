@@ -1,0 +1,223 @@
+{
+  "criterioDificuldade": {
+    "facil": "O palpite de bom senso acerta. Falsa com absurdo evidente (promessa impossível, foto ou alerta exagerado) ou verdadeira muito conhecida, ensinada na escola ou famosa.",
+    "medio": "Soa estranho, mas é plausível. O jogador precisa de uma pista do card (quem diz, quando, como é a foto) ou de uma informação que nem todo mundo tem.",
+    "dificil": "O palpite intuitivo tende a errar: falsa repetida como fato por muita gente, ou verdadeira que parece invenção. Só checando fonte, data ou contexto dá para acertar.",
+    "observacao": "Lote 3, tema político (pedido do responsável em 2026-11-11). Foco em instituições, voto e história política, sem candidatos, partidos ou políticos vivos. Fáceis: 1 V e 2 F; médias: 2 V e 2 F; difíceis: 2 V e 1 F. O jogo ainda não tem o tema \"politica\": cada notícia usa um tema existente e traz \"temaSugerido\": \"politica\" para o responsável decidir."
+  },
+  "noticias": [
+    {
+      "id": "mds-0023",
+      "titulo": "Adolescente de 15 anos já pode tirar o título de eleitor",
+      "tituloCurto": "Título de eleitor aos 15 anos",
+      "descricao": "Segundo a Justiça Eleitoral, quem tem 15 anos já pode pedir o título, mesmo antes de ter idade para votar.",
+      "saibaMais": "No Brasil, o voto é obrigatório dos 18 aos 70 anos. O título de eleitor é o documento que permite votar e pode ser pedido pela internet. Antes de cada eleição, a Justiça Eleitoral fecha o cadastro por alguns meses, e quem perde o prazo fica de fora daquela votação.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Diário do Nordeste e Tribuna de Jundiaí explicam que uma resolução do TSE de 2021 permite pedir o título a partir dos 15 anos. Mas só vota quem tiver 16 anos completos até o dia da eleição, e aos 16 e 17 anos o voto é facultativo. Para checar, vá à fonte oficial: a Justiça Eleitoral, cujo site termina em jus.br.",
+      "tecnica": "fonte",
+      "tema": "curiosidades",
+      "temaSugerido": "politica",
+      "dificuldade": "facil",
+      "fonteNome": "Diário do Nordeste",
+      "fonteUrl": "https://diariodonordeste.verdesmares.com.br/pontopoder/confira-como-funciona-o-processo-de-alistamento-eleitoral-para-jovens-de-16-anos-1.3739951",
+      "fontesExtras": [
+        "https://tribunadejundiai.com.br/mais/brasil/jovens-15-anos-titulo-eleitor-ate-6-de-maio-eleicoes-2026/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0024",
+      "titulo": "Rinoceronte foi a mais votada numa eleição para vereador em SP",
+      "tituloCurto": "Rinoceronte mais votada em SP",
+      "descricao": "Numa eleição para a Câmara Municipal de São Paulo, cerca de 100 mil eleitores votaram numa rinoceronte do zoológico.",
+      "saibaMais": "A rinoceronte se chamava Cacareco e era uma das atrações do zoológico de São Paulo. Ela nunca foi inscrita como candidata. A ideia de votar nela foi lançada por um jornalista e se espalhou pela cidade como forma de reclamar dos políticos da época.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Catraca Livre e o portal DOL contam que, em 1959, cerca de 100 mil pessoas escreveram o nome de Cacareco na cédula, mais votos que qualquer candidato. A cédula era de papel, então dava para escrever qualquer nome. Os votos foram anulados e ela não assumiu. O contexto explica o fato: foi um voto de protesto, numa época de cédula de papel.",
+      "tecnica": "contexto",
+      "tema": "historia",
+      "temaSugerido": "politica",
+      "dificuldade": "medio",
+      "fonteNome": "Catraca Livre",
+      "fonteUrl": "https://catracalivre.com.br/noticias/uma-rinoceronte-recebeu-cerca-de-100-mil-votos-para-vereadora-em-sao-paulo-e-superou-todos-os-candidatos-humanos/",
+      "fontesExtras": [
+        "https://dol.com.br/tuedoide/curiosidades/877735/ioio-cacareco-e-tiao-os-animais-candidatos-no-brasil",
+        "https://hoaxes.org/archive/permalink/cacareco_the_rhinoceros"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0025",
+      "titulo": "Rosto famoso de Tiradentes foi inventado cem anos depois dele",
+      "tituloCurto": "O rosto inventado de Tiradentes",
+      "descricao": "Historiadores dizem que ninguém sabe como era a cara de Tiradentes e que a imagem dos livros foi criada por artistas.",
+      "saibaMais": "Tiradentes foi o líder mais conhecido da Inconfidência Mineira, movimento contra o domínio de Portugal no fim do século XVIII. O dia 21 de abril é feriado em sua homenagem. Nos livros escolares e em monumentos, ele quase sempre aparece com cabelos longos e barba.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. A Revista Pesquisa FAPESP conta que não há retrato dele feito em vida. O primeiro desenho, de Angelo Agostini, é de 1890 e se inspirou numa pintura de Jesus. Documentos da época dizem que, no fim da vida, ele estava sem barba e de cabeça raspada. A National Geographic Brasil confirma. Diante de uma imagem, pergunte: quem fez, e quando?",
+      "tecnica": "imagem",
+      "tema": "historia",
+      "temaSugerido": "politica",
+      "dificuldade": "medio",
+      "fonteNome": "Revista Pesquisa FAPESP",
+      "fonteUrl": "https://revistapesquisa.fapesp.br/representacao-de-um-heroi/",
+      "fontesExtras": [
+        "https://www.nationalgeographicbrasil.com/historia/2025/04/quem-foi-tiradentes-os-4-dados-sobre-o-homem-simbolo-da-inconfidencia-mineira"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0026",
+      "titulo": "Por mais de 100 anos, quem não sabia ler foi proibido de votar",
+      "tituloCurto": "Analfabetos proibidos de votar",
+      "descricao": "No Brasil, pessoas analfabetas teriam ficado sem direito ao voto desde o tempo do Império até a década de 1980.",
+      "saibaMais": "Hoje, quem não sabe ler pode votar no Brasil, mas não é obrigado, assim como jovens de 16 e 17 anos e pessoas com mais de 70. Em 2024, o país tinha 5,5 milhões de eleitores analfabetos, segundo a Justiça Eleitoral.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. O MPF explica que a Emenda Constitucional 25, de 1985, acabou com uma proibição que durava 104 anos. Segundo o Jornal de Brasília, com texto da Folhapress, os analfabetos votaram nas eleições de novembro de 1985. Eles podem votar, mas ainda não podem ser candidatos. O contexto histórico importa: direitos que parecem óbvios já foram negados.",
+      "tecnica": "contexto",
+      "tema": "historia",
+      "temaSugerido": "politica",
+      "dificuldade": "dificil",
+      "fonteNome": "Ministério Público Federal",
+      "fonteUrl": "https://www.mpf.mp.br/o-mpf/unidades/procuradoria-geral-da-republica-pgr/noticias/me-explica-mpf-por-que-5-de-outubro-e-uma-data-importante-para-a-democracia",
+      "fontesExtras": [
+        "https://jornaldebrasilia.com.br/noticias/politica-e-poder/emenda-que-instituiu-voto-analfabeto-influenciou-a-constituicao-de-88/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0027",
+      "titulo": "Brasileiros já votaram para decidir se o país voltaria a ter um rei",
+      "tituloCurto": "A votação para ter um rei",
+      "descricao": "Numa votação nacional, os eleitores puderam escolher entre manter a República ou trazer a monarquia de volta ao Brasil.",
+      "saibaMais": "O Brasil foi um império, governado por imperadores, até 1889, quando foi proclamada a República. Plebiscito é uma consulta em que a população vota diretamente sobre uma questão, e não em candidatos. Nesse tipo de votação, o eleitor marca uma das opções apresentadas.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira, e não faz tanto tempo. A Agência Senado conta que o plebiscito de 21 de abril de 1993, previsto na Constituição de 1988, perguntou: república ou monarquia? Presidencialismo ou parlamentarismo? A república teve 66% e a monarquia, 10%. O Diario de Pernambuco fala em 6,7 milhões de votos pelo rei. Confira a data: o fato é dos anos 1990.",
+      "tecnica": "data",
+      "tema": "historia",
+      "temaSugerido": "politica",
+      "dificuldade": "dificil",
+      "fonteNome": "Agência Senado",
+      "fonteUrl": "https://www12.senado.leg.br/noticias/especiais/arquivo-s/ha-30-anos-brasil-foi-as-urnas-decidir-se-teria-rei-e-primeiro-ministro/",
+      "fontesExtras": [
+        "https://www.diariodepernambuco.com.br/amp/politica/2026/06/11715903-o-dia-em-que-222-mil-pernambucanos-votaram-pela-volta-da-monarquia.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0028",
+      "titulo": "TSE libera voto pelo celular: basta se cadastrar no link",
+      "tituloCurto": "Voto pelo celular",
+      "descricao": "Mensagem diz que agora dá para votar de casa, pelo celular, e pede que o eleitor faça um cadastro num link.",
+      "saibaMais": "O texto circula no WhatsApp e nas redes perto das eleições, às vezes com o nome \"Vote em Casa\" e com cara de anúncio oficial. O TSE, Tribunal Superior Eleitoral, organiza as eleições no Brasil. Ele tem um aplicativo oficial, o e-Título, que é a versão digital do título de eleitor.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Aos Fatos e O Imparcial mostram que o voto no Brasil é só presencial, na urna. O TSE negou o \"Vote em Casa\", e o e-Título serve para identificação e para justificar ausência, não para votar. O link nem era de site oficial, que termina em jus.br ou gov.br, e podia coletar dados para golpes. Confira a fonte: vá direto ao site do TSE.",
+      "tecnica": "fonte",
+      "tema": "tecnologia",
+      "temaSugerido": "politica",
+      "dificuldade": "facil",
+      "fonteNome": "Aos Fatos",
+      "fonteUrl": "https://www.aosfatos.org/noticias/e-falso-que-tse-permitiu-voto-pelo-celular-nestas-eleicoes/",
+      "fontesExtras": [
+        "https://oimparcial.com.br/noticias/2020/11/governo-federal-lancou-aplicativo-que-permite-votar-pelo-celular-checamos/",
+        "https://www.aosfatos.org/noticias/tse-nao-liberou-voto-celular-eleicoes/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0029",
+      "titulo": "Foto mostra o chip que seria injetado junto com a vacina",
+      "tituloCurto": "Chip na vacina",
+      "descricao": "Post mostra a foto de uma pecinha eletrônica e diz que ela vai dentro das vacinas para rastrear as pessoas pelo 5G.",
+      "saibaMais": "O post começou a circular em 2020, quando vacinas contra a covid-19 estavam em teste, inclusive no Brasil, com participação do Instituto Butantan. A rede 5G de internet móvel começava a chegar ao país na época. Postagens parecidas apareceram em outros países.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Checagem publicada pelo Estado de Minas fez busca reversa: a foto é de um capacitor, postada em 2018 num site de imagens, antes da pandemia. Especialistas dizem que um chip com 5G não passaria pela agulha. Ao Aos Fatos, o Instituto Butantan disse que a vacina não tem nenhum componente de \"controle digital\". Faça busca reversa da imagem.",
+      "tecnica": "imagem",
+      "tema": "saude",
+      "temaSugerido": "politica",
+      "dificuldade": "facil",
+      "fonteNome": "Estado de Minas",
+      "fonteUrl": "https://www.em.com.br/app/noticia/internacional/factcheck/2020/08/10/interna_internacional,1175037/checamos-nanochip-nao-passa-agulha-de-seringa-e-5g-nao-carrega-virus.shtml",
+      "fontesExtras": [
+        "https://www.aosfatos.org/noticias/vacinas-testadas-contra-covid-19-nao-usam-nanochip-para-rastrear-pessoas-pelo-5g/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0030",
+      "titulo": "Pintura famosa mostra como foi o grito da Independência",
+      "tituloCurto": "Quadro do grito da Independência",
+      "descricao": "O quadro com D. Pedro num cavalo, cercado por uma guarda também a cavalo, seria o retrato fiel do 7 de setembro de 1822.",
+      "saibaMais": "A pintura se chama \"Independência ou Morte\", também conhecida como \"Grito do Ipiranga\", e é de Pedro Américo. É uma das imagens mais conhecidas da história do Brasil e aparece em muitos livros escolares. Na cena, a comitiva do príncipe está toda montada, perto do riacho Ipiranga.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O quadro foi pintado em 1888, 66 anos depois, por encomenda do governo imperial, segundo a Revista Pesquisa FAPESP e a National Geographic Brasil. Para subir a serra do Mar, a comitiva provavelmente usava mulas, não cavalos. Pintura histórica é uma versão do passado, não um registro. Confira a data: a obra é muito posterior ao fato.",
+      "tecnica": "data",
+      "tema": "historia",
+      "temaSugerido": "politica",
+      "dificuldade": "medio",
+      "fonteNome": "Revista Pesquisa FAPESP",
+      "fonteUrl": "https://revistapesquisa.fapesp.br/erros-e-acertos-dos-caminhos-da-independencia/",
+      "fontesExtras": [
+        "https://www.nationalgeographicbrasil.com/historia/2022/09/nos-200-anos-da-independencia-do-brasil-conheca-mitos-e-verdades-sobre-o-7-de-setembro"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0031",
+      "titulo": "Presidente da França disse que \"o Brasil não é um país sério\"",
+      "tituloCurto": "\"O Brasil não é um país sério\"",
+      "descricao": "A frase famosa é atribuída a Charles de Gaulle, que governou a França, e é repetida até hoje em conversas sobre o Brasil.",
+      "saibaMais": "A frase teria surgido em 1962, durante a chamada \"Guerra da Lagosta\", uma disputa entre Brasil e França por causa de barcos de pesca franceses em águas brasileiras. Ela aparece em colunas de jornal, discursos e posts, quase sempre entre aspas e com o nome do general francês.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Coluna do Correio Braziliense conta que a frase é do embaixador brasileiro Carlos Alves de Souza Filho, dita numa conversa informal com um jornalista em 1962. O jornal a publicou como se fosse de De Gaulle, e o diplomata desfez o erro em suas memórias, em 1979. Colunas do Agora RN e da Tribuna de Minas confirmam. Pergunte: quem disse, e onde?",
+      "tecnica": "fonte",
+      "tema": "historia",
+      "temaSugerido": "politica",
+      "dificuldade": "medio",
+      "fonteNome": "Correio Braziliense",
+      "fonteUrl": "https://blogs.correiobraziliense.com.br/azedo/nas-entrelinhas-crise-nao-e-para-amadores/",
+      "fontesExtras": [
+        "https://agorarn.com.br/coluna/os-estados-unidos-nao-sao-um-pais-serio/",
+        "https://tribunademinas.com.br/?p=129786"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0032",
+      "titulo": "Se mais da metade votar nulo, a eleição é anulada e refeita",
+      "tituloCurto": "Voto nulo anula a eleição?",
+      "descricao": "Mensagem diz que, se mais de 50% dos eleitores anularem o voto, a Justiça Eleitoral é obrigada a fazer outra eleição.",
+      "saibaMais": "A mensagem volta em época de eleição e cita o Código Eleitoral, a lei que organiza as votações no Brasil. Um artigo dessa lei fala em nova eleição quando a \"nulidade\" atinge mais da metade dos votos.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Aos Fatos e Gazeta do Povo mostram que a lei trata de votos anulados pela Justiça por fraude ou coação, e não do voto nulo escolhido pelo eleitor. Brancos e nulos não entram na conta: vence quem tem mais votos válidos. Ler a lei no contexto desmonta o boato: ali, \"nulidade\" quer dizer outra coisa.",
+      "tecnica": "contexto",
+      "tema": "curiosidades",
+      "temaSugerido": "politica",
+      "dificuldade": "dificil",
+      "fonteNome": "Aos Fatos",
+      "fonteUrl": "https://www.aosfatos.org/noticias/o-que-significam-os-votos-nulo-em-branco-e-em-legenda-nas-eleicoes/",
+      "fontesExtras": [
+        "https://www.gazetadopovo.com.br/vida-publica/eleicoes/2014/voto-nulo-nao-cancela-eleicao-esclarece-tse-ecddq5avqk7ixiazxhamhtwlq"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    }
+  ]
+}
