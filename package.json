@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "productName": "Match do Saber",
-  "version": "9.0.0",
+  "version": "11.0.0",
   "description": "Match do Saber (Conectando): jogo de checagem de notícias, versão web e desktop offline",
   "main": "electron/main.cjs",
   "scripts": {
