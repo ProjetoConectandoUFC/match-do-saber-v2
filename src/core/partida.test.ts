@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ESTADO_INICIAL, TEMPOS, mensagemResumo, pontos, reduzir,
+  ESTADO_INICIAL, TEMPOS, mensagemResumo, opcoesDaConfiguracao, pontos, reduzir,
   type Contexto, type Estado, type Evento, type Presenca,
 } from './partida';
 import type { Noticia, Tecnica, Veredito } from './types';
+import { CONFIG_PADRAO } from './modos';
 
 const n = (id: string, veredito: Veredito, tecnica: Tecnica = 'fonte'): Noticia => ({
   id, veredito, tecnica, titulo: id, descricao: '', saibaMais: '', imagem: '', tema: 'ciencia', explicacao: '', fonteUrl: '',
@@ -259,5 +260,64 @@ describe('v6.0.0: ausência só pausa no modo Corpo', () => {
   it('a calibração continua exigindo a pessoa no centro, mesmo com ignorarAusencia', () => {
     const c = ctx({ ignorarAusencia: true });
     expect(rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(5000, ninguem), tick(5000, ninguem)], c).tela).toBe('espera');
+  });
+});
+
+describe('configurações da partida (v12.0.0, AC-9.23)', () => {
+  const muitas = [
+    ...Array.from({ length: 6 }, (_, i) => n(`v${i}`, 'verdadeira')),
+    ...Array.from({ length: 6 }, (_, i) => n(`f${i}`, 'falsa')),
+  ];
+  it('AC-4.1 com tempo entre cards de 8 s: o feedback guarda a duração e fica 8 s inteiros depois da saída do card', () => {
+    const c = ctx({ tempoFeedbackMs: 8000 });
+    const s1 = rodar(emCard(c), [{ tipo: 'escolha', resposta: 'verdadeira' }], c);
+    expect(s1).toMatchObject({ tela: 'feedback', feedbackMs: 8000, restanteMs: 8000 + TEMPOS.saidaMs });
+    expect(rodar(s1, [tick(TEMPOS.saidaMs + 7999)], c)).toMatchObject({ tela: 'feedback', restanteMs: 1 });
+    expect(rodar(s1, [tick(TEMPOS.saidaMs + 8000)], c)).toMatchObject({ tela: 'card', indice: 1 });
+  });
+  it('AC-4.3 com tempo entre cards de 5 s: tempo esgotado também fica 5 s (sem saída)', () => {
+    const c = ctx({ tempoFeedbackMs: 5000 });
+    const s1 = rodar(emCard(c), [tick(TEMPOS.cardMs)], c);
+    expect(s1).toMatchObject({ tela: 'feedback', resposta: null, feedbackMs: 5000, restanteMs: 5000 });
+  });
+  it('sem configuração, o feedback continua com 3 s (padrão)', () => {
+    const s1 = rodar(emCard(), [{ tipo: 'escolha', resposta: 'falsa' }]);
+    expect(s1).toMatchObject({ tela: 'feedback', feedbackMs: TEMPOS.feedbackMs });
+  });
+  it('AC-6.1 com 5 cards por partida: a partida tem 5 cards', () => {
+    const c = ctx({ noticias: muitas, totalCards: 5 });
+    const s = emCard(c);
+    expect(s.tela === 'card' && s.partida.cards).toHaveLength(5);
+  });
+  it('AC-6.5: o nível configurado chega ao sorteio', () => {
+    const comNivel = muitas.map((x, i) => ({ ...x, dificuldade: i % 6 < 3 ? ('facil' as const) : ('dificil' as const) }));
+    const c = ctx({ noticias: comNivel, totalCards: 5, nivel: 'facil' });
+    const s = emCard(c);
+    expect(s.tela === 'card' && s.partida.cards.every((x) => x.dificuldade === 'facil')).toBe(true);
+  });
+  it('AC-5.5 com ausência de 5 s: encerra aos 5 s sem ninguém, e não antes', () => {
+    const c = ctx({ ausenciaMs: 5000 });
+    const s = emCardCalibrado(c);
+    expect(rodar(s, [tick(4999, ninguem)], c).tela).toBe('card');
+    expect(rodar(s, [tick(4999, ninguem), tick(1, ninguem)], c)).toBe(ESTADO_INICIAL);
+  });
+  it('AC-15.3: o feedback do treino usa o tempo entre cards', () => {
+    const perfil = { ...n('t1', 'falsa'), perfil: 'x' } as never;
+    const c = ctx({ tutorial: [perfil], tempoFeedbackMs: 10000 });
+    const s = rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, { tipo: 'enter' }, { tipo: 'escolha', resposta: 'falsa' }], c);
+    expect(s).toMatchObject({ tela: 'tutorialFeedback', feedbackMs: 10000, restanteMs: 10000 + TEMPOS.saidaMs });
+  });
+});
+
+describe('opcoesDaConfiguracao (v12.0.0, AC-9.23)', () => {
+  it('converte as configurações do menu nas opções da partida', () => {
+    expect(opcoesDaConfiguracao({ ...CONFIG_PADRAO, modo: 'mao', tempoCardS: 20, tempoFeedbackS: 8, cardsPartida: 5, nivel: 'medio', tempoAusenciaS: 20 })).toEqual({
+      tempoCardMs: 20000, tempoFeedbackMs: 8000, totalCards: 5, nivel: 'medio', ausenciaMs: 20000, ignorarAusencia: true,
+    });
+  });
+  it('com os padrões, repete os tempos fixos de antes', () => {
+    expect(opcoesDaConfiguracao(CONFIG_PADRAO)).toEqual({
+      tempoCardMs: TEMPOS.cardMs, tempoFeedbackMs: TEMPOS.feedbackMs, totalCards: 10, nivel: 'todos', ausenciaMs: TEMPOS.ausenciaMs, ignorarAusencia: false,
+    });
   });
 });

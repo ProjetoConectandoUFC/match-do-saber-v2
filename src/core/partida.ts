@@ -1,5 +1,6 @@
 import { sortear } from './sorteio';
 import type { PerfilTutorial } from './tutorial';
+import type { Configuracoes, Nivel } from './modos';
 import type { Noticia, Veredito } from './types';
 
 export const TEMPOS = {
@@ -29,11 +30,12 @@ export type Estado =
   | { tela: 'calibracao'; centradoMs: number; ausenteMs: number }
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
-  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null }
+  // `feedbackMs` (v12.0.0): a duração configurada deste feedback; acima dela, o card ainda está saindo.
+  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; feedbackMs: number; resposta: Veredito | null }
   | { tela: 'resumo'; partida: Partida }
   // v10.2.0 (FR-16): treino antes da partida; `passo` indexa `Contexto.tutorial`. Sem cronômetro (AC-15.6).
   | { tela: 'tutorial'; passo: number; entrada: Entrada }
-  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; resposta: Veredito };
+  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; feedbackMs: number; resposta: Veredito };
 
 export type Evento =
   | { tipo: 'tick'; dtMs: number; presenca: Presenca | null }
@@ -52,6 +54,23 @@ export interface Contexto {
   ignorarAusencia?: boolean;
   /** v10.2.0 (FR-16): perfis de treino; vazio ou ausente = tutorial desligado (AC-15.1). */
   tutorial?: readonly PerfilTutorial[];
+  /** v12.0.0 (AC-9.23): tempo entre cards, cards por partida, nível e tempo de ausência; sem valor, os de antes. */
+  tempoFeedbackMs?: number;
+  totalCards?: number;
+  nivel?: Nivel;
+  ausenciaMs?: number;
+}
+
+/** Opções da partida que vêm do menu Configurações (FR-9; tempos, cards, nível e ausência na v12.0.0, AC-9.23). */
+export function opcoesDaConfiguracao(c: Configuracoes): Pick<Contexto, 'tempoCardMs' | 'tempoFeedbackMs' | 'totalCards' | 'nivel' | 'ausenciaMs' | 'ignorarAusencia'> {
+  return {
+    tempoCardMs: c.tempoCardS * 1000,
+    tempoFeedbackMs: c.tempoFeedbackS * 1000,
+    totalCards: c.cardsPartida,
+    nivel: c.nivel,
+    ausenciaMs: c.tempoAusenciaS * 1000,
+    ignorarAusencia: c.modo !== 'corpo', // AC-9.21
+  };
 }
 
 export const ESTADO_INICIAL: Estado = { tela: 'espera' };
@@ -62,7 +81,7 @@ function card(partida: Partida, indice: number, tempoCardMs: number = TEMPOS.car
 }
 
 function iniciarPartida(ctx: Contexto, entrada: Entrada): Estado {
-  const cards = sortear(ctx.noticias, ctx.rng);
+  const cards = sortear(ctx.noticias, ctx.rng, ctx.totalCards, ctx.nivel);
   return cards.length === 0 ? ESTADO_INICIAL : card({ cards, resultados: [], entrada }, 0, ctx.tempoCardMs);
 }
 
@@ -72,13 +91,15 @@ function comecar(ctx: Contexto, entrada: Entrada): Estado {
   return ctx.tutorial?.length ? { tela: 'tutorial', passo: 0, entrada } : iniciarPartida(ctx, entrada);
 }
 
-function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null): Estado {
+function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null, ctx: Contexto): Estado {
+  const feedbackMs = ctx.tempoFeedbackMs ?? TEMPOS.feedbackMs;
   return {
     tela: 'feedback',
     partida: { ...e.partida, resultados: [...e.partida.resultados, r] },
     indice: e.indice,
-    // Escolha: o card sai antes (saidaMs) e o resultado ainda fica 3 s inteiros (AC-4.1/AC-4.2).
-    restanteMs: resposta === null ? TEMPOS.feedbackMs : TEMPOS.feedbackMs + TEMPOS.saidaMs,
+    // Escolha: o card sai antes (saidaMs) e o resultado ainda fica o tempo entre cards inteiro (AC-4.1/AC-4.2).
+    restanteMs: resposta === null ? feedbackMs : feedbackMs + TEMPOS.saidaMs,
+    feedbackMs,
     resposta,
   };
 }
@@ -109,7 +130,7 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
     case 'card': {
       if (evento.tipo === 'escolha') {
         const certo = evento.resposta === estado.partida.cards[estado.indice]!.veredito;
-        return registrar(estado, certo ? 'acerto' : 'erro', evento.resposta);
+        return registrar(estado, certo ? 'acerto' : 'erro', evento.resposta, ctx);
       }
       if (evento.tipo === 'saibaMais') return { ...estado, saibaMais: !estado.saibaMais };
       if (evento.tipo !== 'tick') return estado;
@@ -117,11 +138,11 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       const p = estado.partida.entrada === 'alternativa' || ctx.ignorarAusencia ? null : evento.presenca;
       if (p && !p.presente) {
         const ausenteMs = (estado.ausenteMs ?? 0) + evento.dtMs;
-        return ausenteMs >= TEMPOS.ausenciaMs ? ESTADO_INICIAL : { ...estado, ausenteMs };
+        return ausenteMs >= (ctx.ausenciaMs ?? TEMPOS.ausenciaMs) ? ESTADO_INICIAL : { ...estado, ausenteMs };
       }
       const base: EstadoCard = { ...estado, ausenteMs: null };
       const restanteMs = base.restanteMs - evento.dtMs;
-      return restanteMs <= 0 ? registrar(base, 'tempo', null) : { ...base, restanteMs };
+      return restanteMs <= 0 ? registrar(base, 'tempo', null, ctx) : { ...base, restanteMs };
     }
     case 'feedback': {
       if (evento.tipo !== 'tick') return estado;
@@ -140,7 +161,8 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       // AC-15.5: Enter pula o treino. AC-15.6: sem cronômetro, ausência nem "saiba mais".
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
       if (evento.tipo !== 'escolha') return estado;
-      return { ...estado, tela: 'tutorialFeedback', restanteMs: TEMPOS.feedbackMs + TEMPOS.saidaMs, resposta: evento.resposta };
+      const feedbackMs = ctx.tempoFeedbackMs ?? TEMPOS.feedbackMs;
+      return { ...estado, tela: 'tutorialFeedback', restanteMs: feedbackMs + TEMPOS.saidaMs, feedbackMs, resposta: evento.resposta };
     }
     case 'tutorialFeedback': {
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);

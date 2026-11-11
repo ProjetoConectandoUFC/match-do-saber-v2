@@ -131,8 +131,11 @@ describe('situacaoDoCard (AC-2.10)', () => {
   });
 
   it('saída do card escolhido mantém a posição; o resultado do feedback e o tempo esgotado voltam ao centro', () => {
-    const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null) =>
-      ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, resposta });
+    const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null, feedbackMs: number = TEMPOS.feedbackMs) =>
+      ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, feedbackMs, resposta });
+    // v12.0.0 (AC-9.23): com 8 s entre cards, o card só está saindo nos primeiros saidaMs, não até faltar 3 s.
+    expect(situacaoDoCard(fb(8000 + TEMPOS.saidaMs, 'verdadeira', 8000), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(5000, 'verdadeira', 8000), false)).toBe('centro');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs + TEMPOS.saidaMs, 'verdadeira'), false)).toBe('saindo');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs, 'falsa'), false)).toBe('centro');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs, null), false)).toBe('centro');
@@ -141,7 +144,9 @@ describe('situacaoDoCard (AC-2.10)', () => {
   it('v10.2.0: o card de treino segue a leitura e sai da mesma forma; o feedback de treino volta ao centro', () => {
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, false)).toBe('jogando');
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, true)).toBe('centro');
-    const fb = (restanteMs: number) => ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, resposta: 'falsa' as const });
+    const fb = (restanteMs: number, feedbackMs: number = TEMPOS.feedbackMs) =>
+      ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, feedbackMs, resposta: 'falsa' as const });
+    expect(situacaoDoCard(fb(5000, 8000), false)).toBe('centro');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs + 1), false)).toBe('saindo');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs), false)).toBe('centro');
   });

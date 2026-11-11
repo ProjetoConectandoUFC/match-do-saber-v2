@@ -2,6 +2,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { Noticia } from '../core/types';
+import { CONFIG_PADRAO } from '../core/modos';
 import { BarraTempo, BotaoSair, MenuConfiguracoes, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
 
 const noticia: Noticia = {
@@ -165,8 +166,8 @@ describe('v10.0.0: espera com a identidade Conectando (FR-15)', () => {
 describe('v2.0.0: configurações, iniciar e sair', () => {
   it('AC-9.2/AC-10.1 (v9.0.0): espera mostra o resumo, Iniciar e o menu ☰ no lugar do ⚙', () => {
     const iniciar = vi.fn();
-    render(<TelaEspera semNoticias={false} camera="ativa" config={{ modo: 'mao', tempoCardS: 20, som: false, foto: false, tutorial: true }} menu={<button type="button">Menu</button>} onIniciar={iniciar} />);
-    expect(screen.getByText('Modo: Mão · Tempo por card: 20 s · Som: desligado · Foto: desligada · Tutorial: ligado')).toBeInTheDocument();
+    render(<TelaEspera semNoticias={false} camera="ativa" config={{ ...CONFIG_PADRAO, modo: 'mao', tempoCardS: 20, som: false, foto: false, tutorial: true }} menu={<button type="button">Menu</button>} onIniciar={iniciar} />);
+    expect(screen.getByText('Modo: Mão · Card: 20 s · Entre cards: 3 s · Cards: 10 · Nível: Todos · Ausência: 10 s · Som: desligado · Foto: desligada · Tutorial: ligado')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Configurações' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Menu' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar' }));
@@ -176,9 +177,16 @@ describe('v2.0.0: configurações, iniciar e sair', () => {
     render(<TelaEspera semNoticias camera="ativa" />);
     expect(screen.getByRole('button', { name: 'Iniciar' })).toBeDisabled();
   });
-  it('AC-9.1: menu mostra os cinco itens (v10.2.0: Tutorial) com os valores atuais marcados', () => {
+  it('AC-9.1 (v12.0.0): menu mostra os nove itens, na ordem, com os valores atuais marcados', () => {
     const definir = vi.fn();
-    render(<MenuConfiguracoes config={{ modo: 'corpo', tempoCardS: 15, som: true, foto: true, tutorial: false }} itemDestacado={0} onDefinir={definir} onFechar={() => {}} />);
+    render(<MenuConfiguracoes config={CONFIG_PADRAO} itemDestacado={0} onDefinir={definir} onFechar={() => {}} />);
+    expect(screen.getAllByRole('group')).toHaveLength(9);
+    expect(within(screen.getByRole('group', { name: 'Tempo entre cards' })).getByRole('button', { name: '◉ 3 s' })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(screen.getByRole('group', { name: 'Cards por partida' })).getByRole('button', { name: '◉ 10' })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(screen.getByRole('group', { name: 'Nível' })).getByRole('button', { name: '◉ Todos' })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(screen.getByRole('group', { name: 'Tempo de ausência' })).getByRole('button', { name: '◉ 10 s' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(within(screen.getByRole('group', { name: 'Nível' })).getByRole('button', { name: '○ Difícil' }));
+    expect(definir).toHaveBeenLastCalledWith({ ...CONFIG_PADRAO, nivel: 'dificil' });
     expect(screen.getByRole('dialog', { name: 'Configurações' })).toBeInTheDocument();
     expect(screen.getByRole('group', { name: 'Modo de jogo' })).toBeInTheDocument();
     expect(screen.getByRole('group', { name: 'Tempo por card' })).toBeInTheDocument();
@@ -187,13 +195,13 @@ describe('v2.0.0: configurações, iniciar e sair', () => {
     const tutorial = within(screen.getByRole('group', { name: 'Tutorial' }));
     expect(tutorial.getByRole('button', { name: '◉ Desligado' })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(tutorial.getByRole('button', { name: '○ Ligado' }));
-    expect(definir).toHaveBeenLastCalledWith({ modo: 'corpo', tempoCardS: 15, som: true, foto: true, tutorial: true });
+    expect(definir).toHaveBeenLastCalledWith({ ...CONFIG_PADRAO, tutorial: true });
     expect(screen.getByRole('button', { name: '◉ Corpo' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '◉ 15 s' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '◉ Ligado' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '◉ Ligada' })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(screen.getByRole('button', { name: '○ 25 s' }));
-    expect(definir).toHaveBeenCalledWith({ modo: 'corpo', tempoCardS: 25, som: true, foto: true, tutorial: false });
+    expect(definir).toHaveBeenCalledWith({ ...CONFIG_PADRAO, tempoCardS: 25 });
     // AC-9.3/AC-9.18: o X no topo do painel fecha (desenhado, sem o caractere "✕", FR-15)
     const fechar = screen.getByRole('button', { name: 'Fechar' });
     expect(fechar.textContent).toBe('');

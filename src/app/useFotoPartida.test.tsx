@@ -14,7 +14,7 @@ const partida: Partida = { cards: Array.from({ length: 10 }, (_, i) => noticia(i
 const espera: Estado = { tela: 'espera' };
 const calibracao: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
 const card = (indice: number): Estado => ({ tela: 'card', partida, indice, restanteMs: 15000, saibaMais: false, ausenteMs: null });
-const feedback = (indice: number, restanteMs = 3250): Estado => ({ tela: 'feedback', partida, indice, restanteMs, resposta: 'verdadeira' });
+const feedback = (indice: number, restanteMs = 3250): Estado => ({ tela: 'feedback', partida, indice, restanteMs, feedbackMs: 3000, resposta: 'verdadeira' });
 const resumo: Estado = { tela: 'resumo', partida };
 
 /** Joga uma partida de 10 cards inteira, do card 0 ao resumo, passando cada estado ao hook. */

@@ -13,12 +13,12 @@ export function sonsDaTransicao(antes: Estado, depois: Estado): Som[] {
   if (depois.tela !== 'feedback') return [];
   const resultado: Som = depois.partida.resultados[depois.indice] === 'acerto' ? 'acerto' : 'erro';
   if (antes.tela === 'card') return depois.resposta === null ? [resultado] : ['deslizar'];
-  // Depois da saída do card (TEMPOS.saidaMs), o resultado aparece: toca uma vez.
+  // Depois da saída do card (TEMPOS.saidaMs), o resultado aparece: toca uma vez. `feedbackMs` é o tempo entre cards (v12.0.0).
   const terminouSaida =
     antes.tela === 'feedback' &&
     antes.indice === depois.indice &&
     depois.resposta !== null &&
-    antes.restanteMs > TEMPOS.feedbackMs &&
-    depois.restanteMs <= TEMPOS.feedbackMs;
+    antes.restanteMs > antes.feedbackMs &&
+    depois.restanteMs <= depois.feedbackMs;
   return terminouSaida ? [resultado] : [];
 }

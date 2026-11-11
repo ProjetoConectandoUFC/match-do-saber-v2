@@ -136,8 +136,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       break;
     case 'feedback': {
       const noticia = estado.partida.cards[estado.indice]!;
-      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, 3 s de resultado.
-      const saindo = estado.resposta !== null && estado.restanteMs > TEMPOS.feedbackMs;
+      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, o tempo entre cards (v12.0.0).
+      const saindo = estado.resposta !== null && estado.restanteMs > estado.feedbackMs;
       tela = saindo ? (
         <TelaCard
           key={estado.indice}
@@ -163,7 +163,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       const perfil = PERFIS_TUTORIAL[estado.passo]!;
       const noticia = perfilComoNoticia(perfil);
       const treino = { passo: estado.passo, total: PERFIS_TUTORIAL.length, ilustracao: perfil.ilustracao };
-      const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > TEMPOS.feedbackMs;
+      const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > estado.feedbackMs;
       tela = estado.tela === 'tutorialFeedback' && !saindo ? (
         <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.config.modo} treino={treino} />
       ) : (

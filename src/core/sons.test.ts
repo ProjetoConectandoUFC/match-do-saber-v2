@@ -10,11 +10,11 @@ const ctx: Contexto = { noticias: [noticia], rng: () => 0.5, cameraAtiva: false,
 const tick = (dtMs: number): Evento => ({ tipo: 'tick', dtMs, presenca: null });
 
 /** Aplica os eventos um a um e junta os sons de cada transição. */
-function sons(eventos: Evento[], inicio: Estado = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, ctx)): Som[] {
+function sons(eventos: Evento[], inicio: Estado = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, ctx), c: Contexto = ctx): Som[] {
   let s = inicio;
   const out: Som[] = [];
   for (const e of eventos) {
-    const n = reduzir(s, e, ctx);
+    const n = reduzir(s, e, c);
     out.push(...sonsDaTransicao(s, n));
     s = n;
   }
@@ -26,6 +26,12 @@ describe('sonsDaTransicao', () => {
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }])).toEqual(['deslizar']);
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(100), tick(100)])).toEqual(['deslizar']);
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(100), tick(100), tick(100)])).toEqual(['deslizar', 'acerto']);
+  });
+  it('AC-11.2 com 8 s entre cards (v12.0.0): o acerto toca logo depois da saída do card, não quando faltam 3 s', () => {
+    const c8: Contexto = { ...ctx, tempoFeedbackMs: 8000 };
+    const inicio = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, c8);
+    expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs)], inicio, c8)).toEqual(['deslizar', 'acerto']);
+    expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs), tick(5000)], inicio, c8)).toEqual(['deslizar', 'acerto']);
   });
   it('AC-11.3: escolha errada = deslizar e erro', () => {
     expect(sons([{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs)])).toEqual(['deslizar', 'erro']);

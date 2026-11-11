@@ -2,7 +2,7 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import { extrairPontos, type Registro } from '../core/diagnostico';
 import { criarInterpretador, escolherJogador, medirCabeca, medirMaos, type Gesto, type Pose } from '../core/gestos';
 import { CONFIG_PADRAO, type Configuracoes } from '../core/modos';
-import { ESTADO_INICIAL, calibrarAoSair, reduzir, type Contexto, type Estado, type Evento } from '../core/partida';
+import { ESTADO_INICIAL, calibrarAoSair, opcoesDaConfiguracao, reduzir, type Contexto, type Estado, type Evento } from '../core/partida';
 import { dtDoQuadro } from '../core/relogio';
 import type { Noticia } from '../core/types';
 import { PERFIS_TUTORIAL } from './perfisTutorial';
@@ -26,9 +26,9 @@ const EVENTO_DA_TECLA: Record<string, Evento | undefined> = {
 
 export function useJogo(noticias: Noticia[], config: Configuracoes = CONFIG_PADRAO, pausado = false, registro?: Registro) {
   const [camera, setCamera] = useState<StatusCamera>('carregando');
-  const ctx = useRef<Contexto>({ noticias, rng: Math.random, cameraAtiva: false, tempoCardMs: config.tempoCardS * 1000, ignorarAusencia: config.modo !== 'corpo' });
+  const ctx = useRef<Contexto>({ noticias, rng: Math.random, cameraAtiva: false, ...opcoesDaConfiguracao(config) });
   ctx.current = {
-    noticias, rng: Math.random, cameraAtiva: camera === 'ativa', tempoCardMs: config.tempoCardS * 1000, ignorarAusencia: config.modo !== 'corpo',
+    noticias, rng: Math.random, cameraAtiva: camera === 'ativa', ...opcoesDaConfiguracao(config), // FR-9, AC-9.23
     tutorial: config.tutorial ? PERFIS_TUTORIAL : [], // FR-16: desligado por padrão
   };
   const [estado, despachar] = useReducer((s: Estado, e: Evento) => reduzir(s, e, ctx.current), ESTADO_INICIAL);

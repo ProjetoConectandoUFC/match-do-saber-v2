@@ -62,7 +62,7 @@ describe('privacidade da foto e das âncoras (AC-13.5, AC-13.7)', () => {
     rerender({ estado: { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 } });
     for (let i = 0; i < 10; i++) {
       rerender({ estado: { tela: 'card', partida, indice: i, restanteMs: 15000, saibaMais: false, ausenteMs: null } });
-      rerender({ estado: { tela: 'feedback', partida, indice: i, restanteMs: 3250, resposta: 'verdadeira' } });
+      rerender({ estado: { tela: 'feedback', partida, indice: i, restanteMs: 3250, feedbackMs: 3000, resposta: 'verdadeira' } });
     }
     rerender({ estado: { tela: 'resumo', partida } });
 
