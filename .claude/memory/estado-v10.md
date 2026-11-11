@@ -1,6 +1,6 @@
 ---
 name: estado-v10
-description: Estado do Match do Saber em 2026-11-10 (spec v10.2.0 em branches, aguardando aprovação) e o que falta; ponto de partida para retomar de outro dispositivo
+description: Estado do Match do Saber (atualizado em 2026-11-11: v11.0.0 na main, develop recriada, Pages desativado, audit); ponto de partida para retomar de outro dispositivo
 metadata:
   type: project
 ---
@@ -34,3 +34,10 @@ Ver [[agentes]].
 - `001-v11-visual-aplicado` (a partir da anterior + prévia mesclada): spec v11.0.0 aplica as recomendações da prévia v11 por ordem do responsável — pilha + botões redondos + carimbo, "Deu match!", resumo opção B (lista + polaroid 384 + QR único via `qrcode-generator` 1.4.4 para `fontes.html` na web), filtros SVG por faixa sobre a foto (`src/core/filtrosFoto.ts`), vinheta de fim de partida, colunas opcionais `titulo_curto`/`fonte_nome`, tutorial com 2 perfis da prévia (4 do agente de notícias em `perfisReserva`). Nome continua "Match do Saber". 449/449 unitários, build ok, e2e 48/48 (agente); `foto.spec.ts:29` e `camera-overlay` falham só sob carga paralela (passam em série) e o foto.spec ficou lento (~2 min).
 - `vite dev` em worktree com node_modules por junction não serve a Poppins; use build + `vite preview`.
 - Trello: o MCP é só leitura; escrever exige MCP com escrita ou `TRELLO_API_KEY`/`TRELLO_TOKEN` no env do Claude Code.
+
+## Atualização 2026-11-11 (substitui o que acima diz sobre `main`/`develop`/branches)
+- PRs #1 (lote 2) e #2 (develop → main) aceitos: a `main` (1a4c2d8) tem v10.3.1 + v11.0.0. As branches de trabalho foram apagadas no GitHub; a `develop` foi recriada a partir da `main`. Sobra `develop-antiga` (v8.2, 553a346, sem base comum): não apagar, é o único lugar desse histórico.
+- Depois de puxar a `main`, rode `npm install`: a v11 trouxe `qrcode-generator`, e sem ele o build/dev quebram em `QrCode.tsx` (TS2307).
+- `package.json` estava em 9.0.0; a branch `001-versao-11` passa para 11.0.0 (versão do exe do Electron).
+- **GitHub Pages não está ativado** no repo: o workflow "Publicar jogo" passa em teste e build mas falha no deploy (404). A versão web e o `fontes.html` que o QR do resumo abre não existem até ativar em Settings › Pages › Source: GitHub Actions.
+- `npm audit`: 0 vulnerabilidades em produção; 10 em devDependencies. A que importa é o Electron 33.4.11 (vai dentro do exe, sem suporte); as outras (deepmerge/glob/minimatch via vite-plugin-pwa, extract-zip via @electron/packager) são só de build. Não usar `npm audit fix --force` (rebaixa o vite-plugin-pwa para 1.1.0 e pula o Electron para 45 sem teste).
