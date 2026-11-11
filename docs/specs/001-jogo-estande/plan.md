@@ -5439,6 +5439,18 @@ Spec: AC-2.10b, AC-2.11, AC-2.12, AC-4.1 a AC-4.3, AC-4.9, AC-5.1, AC-5.8 a AC-5
 - 41.8 Resumo: opção B (polaroid 384, placar, mensagem, cartão do QR e lista em duas colunas), 1366×768 e 1920×1080; E2E de layout, da página das fontes e capturas reais em `docs/visual/capturas/v11-aplicado/`.
 - 41.9 Verificação no hardware (pendente): ler o QR a 50–80 cm da TV com dois celulares; conferir os filtros com fotos reais (de frente, de lado, de boné); conferir a vinheta no som do estande.
 
+## Phase 42 (added v12.0.0): Feedback pela pontuação e configurações ampliadas
+
+Spec: AC-4.1 a AC-4.3, AC-4.9, AC-4.10, AC-5.4, AC-5.5, AC-6.1 a AC-6.3, AC-6.5, AC-9.1, AC-9.2, AC-9.4, AC-9.23, AC-15.3; FR-1, FR-4, FR-5, FR-9. TDD. Sem mexer em `gestos.ts` nem na geometria de `inclinacaoCard.ts`.
+
+- [ ] 42.1 `src/core/modos.ts`: `Configuracoes` ganha `tempoFeedbackS` (3, 5, 8, 10; padrão 3), `cardsPartida` (5, 8, 10; padrão 10), `nivel` (`todos`, `facil`, `medio`, `dificil`; padrão `todos`) e `tempoAusenciaS` (5, 10, 20; padrão 10); chaves novas no `localStorage`, leitura com padrão para valor inválido, rótulos, ordem dos 9 itens (AC-9.1) e resumo encurtado (AC-9.2). Testes em `modos.test.ts`.
+- [ ] 42.2 `src/core/sorteio.ts`: `sortear(noticias, rng, total, nivel?)` com prioridade para o nível dentro de cada lado (AC-6.5), mantendo AC-6.1 a AC-6.3 para qualquer M.
+- [ ] 42.3 `src/core/partida.ts`: `Contexto` ganha `tempoFeedbackMs`, `totalCards`, `nivel` e `ausenciaMs`; o estado `feedback` e o `tutorialFeedback` guardam `feedbackMs` (a duração daquele feedback), e `situacaoDoCard`, `sonsDaTransicao` e `App.tsx` passam a comparar `restanteMs > estado.feedbackMs` no lugar de `TEMPOS.feedbackMs` (a saída do card continua somada, AC-4.1). Testes de fronteira no reducer para T = 3 s e T = 8 s, para M = 5 e para a ausência de 5 s.
+- [ ] 42.4 `src/app/useJogo.ts`: passa as configurações novas ao `Contexto`.
+- [ ] 42.5 Feedback (`Telas.tsx`, `App.module.css`): fundo por resultado (`fbAcerto` menta, `fbErro` coral para erro e tempo), `data-resultado` mantido; carimbo do veredito (`MarcaVerdade`/`MarcaMentira`, ~360 u, girado, `opacity: 0.4`, `pointer-events: none`, `aria-hidden`) por cima do bloco de texto, também no feedback do treino. Testes em `Telas.test.tsx`/`TelasV11.test.tsx`.
+- [ ] 42.6 Menu: os 9 itens cabem no painel de AC-9.18 em 1366×768; E2E do menu e da partida com os padrões (que repetem os valores antigos).
+- [ ] 42.7 Verificação no hardware (pendente): legibilidade da explicação com o carimbo a 40% a 2 m; 10 s de feedback não atrasam a fila do estande.
+
 ## Quickstart Validation
 
 ```bash
@@ -5529,3 +5541,5 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 10.2.0 | 39 | Adicionada: âncoras do rosto, privacidade da foto, tutorial, E2E do relógio em série e modelo de dados |
 | 11.0.0 | 39.7 | Concluída pela Fase 41 (filtros desenhados com as âncoras) |
 | 11.0.0 | 41 | Adicionada: prévia v11 aplicada (tela final com lista e QR, filtros por faixa, pilha, botões redondos, carimbo, "Deu match!", som de fim de partida, recorte chapado) |
+| 12.0.0 | 41.7 | Parcialmente invalidada: o fundo do feedback deixa de ser a cor do veredito (Fase 42.5) |
+| 12.0.0 | 42 | Adicionada: feedback pela pontuação com carimbo do veredito e configurações de tempo entre cards, cards por partida, nível e ausência |

@@ -101,7 +101,7 @@ Não existe entidade de jogador nem de partida persistida (FR-1 "Must not"; Non-
 
 ---
 
-### Configuracoes (configuração do notebook; v1.1.0, reescrito v2.0.0, ampliado v7.0.0 e v10.2.0)
+### Configuracoes (configuração do notebook; v1.1.0, reescrito v2.0.0, ampliado v7.0.0, v10.2.0 e v12.0.0)
 
 Chaves do `localStorage` (`src/core/modos.ts`); valor ausente ou inválido usa o padrão do item.
 
@@ -109,10 +109,14 @@ Chaves do `localStorage` (`src/core/modos.ts`); valor ausente ou inválido usa o
 |-------|------|-------------|-------------|
 | match-do-saber:modo | `'corpo' \| 'mao' \| 'cabeca'` | padrão `corpo` | Modo de jogo |
 | match-do-saber:tempoCard | `'10' \| '15' \| '20' \| '25' \| '30'` | padrão `15` | Tempo por card, em segundos |
+| match-do-saber:tempoFeedback | `'3' \| '5' \| '8' \| '10'` | padrão `3` | Tempo entre cards (duração do feedback), em segundos (v12.0.0) |
+| match-do-saber:cardsPartida | `'5' \| '8' \| '10'` | padrão `10` | Cards por partida (v12.0.0) |
+| match-do-saber:nivel | `'todos' \| 'facil' \| 'medio' \| 'dificil'` | padrão `todos` | Nível com prioridade no sorteio (AC-6.5, v12.0.0) |
+| match-do-saber:tempoAusencia | `'5' \| '10' \| '20'` | padrão `10` | Tempo sem ninguém no quadro até encerrar, modo Corpo (v12.0.0) |
 | match-do-saber:som | `'ligado' \| 'desligado'` | padrão `ligado` | Som de escolha e resultado |
 | match-do-saber:foto | `'ligada' \| 'desligada'` | padrão `ligada` | Foto no resumo (FR-13) |
 | match-do-saber:tutorial | `'ligado' \| 'desligado'` | padrão `desligado` | Treino antes da partida (FR-16) |
 
 **Indexes:** nenhum.
 **Relationships:** nenhuma; é configuração do estande, não dado de jogador.
-**Spec requirement:** FR-9, AC-9.4, AC-9.5, AC-9.17, FR-11, FR-13, FR-16.
+**Spec requirement:** FR-9, AC-9.4, AC-9.5, AC-9.17, AC-9.23, AC-6.5, FR-11, FR-13, FR-16.
