@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { criarRegistro, extrairPontos, type Amostra } from './diagnostico';
+import { alternarDiagnostico, criarRegistro, extrairPontos, type Amostra } from './diagnostico';
 import type { Pose } from './gestos';
 
 const amostra = (t: number, over: Partial<Amostra> = {}): Amostra => ({
@@ -60,5 +60,17 @@ describe('criarRegistro', () => {
     const exp = r.exportar();
     expect(exp.inicioPaginaMs).toBe(1_793_188_800_000);
     expect(new Date(exp.inicioPaginaMs + exp.amostras[0]!.t).toISOString()).toBe('2026-10-28T12:00:01.500Z');
+  });
+});
+
+describe('alternarDiagnostico (AC-12.7, v10.3.0)', () => {
+  it('desligado liga com um registro novo; ligado desliga e descarta o registro', () => {
+    const r = alternarDiagnostico(undefined);
+    expect(r).toBeDefined();
+    r!.adicionar(amostra(1000));
+    expect(alternarDiagnostico(r)).toBeUndefined();
+    const de_novo = alternarDiagnostico(undefined)!;
+    expect(de_novo).not.toBe(r);
+    expect(de_novo.exportar().amostras).toEqual([]);
   });
 });

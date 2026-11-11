@@ -1,4 +1,5 @@
 import { sortear } from './sorteio';
+import type { PerfilTutorial } from './tutorial';
 import type { Noticia, Veredito } from './types';
 
 export const TEMPOS = {
@@ -29,7 +30,10 @@ export type Estado =
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
   | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null }
-  | { tela: 'resumo'; partida: Partida };
+  | { tela: 'resumo'; partida: Partida }
+  // v10.2.0 (FR-16): treino antes da partida; `passo` indexa `Contexto.tutorial`. Sem cronômetro (AC-15.6).
+  | { tela: 'tutorial'; passo: number; entrada: Entrada }
+  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; resposta: Veredito };
 
 export type Evento =
   | { tipo: 'tick'; dtMs: number; presenca: Presenca | null }
@@ -46,6 +50,8 @@ export interface Contexto {
   tempoCardMs?: number;
   /** v6.0.0 (AC-9.21): nos modos Mão e Cabeça a ausência não pausa nem encerra a partida. */
   ignorarAusencia?: boolean;
+  /** v10.2.0 (FR-16): perfis de treino; vazio ou ausente = tutorial desligado (AC-15.1). */
+  tutorial?: readonly PerfilTutorial[];
 }
 
 export const ESTADO_INICIAL: Estado = { tela: 'espera' };
@@ -58,6 +64,12 @@ function card(partida: Partida, indice: number, tempoCardMs: number = TEMPOS.car
 function iniciarPartida(ctx: Contexto, entrada: Entrada): Estado {
   const cards = sortear(ctx.noticias, ctx.rng);
   return cards.length === 0 ? ESTADO_INICIAL : card({ cards, resultados: [], entrada }, 0, ctx.tempoCardMs);
+}
+
+/** Começo de uma partida: com o tutorial ligado, passa antes pelos cards de treino (AC-15.2). */
+function comecar(ctx: Contexto, entrada: Entrada): Estado {
+  if (ctx.noticias.length === 0) return ESTADO_INICIAL;
+  return ctx.tutorial?.length ? { tela: 'tutorial', passo: 0, entrada } : iniciarPartida(ctx, entrada);
 }
 
 function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null): Estado {
@@ -79,11 +91,11 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       if (ctx.noticias.length === 0) return estado;
       // v3.0.0: só o operador inicia (Enter ou "▶ Iniciar"); a presença na câmera nunca tira o jogo da espera (AC-1.1).
       // Com câmera ativa, Enter abre a calibração (AC-1.7); sem câmera, a partida começa direto (AC-1.6).
-      if (evento.tipo === 'enter') return ctx.cameraAtiva ? CALIBRACAO : iniciarPartida(ctx, 'alternativa');
+      if (evento.tipo === 'enter') return ctx.cameraAtiva ? CALIBRACAO : comecar(ctx, 'alternativa');
       return estado;
     }
     case 'calibracao': {
-      if (evento.tipo === 'enter') return iniciarPartida(ctx, 'alternativa');
+      if (evento.tipo === 'enter') return comecar(ctx, 'alternativa');
       if (evento.tipo !== 'tick') return estado;
       const p = evento.presenca;
       if (!p || !p.presente) {
@@ -92,7 +104,7 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       }
       if (!p.centralizado) return { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
       const centradoMs = estado.centradoMs + evento.dtMs;
-      return centradoMs >= TEMPOS.calibracaoMs ? iniciarPartida(ctx, 'corpo') : { tela: 'calibracao', centradoMs, ausenteMs: 0 };
+      return centradoMs >= TEMPOS.calibracaoMs ? comecar(ctx, 'corpo') : { tela: 'calibracao', centradoMs, ausenteMs: 0 };
     }
     case 'card': {
       if (evento.tipo === 'escolha') {
@@ -122,9 +134,30 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
     }
     case 'resumo': {
       if (evento.tipo !== 'enter') return estado;
-      return ctx.cameraAtiva ? CALIBRACAO : iniciarPartida(ctx, 'alternativa');
+      return ctx.cameraAtiva ? CALIBRACAO : comecar(ctx, 'alternativa');
+    }
+    case 'tutorial': {
+      // AC-15.5: Enter pula o treino. AC-15.6: sem cronômetro, ausência nem "saiba mais".
+      if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
+      if (evento.tipo !== 'escolha') return estado;
+      return { ...estado, tela: 'tutorialFeedback', restanteMs: TEMPOS.feedbackMs + TEMPOS.saidaMs, resposta: evento.resposta };
+    }
+    case 'tutorialFeedback': {
+      if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
+      if (evento.tipo !== 'tick') return estado;
+      const restanteMs = estado.restanteMs - evento.dtMs;
+      if (restanteMs > 0) return { ...estado, restanteMs };
+      const passo = estado.passo + 1;
+      return passo < (ctx.tutorial?.length ?? 0)
+        ? { tela: 'tutorial', passo, entrada: estado.entrada }
+        : iniciarPartida(ctx, estado.entrada);
     }
   }
+}
+
+/** O centro do jogador é medido ao sair da calibração (FR-2), para o card ou, com o tutorial, para o treino. */
+export function calibrarAoSair(antes: Estado['tela'], depois: Estado['tela']): boolean {
+  return antes === 'calibracao' && (depois === 'card' || depois === 'tutorial');
 }
 
 export function pontos(p: Partida): number {

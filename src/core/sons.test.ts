@@ -39,4 +39,18 @@ describe('sonsDaTransicao', () => {
     const s = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, ctx);
     expect(sonsDaTransicao(s, s)).toEqual([]);
   });
+
+  // Partida de 1 card (ctx tem uma notícia): o feedback termina e vai ao resumo.
+  const ateResumo = (resposta: 'verdadeira' | 'falsa'): Evento[] =>
+    [{ tipo: 'escolha', resposta }, tick(TEMPOS.saidaMs), tick(TEMPOS.feedbackMs)];
+
+  it('AC-11.6 (v11.0.0): ao chegar ao resumo toca uma vez a vinheta da faixa (1 de 1 = faixa 4; 0 de 1 = faixa 1)', () => {
+    expect(sons(ateResumo('verdadeira'))).toEqual(['deslizar', 'acerto', 'fim4']);
+    expect(sons(ateResumo('falsa'))).toEqual(['deslizar', 'erro', 'fim1']);
+    expect(sons([...ateResumo('verdadeira'), tick(1000), tick(60000)])).toEqual(['deslizar', 'acerto', 'fim4']);
+  });
+
+  it('AC-11.6: sair da partida não toca a vinheta', () => {
+    expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs), { tipo: 'sair' }])).toEqual(['deslizar', 'acerto']);
+  });
 });

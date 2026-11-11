@@ -10,12 +10,12 @@ import type { EstadoBanco, RepositorioNoticias } from './repositorio';
 const n = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org/a',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
 });
 
 const BANCO = [
   n('mds-0001', { titulo: 'Vacina causa ímã', veredito: 'falsa', tema: 'saude' }),
-  n('mds-0002', { titulo: 'Água ferve a 100 °C', veredito: 'verdadeira', tema: 'ciencia' }),
+  n('mds-0002', { titulo: 'Água ferve a 100 °C', veredito: 'verdadeira', tema: 'ciencia', dificuldade: 'dificil' }),
   n('mds-0003', { titulo: 'Rascunho de história', veredito: 'verdadeira', tema: 'historia', status: 'rascunho', revisado_por: '' }),
   n('mds-0004', { titulo: 'Linha estragada', tema: 'esporte' }),
 ];
@@ -84,6 +84,56 @@ describe('PainelNoticias no app de desktop', () => {
     fireEvent.change(screen.getByLabelText('Status'), { target: { value: 'invalida' } });
     expect(ids()).toEqual(['mds-0004']);
     expect(linhas()[0]).toHaveTextContent(/tema/);                                // AC-8.4: mostra o motivo
+  });
+
+  it('AC-7.10: filtro por dificuldade, inclusive "sem dificuldade"', async () => {
+    await montar();
+    const filtro = screen.getByLabelText('Dificuldade');
+    expect([...filtro.querySelectorAll('option')].map((o) => o.textContent))
+      .toEqual(['Todas', 'Fácil', 'Médio', 'Difícil', 'Sem dificuldade']);
+    fireEvent.change(filtro, { target: { value: 'dificil' } });
+    expect(ids()).toEqual(['mds-0002']);
+    fireEvent.change(filtro, { target: { value: 'sem' } });
+    expect(ids()).toEqual(['mds-0001', 'mds-0003', 'mds-0004']);
+    fireEvent.change(filtro, { target: { value: 'facil' } });
+    expect(ids()).toEqual([]);
+  });
+
+  it('AC-7.10: o editor escolhe a dificuldade numa lista (ou vazia) e grava', async () => {
+    const repo = await montar();
+    fireEvent.click(within(linhas()[0]!).getByRole('button', { name: 'Editar' }));
+    const editor = screen.getByRole('dialog', { name: 'Editar notícia' });
+    const campo = within(editor).getByLabelText('Dificuldade (opcional)');
+    expect(campo).toHaveValue('');
+    expect([...campo.querySelectorAll('option')].map((o) => o.textContent)).toEqual(['—', 'Fácil', 'Médio', 'Difícil']);
+    fireEvent.change(campo, { target: { value: 'medio' } });
+    await act(async () => fireEvent.click(within(editor).getByRole('button', { name: 'Salvar' })));
+    expect(repo.salvar).toHaveBeenCalledWith([{ ...BANCO[0], dificuldade: 'medio' }, BANCO[1], BANCO[2], BANCO[3]], 'v1');
+  });
+
+  it('AC-7.11 (v11.0.0): o editor tem título curto e veículo da fonte, opcionais; título curto longo é apontado', async () => {
+    const repo = await montar();
+    fireEvent.click(within(linhas()[0]!).getByRole('button', { name: 'Editar' }));
+    const editor = screen.getByRole('dialog', { name: 'Editar notícia' });
+    fireEvent.change(within(editor).getByLabelText('Título curto (opcional)'), { target: { value: 'x'.repeat(35) } });
+    fireEvent.change(within(editor).getByLabelText('Veículo da fonte (opcional)'), { target: { value: 'Aos Fatos' } });
+    fireEvent.click(within(editor).getByRole('button', { name: 'Salvar' }));
+    expect(within(editor).getByLabelText('Título curto (opcional)')).toHaveAttribute('aria-invalid', 'true');
+    expect(repo.salvar).not.toHaveBeenCalled();
+    fireEvent.change(within(editor).getByLabelText('Título curto (opcional)'), { target: { value: 'Curto' } });
+    await act(async () => fireEvent.click(within(editor).getByRole('button', { name: 'Salvar' })));
+    expect(repo.salvar).toHaveBeenCalledWith([{ ...BANCO[0], titulo_curto: 'Curto', fonte_nome: 'Aos Fatos' }, BANCO[1], BANCO[2], BANCO[3]], 'v1');
+  });
+
+  it('AC-7.3/AC-7.10: dificuldade fora da lista (vinda do Excel) aparece e é apontada', async () => {
+    const repo = repoFalso();
+    repo.carregar = vi.fn(async () => ({ banco: [n('mds-0001', { dificuldade: 'extrema' })], arquivo: 'x.csv', versao: 'v1' }));
+    await montar(repo);
+    expect(linhas()[0]).toHaveTextContent('dificuldade: use facil, medio, dificil');
+    fireEvent.click(within(linhas()[0]!).getByRole('button', { name: 'Editar' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    expect(screen.getByLabelText('Dificuldade (opcional)')).toHaveAttribute('aria-invalid', 'true');
+    expect(repo.salvar).not.toHaveBeenCalled();
   });
 
   it('AC-7.2/AC-7.3: editor aponta o campo com problema e não salva', async () => {

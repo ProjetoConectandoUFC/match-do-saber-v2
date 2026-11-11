@@ -34,35 +34,24 @@ function seq(i: ReturnType<typeof criarInterpretador>, passos: [Pose | null, num
 }
 
 describe('modo Mão', () => {
-  it('presença pela parte de cima do corpo; card não inclina', () => {
+  // v10.3.0: o swipe (AC-9.20, AC-9.22) está em gestos-mao-v6.test.ts.
+  it('presença pela parte de cima do corpo; sem mão à frente do peito, o card fica no centro', () => {
     const i = criarInterpretador('mao');
     expect(i.ler(maos({}), 0)).toMatchObject({ presenca: { presente: true, centralizado: true }, inclinacao: 0 });
     expect(i.ler(maos({}, 0.8), 10).presenca.centralizado).toBe(false);
   });
-  it('AC-9.7: mão direita acima do ombro por 300 ms = "direita"; esquerda = "esquerda"', () => {
+  it('AC-9.7 removido (v10.3.0): uma mão acima do ombro, parada, não escolhe', () => {
     const i = criarInterpretador('mao');
-    expect(seq(i, [[maos({ direita: true }), 0], [maos({ direita: true }), 200]])).toEqual([]);
-    expect(seq(i, [[maos({ direita: true }), 300]])).toEqual(['direita']);
-    const j = criarInterpretador('mao');
-    expect(seq(j, [[maos({ esquerda: true }), 0], [maos({ esquerda: true }), 300]])).toEqual(['esquerda']);
+    expect(seq(i, [[maos({ direita: true }), 0], [maos({ direita: true }), 300], [maos({ direita: true }), 2000]])).toEqual([]);
+    expect(seq(i, [[maos({ esquerda: true }), 2100], [maos({ esquerda: true }), 4000]])).toEqual([]);
   });
-  it('AC-9.8: duas mãos por 500 ms = "maosParaCima", sem escolha; baixar uma mão por vez não escolhe', () => {
+  it('AC-9.8: duas mãos por 500 ms = "maosParaCima", uma vez por levantada, sem escolha', () => {
     const i = criarInterpretador('mao');
     const ambas = maos({ direita: true, esquerda: true });
     expect(seq(i, [[ambas, 0], [ambas, 400]])).toEqual([]);
     expect(seq(i, [[ambas, 500], [ambas, 1500]])).toEqual(['maosParaCima']);
     expect(seq(i, [[maos({ esquerda: true }), 1600], [maos({ esquerda: true }), 2000]])).toEqual([]);
-    expect(seq(i, [[maos({}), 2100], [maos({ esquerda: true }), 2200], [maos({ esquerda: true }), 2500]])).toEqual(['esquerda']);
-  });
-  it('AC-9.9: exige baixar as mãos entre escolhas', () => {
-    const i = criarInterpretador('mao');
-    expect(seq(i, [[maos({ direita: true }), 0], [maos({ direita: true }), 300]])).toEqual(['direita']);
-    expect(seq(i, [[maos({ direita: true }), 700], [maos({ direita: true }), 1500]])).toEqual([]);
-    expect(seq(i, [[maos({}), 1600], [maos({ direita: true }), 1700], [maos({ direita: true }), 2000]])).toEqual(['direita']);
-  });
-  it('perder a pessoa zera a contagem', () => {
-    const i = criarInterpretador('mao');
-    expect(seq(i, [[maos({ direita: true }), 0], [null, 100], [maos({ direita: true }), 200], [maos({ direita: true }), 400]])).toEqual([]);
+    expect(seq(i, [[maos({}), 2100], [ambas, 2200], [ambas, 2700]])).toEqual(['maosParaCima']);
   });
 });
 
@@ -90,6 +79,16 @@ describe('modo Cabeça', () => {
     i.calibrar();
     expect(i.ler(cabeca(7.5), 100).inclinacao).toBeCloseTo(0.5, 1);
     expect(seq(i, [[cabeca(7.5), 1000]])).toEqual([]);
+  });
+  it('AC-2.10 (v10.3.0): a inclinação é contínua até o limiar e fica 0 depois da escolha até a cabeça voltar', () => {
+    const i = criarInterpretador('cabeca');
+    i.ler(cabeca(0), 0);
+    i.calibrar();
+    expect(i.ler(cabeca(3), 50).inclinacao).toBeCloseTo(0.2, 2);
+    expect(i.ler(cabeca(-12), 60).inclinacao).toBeCloseTo(-0.8, 2);
+    expect(seq(i, [[cabeca(20), 100], [cabeca(20), 400]])).toEqual(['direita']);
+    expect(i.ler(cabeca(20), 500).inclinacao).toBe(0);
+    expect(i.ler(cabeca(3), 600).inclinacao).toBeCloseTo(0.2, 2); // voltou ao centro (< 6°): segue de novo
   });
   it('AC-9.12: exige voltar a cabeça ao centro entre escolhas', () => {
     const i = criarInterpretador('cabeca');

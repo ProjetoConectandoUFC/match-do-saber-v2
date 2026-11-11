@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 520" width="420" height="520">
+  <title>Perfil do tutorial (falso): "Abacaxi Perfeito"</title>
+  <desc>Perfil cômico visivelmente cheio de filtros: óculos de estrela, coroa, orelhas de gatinho, brilhos e anéis de "luz" por toda parte, braço com músculo desenhado. Estilo "recorte chapado" com marcadores do design system (estrelas 4, 5 e 6, triângulo) e anel-b em 20% branco.</desc>
+  <defs>
+    <path id="pa-e4" d="M17 1L21.3 12.7L33 17L21.3 21.3L17 33L12.7 21.3L1 17L12.7 12.7L17 1"/>
+    <path id="pa-e5" d="M16.2 1L19.8 12.1L31.4 12.1L22 18.9L25.6 29.9L16.2 23.1L6.8 29.9L10.4 18.9L1 12.1L12.6 12.1L16.2 1"/>
+    <path id="pa-e6" d="M12.9 1L15.6 10.2L24.9 7.9L18.2 14.8L24.9 21.7L15.6 19.3L12.9 28.6L10.3 19.3L1 21.7L7.7 14.8L1 7.9L10.3 10.2L12.9 1"/>
+    <path id="pa-tri" d="M14.9 1L20.1 13.9L28.7 25L14.9 23.1L1 25L9.6 13.9L14.9 1"/>
+    <clipPath id="pa-corpo"><ellipse cx="210" cy="340" rx="112" ry="138"/></clipPath>
+  </defs>
+  <rect width="420" height="520" fill="#ff6776"/>
+  <svg x="-10" y="250" width="180" height="270" viewBox="-311 9 648 611" preserveAspectRatio="xMinYMax meet">
+    <path d="M337 531.4C283.7 561.2 185.5 609.6 96.2 618.5C46.2 623.5 -1.2 616.3 -39.3 591.7C-77.8 566.8 -108.4 524 -120.4 453.5C-122.7 440.1 -124.3 427.2 -125.3 414.8C-181.8 380.2 -236.3 317.6 -278.9 213.8C-312.4 132.1 -317.3 64.6 -304.5 9L-226.2 9C-226.6 10 -226.9 10.9 -227.2 11.9C-242.1 57.6 -238.2 114.3 -209.2 185.2C-183.4 248.2 -153.3 293.3 -120.9 323.7C-114.8 291.3 -103.8 263 -89.7 238.6C-41.6 155.5 44.6 117 117.6 119C176.3 120.5 226.5 147.8 249.8 195.1C272.5 241.3 253.6 309 200.3 363.6C143.2 422 50 465 -45.2 446.3C-37.3 487.1 -21.4 513.6 1.6 528.4C26 544.2 56.7 546.7 88.7 543.6C204 532.1 335.4 444.8 335.4 444.8L337 443.7L337 531.4M-50.4 367.2C25 392.3 101.2 357.2 146.5 310.9C162.4 294.6 174.6 276.9 180.7 259.5C184.7 248.3 186.6 237.4 182.2 228.4C166.1 195.7 122.5 188.2 80.1 198C17.4 212.6 -43.4 268.6 -50.4 367.2" fill="#ffffff" fill-rule="evenodd" fill-opacity="0.2"/>
+  </svg>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="10">
+    <circle cx="210" cy="320" r="170"/>
+    <circle cx="210" cy="320" r="200"/>
+  </g>
+  <path d="M100 330 C60 300 50 250 70 230" fill="none" stroke="#002036" stroke-width="26" stroke-linecap="round"/>
+  <path d="M100 330 C60 300 50 250 70 230" fill="none" stroke="#fde31f" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="72" cy="282" r="20" fill="#fde31f" stroke="#002036" stroke-width="4"/>
+  <path d="M320 330 C350 360 370 380 380 410" fill="none" stroke="#002036" stroke-width="26" stroke-linecap="round"/>
+  <path d="M320 330 C350 360 370 380 380 410" fill="none" stroke="#fde31f" stroke-width="18" stroke-linecap="round"/>
+  <g fill="#309f9f" stroke="#002036" stroke-width="4" stroke-linejoin="round">
+    <path d="M210 120 L232 200 L188 200 Z"/>
+    <path d="M160 140 L200 206 L168 214 Z"/>
+    <path d="M260 140 L252 214 L220 206 Z"/>
+  </g>
+  <ellipse cx="222" cy="352" rx="112" ry="138" fill="#002036"/>
+  <ellipse cx="210" cy="340" rx="112" ry="138" fill="#fde31f" stroke="#002036" stroke-width="5"/>
+  <g clip-path="url(#pa-corpo)" stroke="#d86f33" stroke-width="6" stroke-opacity="0.8">
+    <path d="M60 220 L360 520 M60 300 L280 520 M60 380 L200 520 M120 200 L360 440 M200 200 L360 360 M280 200 L360 280"/>
+    <path d="M360 220 L60 520 M360 300 L140 520 M360 380 L220 520 M300 200 L60 440 M220 200 L60 360 M140 200 L60 280"/>
+  </g>
+  <g fill="#a740b2" stroke="#002036" stroke-width="4" stroke-linejoin="round">
+    <path d="M118 222 L136 168 L168 210 Z"/>
+    <path d="M302 222 L284 168 L252 210 Z"/>
+  </g>
+  <g fill="#fde31f" stroke="#002036" stroke-width="4" stroke-linejoin="round">
+    <path d="M172 150 L180 112 L196 136 L210 100 L224 136 L240 112 L248 150 Z"/>
+  </g>
+  <g fill="#a740b2" stroke="#002036" stroke-width="3">
+    <use href="#pa-e5" transform="translate(132 262) scale(2.3)"/>
+    <use href="#pa-e5" transform="translate(214 262) scale(2.3)"/>
+  </g>
+  <path d="M206 290 Q210 282 214 290" fill="none" stroke="#002036" stroke-width="5" stroke-linecap="round"/>
+  <path d="M168 344 Q210 384 252 344 Z" fill="#002036"/>
+  <path d="M186 356 Q210 370 234 356" fill="none" stroke="#fcfaf1" stroke-width="6" stroke-linecap="round"/>
+  <use href="#pa-e6" fill="#fcfaf1" transform="translate(30 40) scale(2.4)"/>
+  <use href="#pa-e4" fill="#fde31f" transform="translate(320 60) scale(2.2)"/>
+  <use href="#pa-e4" fill="#fcfaf1" transform="translate(350 200) scale(1.2)"/>
+  <use href="#pa-e5" fill="#fde31f" transform="translate(40 170) scale(1.2)"/>
+  <use href="#pa-e4" fill="#fcfaf1" transform="translate(300 440) scale(1.4)"/>
+  <use href="#pa-e6" fill="#fde31f" transform="translate(340 300) scale(1.3)"/>
+  <use href="#pa-e4" fill="#fde31f" transform="translate(120 450) scale(1)"/>
+  <use href="#pa-tri" fill="#a5dede" transform="translate(260 30) scale(1.2)"/>
+</svg>

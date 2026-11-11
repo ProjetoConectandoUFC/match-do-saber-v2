@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-300 -260 600 600" width="600" height="600">
+  <title>Âncoras do rosto (pontos do MediaPipe Pose) na foto espelhada</title>
+  <desc>Substitui a foto real da câmera nas prévias. Mesmo quadro de referência dos filtros: olhos em (-50,0) e (50,0), nariz em (0,40), orelhas em (-105,15) e (105,15), boca em (-30,95) e (30,95), ombros em (-200,255) e (200,255), já espelhada como a prévia da câmera.</desc>
+  <rect x="-300" y="-260" width="600" height="600" fill="#c8dfe8"/>
+  <rect x="170" y="-260" width="130" height="600" fill="#0075c5"/>
+  <path d="M-300 340 C-290 285 -245 258 -200 252 L-60 228 L60 228 L200 252 C245 258 290 285 300 340 Z" fill="#309f9f"/>
+  <rect x="-42" y="130" width="84" height="110" rx="24" fill="#c98b62"/>
+  <path d="M-62 228 Q0 290 62 228 Z" fill="#c98b62"/>
+  <ellipse cx="-105" cy="15" rx="20" ry="32" fill="#d99a70"/>
+  <ellipse cx="105" cy="15" rx="20" ry="32" fill="#d99a70"/>
+  <ellipse cx="0" cy="30" rx="105" ry="135" fill="#e0a37b"/>
+  <path d="M-112 22 C-128 -118 -42 -152 0 -147 C62 -152 128 -112 112 22 C102 -38 70 -70 0 -76 C-62 -72 -100 -40 -112 22 Z" fill="#19262e"/>
+  <path d="M-78 -30 Q-50 -44 -24 -30 M24 -30 Q50 -44 78 -30" fill="none" stroke="#19262e" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="-50" cy="0" r="10" fill="#19262e"/>
+  <circle cx="50" cy="0" r="10" fill="#19262e"/>
+  <path d="M0 18 Q-12 44 -2 50 Q8 52 12 46" fill="none" stroke="#b5764f" stroke-width="6" stroke-linecap="round"/>
+  <path d="M-32 92 Q0 120 32 92" fill="none" stroke="#19262e" stroke-width="7" stroke-linecap="round"/>
+
+  <path d="M-50 0 H50" stroke="#e34a39" stroke-width="4" stroke-dasharray="8 6"/>
+  <circle cx="0" cy="40" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="18" y="60" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="start" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">0 nariz</text>
+  <circle cx="-50" cy="0" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="-50" y="-26" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="middle" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">2 olho esq.</text>
+  <circle cx="50" cy="0" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="50" y="-26" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="middle" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">5 olho dir.</text>
+  <circle cx="-105" cy="15" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="-115" y="67" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="end" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">7 orelha esq.</text>
+  <circle cx="105" cy="15" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="115" y="67" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="start" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">8 orelha dir.</text>
+  <circle cx="-30" cy="95" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="-44" y="129" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="end" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">9 boca</text>
+  <circle cx="30" cy="95" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="44" y="129" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="start" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">10 boca</text>
+  <circle cx="-200" cy="255" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="-194" y="237" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="start" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">11 ombro esq.</text>
+  <circle cx="200" cy="255" r="9" fill="#fde31f" stroke="#002036" stroke-width="4"/><text x="194" y="237" font-family="Poppins, system-ui, sans-serif" font-size="22" font-weight="800" fill="#002036" text-anchor="end" paint-order="stroke" stroke="#fcfaf1" stroke-width="6">12 ombro dir.</text>
+</svg>

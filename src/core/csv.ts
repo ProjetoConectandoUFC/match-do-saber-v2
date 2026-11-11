@@ -1,7 +1,7 @@
 import { COLUNAS_BANCO, type ColunaBanco, type NoticiaBanco } from './types';
 
 /** Colunas de lista: lidas em minúsculas, para aceitar "Falsa" ou "SAUDE" vindos do Excel. */
-const COLUNAS_LISTA: readonly ColunaBanco[] = ['veredito', 'tecnica', 'tema', 'status'];
+const COLUNAS_LISTA: readonly ColunaBanco[] = ['veredito', 'tecnica', 'tema', 'status', 'dificuldade'];
 
 /**
  * Lê um CSV em linhas e campos (FR-6): separador `,` ou `;` (o que mais aparece no cabeçalho),

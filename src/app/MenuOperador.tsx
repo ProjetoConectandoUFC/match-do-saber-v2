@@ -8,15 +8,17 @@ export type ItemMenu = 'noticias' | 'configuracoes' | 'diagnostico' | 'telaCheia
 const ITENS: { id: ItemMenu; rotulo: string; dica: string; marca: IdForma }[] = [
   { id: 'noticias', rotulo: 'Notícias', dica: 'listar, editar e importar', marca: 'marca-triangulo' },
   { id: 'configuracoes', rotulo: 'Configurações', dica: 'tecla M', marca: 'marca-estrela-4' },
-  { id: 'diagnostico', rotulo: 'Diagnóstico', dica: 'até recarregar', marca: 'marca-estrela-5' },
+  { id: 'diagnostico', rotulo: 'Diagnóstico', dica: 'liga e desliga o painel de medição', marca: 'marca-estrela-5' },
   { id: 'telaCheia', rotulo: 'Tela cheia', dica: 'F11', marca: 'marca-estrela-6' },
 ];
 
 /**
  * Menu ☰ do operador (FR-14), só na tela de espera. Esc, clique fora ou escolher um item fecham.
  */
-export function MenuOperador({ aberto, onAbrir, onFechar, onEscolher }: {
+export function MenuOperador({ aberto, diagnosticoLigado = false, onAbrir, onFechar, onEscolher }: {
   aberto: boolean;
+  /** AC-12.7 (v10.3.0): o item Diagnóstico mostra e alterna o estado do painel. */
+  diagnosticoLigado?: boolean;
   onAbrir: () => void;
   onFechar: () => void;
   onEscolher: (item: ItemMenu) => void;
@@ -54,20 +56,24 @@ export function MenuOperador({ aberto, onAbrir, onFechar, onEscolher }: {
       </button>
       {aberto && (
         <div className={m.menu} role="menu" aria-label="Menu do operador">
-          {ITENS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="menuitem"
-              className={m.item}
-              data-item={item.id}
-              title={item.dica}
-              onClick={() => { onFechar(); onEscolher(item.id); }}
-            >
-              <Forma id={item.marca} largura={18} className={m.marca} />
-              <span>{item.rotulo}</span>
-            </button>
-          ))}
+          {ITENS.map((item) => {
+            const alterna = item.id === 'diagnostico';
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="menuitem"
+                className={m.item}
+                data-item={item.id}
+                data-ligado={alterna ? String(diagnosticoLigado) : undefined}
+                title={item.dica}
+                onClick={() => { onFechar(); onEscolher(item.id); }}
+              >
+                <Forma id={item.marca} largura={18} className={m.marca} />
+                <span>{alterna ? `${item.rotulo}: ${diagnosticoLigado ? 'ligado' : 'desligado'}` : item.rotulo}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

@@ -1,10 +1,11 @@
 // Banco de teste dos E2E (v9.0.0): grava public/content/noticias.csv e as imagens.
-// 12 notícias aprovadas (só as ímpares com imagem; as pares mostram a ilustração do tema),
-// mais uma em rascunho e uma inválida, que não entram nas partidas (AC-7.7, AC-8.4).
+// 12 notícias aprovadas, 6 verdadeiras e 6 falsas alternadas (só as ímpares com imagem; as pares mostram
+// a ilustração do tema), com dificuldade fácil/médio/difícil em rodízio (v10.1.0), mais uma em rascunho
+// e uma inválida, que não entram nas partidas (AC-7.7, AC-8.4).
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import sharp from 'sharp';
 import { escreverCsv } from '../src/core/csv';
-import { TEMAS, TECNICAS, type NoticiaBanco } from '../src/core/types';
+import { DIFICULDADES, TEMAS, TECNICAS, type NoticiaBanco } from '../src/core/types';
 
 const destino = 'public/content';
 const cores = ['#e63946', '#457b9d', '#2a9d8f', '#f4a261'];
@@ -26,6 +27,10 @@ const noticia = (i: number, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => 
   imagem: i % 2 === 0 ? `content/img/teste-${i + 1}.webp` : '',
   revisado_por: 'Equipe de teste',
   status: 'aprovada',
+  dificuldade: DIFICULDADES[i % DIFICULDADES.length]!, // v10.1.0 (AC-7.10)
+  // v11.0.0 (AC-7.11): as ímpares sem título curto nem veículo, para o resumo usar o título cortado e o domínio.
+  titulo_curto: i % 2 === 1 ? '' : `Teste ${i + 1}: manchete`,
+  fonte_nome: i % 2 === 1 ? '' : 'Agência de Teste',
   ...extra,
 });
 
@@ -37,7 +42,7 @@ for (const n of banco.filter((x) => x.imagem)) {
     .toFile(`public/${n.imagem}`);
 }
 banco.push(
-  noticia(12, { id: 'rascunho-1', status: 'rascunho', revisado_por: '', titulo: 'Rascunho que não entra na partida' }),
+  noticia(12, { id: 'rascunho-1', status: 'rascunho', revisado_por: '', dificuldade: '', titulo: 'Rascunho que não entra na partida' }),
   noticia(13, { id: 'invalida-1', tema: 'esporte', titulo: 'Linha inválida que não entra na partida' }),
 );
 

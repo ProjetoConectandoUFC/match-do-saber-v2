@@ -9,7 +9,7 @@ test.use({ serviceWorkers: 'block' });
 const n = (i: number, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id: `mds-${String(i).padStart(4, '0')}`, titulo: `Notícia ${i}`, descricao: 'Descrição', saiba_mais: 'Saiba mais',
   veredito: i % 2 ? 'falsa' : 'verdadeira', explicacao: 'Explicação', tecnica: 'fonte', tema: 'ciencia',
-  fonte_url: 'https://exemplo.org', fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', ...extra,
+  fonte_url: 'https://exemplo.org', fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
 });
 
 async function abrirDesktop(page: Page, banco: NoticiaBanco[]) {
@@ -51,7 +51,7 @@ test('AC-7.1/AC-7.2/AC-7.6: nova notícia aprovada entra na próxima partida, se
   await painel.getByRole('button', { name: 'Nova notícia' }).click();
   const editor = page.getByRole('dialog', { name: 'Nova notícia' });
   await expect(editor.getByLabel('ID')).toHaveValue('mds-0002');
-  await editor.getByLabel('Título').fill('Beber água ajuda o cérebro');
+  await editor.getByLabel('Título', { exact: true }).fill('Beber água ajuda o cérebro'); // v11.0.0: há também "Título curto (opcional)"
   await editor.getByLabel('Descrição').fill('Desidratação leve afeta a atenção.');
   await editor.getByLabel('Saiba mais').fill('Estudos mostram que…');
   await editor.getByLabel('Veredito').selectOption('verdadeira');

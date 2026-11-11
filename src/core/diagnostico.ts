@@ -46,6 +46,11 @@ export interface Registro {
   exportar(): { versao: 1; geradoEm: string; inicioPaginaMs: number; amostras: Amostra[] };
 }
 
+/** ☰ › Diagnóstico liga e desliga o painel (AC-12.7, v10.3.0); desligar descarta o registro da memória. */
+export function alternarDiagnostico(atual: Registro | undefined): Registro | undefined {
+  return atual ? undefined : criarRegistro();
+}
+
 export function criarRegistro(
   janelaMs = 60_000,
   agoraIso: () => string = () => new Date().toISOString(),

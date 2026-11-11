@@ -14,7 +14,7 @@
 3. Só entram nas partidas notícias com status **aprovada**, fonte e "revisado por" preenchidos. Notícias novas começam como rascunho.
 4. Para várias de uma vez: marque as linhas e use "Apagar" ou mude status, tema ou técnica em massa.
 5. "Importar CSV": mostra a prévia (novas, já existentes pelo id e inválidas com o motivo); "Adicionar N" grava só as novas válidas. "Exportar CSV" salva uma cópia que abre no Excel.
-6. Também dá para editar `Documentos/Match do Saber/noticias.csv` no Excel (colunas `id;titulo;descricao;saiba_mais;veredito;explicacao;tecnica;tema;fonte_url;fontes_extras;imagem;revisado_por;status`). Feche o Excel antes de salvar pelo painel e aperte Ctrl+R no jogo para ler o arquivo novo; linhas inválidas aparecem no painel com o motivo e não entram nas partidas.
+6. Também dá para editar `Documentos/Match do Saber/noticias.csv` no Excel (colunas `id;titulo;descricao;saiba_mais;veredito;explicacao;tecnica;tema;fonte_url;fontes_extras;imagem;revisado_por;status;dificuldade`; a `dificuldade`, da v10.1.0, é opcional — `facil`, `medio`, `dificil` ou vazia — e um CSV antigo sem ela continua valendo). Feche o Excel antes de salvar pelo painel e aperte Ctrl+R no jogo para ler o arquivo novo; linhas inválidas aparecem no painel com o motivo e não entram nas partidas.
 7. Na versão web (navegador), ☰ › Notícias só avisa que o gerenciador está no app de desktop.
 
 ## No dia do evento (operador)
@@ -29,7 +29,7 @@
 ## Diagnóstico do rastreio (equipe técnica)
 Para medir o rastreio no notebook do estande antes de ajustar os gestos:
 1. Ligar o painel por ☰ › Diagnóstico (vale até recarregar o jogo) ou abrir o jogo com `?diagnostico` no fim do endereço (por exemplo `…/match-do-saber/?diagnostico`).
-2. Com a câmera ligada, ficar a ~1,5–2 m (ou sentado, nos modos Mão e Cabeça) e jogar uma partida em cada modo, levantando cada mão e as duas, inclinando a cabeça e levantando o queixo.
+2. Com a câmera ligada, ficar a ~1,5–2 m (ou sentado, nos modos Mão e Cabeça) e jogar uma partida em cada modo: deslocar o tronco (Corpo), arrastar uma mão à frente do peito para cada lado e levantar as duas (Mão), inclinar a cabeça e levantar o queixo (Cabeça).
 3. Logo depois de cada tentativa, clicar em "Baixar registro (60 s)" e enviar o arquivo `.json` para a equipe técnica, dizendo o modo e o que tentou fazer.
 
 O painel mostra quadros por segundo e tempo de detecção (meta: ≥ 15 quadros/s), e o registro não contém imagens da câmera.

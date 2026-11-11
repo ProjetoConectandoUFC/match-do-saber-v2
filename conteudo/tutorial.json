@@ -1,0 +1,64 @@
+{
+  "status": "rascunho",
+  "origem": "v11.0.0: os 2 perfis da prévia visual v11 (docs/visual/previa-v11.html, seção 5), Abacaxi Perfeito e Seu Caju, com os desenhos de docs/visual/estilo-imagens/, aplicados por ordem do responsável; textos a revisar. Os 4 perfis do rascunho do agente de notícias (2026-11-10) ficam em perfisReserva, fora do treino, aguardando revisão. Não são notícias: não entram no banco nem na pontuação (FR-16).",
+  "perfis": [
+    {
+      "id": "treino-abacaxi",
+      "nome": "Abacaxi Perfeito, 19",
+      "frase": "CEO de mim mesmo. Milionário. Médico, astronauta e campeão mundial. Sem tempo para perguntas.",
+      "veredito": "falsa",
+      "explicacao": "Mentira! Filtro em tudo: óculos de estrela, coroa, orelhas de gatinho e brilho por toda parte. E a bio não tem nada que dê para conferir. Promessa demais e nenhum detalhe verificável são sinais de perfil falso.",
+      "tecnica": "imagem",
+      "tema": "curiosidades",
+      "ilustracao": "perfil-falso-abacaxi"
+    },
+    {
+      "id": "treino-caju",
+      "nome": "Seu Caju, 52",
+      "frase": "Feirante no Mercado São Sebastião, Fortaleza. Banca 14, desde 1998. Pode passar lá.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdade! Foto simples, no lugar onde ele trabalha, sem filtro, e detalhes que dá para conferir: o mercado, o número da banca e desde quando. Nada de promessa: só quem ele é.",
+      "tecnica": "fonte",
+      "tema": "curiosidades",
+      "ilustracao": "perfil-verdadeiro-caju"
+    }
+  ],
+  "perfisReserva": [
+    {
+      "id": "treino-1",
+      "nome": "Morango Influencer",
+      "frase": "Acordei assim: 1,80 m de altura e pele perfeita, sem filtro nenhum!",
+      "veredito": "falsa",
+      "explicacao": "Mentira! Repare na imagem: brilho demais, olhos enormes e o ícone do filtro no canto. Quando a foto parece boa demais para ser verdade, olhe os detalhes.",
+      "tecnica": "imagem",
+      "tema": "tecnologia"
+    },
+    {
+      "id": "treino-2",
+      "nome": "Professora Abelha",
+      "frase": "As abelhas fazem mel a partir do néctar das flores.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdade! Isso está em qualquer livro de ciências. Nem todo fato curioso é mentira: quando várias fontes sérias dizem a mesma coisa, pode confiar.",
+      "tecnica": "fonte",
+      "tema": "ciencia"
+    },
+    {
+      "id": "treino-3",
+      "nome": "Gato Astronauta",
+      "frase": "Meu gato foi sozinho à Lua hoje de manhã e voltou a tempo do jantar.",
+      "veredito": "falsa",
+      "explicacao": "Mentira! A foto é uma colagem mal feita: dá para ver o recorte em volta do gato. E quem disse isso? Só o dono do gato. Notícia grande assim estaria em todo lugar.",
+      "tecnica": "imagem",
+      "tema": "curiosidades"
+    },
+    {
+      "id": "treino-4",
+      "nome": "Dona Chaleira",
+      "frase": "Na praia, a água ferve a 100 graus Celsius.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdade! Ao nível do mar, a água ferve a 100 °C. Em lugares muito altos ela ferve antes. Por isso o contexto importa: onde e quando algo acontece muda a resposta.",
+      "tecnica": "contexto",
+      "tema": "ciencia"
+    }
+  ]
+}

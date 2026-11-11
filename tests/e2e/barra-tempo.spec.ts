@@ -11,11 +11,14 @@ test.beforeEach(async ({ page }) => {
   await page.keyboard.press('Enter');
 });
 
-test('AC-2.3: o card não recebe transformação de inclinação', async ({ page }) => {
+test('AC-2.3/AC-2.10 (v10.1.0): sem pessoa detectada, o card fica no centro, sem deslocar nem girar', async ({ page }) => {
   const card = page.locator('article');
   await expect(card).toBeVisible();
   await page.waitForTimeout(500);
-  await expect(card).not.toHaveAttribute('style', /transform/);
+  await expect(card).not.toHaveAttribute('style', /transform|translate|rotate/);
+  const { translate, rotate } = await card.evaluate((el) => getComputedStyle(el));
+  expect(translate).toBe('none');
+  expect(rotate).toBe('none');
 });
 
 test('AC-4.6: barra larga na base, diminuindo com o tempo', async ({ page }) => {

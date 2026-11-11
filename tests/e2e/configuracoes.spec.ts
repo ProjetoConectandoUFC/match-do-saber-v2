@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
-const DICA_MAO = 'É verdade: mão direita para cima, as duas mãos para a direita ou arraste para a direita · É mentira: o mesmo para a esquerda · Duas mãos para cima: saiba mais';
+const DICA_MAO = 'Arraste a mão para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais';
 
 async function abrirSemCamera(page: Page) {
   await page.addInitScript(() => {
@@ -15,7 +15,7 @@ test('menu pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (AC
   await abrirSemCamera(page);
   const menu = page.getByRole('dialog', { name: 'Configurações' });
   const resumo = (t: string) => page.getByText(t, { exact: true });
-  await expect(resumo('Modo: Corpo · Tempo por card: 15 s · Som: ligado · Foto: ligada')).toBeVisible();   // AC-9.4
+  await expect(resumo('Modo: Corpo · Tempo por card: 15 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.4
 
   await page.keyboard.press('m');
   await expect(menu).toBeVisible();                                                       // AC-9.1
@@ -29,7 +29,7 @@ test('menu pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (AC
   await page.keyboard.press('Enter');                                                     // fecha (AC-9.3)
   await expect(menu).toBeHidden();
   await expect(page.locator('article')).toHaveCount(0);                                   // Enter do menu não inicia
-  await expect(resumo('Modo: Mão · Tempo por card: 20 s · Som: ligado · Foto: ligada')).toBeVisible();   // AC-9.2
+  await expect(resumo('Modo: Mão · Tempo por card: 20 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.2
 
   await page.keyboard.press('m');
   await page.keyboard.press('ArrowDown');
@@ -37,11 +37,11 @@ test('menu pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (AC
   await page.keyboard.press('ArrowLeft');                                                 // 15 → 10
   await page.keyboard.press('ArrowLeft');                                                 // 10 fica (AC-9.17)
   await page.keyboard.press('m');                                                         // M também fecha
-  await expect(resumo('Modo: Mão · Tempo por card: 10 s · Som: ligado · Foto: ligada')).toBeVisible();
+  await expect(resumo('Modo: Mão · Tempo por card: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();
 
   await page.reload();
   await expect(page.getByText(CAMERA_OFF)).toBeVisible();
-  await expect(resumo('Modo: Mão · Tempo por card: 10 s · Som: ligado · Foto: ligada')).toBeVisible();   // AC-9.5
+  await expect(resumo('Modo: Mão · Tempo por card: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.5
 
   await page.keyboard.press('Enter');
   const card = page.locator('article');
@@ -80,6 +80,9 @@ test('AC-9.1/AC-9.18 (v9.0.0): ☰ no canto superior direito; Configurações ab
   expect(b.x + b.width).toBeGreaterThan(vp.width - 48);
   expect(b.y).toBeLessThan(48);
   const iniciar = page.getByRole('button', { name: 'Iniciar', exact: true });
+  // A Poppins (local) pode terminar de carregar depois da primeira pintura e mudar a largura do botão
+  // (visto: 170,7 → 179,8 px); mede só com as fontes prontas, para comparar o lugar e não a fonte.
+  await page.evaluate(() => document.fonts.ready);
   const antes = (await iniciar.boundingBox())!;
 
   await botao.click();

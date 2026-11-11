@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 552 260" width="552" height="260">
+  <title>Card · Ciência: "Cientistas confirmam: a banana é uma fruta radioativa"</title>
+  <desc>Estilo "recorte chapado": fundo céu (ciência), anel-c do design system em 20% branco cortado na borda, banana personificada com contorno noite e sombra chapada azul-escuro, três triângulos do design system formando o símbolo de radiação. Faixa central y 52 a 208.</desc>
+  <defs>
+    <path id="cb-e4" d="M17 1L21.3 12.7L33 17L21.3 21.3L17 33L12.7 21.3L1 17L12.7 12.7L17 1"/>
+    <path id="cb-tri" d="M14.9 1L20.1 13.9L28.7 25L14.9 23.1L1 25L9.6 13.9L14.9 1"/>
+    <path id="cb-banana" d="M196 160 C236 226 372 226 414 112 C418 98 404 92 398 104 C360 170 282 186 224 140 C212 131 190 142 196 160 Z"/>
+  </defs>
+  <rect width="552" height="260" fill="#3bb8ff"/>
+  <svg x="372" y="-6" width="186" height="190" viewBox="560 6 560 570" preserveAspectRatio="xMaxYMin meet">
+    <path d="M6 899.7C96.8 950.7 264.1 1033.3 416.3 1048.5C501.5 1057 582.2 1044.7 647.1 1002.7C712.7 960.2 764.8 887.2 785.3 766.7C789.2 744 791.9 722 793.6 700.7C889.9 641.6 982.8 534.7 1055.3 357.6C1112.3 218.1 1120.8 102.9 1098.9 8L965.6 8C966.2 9.6 966.7 11.3 967.3 13C992.6 91 986 187.8 936.6 308.8C892.6 416.3 841.4 493.2 786.2 545.2C775.7 489.9 757.1 441.6 733 400C650.9 258.1 504.2 192.4 379.8 195.7C279.8 198.4 194.3 244.9 154.6 325.7C115.8 404.5 148 520.2 238.9 613.3C336.1 713 494.9 786.4 657.1 754.5C643.7 824.1 616.6 869.4 577.5 894.7C535.9 921.6 483.5 925.9 429 920.5C232.6 901 8.7 751.9 8.7 751.9L6 750.1L6 899.7M665.9 619.4C537.5 662.3 407.7 602.4 330.6 523.4C303.4 495.6 282.7 465.3 272.2 435.7C265.4 416.4 262.2 397.9 269.7 382.6C297.2 326.6 371.4 313.8 443.7 330.7C550.6 355.6 654.1 451.2 665.9 619.4" fill="#ffffff" fill-rule="evenodd" fill-opacity="0.2"/>
+  </svg>
+  <g transform="translate(118 128)">
+    <circle r="40" fill="#fde31f" stroke="#002036" stroke-width="4"/>
+    <use href="#cb-tri" fill="#002036" transform="translate(-15 -38) scale(1)"/>
+    <use href="#cb-tri" fill="#002036" transform="rotate(120) translate(-15 -38)"/>
+    <use href="#cb-tri" fill="#002036" transform="rotate(240) translate(-15 -38)"/>
+    <circle r="6" fill="#002036"/>
+  </g>
+  <use href="#cb-banana" fill="#035386" transform="translate(10 10)"/>
+  <use href="#cb-banana" fill="#fde31f" stroke="#002036" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M398 104 L410 84 L420 90 L408 108" fill="#382e00" stroke="#002036" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M196 160 L186 166" stroke="#002036" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="292" cy="178" r="7" fill="#002036"/>
+  <circle cx="330" cy="172" r="7" fill="#002036"/>
+  <path d="M296 194 Q314 206 334 190" fill="none" stroke="#002036" stroke-width="5" stroke-linecap="round"/>
+  <use href="#cb-e4" fill="#fcfaf1" transform="translate(220 64) scale(1.4)"/>
+  <use href="#cb-e4" fill="#fde31f" transform="translate(440 150) scale(1.1)"/>
+  <use href="#cb-e4" fill="#fcfaf1" transform="translate(480 92) scale(0.7)"/>
+</svg>

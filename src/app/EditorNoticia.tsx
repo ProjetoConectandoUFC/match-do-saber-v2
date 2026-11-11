@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { Problemas } from '../core/banco';
 import {
-  STATUS, TECNICAS, TECNICA_ROTULO, TEMAS, TEMA_ROTULO, VEREDITOS, type ColunaBanco, type NoticiaBanco,
+  DIFICULDADES, DIFICULDADE_ROTULO, STATUS, TECNICAS, TECNICA_ROTULO, TEMAS, TEMA_ROTULO, VEREDITOS,
+  type ColunaBanco, type NoticiaBanco,
 } from '../core/types';
 import p from './PainelNoticias.module.css';
 
@@ -21,6 +22,11 @@ const CAMPOS: Campo[] = [
   { coluna: 'imagem', rotulo: 'Imagem (opcional)', tipo: 'texto', dica: 'sem imagem, o card mostra a ilustração do tema' },
   { coluna: 'revisado_por', rotulo: 'Revisado por', tipo: 'texto', dica: 'obrigatório para aprovar' },
   { coluna: 'status', rotulo: 'Status', tipo: 'lista', opcoes: STATUS, rotulos: { rascunho: 'Rascunho', aprovada: 'Aprovada' } },
+  // v10.1.0 (AC-7.10): vazia é válida ("—"); ainda não muda o sorteio.
+  { coluna: 'dificuldade', rotulo: 'Dificuldade (opcional)', tipo: 'lista', opcoes: DIFICULDADES, rotulos: DIFICULDADE_ROTULO },
+  // v11.0.0 (AC-7.11): para a lista do resumo; sem eles, o título cortado e o domínio da fonte.
+  { coluna: 'titulo_curto', rotulo: 'Título curto (opcional)', tipo: 'texto', dica: 'até 34 caracteres, para a lista do fim da partida' },
+  { coluna: 'fonte_nome', rotulo: 'Veículo da fonte (opcional)', tipo: 'texto', dica: 'ex.: Aos Fatos; nas falsas, quem desmentiu' },
 ];
 
 /** Editor de uma notícia (AC-7.2, AC-7.3): aponta cada campo com problema; quem valida e grava é o painel. */
@@ -52,7 +58,7 @@ export function EditorNoticia({ inicial, nova, problemas, salvando, onSalvar, on
             const erro = problemas[c.coluna];
             const comum = {
               id,
-              value: n[c.coluna],
+              value: n[c.coluna] ?? '',
               'aria-invalid': erro ? ('true' as const) : ('false' as const),
               'aria-describedby': erro ? `${id}-erro` : undefined,
               onChange: (e: { target: { value: string } }) => setN({ ...n, [c.coluna]: e.target.value }),

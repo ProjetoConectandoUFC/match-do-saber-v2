@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-300 -260 600 600" width="600" height="600">
+  <title>Filtro da faixa 4 (100%): Imune a fake news!</title>
+  <desc>Quadro do rosto: olhos em (-50,0) e (50,0); 100 unidades = distância entre os olhos (pontos 2 e 5). Máscara de herói nos olhos; capa e emblema presos aos ombros (pontos 11 e 12, aqui em (-200,255) e (200,255)): no jogo, a capa é escalada pela distância entre os ombros, separada da máscara. Estrelas: marca-estrela-4 e marca-estrela-6 do Conectando Design System.</desc>
+  <defs>
+    <path id="f4-e4" d="M17 1L21.3 12.7L33 17L21.3 21.3L17 33L12.7 21.3L1 17L12.7 12.7L17 1"/>
+    <path id="f4-e6" d="M12.9 1L15.6 10.2L24.9 7.9L18.2 14.8L24.9 21.7L15.6 19.3L12.9 28.6L10.3 19.3L1 21.7L7.7 14.8L1 7.9L10.3 10.2L12.9 1"/>
+    <path id="f4-mascara" fill-rule="evenodd" d="M-124 -6 C-120 -50 -40 -48 0 -22 C40 -48 120 -50 124 -6 C122 34 44 44 0 20 C-44 44 -122 34 -124 -6 Z M-78 0 A28 19 0 1 0 -22 0 A28 19 0 1 0 -78 0 Z M22 0 A28 19 0 1 0 78 0 A28 19 0 1 0 22 0 Z"/>
+  </defs>
+  <path d="M-165 246 C-232 262 -272 292 -300 340 L-212 340 C-204 302 -188 276 -150 262 Z" fill="#a740b2"/>
+  <path d="M165 246 C232 262 272 292 300 340 L212 340 C204 302 188 276 150 262 Z" fill="#a740b2"/>
+  <path d="M-205 250 Q0 196 205 250 L192 270 Q0 222 -192 270 Z" fill="#ff6776"/>
+  <circle cx="8" cy="304" r="44" fill="#002036"/>
+  <circle cx="0" cy="296" r="44" fill="#fde31f" stroke="#002036" stroke-width="6"/>
+  <use href="#f4-e4" fill="#002036" transform="translate(-34 262) scale(2)"/>
+  <path d="M-120 -8 L-160 -30 L-150 6 Z M120 -8 L160 -30 L150 6 Z" fill="#24c0c0" stroke="#002036" stroke-width="5" stroke-linejoin="round"/>
+  <use href="#f4-mascara" fill="#002036" transform="translate(8 8)"/>
+  <use href="#f4-mascara" fill="#24c0c0"/>
+  <use href="#f4-e6" fill="#fde31f" transform="translate(-235 -215) scale(3)"/>
+  <use href="#f4-e4" fill="#fde31f" transform="translate(160 -210) scale(2)"/>
+  <use href="#f4-e4" fill="#fcfaf1" transform="translate(205 -110) scale(1)"/>
+</svg>

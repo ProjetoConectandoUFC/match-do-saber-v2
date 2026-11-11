@@ -53,11 +53,33 @@
 .lado { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: calc(16 * var(--u)); }
 .marcaMentira { color: var(--mentira); }
 .marcaVerdade { color: var(--verdade); }
+/* Botões redondos (AC-2.11, v11.0.0): --acende (0..1) vem de useInclinacaoCard, a mesma fração do card; cresce até
+   10% e ganha um anel amarelo de até 8 px. Na saída, o lado escolhido fica aceso por inteiro. */
+.botaoLado { --acende: 0; display: grid; place-items: center; width: calc(140 * var(--u)); height: calc(140 * var(--u)); box-sizing: border-box; border-radius: 50%; border: calc(4 * var(--u)) solid var(--cn-creme); color: var(--cn-noite); box-shadow: 0 0 0 calc(8 * var(--u) * var(--acende)) var(--cn-amarelo), calc(8 * var(--u)) calc(8 * var(--u)) 0 rgb(0 0 0 / 0.35); scale: calc(1 + 0.1 * var(--acende)); }
+.botaoLado[data-escolhido] { --acende: 1 !important; }
+.botaoMentira { background: var(--mentira); }
+.botaoVerdade { background: var(--verdade); }
+/* Pilha de cards (AC-2.12): duas camadas paradas atrás do card, no lugar da sombra chapada; a pilha tem o tamanho do card. */
+.pilha { position: relative; flex: none; }
+.camadaPilha { position: absolute; inset: 0; border-radius: calc(24 * var(--u)); border: 2px solid rgb(252 250 241 / 0.25); pointer-events: none; }
+.camadaPilha1 { background: var(--cn-marinho); transform: translate(calc(14 * var(--u)), calc(10 * var(--u))) rotate(4deg); }
+.camadaPilha2 { background: var(--cn-grafite-azul); transform: translate(calc(-8 * var(--u)), calc(6 * var(--u))) rotate(-2.5deg); }
+/* Carimbo (AC-2.10b, AC-2.12): o rótulo do lado; opacidade = fração (useInclinacaoCard); inteiro na saída.
+   Coral sobre creme 3,8:1 e teal sobre creme 3,0:1, em texto de 40 px bold (regra de 3:1 para ≥ 24 px bold). */
+.carimbo { position: absolute; top: calc(30 * var(--u)); z-index: 3; padding: calc(2 * var(--u)) calc(16 * var(--u)); border: calc(6 * var(--u)) solid currentColor; border-radius: calc(14 * var(--u)); background: rgb(252 250 241 / 0.92); font: 900 calc(40 * var(--u)) / 1.1 var(--fonte); letter-spacing: 0.04em; text-transform: uppercase; pointer-events: none; }
+.carimboMentira { left: calc(24 * var(--u)); color: var(--cn-coral); rotate: -12deg; }
+.carimboVerdade { right: calc(24 * var(--u)); color: var(--cn-teal); rotate: 12deg; }
+.carimbado { opacity: 1 !important; animation: carimbar 160ms ease-out; }
+@keyframes carimbar { from { scale: 1.4; } to { scale: 1; } }
 .pilula { display: inline-flex; align-items: center; border-radius: var(--raio-pilula); padding: calc(6 * var(--u)) calc(26 * var(--u)); font-size: calc(32 * var(--u)); font-weight: 800; line-height: 1.2; border: calc(3 * var(--u)) solid var(--cn-creme); }
 .pilulaMentira { background: var(--mentira); color: var(--cn-tinta); }
 .pilulaVerdade { background: var(--verdade); color: var(--cn-noite); }
-.card { position: relative; flex: none; width: calc(600 * var(--u)); max-height: calc(642 * var(--u)); box-sizing: border-box; background: var(--cn-creme); color: var(--cn-tinta); border-radius: calc(24 * var(--u)); padding: calc(22 * var(--u)) calc(24 * var(--u)) calc(24 * var(--u)); display: flex; flex-direction: column; gap: calc(12 * var(--u)); box-shadow: calc(14 * var(--u)) calc(14 * var(--u)) 0 var(--sombra); overflow: hidden; touch-action: none; user-select: none; }
+.card { position: relative; flex: none; width: calc(600 * var(--u)); max-height: calc(642 * var(--u)); box-sizing: border-box; background: var(--cn-creme); color: var(--cn-tinta); border-radius: calc(24 * var(--u)); padding: calc(22 * var(--u)) calc(24 * var(--u)) calc(24 * var(--u)); display: flex; flex-direction: column; gap: calc(12 * var(--u)); overflow: hidden; touch-action: none; user-select: none; }
 .card img { width: 100%; height: calc(156 * var(--u)); flex: none; object-fit: cover; border-radius: calc(16 * var(--u)); }
+/* Treino (AC-15.7, v11.0.0): o perfil ocupa mais altura; o card de treino não tem a dica nem texto longo. */
+.card img.imagemPerfil { height: calc(300 * var(--u)); object-position: 50% 30%; }
+/* Ilustração "recorte chapado" (552 × 260): o card mostra a faixa central de 552 × 156. */
+.card img.ilustracaoRecorte { display: block; border-radius: 0; }
 .card h2 { margin: 0; font-size: calc(32 * var(--u)); line-height: 1.15; font-weight: 700; color: var(--cn-titulo); overflow-wrap: anywhere; }
 .card p { margin: 0; font-size: calc(28 * var(--u)); line-height: 1.32; font-weight: 400; overflow-wrap: anywhere; }
 .card p.dicaCard { display: flex; align-items: center; gap: calc(8 * var(--u)); font-size: calc(20 * var(--u)); line-height: 1.3; font-weight: 500; color: var(--cn-grafite); }
@@ -100,25 +122,66 @@
 .app:has(> .fbMentira) { color: var(--cn-tinta); }
 .feedback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(22 * var(--u)); text-align: center; padding: 0 calc(200 * var(--u)); }
 .veredito { margin: 0; display: inline-flex; align-items: center; gap: calc(12 * var(--u)); font-size: calc(30 * var(--u)); font-weight: 800; line-height: 1.2; }
-.selo { margin: 0; font-size: calc(48 * var(--u)); font-weight: 900; line-height: 1; padding: calc(12 * var(--u)) calc(40 * var(--u)); border-radius: var(--raio-pilula); }
+/* Ícone + selo numa linha (AC-4.9, v11.0.0); o ícone pulsa uma vez ao aparecer. */
+.linhaSelo { display: flex; align-items: center; justify-content: center; gap: calc(20 * var(--u)); }
+.iconeFeedback { display: block; flex: none; animation: aparecerIcone 420ms ease-out; }
+@keyframes aparecerIcone { 0% { scale: 0.6; } 60% { scale: 1.12; } 100% { scale: 1; } }
+.selo { margin: 0; display: inline-flex; align-items: baseline; gap: calc(16 * var(--u)); font-size: calc(44 * var(--u)); font-weight: 900; line-height: 1; padding: calc(14 * var(--u)) calc(36 * var(--u)); border-radius: var(--raio-pilula); white-space: nowrap; }
 .seloAcerto { background: var(--cn-noite); color: var(--cn-amarelo); }
+.seloAcerto .seloMatch + .seloResultado { color: var(--cn-creme); }
 .seloErro { background: var(--cn-creme); color: var(--cn-tinta); border: calc(3 * var(--u)) solid var(--cn-tinta); }
+.seloMatch + .seloResultado { font-size: calc(34 * var(--u)); font-weight: 800; }
+@media (prefers-reduced-motion: reduce) {
+  .iconeFeedback, .carimbado { animation: none; }
+}
 .explicacao { margin: 0; font-size: calc(30 * var(--u)); line-height: 1.4; font-weight: 500; max-width: calc(860 * var(--u)); }
 .tecnica { margin: 0; border: calc(3 * var(--u)) solid currentColor; border-radius: var(--raio-pilula); padding: calc(4 * var(--u)) calc(24 * var(--u)); font-size: calc(26 * var(--u)); font-weight: 600; }
 
-/* Resumo (tema Claro, AC-5.1, AC-13.2): polaroid 384 (20% maior que os 320 da v9) e texto lado a lado, centralizados. */
-.resumoLinha { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: calc(90 * var(--u)); }
-.resumoTexto { display: flex; flex-direction: column; align-items: center; gap: calc(8 * var(--u)); width: calc(500 * var(--u)); text-align: center; }
+/* Resumo (tema Claro, AC-5.1, opção B da prévia v11): polaroid 384 (AC-13.2) à esquerda; à direita o placar, a
+   mensagem e o cartão do QR (AC-5.9) em cima e a lista da rodada (AC-5.8) embaixo. */
+.resumoLinha { position: absolute; left: calc(40 * var(--u)); right: calc(40 * var(--u)); top: 0; bottom: calc(52 * var(--u)); display: flex; align-items: center; justify-content: center; gap: calc(40 * var(--u)); }
+.resumoDireita { flex: 1; min-width: 0; max-width: calc(900 * var(--u)); display: flex; flex-direction: column; gap: calc(22 * var(--u)); }
+.resumoTopo { display: flex; align-items: center; justify-content: space-between; gap: calc(24 * var(--u)); }
+.resumoTexto { display: flex; flex-direction: column; align-items: flex-start; gap: calc(6 * var(--u)); min-width: 0; }
 .resumoTexto > * { margin: 0; }
-.resumoTexto h1 { font-size: calc(56 * var(--u)); font-weight: 900; line-height: 1.1; }
+.resumoTexto h1 { font-size: calc(44 * var(--u)); font-weight: 900; line-height: 1.1; }
 .resumoTexto h1 em { font-style: normal; color: var(--cn-amarelo); }
-.placar { font-size: calc(112 * var(--u)); font-weight: 900; line-height: 1; color: var(--cn-amarelo); }
-.mensagemResumo { font-size: calc(28 * var(--u)); font-weight: 600; line-height: 1.3; }
+.placar { font-size: calc(92 * var(--u)); font-weight: 900; line-height: 1; color: var(--cn-amarelo); }
+.mensagemResumo { font-size: calc(28 * var(--u)); font-weight: 600; line-height: 1.3; max-width: calc(600 * var(--u)); }
+.cartaoQr { flex: none; width: calc(216 * var(--u)); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: calc(8 * var(--u)); background: var(--cn-creme); color: var(--cn-noite); border-radius: calc(20 * var(--u)); padding: calc(14 * var(--u)) calc(16 * var(--u)) calc(12 * var(--u)); box-shadow: calc(10 * var(--u)) calc(10 * var(--u)) 0 var(--cn-noite); text-align: center; }
+.cartaoQr p { margin: 0; font-size: calc(17 * var(--u)); font-weight: 800; line-height: 1.2; }
+/* Lista da rodada (AC-5.8): letra menor de propósito, para ler de perto ou na foto do celular. */
+.listaRodada { background: var(--cn-creme); color: var(--cn-tinta); border-radius: calc(24 * var(--u)); box-shadow: calc(12 * var(--u)) calc(12 * var(--u)) 0 var(--sombra); padding: calc(14 * var(--u)) calc(22 * var(--u)) calc(10 * var(--u)); }
+.listaTopo { display: flex; align-items: center; justify-content: space-between; gap: calc(12 * var(--u)); padding-bottom: calc(8 * var(--u)); border-bottom: 2px solid var(--cn-azul); }
+.listaTopo h2 { margin: 0; font-size: calc(22 * var(--u)); font-weight: 800; color: var(--cn-titulo); }
+.legenda { display: flex; align-items: center; gap: calc(14 * var(--u)); font-size: calc(15 * var(--u)); font-weight: 600; color: var(--cn-grafite); }
+.legenda > span { display: inline-flex; align-items: center; gap: calc(6 * var(--u)); }
+.gradeRodada { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(5, auto); column-gap: calc(24 * var(--u)); }
+.linhaRodada { display: flex; align-items: center; gap: calc(12 * var(--u)); height: calc(60 * var(--u)); min-width: 0; border-bottom: 1.5px dashed rgb(56 46 0 / 0.35); }
+.linhaRodada:nth-child(5n) { border-bottom: 0; }
+.resultado { display: grid; place-items: center; width: calc(34 * var(--u)); height: calc(34 * var(--u)); box-sizing: border-box; border-radius: 50%; flex: none; font-style: normal; color: var(--cn-noite); }
+.resultadoOk { background: var(--cn-amarelo); border: 2px solid var(--cn-noite); }
+.resultadoNao { background: var(--cn-creme); border: 3px solid var(--cn-noite); }
+.resultadoMini { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+.resultadoMini .xis { scale: 0.75; }
+.textoRodada { flex: 1; min-width: 0; }
+.textoRodada b { display: block; font-size: calc(19 * var(--u)); font-weight: 700; color: var(--cn-titulo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
+.textoRodada small { display: flex; align-items: center; gap: calc(6 * var(--u)); font-size: calc(14 * var(--u)); font-weight: 500; color: var(--cn-grafite); line-height: 1.4; white-space: nowrap; overflow: hidden; }
+.textoRodada strong { font-weight: 700; color: var(--cn-tinta); overflow: hidden; text-overflow: ellipsis; }
+.veiculo { display: inline-flex; flex: none; border-radius: var(--raio-pilula); padding: calc(1 * var(--u)) calc(8 * var(--u)); font-size: calc(12 * var(--u)); font-weight: 800; line-height: 1.5; }
+.veiculoVerdade { background: var(--verdade); color: var(--cn-noite); }
+.veiculoMentira { background: var(--mentira); color: var(--cn-tinta); }
 .polaroid { position: relative; margin: 0; width: calc(384 * var(--u)); flex: none; }
 .folha { position: absolute; inset: 0; background: var(--cn-amarelo); border-radius: 4px; transform: translate(calc(16 * var(--u)), calc(12 * var(--u))) rotate(2.5deg); }
 .papel { position: relative; background: var(--cn-branco); color: var(--cn-tinta); padding: calc(16 * var(--u)) calc(16 * var(--u)) 0; border-radius: 4px; transform: rotate(-1.4deg); }
-.papel img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+/* Foto e filtro (AC-13.8) no mesmo recorte quadrado; o filtro é uma camada à parte, a foto não muda. */
+.quadroFoto { position: relative; aspect-ratio: 1 / 1; overflow: hidden; }
+.papel img { display: block; width: 100%; height: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.filtroFoto { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .papel figcaption { padding: calc(12 * var(--u)) 0 calc(16 * var(--u)); font-size: calc(22 * var(--u)); font-weight: 700; text-align: center; }
+/* Selo da faixa na moldura (AC-13.2, AC-13.9): sempre que há foto, com ou sem filtro. */
+.seloFaixa { position: absolute; right: calc(-27 * var(--u)); top: calc(-31 * var(--u)); z-index: 1; width: calc(154 * var(--u)); height: calc(154 * var(--u)); box-sizing: border-box; padding: 0 calc(10 * var(--u)); border-radius: 50%; background: var(--cn-amarelo); color: var(--cn-noite); border: 3px solid var(--cn-noite); box-shadow: calc(5 * var(--u)) calc(5 * var(--u)) 0 var(--cn-noite); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(3 * var(--u)); text-align: center; font-weight: 800; font-size: calc(17 * var(--u)); line-height: 1.08; rotate: 8deg; }
+.seloFaixaLinha { display: block; }
 
 /* Prévia da câmera (AC-2.6, v10.0.0): camada sobreposta e fixa no canto inferior direito, fora do fluxo de centralização. */
 .preview { position: fixed; right: calc(16 * var(--u)); bottom: calc(80 * var(--u)); z-index: 10; width: calc(320 * var(--u)); height: calc(180 * var(--u)); box-sizing: content-box; border-radius: calc(14 * var(--u)); overflow: hidden; border: 2px solid var(--cn-creme); background: var(--cn-grafite-azul); pointer-events: none; }

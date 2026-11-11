@@ -14,7 +14,7 @@
 - (v1.1.0) Modos de jogo: Corpo (padrão), Mão (mão direita = match, esquerda = descarte, as duas = saiba mais) e Cabeça (inclinar para direita/esquerda; queixo para cima = saiba mais). Escolhidos pelo operador na tela de espera (tecla M), guardados no notebook até serem trocados; nunca mudam durante uma partida.
 - (v6.0.0) Modo Mão: escolher por levantar a mão, por duas mãos para um lado ou arrastando do centro para o lado. A pausa por ausência vale só no modo Corpo.
 - (v5.0.0) O cronômetro do card só pausa por "Volte para o centro": com o "saiba mais" aberto o tempo corre e a barra diminui; o "saiba mais" não fecha sozinho.
-- (v4.0.0) Card parado até a escolha (sem inclinar com o corpo/cabeça); cronômetro numa barra grossa na base da tela com os segundos; nos últimos 5 s barra vermelha e card pulsando em vermelho (pausado, não pulsa).
+- (v4.0.0) Card parado até a escolha (sem inclinar com o corpo/cabeça; revisto na v10.1.0: acompanha levemente a inclinação, suavizado, AC-2.10); cronômetro numa barra grossa na base da tela com os segundos; nos últimos 5 s barra vermelha e card pulsando em vermelho (pausado, não pulsa).
 - (v3.0.0) Início só manual: a câmera nunca inicia nada; "▶ Iniciar" ou Enter na espera abre a calibração (câmera ativa) ou começa direto (sem câmera); Enter na calibração a pula. Sair, ausência de 10 s e o fim de calibração vazia deixam o jogo na espera.
 - (v2.0.0) Menu "Configurações": modo, tempo por card (10, 15, 20, 25, 30 s) e som (ligado/desligado). Botões "▶ Iniciar" (= Enter) e "✕ Sair" (= Esc, encerra sem resumo). Sons sintetizados: deslizar na escolha, positivo no acerto, erro no erro e no tempo esgotado. Card centralizado na vertical.
 - Todos os textos em português do Brasil.
@@ -5393,6 +5393,52 @@ Reescrita v10.0.0 (spec FR-15, AC-2.6, AC-4.1, AC-4.5, AC-4.9, AC-9.14, AC-13.2;
 - Editar uma notícia no painel; conferir backup em `Documentos/Match do Saber/backups/`; abrir o CSV no Excel e salvar; Ctrl+R e conferir.
 - Importar o CSV de um lote de notícias aprovado.
 
+## Phase 38 (added v10.1.0): Card acompanha o corpo e dificuldade das notícias
+
+Spec: AC-2.3, AC-2.10, AC-9.13, FR-2, FR-9 (card acompanha a inclinação); AC-7.1, AC-7.2, AC-7.3, AC-7.10, FR-6 (dificuldade). TDD: teste falhando antes do código.
+
+- 38.1 `src/core/inclinacaoCard.ts` (novo, puro): `mapearInclinacao(inclinacao)` → `{ dx, graus }` (zona morta de 15%, máximo 40 px e 6°, limitado a -1..1) e `criarInclinacaoCard()` com suavização exponencial por `dtMs` e as situações `jogando` (segue a leitura), `saindo` (mantém a posição) e `centro` (volta ao zero); `prefers-reduced-motion` zera na hora.
+- 38.2 `src/app/useInclinacaoCard.ts`: laço `requestAnimationFrame` que lê `inclinacaoRef` (de `useJogo`) e escreve `style.translate`/`style.rotate` no card atual (ref), fora do estado do React. Usa as propriedades `translate` e `rotate`, que se somam ao `transform` das animações de saída e do pulso (AC-4.7) sem brigar com elas; sem CSS novo.
+- 38.3 `dificuldade`: `Dificuldade`/`DIFICULDADES` em `types.ts`, última coluna de `COLUNAS_BANCO`; `csv.ts` lê em minúsculas e CSV sem a coluna fica com ela vazia; `banco.ts` valida a lista quando preenchida; `Noticia.dificuldade?`. Editor com lista e painel com filtro "Dificuldade" (inclui "Sem dificuldade").
+- 38.4 `conteudo/noticias.csv`: só o cabeçalho e um `;` vazio no fim de cada linha. `scripts/fixture.ts`: dificuldade nas aprovadas.
+- 38.5 Verificação no hardware (pendente): a ~2 m, conferir que o card não treme com o jogador parado e que segue o corpo sem atraso incômodo nos modos Corpo e Cabeça; ajustar zona morta, máximos e constante de tempo se preciso.
+
+## Phase 39 (added v10.2.0): Âncoras do rosto, privacidade da foto e tutorial (só mecânica)
+
+Spec: AC-13.5 a AC-13.7, FR-13; Story 15, AC-15.1 a AC-15.7, FR-16; AC-9.1, AC-9.2, AC-9.4, FR-9. TDD. Nada visual novo além do mínimo para as telas de treino funcionarem.
+
+- 39.1 `src/core/ancorasRosto.ts` (novo, puro): `calcularAncoras(pontos, { largura, altura, espelhada })` → quadros (origem, escala, giro) de rosto, chapéu e capa, pontos dos olhos e da orelha 8, ou `null` ("sem filtro"); visibilidade mínima 0,5; reserva do rosto pelas orelhas.
+- 39.2 `src/app/foto.ts`: `capturarFoto(video, pose)` devolve `{ imagem, largura, altura, ancoras }`; `useFotoPartida` fica genérico e guarda o objeto inteiro (apagado inteiro, AC-13.7).
+- 39.3 Privacidade: teste de componente que vigia `localStorage`, `sessionStorage`, IndexedDB, `fetch`, XHR e `sendBeacon` numa partida inteira com foto; E2E de `foto.spec.ts` com o mesmo vigia instalado na página e checagem do corpo de todas as requisições.
+- 39.4 Tutorial: `conteudo/tutorial.json` (perfis do rascunho, `"status": "rascunho"`), `src/core/tutorial.ts` (validação e textos didáticos por modo), telas `tutorial` e `tutorialFeedback` no reducer com testes de fronteira; item "Tutorial" nas Configurações (padrão desligado); `TelaCard` em modo treino (sem barra, "Treino N de 4") e `TelaFeedbackTutorial` com as classes existentes.
+- 39.5 E2E `relogio-real.spec.ts` num projeto do Playwright que roda sozinho, depois dos outros (mesmo critério de FR-1).
+- 39.6 `data-model.md` reescrito para o banco CSV.
+- 39.7 Depois da aprovação da prévia v11: desenhar os filtros por cima da foto com as âncoras e decidir quando o tutorial entra.
+
+## Phase 40 (added v10.3.0): Card que mimetiza o controle, um controle por modo, diagnóstico liga/desliga
+
+Spec: AC-2.4, AC-2.9, AC-2.10, AC-9.9, AC-9.14, AC-9.20, AC-9.22, AC-12.7, FR-2, FR-9, FR-12, FR-14. Decisões do responsável (Levi). TDD.
+
+- 40.1 Diagnóstico: `alternarDiagnostico` (core) e o item "Diagnóstico: ligado/desligado" no menu ☰.
+- 40.2 `src/core/inclinacaoCard.ts`: fração suavizada (100 ms, zona morta 3%) e `deslocamentoCard(fracao, { largura, altura }, reduzir)` com base deslocada 38% da largura e giro de 14° com eixo na base (convertido em `translate`/`rotate` sem mudar CSS), mais a opacidade dos rótulos Verdade/Mentira.
+- 40.3 `useInclinacaoCard` lê o tamanho do card e escreve `translate`, `rotate` e a opacidade dos rótulos; `TelaCard` ganha os dois rótulos (só texto e tokens).
+- 40.4 `gestos.ts`: Corpo só pelo tronco (sai o braço); Mão por swipe contínuo (mão ativa = punho acima do cotovelo, limite = `arrasteMinL`, a calibrar); a inclinação fica 0 enquanto a escolha está travada. Dicas e textos do tutorial.
+- 40.5 Verificação no hardware: ver o que testar no relatório da rodada.
+
+## Phase 41 (added v11.0.0): Prévia v11 aplicada (tela final, filtros, interface de app de namoro, som de fim)
+
+Spec: AC-2.10b, AC-2.11, AC-2.12, AC-4.1 a AC-4.3, AC-4.9, AC-5.1, AC-5.8 a AC-5.10, AC-7.2, AC-7.3, AC-7.11, AC-11.6, AC-13.2, AC-13.6, AC-13.8, AC-13.9, AC-15.7; FR-4, FR-5, FR-6, FR-11, FR-13, FR-15. Aplicado por ordem do responsável; detalhes a confirmar. TDD. Sem mexer em `gestos.ts`, `partida.ts`, `useJogo.ts` nem na geometria de `inclinacaoCard.ts`.
+
+- 41.1 `src/core/faixas.ts` (novo, puro): `faixaDeAcertos(pontos, total)` → 1..4, igual às faixas de `mensagemResumo`, e o título de cada faixa.
+- 41.2 Banco: `titulo_curto` e `fonte_nome` no fim de `COLUNAS_BANCO`; `titulo_curto` até 34 caracteres; `Noticia.tituloCurto?`, `fonteNome?`, `fontesExtras?`. `src/core/fontesRodada.ts` (novo, puro): título curto, nome do veículo pelo domínio, linhas do resumo, ids ↔ fragmento do QR, endereço da página e itens da página das fontes. `conteudo/noticias.csv` só ganha as duas colunas vazias; editor com os dois campos.
+- 41.3 QR: `qrcode-generator` 1.4.4 (fixado), matriz gerada em `src/app/QrCode.tsx` e desenhada em SVG; página `fontes.html` + `src/fontes/main.ts` (entrada nova do Vite), com a mesma CSP; PWA sem `navigateFallback` para ela.
+- 41.4 `src/core/filtrosFoto.ts` (novo, puro): partes de cada filtro (rosto, chapéu, capa, lápis) e o `transform` SVG de cada uma a partir das âncoras; `src/app/filtros/*.svg` (cópias de `docs/visual/filtros/` com as partes marcadas por comentários, sem mudar o desenho); `FiltroFoto` e o selo da faixa no polaroid.
+- 41.5 Sons: `fim1`..`fim4` em `sonsDaTransicao` (entrada no resumo vinda do feedback) e as notas em `audio.ts`.
+- 41.6 Card: pilha, botões redondos com `--acende` escrita por `useInclinacaoCard` (mesma fração dos rótulos), carimbo como visual final do rótulo, aceso por inteiro na saída; ilustrações "recorte chapado" por id de notícia; treino com os 2 perfis da prévia e o campo opcional `ilustracao` (os 4 do rascunho em `perfisReserva`).
+- 41.7 Feedback: ícones (acerto, erro, ampulheta) com as formas do design system e "Deu match!"/"Não deu match"; "Acertou!", "Errou" e "Tempo esgotado" continuam como texto próprio.
+- 41.8 Resumo: opção B (polaroid 384, placar, mensagem, cartão do QR e lista em duas colunas), 1366×768 e 1920×1080; E2E de layout, da página das fontes e capturas reais em `docs/visual/capturas/v11-aplicado/`.
+- 41.9 Verificação no hardware (pendente): ler o QR a 50–80 cm da TV com dois celulares; conferir os filtros com fotos reais (de frente, de lado, de boné); conferir a vinheta no som do estande.
+
 ## Quickstart Validation
 
 ```bash
@@ -5475,3 +5521,11 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 9.0.0 | 37 | Adicionada: verificação no hardware |
 | 10.0.0 | 31 | Invalidada: a barra de tempo do card sai (AC-4.8 removido) |
 | 10.0.0 | 36 | Reescrita: subfases 36.1 a 36.7 conforme a prévia aprovada (revisão 3) |
+| 10.1.0 | 14 | Parcialmente invalidada: o card volta a acompanhar a inclinação, suavizado e limitado (Fase 38) |
+| 10.1.0 | 38 | Adicionada: card acompanha o corpo (AC-2.10) e coluna `dificuldade` (AC-7.10) |
+| 10.2.0 | 24 | Parcialmente estendida: a foto do resumo leva as âncoras do rosto (Fase 39) |
+| 10.3.0 | 29, 20, 38 | Parcialmente invalidadas: braço para o lado (Corpo), mão levantada e duas mãos para o lado (Mão) saem; o card passa a mimetizar o controle (Fase 40) |
+| 10.3.0 | 40 | Adicionada: card como no Reigns, um controle por modo e diagnóstico liga/desliga |
+| 10.2.0 | 39 | Adicionada: âncoras do rosto, privacidade da foto, tutorial, E2E do relógio em série e modelo de dados |
+| 11.0.0 | 39.7 | Concluída pela Fase 41 (filtros desenhados com as âncoras) |
+| 11.0.0 | 41 | Adicionada: prévia v11 aplicada (tela final com lista e QR, filtros por faixa, pilha, botões redondos, carimbo, "Deu match!", som de fim de partida, recorte chapado) |
