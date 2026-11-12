@@ -3,14 +3,14 @@
     "facil": "O palpite de bom senso acerta. Falsa com absurdo evidente (promessa impossível, foto ou alerta exagerado) ou verdadeira muito conhecida, ensinada na escola ou famosa.",
     "medio": "Soa estranho, mas é plausível. O jogador precisa de uma pista do card (quem diz, quando, como é a foto) ou de uma informação que nem todo mundo tem.",
     "dificil": "O palpite intuitivo tende a errar: falsa repetida como fato por muita gente, ou verdadeira que parece invenção. Só checando fonte, data ou contexto dá para acertar.",
-    "observacao": "Lote só com o tema politica (spec v12.0.0). Nenhum card (titulo, descricao, saibaMais) nomeia pessoas, partidos ou siglas; os nomes aparecem só na explicacao. Entre as falsas, 5 boatos circularam mais num campo político e 5 no outro; entre as verdadeiras, 3 constrangem cada campo e 4 são fatos institucionais neutros. As verdadeiras difíceis foram escolhidas para soar absurdas."
+    "observacao": "Lote só com o tema politica (spec v12.0.0). Nenhum card (titulo, descricao, saibaMais) nomeia pessoas, partidos ou siglas; os nomes aparecem só na explicacao. Entre as falsas, 5 boatos circularam mais num campo político e 5 no outro; entre as verdadeiras, 3 constrangem cada campo e 4 são fatos institucionais neutros. As verdadeiras difíceis foram escolhidas para soar absurdas. Revisão de 2026-11-12 (Produção CNTM): 4 falsas reprovadas foram trocadas por mds-0043 a mds-0046; cards com referência relativa ao momento foram localizados com o ano (regra 13)."
   },
   "noticias": [
     {
       "id": "mds-0023",
       "titulo": "Vacina contra a covid pode transformar quem toma em jacaré",
-      "descricao": "Num discurso de 2020, um líder político avisou: quem tomar a vacina contra a covid pode virar jacaré, e o problema é seu.",
-      "saibaMais": "A frase foi dita em dezembro de 2020, num evento na Bahia, quando as primeiras vacinas contra a covid começavam a ser aplicadas no mundo. O assunto era o contrato de compra de uma das vacinas e quem responderia por efeitos colaterais. O trecho do discurso viralizou nas redes sociais.",
+      "descricao": "Quem tomar a vacina contra a covid corre o risco de se transformar em jacaré, e o problema será só seu.",
+      "saibaMais": "A ideia se espalhou em dezembro de 2020, quando as primeiras vacinas contra a covid começavam a ser aplicadas no mundo. A discussão envolvia o contrato de compra de uma das vacinas e quem responderia por efeitos colaterais. Vídeos e memes sobre o assunto viralizaram nas redes sociais.",
       "veredito": "falsa",
       "explicacao": "Falsa. Vacina não muda a espécie de ninguém. Segundo o Diário de Notícias, Jair Bolsonaro disse a frase ao criticar o contrato da Pfizer. Em 2021, ele afirmou ao O Povo que era uma \"hipérbole\", um exagero. Veja o contexto: a frase era força de expressão, e quem responde sobre efeitos de vacina são cientistas e agências de saúde.",
       "tecnica": "contexto",
@@ -26,8 +26,8 @@
     },
     {
       "id": "mds-0024",
-      "titulo": "Presidente da República fez discurso saudando a mandioca",
-      "descricao": "Vídeo mostra a chefe do governo, em evento oficial, dizendo que saúda a mandioca, \"uma das maiores conquistas do Brasil\".",
+      "titulo": "Em 2015, a então presidente fez discurso saudando a mandioca",
+      "descricao": "Vídeo mostra a então chefe do governo, em evento oficial, dizendo que saúda a mandioca, \"uma das maiores conquistas do Brasil\".",
       "saibaMais": "O vídeo circula há anos, e muita gente acha que é montagem ou edição de programa de humor. O evento foi o lançamento dos Jogos Mundiais dos Povos Indígenas, em Brasília. A mandioca é uma raiz nativa da América do Sul, cultivada por povos indígenas há milhares de anos e base de alimentos como farinha, tapioca e polvilho.",
       "veredito": "verdadeira",
       "explicacao": "Verdadeira. Em 23 de junho de 2015, no Estádio Mané Garrincha, Dilma Rousseff disse: \"Hoje, estou saudando a mandioca, é uma das maiores conquistas deste país\", como registraram Gazeta do Povo e InfoMoney. Diante de um vídeo que parece editado, procure a gravação completa e a cobertura do dia: se vários veículos relatam a fala, ela é real.",
@@ -57,32 +57,14 @@
         "https://canaltech.com.br/mercado/o-pix-sera-taxado-e-monitorado-receita-federal-nega-boatos/"
       ],
       "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
-    },
-    {
-      "id": "mds-0026",
-      "titulo": "Futuro presidente dos EUA chamou os próprios eleitores de burros",
-      "descricao": "Citação de uma revista de 1998 diz que, se ele concorresse, seria pelo partido dos eleitores \"mais burros\" do país.",
-      "saibaMais": "A imagem traz a foto do empresário e um trecho atribuído a uma entrevista à revista People, dos Estados Unidos. No texto, ele diria que esses eleitores acreditam em tudo o que veem num canal de TV. A peça circula pelo menos desde 2015 e reaparece em toda eleição americana, inclusive em grupos brasileiros.",
-      "veredito": "falsa",
-      "explicacao": "Falsa. A revista People disse ao Observador e a outros checadores que não achou nada parecido em seu arquivo e que Donald Trump não lhe deu entrevista em 1998. O Full Fact chama a peça de \"boato zumbi\": ela sempre volta. Confira a fonte citada: se a frase é de uma revista, procure a edição. Citação famosa sem edição, página ou link é sinal de alerta.",
-      "tecnica": "fonte",
-      "tema": "politica",
-      "dificuldade": "medio",
-      "fonteUrl": "https://observador.pt/factchecks/fact-check-trump-chamou-aos-republicanos-o-grupo-de-eleitores-mais-estupido/",
-      "fontesExtras": [
-        "https://fullfact.org/us/donald-trump-dumbest-voters-quote-fake/"
-      ],
-      "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
+      "status": "aprovada",
+      "revisadoPor": "Produção CNTM"
     },
     {
       "id": "mds-0027",
-      "titulo": "Rinoceronte recebeu cerca de 100 mil votos para vereador em São Paulo",
-      "descricao": "Um rinoceronte do zoológico teve mais votos do que qualquer candidato humano numa eleição para a Câmara Municipal.",
-      "saibaMais": "O animal se chamava Cacareco e vivia no zoológico da cidade. Ele nunca se inscreveu como candidato. A história é lembrada até hoje sempre que se fala em voto de protesto no Brasil.",
+      "titulo": "Uma rinoceronte teve cerca de 100 mil votos para vereador em São Paulo",
+      "descricao": "Uma rinoceronte do zoológico teve mais votos do que qualquer candidato humano numa eleição para a Câmara Municipal.",
+      "saibaMais": "O animal, uma fêmea, se chamava Cacareco e vivia no zoológico da cidade. Ela nunca se inscreveu como candidata. A história é lembrada até hoje sempre que se fala em voto de protesto no Brasil.",
       "veredito": "verdadeira",
       "explicacao": "Verdadeira. Foi na eleição de 1959, quando o voto era em cédula de papel e o eleitor podia escrever qualquer nome. Segundo Catraca Livre e São Paulo Secreto, Cacareco teve cerca de 100 mil votos, mais que os candidatos de verdade, mas a Justiça Eleitoral anulou todos. Olhe a data: um fato que parece impossível hoje pode ter acontecido com as regras de outra época.",
       "tecnica": "data",
@@ -97,27 +79,9 @@
       "revisadoPor": ""
     },
     {
-      "id": "mds-0028",
-      "titulo": "Jogadores do Flamengo posam com camisa de candidato a presidente",
-      "descricao": "Foto mostra atletas do time comemorando com uma camisa que traz o nome de um candidato e o número dele na urna.",
-      "saibaMais": "A imagem circulou no Facebook com milhares de compartilhamentos, como prova de que o elenco apoiava um político. Na foto, um jogador ergue a camisa para a torcida no estádio, ao lado de colegas de time. Clubes de futebol têm torcedores de todas as opiniões políticas.",
-      "veredito": "falsa",
-      "explicacao": "Falsa. É montagem. O Aos Fatos achou a foto original, de 8/9/2018: Diego Ribas mostra a camisa 4 do zagueiro Juan, que tinha se lesionado. A Gazeta Esportiva confirma a homenagem na vitória sobre a Chapecoense. A mesma foto já foi adulterada com nome de candidato do lado oposto. Faça busca reversa e compare número e nome na camisa.",
-      "tecnica": "imagem",
-      "tema": "politica",
-      "dificuldade": "facil",
-      "fonteUrl": "https://www.aosfatos.org/noticias/e-montagem-foto-em-que-jogadores-do-flamengo-seguram-camisa-com-nome-de-bolsonaro/",
-      "fontesExtras": [
-        "https://www.gazetaesportiva.com/?p=2635586"
-      ],
-      "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
-    },
-    {
       "id": "mds-0029",
-      "titulo": "Ministro da Educação escreveu \"imprecionante\" numa rede social",
-      "descricao": "Print mostra um post do responsável pela educação do país com a palavra \"impressionante\" escrita com C.",
+      "titulo": "Em 2020, ministro da Educação escreveu \"imprecionante\" em rede social",
+      "descricao": "Print mostra um post do então responsável pela educação do país com a palavra \"impressionante\" escrita com C.",
       "saibaMais": "O post foi publicado no Twitter, hoje X, numa resposta a outro político, e apagado pouco depois. Prints da mensagem se espalharam e viraram piada. Muita gente achou que era montagem, porque prints de redes sociais são fáceis de falsificar.",
       "veredito": "verdadeira",
       "explicacao": "Verdadeira. Diário de Notícias e IstoÉ registraram que, em janeiro de 2020, Abraham Weintraub escreveu \"Mais imprecionante\" ao responder a um deputado e apagou o post depois. Não foi o único erro: ele também já tinha escrito \"paralização\" num ofício. Print pode ser forjado; por isso, busque se veículos sérios registraram o post na época.",
@@ -138,32 +102,13 @@
       "descricao": "Post diz que o governo paga a cada preso um benefício maior que o salário mínimo, mais do que ganha muito trabalhador.",
       "saibaMais": "O auxílio-reclusão é um benefício do INSS, a Previdência Social, que existe há décadas e está previsto na Constituição. Posts sobre ele voltam sempre que o salário mínimo é reajustado, cada vez com um valor diferente e atribuídos a um governo diferente.",
       "veredito": "falsa",
-      "explicacao": "Falsa. Segundo Aos Fatos e O Povo, o benefício não vai para o preso, mas para a família, e só se ele contribuía para o INSS e tinha baixa renda. Menos de 10% dos presos têm direito, diz o CNJ citado pelo O Povo. Hoje, o valor é de um salário mínimo. Antes de compartilhar, procure as regras oficiais: o nome do benefício esconde os detalhes.",
+      "explicacao": "Falsa. Segundo Aos Fatos e O Povo, o benefício não vai para o preso, mas para a família, e só se ele contribuía para o INSS e tinha baixa renda. Menos de 10% dos presos têm direito, diz o CNJ citado pelo O Povo. Em 2023, o valor era de um salário mínimo. Antes de compartilhar, procure as regras oficiais: o nome do benefício esconde os detalhes.",
       "tecnica": "contexto",
       "tema": "politica",
       "dificuldade": "dificil",
       "fonteUrl": "https://aosfatos.org/noticias/auxilio-reclusao-nao-foi-criado-pelo-PT-e-raramente-supera-o-salario-minimo/",
       "fontesExtras": [
         "https://www.opovo.com.br/noticias/politica/2023/01/16/amp/e-falso-que-governo-lula-aumentou-auxilio-reclusao-para-rs-17-mil-entenda-regras.html"
-      ],
-      "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
-    },
-    {
-      "id": "mds-0031",
-      "titulo": "Partido do novo presidente defende fim do 13º salário e das férias",
-      "descricao": "Print de post do partido do presidente eleito diz: \"Defendemos o fim do 13º salário e das férias pagas\".",
-      "saibaMais": "O print circulou em novembro de 2018, logo depois da eleição presidencial. Semanas antes, o candidato a vice da mesma chapa tinha criticado o 13º salário numa palestra, o que gerou polêmica. A imagem foi publicada por páginas no Facebook e teve milhares de compartilhamentos.",
-      "veredito": "falsa",
-      "explicacao": "Falsa. O Aos Fatos mostrou que o print usava a conta @PSLOficial, mas o perfil real do partido era @PSL_Nacional, onde a frase não existe. Em setembro, segundo a IstoÉ, Jair Bolsonaro tinha rebatido o vice, Hamilton Mourão, dizendo que o 13º está na Constituição. Confira o nome exato da conta no print e procure o post no perfil oficial.",
-      "tecnica": "imagem",
-      "tema": "politica",
-      "dificuldade": "medio",
-      "fonteUrl": "https://www.aosfatos.org/noticias/e-falso-que-PSL-publicou-tweet-defendendo-fim-do-13-salario-e-das-ferias/",
-      "fontesExtras": [
-        "https://istoe.com.br/bolsonaro-fica-irritado-com-mourao-e-diz-que-seu-vice-desconhece-a-constituicao/",
-        "https://www.congressoemfoco.com.br/noticia/27014/vice-de-bolsonaro-general-mourao-volta-a-criticar-13o-salario"
       ],
       "imagemBoatoUrl": "",
       "status": "rascunho",
@@ -184,13 +129,13 @@
         "https://www.camara.leg.br/noticias/452151-delator-da-lava-jato-diz-que-esta-aliviado-por-devolver-dinheiro-de-propina"
       ],
       "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
+      "status": "aprovada",
+      "revisadoPor": "Produção CNTM"
     },
     {
       "id": "mds-0033",
       "titulo": "ONU absolveu ex-presidente brasileiro condenado na Justiça",
-      "descricao": "Posts afirmam que a ONU declarou inocente um ex-presidente que havia sido condenado e preso no Brasil.",
+      "descricao": "Em 2022, posts afirmaram que a ONU declarou inocente um ex-presidente que havia sido condenado e preso no Brasil.",
       "saibaMais": "A afirmação ganhou força em 2022, depois que um comitê da Organização das Nações Unidas publicou uma decisão sobre o caso. O comitê é formado por 18 especialistas independentes e analisa queixas de cidadãos de países que assinaram um tratado internacional de direitos civis e políticos.",
       "veredito": "falsa",
       "explicacao": "Falsa, mas com base real. Em abril de 2022, o Comitê de Direitos Humanos da ONU concluiu que Lula não teve julgamento imparcial na Lava Jato, segundo a IstoÉ Dinheiro. Mas, como explica o Aos Fatos, a ONU não julga crimes nem absolve: aponta violações de direitos. Quem anulou as condenações foi o STF. Leia o que a decisão diz, não só a manchete.",
@@ -207,8 +152,8 @@
     },
     {
       "id": "mds-0034",
-      "titulo": "Ministro disse que dólar barato fazia empregada doméstica ir à Disney",
-      "descricao": "O ministro da Economia defendeu o dólar alto lembrando a época em que até empregada doméstica ia para a Disneylândia.",
+      "titulo": "Em 2020, ministro disse que dólar barato levava doméstica à Disney",
+      "descricao": "O então ministro da Economia defendeu o dólar alto lembrando a época em que até empregada doméstica ia para a Disneylândia.",
       "saibaMais": "A fala aconteceu numa palestra em Brasília, em fevereiro de 2020, quando o dólar estava acima de R$ 4. Na época, o governo argumentava que juros baixos e real mais fraco ajudariam a economia. A frase circulou em vídeos e prints, muitas vezes sem o restante da palestra.",
       "veredito": "verdadeira",
       "explicacao": "Verdadeira. Paulo Guedes disse que, com o dólar a R$ 1,80, era \"empregada doméstica indo para Disneylândia, uma festa danada\", segundo Congresso em Foco e A Gazeta. Ele defendia que dólar alto com juros baixos era melhor. Depois pediu desculpas, mas disse ter sido tirado de contexto. Veja o contexto completo da fala antes de julgar.",
@@ -239,8 +184,8 @@
         "https://jovempan.com.br/noticias/macron-usa-foto-antiga-em-alerta-sobre-queimadas-na-amazonia/"
       ],
       "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
+      "status": "aprovada",
+      "revisadoPor": "Produção CNTM"
     },
     {
       "id": "mds-0036",
@@ -257,35 +202,16 @@
         "https://en.mercopress.com/2010/10/05/professional-clown-tiririca-the-most-voted-member-of-the-brazilian-congress"
       ],
       "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
-    },
-    {
-      "id": "mds-0037",
-      "titulo": "Capa de revista diz que chance de reeleição do presidente é zero",
-      "descricao": "Capa de uma revista semanal traz a foto do presidente e a manchete: \"a chance de 'reeleição' é zero\".",
-      "saibaMais": "A imagem circulou nas redes em novembro de 2021, menos de um ano antes da eleição presidencial. A revista citada é uma das mais conhecidas do país, e a capa tem o mesmo logotipo e o mesmo estilo das edições à venda nas bancas. A frase aparece entre aspas, como se fosse uma declaração.",
-      "veredito": "falsa",
-      "explicacao": "Falsa. É montagem. Segundo o Aos Fatos, a capa verdadeira da Veja, de setembro de 2021, dizia \"a chance de um golpe é zero\", frase de Jair Bolsonaro em entrevista. O Estado de Minas confirma a frase e mostra que ele disse que disputaria a eleição. Compare a capa com a edição no site da revista: trocar uma palavra muda tudo.",
-      "tecnica": "imagem",
-      "tema": "politica",
-      "dificuldade": "medio",
-      "fonteUrl": "https://www.aosfatos.org/noticias/e-montagem-capa-da-veja-que-descarta-possibilidade-de-reeleicao-de-bolsonaro/",
-      "fontesExtras": [
-        "https://www.em.com.br/app/noticia/politica/2021/09/25/interna_politica,1308896/bolsonaro-muda-de-tom-e-descarta-golpe-para-se-manter-no-poder.shtml",
-        "https://www.noticiasagricolas.com.br/noticia/298413"
-      ],
-      "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
+      "status": "aprovada",
+      "revisadoPor": "Produção CNTM"
     },
     {
       "id": "mds-0038",
       "titulo": "Ministro pagou uma tapioca de R$ 8,30 com o cartão do governo",
-      "descricao": "Um ministro teria usado o cartão corporativo, pago com dinheiro público, para comprar uma tapioca em Brasília.",
+      "descricao": "Em 2008, veio à tona que um ministro usou o cartão corporativo, pago com dinheiro público, para comprar uma tapioca em Brasília.",
       "saibaMais": "O cartão corporativo é um cartão de crédito do governo federal para gastos de trabalho, como viagens e hospedagem. Em 2008, uma CPI no Congresso investigou o uso desses cartões por ministros e servidores. O caso da tapioca virou piada e ainda é lembrado em discussões sobre gastos públicos.",
       "veredito": "verdadeira",
-      "explicacao": "Verdadeira. Orlando Silva, então ministro do Esporte, pagou a tapioca com o cartão corporativo, e o caso veio à tona em 2008, segundo Exame e Terra. Ele disse que confundiu o cartão com o pessoal, devolveu os R$ 8,30 e, depois, mais de R$ 30 mil gastos com o cartão. Confira a data: o caso é antigo, mas volta sempre que gastos de governo viram notícia.",
+      "explicacao": "Verdadeira. Segundo Exame e Terra, Orlando Silva, então ministro do Esporte, pagou a tapioca com o cartão corporativo, e o caso veio à tona em 2008. Ele devolveu os R$ 8,30 e, depois, R$ 34,3 mil em gastos com o cartão. A CGU concluiu que a maior parte era regular e que ele receberia R$ 26,3 mil de volta, diz o Congresso em Foco. Confira a data: o caso é antigo e volta sempre.",
       "tecnica": "data",
       "tema": "politica",
       "dificuldade": "medio",
@@ -300,9 +226,9 @@
     },
     {
       "id": "mds-0039",
-      "titulo": "Jornal americano diz que presidente brasileiro é o melhor da história",
-      "descricao": "Capa de um famoso jornal dos EUA traz a foto do presidente do Brasil e uma manchete o chamando de melhor de todos os tempos.",
-      "saibaMais": "A imagem circulou em grupos de Facebook no fim de 2021 e teve dezenas de milhares de interações. A manchete está em inglês e diz que os brasileiros amam o presidente. A página tem o logotipo do jornal, colunas de texto e outras manchetes menores, como uma edição impressa.",
+      "titulo": "Em 2021, jornal dos EUA chamou então presidente de melhor da história",
+      "descricao": "Capa de um famoso jornal dos EUA traz a foto do então presidente do Brasil e uma manchete o chamando de melhor de todos os tempos.",
+      "saibaMais": "A imagem circulou em grupos de Facebook no fim de 2021 e teve dezenas de milhares de interações. A manchete está em inglês e diz que os brasileiros amam seu presidente. A página tem o logotipo do jornal, colunas de texto e outras manchetes menores, como uma edição impressa.",
       "veredito": "falsa",
       "explicacao": "Falsa. O Washington Post disse ao Comprova, em checagem publicada pelo SBT News, que nunca publicou a manchete. O Aos Fatos achou a origem: uma capa falsa feita por ativistas em 2019 contra Donald Trump, como registrou a Fortune, com o rosto trocado. Há até erros de inglês. Confira a fonte: capas de jornal ficam no site e no arquivo do próprio veículo.",
       "tecnica": "fonte",
@@ -332,14 +258,14 @@
         "https://www.diariodepernambuco.com.br/politica/2026/06/11715891-papel-rasuras-e-atraso-como-o-erro-humano-travou-a-apuracao-do-plebiscito-de-1993.html"
       ],
       "imagemBoatoUrl": "",
-      "status": "rascunho",
-      "revisadoPor": ""
+      "status": "aprovada",
+      "revisadoPor": "Produção CNTM"
     },
     {
       "id": "mds-0041",
-      "titulo": "Ministro propôs aproveitar a pandemia para \"passar a boiada\"",
-      "descricao": "Em reunião com o presidente, o ministro do Meio Ambiente teria proposto mudar regras enquanto a imprensa só falava da covid.",
-      "saibaMais": "A expressão vem do campo: passar a boiada é fazer o gado inteiro atravessar de uma vez. A reunião teria acontecido em abril de 2020, no começo da pandemia de covid-19, com o presidente e vários ministros. Reuniões assim costumam ser fechadas à imprensa.",
+      "titulo": "Em 2020, ministro propôs aproveitar a pandemia para \"passar a boiada\"",
+      "descricao": "Numa reunião com o então presidente, o ministro do Meio Ambiente teria proposto mudar regras enquanto a imprensa só falava da covid.",
+      "saibaMais": "A expressão vem do campo: passar a boiada é fazer o gado inteiro atravessar de uma vez. A reunião teria acontecido em abril de 2020, no começo da pandemia de covid-19, com o então presidente e vários ministros. Reuniões assim costumam ser fechadas à imprensa.",
       "veredito": "verdadeira",
       "explicacao": "Verdadeira. O vídeo da reunião de 22 de abril de 2020 foi divulgado pelo STF em maio, num inquérito. Nele, Ricardo Salles defende \"ir passando a boiada e mudando todo o regramento e simplificando normas\", segundo Metrópoles e Catraca Livre. Quando a fonte é um vídeo oficial liberado pela Justiça, dá para conferir a fala inteira.",
       "tecnica": "fonte",
@@ -368,8 +294,105 @@
         "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc_anterior1988/emc25-85.htm"
       ],
       "imagemBoatoUrl": "",
+      "status": "aprovada",
+      "revisadoPor": "Produção CNTM"
+    },
+    {
+      "id": "mds-0043",
+      "titulo": "Dinheiro da poupança dos brasileiros vai ser confiscado",
+      "descricao": "Em 2023, posts diziam que o governo federal ia confiscar R$ 23 bilhões das poupanças: \"quem tem poupança, cata tudo\".",
+      "saibaMais": "Em 1990, um plano econômico bloqueou o dinheiro guardado nas cadernetas de poupança, numa tentativa de conter a inflação. Desde então, mensagens sobre um novo confisco voltam a circular de tempos em tempos, às vezes com o logotipo de bancos e pedidos para sacar tudo antes que seja tarde.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo o Aos Fatos, a notícia usada nos posts tratava de um bloqueio de R$ 23 bilhões em gastos do Orçamento de 2024, não da poupança de ninguém. Desde a Emenda Constitucional 32, de 2001, publicada no site do Planalto, medida provisória não pode sequestrar poupança. Em 2015, a Fazenda já negava boato igual. Leia a notícia original e a regra oficial antes de sacar ou compartilhar.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/falso-haddad-confisco-poupancas/",
+      "fontesExtras": [
+        "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc32.htm",
+        "https://www.bahianoticias.com.br/noticia/167510-ministerio-da-fazenda-nega-boato-de-confisco-de-poupancas"
+      ],
+      "imagemBoatoUrl": "",
       "status": "rascunho",
       "revisadoPor": ""
+    },
+    {
+      "id": "mds-0044",
+      "titulo": "Vídeo mostra Avenida Paulista lotada em ato contra a anistia em 2025",
+      "descricao": "Posts com a gravação de uma multidão diziam: \"Manifestação gigante na Avenida Paulista! Milhares contra a anistia\".",
+      "saibaMais": "Em 30 de março de 2025, houve um ato em São Paulo contra o projeto de lei que daria anistia aos envolvidos nos ataques de 8 de janeiro de 2023, em Brasília. Uma semana depois, outro ato, na mesma avenida, defendeu a anistia. Vídeos de multidões dos dois protestos se espalharam pelas redes.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O ato aconteceu, mas o vídeo não era dele. Com busca reversa, o Aos Fatos achou a gravação original, de um protesto de 29 de maio de 2021 na mesma avenida. O ato de 2025 reuniu cerca de 6,6 mil pessoas no pico, segundo contagem de um grupo da USP publicada pelo Congresso em Foco. Antes de compartilhar vídeo de multidão, faça busca reversa de um quadro e veja se ele já existia.",
+      "tecnica": "imagem",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/video-paulista-lotada-gravado-2021-nao-ato-contra-anistia-2025/",
+      "fontesExtras": [
+        "https://congressoemfoco.com.br/noticia/107351/grupo-da-usp-aponta-6-6-mil-em-ato-por-prisao-de-bolsonaro-na-paulista",
+        "https://www.opovo.com.br/noticias/politica/2025/03/30/em-ato-esvaziado-na-paulista-boulos-provoca-familia-bolsonaro-lindbergh-prega-contra-anistia.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0045",
+      "titulo": "Só um presidente do Brasil governou sem diploma universitário",
+      "descricao": "Em toda a história do país, apenas um presidente teria governado sem ter concluído um curso superior.",
+      "saibaMais": "A Constituição não exige diploma de faculdade de quem quer ser presidente da República. Ao longo da história, muitos presidentes brasileiros estudaram direito, e o cargo também já foi ocupado por militares, engenheiros, médicos e economistas.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Café Filho, que governou de 1954 a 1955 após a morte de Getúlio Vargas, entrou na faculdade de direito no Recife, mas não concluiu o curso, segundo o Aos Fatos, que cita o CPDOC/FGV, e o Quero Bolsa. Lula repetiu a frase em 2021 e em 2024. Desconfie de \"único\" e \"nunca\": confira a lista completa em fontes de história.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.aosfatos.org/noticias/lula-2024-desinformou-fome-educacao/",
+      "fontesExtras": [
+        "https://www.aosfatos.org/noticias/checamos-lula-entrevista-podcast-podpah/",
+        "https://querobolsa.com.br/revista/qual-faculdade-mais-formou-presidentes-do-brasil"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0046",
+      "titulo": "Enem foi criado por um ministro da Educação no fim dos anos 2000",
+      "descricao": "Post diz que a prova usada para entrar na faculdade \"não apareceu do nada\": foi criada pelo ministro da Educação de 2009.",
+      "saibaMais": "O Exame Nacional do Ensino Médio, o Enem, é a maior prova do país. Hoje, a nota é usada para disputar vagas em universidades públicas pelo Sisu e para conseguir financiamento estudantil, como o Fies. A prova tem questões de quatro áreas do conhecimento e uma redação.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo o Correio Braziliense, o Enem foi aplicado pela primeira vez em 20 de agosto de 1998, no governo Fernando Henrique Cardoso. O Aos Fatos explica que, em 2009, o MEC de Fernando Haddad lançou o novo Enem, com a nota usada no Sisu, mas não criou a prova. Pergunte \"desde quando?\": o ano da primeira edição desmonta o post.",
+      "tecnica": "data",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/haddad-reformulou-o-enem-mas-exame-foi-criado-pelo-governo-fhc/",
+      "fontesExtras": [
+        "https://www.correiobraziliense.com.br/webstories/flipar/2023/10/5137400-enem-conheca-a-historia-do-exame-nacional-do-ensino-medio.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    }
+  ],
+  "descartadasNaRevisao": [
+    {
+      "id": "mds-0026",
+      "titulo": "Futuro presidente dos EUA chamou os próprios eleitores de burros",
+      "motivo": "Por mais que seja interessante, é irrelevante para o contexto do jogo e o público."
+    },
+    {
+      "id": "mds-0028",
+      "titulo": "Jogadores do Flamengo posam com camisa de candidato a presidente",
+      "motivo": "Esdrúxula, irrelevante para o contexto atual; notícia de 2018."
+    },
+    {
+      "id": "mds-0031",
+      "titulo": "Partido do novo presidente defende fim do 13º salário e das férias",
+      "motivo": "\"Novo presidente\" não cabe; a eleição foi no mês passado e o contexto se perde; muito dependente de contexto temporal."
+    },
+    {
+      "id": "mds-0037",
+      "titulo": "Capa de revista diz que chance de reeleição do presidente é zero",
+      "motivo": "Complicado usar termos como \"o presidente\"; esse tipo de pergunta tem que ser revisto."
     }
   ]
 }
