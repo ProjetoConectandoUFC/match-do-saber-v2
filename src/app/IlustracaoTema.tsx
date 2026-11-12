@@ -15,6 +15,8 @@ const COR: Record<Tema, string> = {
   tecnologia: 'var(--cn-azul-medio)',
   curiosidades: 'var(--cn-roxo)',
   'meio-ambiente': 'var(--cn-turquesa)',
+  // TODO(v12): cor e ilustração de política pelo agente-visual (FR-4, FR-15); provisórias, só para o tema valer.
+  politica: 'var(--cn-teal)',
 };
 
 const BRANCO = '#fff', CREME = 'var(--cn-creme)', NOITE = 'var(--cn-noite)', AMARELO = 'var(--cn-amarelo)';
@@ -96,6 +98,8 @@ const COMPOSICAO: Record<Tema, () => ReactNode> = {
       <Traco><line x1="150" y1="131" x2="552" y2="131" {...tracejado} strokeDasharray="10 8" /></Traco>
     </>
   ),
+  // TODO(v12): ilustração de política pelo agente-visual; provisoriamente, a composição de História.
+  politica: () => COMPOSICAO.historia(),
 };
 
 /** Cor de ilustração do tema (também a faixa do "saiba mais"). */

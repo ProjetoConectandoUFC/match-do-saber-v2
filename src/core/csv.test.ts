@@ -5,7 +5,7 @@ import { COLUNAS_BANCO, type NoticiaBanco } from './types';
 const noticia = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', visivel: '', ...extra,
 });
 
 describe('lerTabela (FR-6)', () => {
@@ -41,7 +41,13 @@ describe('lerCsv', () => {
     expect(lerCsv('id;titulo\nx;T\n')[0]).toMatchObject({ titulo_curto: '', fonte_nome: '' });
     expect(lerCsv('id;titulo;Titulo Curto;fonte_nome\nx;T;Banana radioativa;Correio Braziliense\n')[0])
       .toMatchObject({ titulo_curto: 'Banana radioativa', fonte_nome: 'Correio Braziliense' });
-    expect(COLUNAS_BANCO.slice(-3)).toEqual(['dificuldade', 'titulo_curto', 'fonte_nome']);
+    expect(COLUNAS_BANCO.slice(-4)).toEqual(['dificuldade', 'titulo_curto', 'fonte_nome', 'visivel']);
+  });
+
+  it('AC-7.12 (v12.0.0): CSV sem `visivel` carrega com ela vazia (visível); a coluna é lida em minúsculas', () => {
+    expect(lerCsv('id;titulo\nx;T\n')[0]).toMatchObject({ visivel: '' });
+    expect(lerCsv('id;titulo;Visivel\nx;T;NAO\n')[0]).toMatchObject({ visivel: 'nao' });
+    expect(lerCsv('id;titulo;Tema\nx;T;Politica\n')[0]).toMatchObject({ tema: 'politica' });
   });
 
   it('apara espaços dos campos', () => {

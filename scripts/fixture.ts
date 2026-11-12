@@ -31,6 +31,7 @@ const noticia = (i: number, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => 
   // v11.0.0 (AC-7.11): as ímpares sem título curto nem veículo, para o resumo usar o título cortado e o domínio.
   titulo_curto: i % 2 === 1 ? '' : `Teste ${i + 1}: manchete`,
   fonte_nome: i % 2 === 1 ? '' : 'Agência de Teste',
+  visivel: '', // v12.0.0 (AC-7.12): vazia = visível
   ...extra,
 });
 

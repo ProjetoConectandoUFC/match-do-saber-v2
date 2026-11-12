@@ -82,6 +82,22 @@ export function EditorNoticia({ inicial, nova, problemas, salvando, onSalvar, on
               </div>
             );
           })}
+          {/* AC-7.12 (v12.0.0): interruptor de visibilidade; desligado grava `nao`, ligado grava vazio (= visível). */}
+          <div className={p.campo} data-campo="visivel" data-erro={problemas.visivel ? 'sim' : undefined}>
+            <label htmlFor="ed-visivel">
+              <input
+                id="ed-visivel"
+                type="checkbox"
+                checked={n.visivel !== 'nao'}
+                aria-invalid={problemas.visivel ? 'true' : 'false'}
+                onChange={(e) => setN({ ...n, visivel: e.target.checked ? '' : 'nao' })}
+              />
+              Visível no jogo
+            </label>
+            {problemas.visivel
+              ? <small className={p.erroCampo}>{problemas.visivel}</small>
+              : <small>desligada, a notícia fica no banco, mas fora das partidas</small>}
+          </div>
         </div>
         <footer className={p.rodape}>
           {onApagar && <button type="button" data-acao="apagar" onClick={onApagar} disabled={salvando}>Apagar</button>}
