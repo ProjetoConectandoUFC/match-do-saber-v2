@@ -1,0 +1,375 @@
+{
+  "criterioDificuldade": {
+    "facil": "O palpite de bom senso acerta. Falsa com absurdo evidente (promessa impossível, foto ou alerta exagerado) ou verdadeira muito conhecida, ensinada na escola ou famosa.",
+    "medio": "Soa estranho, mas é plausível. O jogador precisa de uma pista do card (quem diz, quando, como é a foto) ou de uma informação que nem todo mundo tem.",
+    "dificil": "O palpite intuitivo tende a errar: falsa repetida como fato por muita gente, ou verdadeira que parece invenção. Só checando fonte, data ou contexto dá para acertar.",
+    "observacao": "Lote só com o tema politica (spec v12.0.0). Nenhum card (titulo, descricao, saibaMais) nomeia pessoas, partidos ou siglas; os nomes aparecem só na explicacao. Entre as falsas, 5 boatos circularam mais num campo político e 5 no outro; entre as verdadeiras, 3 constrangem cada campo e 4 são fatos institucionais neutros. As verdadeiras difíceis foram escolhidas para soar absurdas."
+  },
+  "noticias": [
+    {
+      "id": "mds-0023",
+      "titulo": "Vacina contra a covid pode transformar quem toma em jacaré",
+      "descricao": "Num discurso de 2020, um líder político avisou: quem tomar a vacina contra a covid pode virar jacaré, e o problema é seu.",
+      "saibaMais": "A frase foi dita em dezembro de 2020, num evento na Bahia, quando as primeiras vacinas contra a covid começavam a ser aplicadas no mundo. O assunto era o contrato de compra de uma das vacinas e quem responderia por efeitos colaterais. O trecho do discurso viralizou nas redes sociais.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Vacina não muda a espécie de ninguém. Segundo o Diário de Notícias, Jair Bolsonaro disse a frase ao criticar o contrato da Pfizer. Em 2021, ele afirmou ao O Povo que era uma \"hipérbole\", um exagero. Veja o contexto: a frase era força de expressão, e quem responde sobre efeitos de vacina são cientistas e agências de saúde.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.dn.pt/mundo/bolsonaro-sobre-a-vacina-de-pfizer-se-voce-se-transformar-num-jacare-e-problema-e-seu-13155253.html",
+      "fontesExtras": [
+        "https://www.opovo.com.br/noticias/politica/2021/07/21/bolsonaro---era-hiperbole-quando-falei-de-virar-jacare--podia-virar-bambi-tambem.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0024",
+      "titulo": "Presidente da República fez discurso saudando a mandioca",
+      "descricao": "Vídeo mostra a chefe do governo, em evento oficial, dizendo que saúda a mandioca, \"uma das maiores conquistas do Brasil\".",
+      "saibaMais": "O vídeo circula há anos, e muita gente acha que é montagem ou edição de programa de humor. O evento foi o lançamento dos Jogos Mundiais dos Povos Indígenas, em Brasília. A mandioca é uma raiz nativa da América do Sul, cultivada por povos indígenas há milhares de anos e base de alimentos como farinha, tapioca e polvilho.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Em 23 de junho de 2015, no Estádio Mané Garrincha, Dilma Rousseff disse: \"Hoje, estou saudando a mandioca, é uma das maiores conquistas deste país\", como registraram Gazeta do Povo e InfoMoney. Diante de um vídeo que parece editado, procure a gravação completa e a cobertura do dia: se vários veículos relatam a fala, ela é real.",
+      "tecnica": "imagem",
+      "tema": "politica",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.gazetadopovo.com.br/vida-publica/dilma-sauda-a-mandioca-e-fala-em-mulheres-sapiens-em-jogos-indigenas-1hhqerwmaoh6nnof10quuse3u",
+      "fontesExtras": [
+        "https://www.infomoney.com.br/politica/em-discurso-hilario-dilma-sauda-mandioca-uma-das-maiores-conquistas-do-pais-veja-video/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0025",
+      "titulo": "Receita Federal vai cobrar imposto sobre todo Pix acima de R$ 5 mil",
+      "descricao": "Posts dizem que, com uma nova regra, quem receber mais de R$ 5 mil por Pix no mês vai pagar imposto à Receita.",
+      "saibaMais": "A mensagem se espalhou em janeiro de 2025, logo depois que uma norma da Receita Federal entrou em vigor. Vídeos e posts com milhões de visualizações pediam que as pessoas evitassem o Pix e voltassem a usar dinheiro vivo. Versões parecidas, com outros valores e até multas, voltaram a circular depois.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo o Aos Fatos, a norma só obrigava bancos e carteiras digitais a informar à Receita o total movimentado acima de R$ 5 mil por mês, como já faziam com valores menores. Não criou imposto. O Canaltech registra que a Receita voltou a negar a taxação em 2026. Leia a regra original: informar um valor não é o mesmo que cobrar imposto sobre ele.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/falso-pix-acima-de-5000-sera-taxado/",
+      "fontesExtras": [
+        "https://canaltech.com.br/mercado/o-pix-sera-taxado-e-monitorado-receita-federal-nega-boatos/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0026",
+      "titulo": "Futuro presidente dos EUA chamou os próprios eleitores de burros",
+      "descricao": "Citação de uma revista de 1998 diz que, se ele concorresse, seria pelo partido dos eleitores \"mais burros\" do país.",
+      "saibaMais": "A imagem traz a foto do empresário e um trecho atribuído a uma entrevista à revista People, dos Estados Unidos. No texto, ele diria que esses eleitores acreditam em tudo o que veem num canal de TV. A peça circula pelo menos desde 2015 e reaparece em toda eleição americana, inclusive em grupos brasileiros.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. A revista People disse ao Observador e a outros checadores que não achou nada parecido em seu arquivo e que Donald Trump não lhe deu entrevista em 1998. O Full Fact chama a peça de \"boato zumbi\": ela sempre volta. Confira a fonte citada: se a frase é de uma revista, procure a edição. Citação famosa sem edição, página ou link é sinal de alerta.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://observador.pt/factchecks/fact-check-trump-chamou-aos-republicanos-o-grupo-de-eleitores-mais-estupido/",
+      "fontesExtras": [
+        "https://fullfact.org/us/donald-trump-dumbest-voters-quote-fake/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0027",
+      "titulo": "Rinoceronte recebeu cerca de 100 mil votos para vereador em São Paulo",
+      "descricao": "Um rinoceronte do zoológico teve mais votos do que qualquer candidato humano numa eleição para a Câmara Municipal.",
+      "saibaMais": "O animal se chamava Cacareco e vivia no zoológico da cidade. Ele nunca se inscreveu como candidato. A história é lembrada até hoje sempre que se fala em voto de protesto no Brasil.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Foi na eleição de 1959, quando o voto era em cédula de papel e o eleitor podia escrever qualquer nome. Segundo Catraca Livre e São Paulo Secreto, Cacareco teve cerca de 100 mil votos, mais que os candidatos de verdade, mas a Justiça Eleitoral anulou todos. Olhe a data: um fato que parece impossível hoje pode ter acontecido com as regras de outra época.",
+      "tecnica": "data",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://catracalivre.com.br/noticias/uma-rinoceronte-recebeu-cerca-de-100-mil-votos-para-vereadora-em-sao-paulo-e-superou-todos-os-candidatos-humanos/",
+      "fontesExtras": [
+        "https://saopaulosecreto.com/rinoceronte-eleito-vereador-de-sao-paulo-em-1959/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0028",
+      "titulo": "Jogadores do Flamengo posam com camisa de candidato a presidente",
+      "descricao": "Foto mostra atletas do time comemorando com uma camisa que traz o nome de um candidato e o número dele na urna.",
+      "saibaMais": "A imagem circulou no Facebook com milhares de compartilhamentos, como prova de que o elenco apoiava um político. Na foto, um jogador ergue a camisa para a torcida no estádio, ao lado de colegas de time. Clubes de futebol têm torcedores de todas as opiniões políticas.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. É montagem. O Aos Fatos achou a foto original, de 8/9/2018: Diego Ribas mostra a camisa 4 do zagueiro Juan, que tinha se lesionado. A Gazeta Esportiva confirma a homenagem na vitória sobre a Chapecoense. A mesma foto já foi adulterada com nome de candidato do lado oposto. Faça busca reversa e compare número e nome na camisa.",
+      "tecnica": "imagem",
+      "tema": "politica",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.aosfatos.org/noticias/e-montagem-foto-em-que-jogadores-do-flamengo-seguram-camisa-com-nome-de-bolsonaro/",
+      "fontesExtras": [
+        "https://www.gazetaesportiva.com/?p=2635586"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0029",
+      "titulo": "Ministro da Educação escreveu \"imprecionante\" numa rede social",
+      "descricao": "Print mostra um post do responsável pela educação do país com a palavra \"impressionante\" escrita com C.",
+      "saibaMais": "O post foi publicado no Twitter, hoje X, numa resposta a outro político, e apagado pouco depois. Prints da mensagem se espalharam e viraram piada. Muita gente achou que era montagem, porque prints de redes sociais são fáceis de falsificar.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Diário de Notícias e IstoÉ registraram que, em janeiro de 2020, Abraham Weintraub escreveu \"Mais imprecionante\" ao responder a um deputado e apagou o post depois. Não foi o único erro: ele também já tinha escrito \"paralização\" num ofício. Print pode ser forjado; por isso, busque se veículos sérios registraram o post na época.",
+      "tecnica": "imagem",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.dn.pt/mundo/imprecionante-ministro-da-educacao-do-brasil-volta-a-dar-erro-de-portugues-11688652.html",
+      "fontesExtras": [
+        "https://istoe.com.br/ministro-da-educacao-volta-a-errar-no-portugues-em-tuite/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0030",
+      "titulo": "Todo preso no Brasil recebe auxílio maior que o salário mínimo",
+      "descricao": "Post diz que o governo paga a cada preso um benefício maior que o salário mínimo, mais do que ganha muito trabalhador.",
+      "saibaMais": "O auxílio-reclusão é um benefício do INSS, a Previdência Social, que existe há décadas e está previsto na Constituição. Posts sobre ele voltam sempre que o salário mínimo é reajustado, cada vez com um valor diferente e atribuídos a um governo diferente.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo Aos Fatos e O Povo, o benefício não vai para o preso, mas para a família, e só se ele contribuía para o INSS e tinha baixa renda. Menos de 10% dos presos têm direito, diz o CNJ citado pelo O Povo. Hoje, o valor é de um salário mínimo. Antes de compartilhar, procure as regras oficiais: o nome do benefício esconde os detalhes.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://aosfatos.org/noticias/auxilio-reclusao-nao-foi-criado-pelo-PT-e-raramente-supera-o-salario-minimo/",
+      "fontesExtras": [
+        "https://www.opovo.com.br/noticias/politica/2023/01/16/amp/e-falso-que-governo-lula-aumentou-auxilio-reclusao-para-rs-17-mil-entenda-regras.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0031",
+      "titulo": "Partido do novo presidente defende fim do 13º salário e das férias",
+      "descricao": "Print de post do partido do presidente eleito diz: \"Defendemos o fim do 13º salário e das férias pagas\".",
+      "saibaMais": "O print circulou em novembro de 2018, logo depois da eleição presidencial. Semanas antes, o candidato a vice da mesma chapa tinha criticado o 13º salário numa palestra, o que gerou polêmica. A imagem foi publicada por páginas no Facebook e teve milhares de compartilhamentos.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O Aos Fatos mostrou que o print usava a conta @PSLOficial, mas o perfil real do partido era @PSL_Nacional, onde a frase não existe. Em setembro, segundo a IstoÉ, Jair Bolsonaro tinha rebatido o vice, Hamilton Mourão, dizendo que o 13º está na Constituição. Confira o nome exato da conta no print e procure o post no perfil oficial.",
+      "tecnica": "imagem",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/e-falso-que-PSL-publicou-tweet-defendendo-fim-do-13-salario-e-das-ferias/",
+      "fontesExtras": [
+        "https://istoe.com.br/bolsonaro-fica-irritado-com-mourao-e-diz-que-seu-vice-desconhece-a-constituicao/",
+        "https://www.congressoemfoco.com.br/noticia/27014/vice-de-bolsonaro-general-mourao-volta-a-criticar-13o-salario"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0032",
+      "titulo": "Ex-gerente da Petrobras aceitou devolver quase US$ 100 milhões",
+      "descricao": "Um único funcionário da estatal teria acumulado cerca de US$ 97 milhões em propina e se comprometido a devolver tudo.",
+      "saibaMais": "O caso surgiu em 2014, durante a Operação Lava Jato, que investigou contratos da Petrobras com grandes empreiteiras. Em reais, o valor passava de R$ 250 milhões na época. A Petrobras é a maior empresa estatal do Brasil e atua na exploração de petróleo e gás.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. O Congresso em Foco noticiou em 2014 que Pedro Barusco, em acordo de delação premiada, se comprometeu a devolver US$ 97 milhões. Em 2015, na CPI da Petrobras, ele disse que recebeu propina entre 2003 e 2011 e que ajudava a repatriar o dinheiro, segundo a Agência Câmara. Fontes oficiais, como o site da Câmara, ajudam a confirmar números que parecem exagerados.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.congressoemfoco.com.br/noticias/ex-gerente-da-petrobras-se-compromete-a-devolver-r-252-milhoes",
+      "fontesExtras": [
+        "https://www.camara.leg.br/noticias/452151-delator-da-lava-jato-diz-que-esta-aliviado-por-devolver-dinheiro-de-propina"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0033",
+      "titulo": "ONU absolveu ex-presidente brasileiro condenado na Justiça",
+      "descricao": "Posts afirmam que a ONU declarou inocente um ex-presidente que havia sido condenado e preso no Brasil.",
+      "saibaMais": "A afirmação ganhou força em 2022, depois que um comitê da Organização das Nações Unidas publicou uma decisão sobre o caso. O comitê é formado por 18 especialistas independentes e analisa queixas de cidadãos de países que assinaram um tratado internacional de direitos civis e políticos.",
+      "veredito": "falsa",
+      "explicacao": "Falsa, mas com base real. Em abril de 2022, o Comitê de Direitos Humanos da ONU concluiu que Lula não teve julgamento imparcial na Lava Jato, segundo a IstoÉ Dinheiro. Mas, como explica o Aos Fatos, a ONU não julga crimes nem absolve: aponta violações de direitos. Quem anulou as condenações foi o STF. Leia o que a decisão diz, não só a manchete.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.aosfatos.org/noticias/o-que-e-falso-e-o-que-e-fato-em-declaracoes-de-lula-sobre-absolvicoes-na-onu-e-na-justica/",
+      "fontesExtras": [
+        "https://www.istoedinheiro.com.br/comite-da-onu-conclui-que-operacao-lava-jato-violou-direitos-de-lula/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0034",
+      "titulo": "Ministro disse que dólar barato fazia empregada doméstica ir à Disney",
+      "descricao": "O ministro da Economia defendeu o dólar alto lembrando a época em que até empregada doméstica ia para a Disneylândia.",
+      "saibaMais": "A fala aconteceu numa palestra em Brasília, em fevereiro de 2020, quando o dólar estava acima de R$ 4. Na época, o governo argumentava que juros baixos e real mais fraco ajudariam a economia. A frase circulou em vídeos e prints, muitas vezes sem o restante da palestra.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Paulo Guedes disse que, com o dólar a R$ 1,80, era \"empregada doméstica indo para Disneylândia, uma festa danada\", segundo Congresso em Foco e A Gazeta. Ele defendia que dólar alto com juros baixos era melhor. Depois pediu desculpas, mas disse ter sido tirado de contexto. Veja o contexto completo da fala antes de julgar.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.congressoemfoco.com.br/governo/guedes-pede-desculpas-as-empregadas-por-fala-sobre-disney/",
+      "fontesExtras": [
+        "https://www.agazeta.com.br/economia/paulo-guedes-pede-desculpa-por-fala-sobre-domesticas-e-viagem-a-disney-0220"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0035",
+      "titulo": "Foto mostra a Amazônia em chamas durante as queimadas de 2019",
+      "descricao": "Imagem dramática de fumaça sobre a floresta foi compartilhada por um presidente europeu e por milhares de pessoas.",
+      "saibaMais": "Em agosto de 2019, as queimadas na Amazônia viraram notícia no mundo todo e motivaram críticas ao governo brasileiro. A foto, feita do alto, mostra uma coluna de fumaça e fogo no meio da mata. Ela foi publicada nas redes do presidente da França e compartilhada por muita gente famosa.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. As queimadas de 2019 foram reais, mas a foto não era delas. O Canaltech e o Hyperallergic mostram que a imagem é do fotógrafo Loren McIntyre, que morreu em 2003, e circula há pelo menos 20 anos. Emmanuel Macron a usou sem checar. Antes de compartilhar, faça busca reversa e veja quando a foto apareceu pela primeira vez.",
+      "tecnica": "data",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://canaltech.com.br/meio-ambiente/o-que-e-real-e-o-que-e-fake-nas-postagens-sobre-as-queimadas-amazonicas-147725/",
+      "fontesExtras": [
+        "https://hyperallergic.com/514652/those-photos-of-the-amazon-burning-not-all-of-them-are-real/",
+        "https://jovempan.com.br/noticias/macron-usa-foto-antiga-em-alerta-sobre-queimadas-na-amazonia/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0036",
+      "titulo": "Palhaço profissional foi o deputado federal mais votado do Brasil",
+      "descricao": "Um humorista de TV, que começou no circo, teve mais votos que todos os outros candidatos a deputado federal do país.",
+      "saibaMais": "A eleição para deputado federal acontece a cada quatro anos, junto com a de presidente. Cada estado elege uma quantidade de deputados proporcional à sua população, e São Paulo é o que tem mais vagas. Muitas celebridades se candidatam, mas poucas se elegem.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Em 2010, Tiririca, humorista que começou no circo, teve 1.353.820 votos em São Paulo, a maior votação do país e a segunda da história para o cargo, segundo A Gazeta. A MercoPress também o registrou como o deputado mais votado. Resultados de eleição são públicos: confira em veículos sérios e na Justiça Eleitoral.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.agazeta.com.br/mundo/de-13-milhao-a-5-mil-votos-como-cearenses-derrubaram-tiririca-apos-14-anos-eleito-por-sp-1026",
+      "fontesExtras": [
+        "https://en.mercopress.com/2010/10/05/professional-clown-tiririca-the-most-voted-member-of-the-brazilian-congress"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0037",
+      "titulo": "Capa de revista diz que chance de reeleição do presidente é zero",
+      "descricao": "Capa de uma revista semanal traz a foto do presidente e a manchete: \"a chance de 'reeleição' é zero\".",
+      "saibaMais": "A imagem circulou nas redes em novembro de 2021, menos de um ano antes da eleição presidencial. A revista citada é uma das mais conhecidas do país, e a capa tem o mesmo logotipo e o mesmo estilo das edições à venda nas bancas. A frase aparece entre aspas, como se fosse uma declaração.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. É montagem. Segundo o Aos Fatos, a capa verdadeira da Veja, de setembro de 2021, dizia \"a chance de um golpe é zero\", frase de Jair Bolsonaro em entrevista. O Estado de Minas confirma a frase e mostra que ele disse que disputaria a eleição. Compare a capa com a edição no site da revista: trocar uma palavra muda tudo.",
+      "tecnica": "imagem",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/e-montagem-capa-da-veja-que-descarta-possibilidade-de-reeleicao-de-bolsonaro/",
+      "fontesExtras": [
+        "https://www.em.com.br/app/noticia/politica/2021/09/25/interna_politica,1308896/bolsonaro-muda-de-tom-e-descarta-golpe-para-se-manter-no-poder.shtml",
+        "https://www.noticiasagricolas.com.br/noticia/298413"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0038",
+      "titulo": "Ministro pagou uma tapioca de R$ 8,30 com o cartão do governo",
+      "descricao": "Um ministro teria usado o cartão corporativo, pago com dinheiro público, para comprar uma tapioca em Brasília.",
+      "saibaMais": "O cartão corporativo é um cartão de crédito do governo federal para gastos de trabalho, como viagens e hospedagem. Em 2008, uma CPI no Congresso investigou o uso desses cartões por ministros e servidores. O caso da tapioca virou piada e ainda é lembrado em discussões sobre gastos públicos.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Orlando Silva, então ministro do Esporte, pagou a tapioca com o cartão corporativo, e o caso veio à tona em 2008, segundo Exame e Terra. Ele disse que confundiu o cartão com o pessoal, devolveu os R$ 8,30 e, depois, mais de R$ 30 mil gastos com o cartão. Confira a data: o caso é antigo, mas volta sempre que gastos de governo viram notícia.",
+      "tecnica": "data",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://exame.com/mundo/orlando-silva-une-comunismo-e-o-escandalo-da-tapioca/",
+      "fontesExtras": [
+        "https://www.terra.com.br/noticias/brasil/politica/de-tapioca-a-orcamento-do-pan-lembre-polemicas-de-orlando,b79c0a43aa1da310VgnCLD200000bbcceb0aRCRD.html",
+        "https://www.congressoemfoco.com.br/noticia/84541/cgu-tesouro-devolvera-r-26-3-mil-a-orlando-silva"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0039",
+      "titulo": "Jornal americano diz que presidente brasileiro é o melhor da história",
+      "descricao": "Capa de um famoso jornal dos EUA traz a foto do presidente do Brasil e uma manchete o chamando de melhor de todos os tempos.",
+      "saibaMais": "A imagem circulou em grupos de Facebook no fim de 2021 e teve dezenas de milhares de interações. A manchete está em inglês e diz que os brasileiros amam o presidente. A página tem o logotipo do jornal, colunas de texto e outras manchetes menores, como uma edição impressa.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O Washington Post disse ao Comprova, em checagem publicada pelo SBT News, que nunca publicou a manchete. O Aos Fatos achou a origem: uma capa falsa feita por ativistas em 2019 contra Donald Trump, como registrou a Fortune, com o rosto trocado. Há até erros de inglês. Confira a fonte: capas de jornal ficam no site e no arquivo do próprio veículo.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.aosfatos.org/noticias/the-washington-post-nao-classificou-bolsonaro-como-o-melhor-presidente-do-brasil/",
+      "fontesExtras": [
+        "https://sbtnews.sbt.com.br/noticia/category/188930-falso-e-falso-que-jornal-the-washington-post-publicou-manchete-elogiando-bolsonaro",
+        "https://fortune.com/2019/01/16/fake-washington-post-unpresidented-yes-men/amp/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0040",
+      "titulo": "Brasileiros votaram para decidir se o país voltaria a ter um rei",
+      "descricao": "Numa votação oficial em todo o país, os eleitores puderam escolher se o Brasil seria uma república ou uma monarquia.",
+      "saibaMais": "O Brasil foi um império, governado por imperadores, até 1889, quando foi proclamada a República. Hoje o país é uma república presidencialista: o presidente é eleito pelo povo e chefia o governo. Numa monarquia, o chefe de Estado é um rei ou uma rainha que herda o cargo da família.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Em 21 de abril de 1993, num plebiscito com cerca de 90 milhões de eleitores, a república teve 66% dos votos e a monarquia, 10%, segundo a Agência Senado. O Diario de Pernambuco lembra que também se votou entre presidencialismo e parlamentarismo. Confira a data e fontes oficiais: parece ficção, mas está nos registros.",
+      "tecnica": "data",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www12.senado.leg.br/noticias/especiais/arquivo-s/ha-30-anos-brasil-foi-as-urnas-decidir-se-teria-rei-e-primeiro-ministro/",
+      "fontesExtras": [
+        "https://www.diariodepernambuco.com.br/politica/2026/06/11715891-papel-rasuras-e-atraso-como-o-erro-humano-travou-a-apuracao-do-plebiscito-de-1993.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0041",
+      "titulo": "Ministro propôs aproveitar a pandemia para \"passar a boiada\"",
+      "descricao": "Em reunião com o presidente, o ministro do Meio Ambiente teria proposto mudar regras enquanto a imprensa só falava da covid.",
+      "saibaMais": "A expressão vem do campo: passar a boiada é fazer o gado inteiro atravessar de uma vez. A reunião teria acontecido em abril de 2020, no começo da pandemia de covid-19, com o presidente e vários ministros. Reuniões assim costumam ser fechadas à imprensa.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. O vídeo da reunião de 22 de abril de 2020 foi divulgado pelo STF em maio, num inquérito. Nele, Ricardo Salles defende \"ir passando a boiada e mudando todo o regramento e simplificando normas\", segundo Metrópoles e Catraca Livre. Quando a fonte é um vídeo oficial liberado pela Justiça, dá para conferir a fala inteira.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.metropoles.com/brasil/salles-reforca-fala-em-reuniao-ministerial-sobre-passar-a-boiada",
+      "fontesExtras": [
+        "https://catracalivre.com.br/cidadania/salles-sugere-aproveitar-pandemia-para-passar-boiada-no-meio-ambiente/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0042",
+      "titulo": "Brasileiros que não sabiam ler ficaram mais de 100 anos sem votar",
+      "descricao": "Uma lei do Império teria proibido o voto de analfabetos, e a proibição teria durado até a década de 1980.",
+      "saibaMais": "Hoje o voto no Brasil é obrigatório para quem tem entre 18 e 70 anos e opcional para jovens de 16 e 17 anos, para maiores de 70 e para analfabetos. Na urna eletrônica, o eleitor vê a foto do candidato antes de confirmar o voto.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo o Jornal de Brasília, o voto de analfabetos foi abolido em 1881, no Império, e só voltou com a Emenda Constitucional nº 25, de 15 de maio de 1985, cujo texto está no site do Planalto. A primeira eleição com esses eleitores foi em novembro de 1985. Pergunte \"desde quando?\": direitos que parecem óbvios hoje podem ser recentes.",
+      "tecnica": "data",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://jornaldebrasilia.com.br/noticias/politica-e-poder/emenda-que-instituiu-voto-analfabeto-influenciou-a-constituicao-de-88/",
+      "fontesExtras": [
+        "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc_anterior1988/emc25-85.htm"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    }
+  ]
+}
