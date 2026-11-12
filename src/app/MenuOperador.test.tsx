@@ -15,7 +15,7 @@ function Montado({ onEscolher }: { onEscolher: (i: ItemMenu) => void }) {
 }
 
 describe('MenuOperador (FR-14)', () => {
-  it('botão "Menu" abre a lista com Notícias, Ajustes (v12.0.0), Diagnóstico e Tela cheia', () => {
+  it('botão "Menu" abre a lista com Questões, Notícias, Ajustes (v12.0.0), Diagnóstico e Tela cheia', () => {
     render(<Montado onEscolher={() => {}} />);
     const botao = screen.getByRole('button', { name: 'Menu' });
     expect(botao).toHaveAttribute('aria-expanded', 'false');
@@ -23,7 +23,7 @@ describe('MenuOperador (FR-14)', () => {
     fireEvent.click(botao);
     expect(botao).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getAllByRole('menuitem').map((b) => b.textContent)).toEqual(
-      [expect.stringContaining('Notícias'), expect.stringContaining('Ajustes'), expect.stringContaining('Diagnóstico'), expect.stringContaining('Tela cheia')],
+      [expect.stringContaining('Questões'), expect.stringContaining('Notícias'), expect.stringContaining('Ajustes'), expect.stringContaining('Diagnóstico'), expect.stringContaining('Tela cheia')],
     );
   });
 
@@ -80,5 +80,15 @@ describe('MenuOperador (FR-14)', () => {
     fireEvent.mouseDown(botao);
     fireEvent.click(botao);
     expect(screen.queryByRole('menu')).toBeNull();
+  });
+});
+
+describe('MenuOperador › Questões (FR-14, FR-17, v12.0.0)', () => {
+  it('o item "Questões" vem primeiro e avisa "questoes"', () => {
+    const onEscolher = vi.fn();
+    render(<Montado onEscolher={onEscolher} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: /Questões/ }));
+    expect(onEscolher).toHaveBeenCalledWith('questoes');
   });
 });

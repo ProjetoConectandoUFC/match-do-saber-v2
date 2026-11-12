@@ -13,6 +13,8 @@ import { capturarFoto, type FotoPartida } from './foto';
 import { MenuOperador, type ItemMenu } from './MenuOperador';
 import { PainelAjustes } from './PainelAjustes';
 import { PainelNoticias } from './PainelNoticias';
+import { PainelQuestoes } from './PainelQuestoes';
+import type { FiltrosQuestoes } from '../core/questoes';
 import { PainelDiagnostico } from './PainelDiagnostico';
 import { criarRepositorio, repositorioWeb, type EstadoBanco, type RepositorioNoticias } from './repositorio';
 import { BotaoSair, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
@@ -28,6 +30,12 @@ import s from './App.module.css';
 function alternarTelaCheia() {
   const pedido = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
   pedido?.catch(() => {});
+}
+
+/** App de desktop: o preload abre links no navegador do sistema (AC-16.2); no navegador, não existe. */
+function abrirLinkDesktop(): ((url: string) => void) | undefined {
+  const abrir = (window as { matchDoSaber?: { abrirLink?: (url: string) => Promise<unknown> } }).matchDoSaber?.abrirLink;
+  return abrir ? (url) => { void abrir(url); } : undefined;
 }
 
 export function App() {
@@ -66,11 +74,19 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   const todas = useMemo(() => jogaveis(estadoBanco.banco), [estadoBanco.banco]);
   const telaRef = useRef<Estado['tela']>('espera');
   // Menu ☰ do operador (FR-14) e o painel que ele abriu.
-  const [operador, setOperador] = useState<'fechado' | 'menu' | 'noticias'>('fechado');
+  const [operador, setOperador] = useState<'fechado' | 'menu' | 'noticias' | 'questoes'>('fechado');
+  // Painel Questões (FR-17): filtro com que abre (AC-9.31) e o nome de quem revisa, só na memória da sessão (AC-16.5).
+  const [filtroQuestoes, setFiltroQuestoes] = useState<Partial<FiltrosQuestoes>>({});
+  const [revisor, setRevisor] = useState('');
   const operadorRef = useRef(operador);
   operadorRef.current = operador;
   const podeAbrirMenu = useCallback(() => telaRef.current === 'espera' && operadorRef.current === 'fechado', []);
-  const cfg = useAjustes(podeAbrirMenu);
+  // AC-9.31: Ajustes › Revisar questões fecha os Ajustes e abre Questões já filtrado por Rascunho.
+  const revisarQuestoes = useCallback(() => {
+    setFiltroQuestoes({ status: 'rascunho' });
+    setOperador('questoes');
+  }, []);
+  const cfg = useAjustes(podeAbrirMenu, { revisarQuestoes: true, onRevisar: revisarQuestoes });
   const { temas, dificuldade } = cfg.ajustes;
   // Filtros de conteúdo dos Ajustes (AC-9.27): o sorteio, a contagem do painel e o aviso da espera (AC-6.4).
   const noticias = useMemo(() => filtrarConteudo(todas, { temas, dificuldade }), [todas, temas, dificuldade]);
@@ -90,6 +106,10 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     else if (item === 'diagnostico') setDiagnostico(alternarDiagnostico);
     else if (item === 'telaCheia') alternarTelaCheia();
     else if (item === 'noticias') setOperador('noticias');
+    else if (item === 'questoes') {
+      setFiltroQuestoes({});
+      setOperador('questoes');
+    }
   }, [cfg.abrir]);
   telaRef.current = estado.tela;
   useSons(estado, cfg.ajustes.som, FATOR_VOLUME[cfg.ajustes.volume]); // AC-9.29
@@ -219,6 +239,18 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       {estado.tela !== 'espera' && <BotaoSair onSair={() => despachar({ tipo: 'sair' })} />}
       {operador === 'noticias' && (
         <PainelNoticias repo={repo} estado={estadoBanco} onBancoAlterado={onBancoAlterado} onFechar={fecharOperador} />
+      )}
+      {operador === 'questoes' && (
+        <PainelQuestoes
+          repo={repo}
+          estado={estadoBanco}
+          onBancoAlterado={onBancoAlterado}
+          onFechar={fecharOperador}
+          filtroInicial={filtroQuestoes}
+          revisor={revisor}
+          onRevisor={setRevisor}
+          abrirLink={abrirLinkDesktop()}
+        />
       )}
       {cfg.aberto && (
         <PainelAjustes

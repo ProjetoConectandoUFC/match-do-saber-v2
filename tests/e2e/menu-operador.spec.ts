@@ -10,12 +10,12 @@ async function abrirSemCamera(page: Page, url = '/') {
   await expect(page.getByText(CAMERA_OFF)).toBeVisible();
 }
 
-test('FR-14: ☰ abre Notícias, Ajustes, Diagnóstico e Tela cheia; Esc e clique fora fecham', async ({ page }) => {
+test('FR-14: ☰ abre Questões (v12.0.0), Notícias, Ajustes, Diagnóstico e Tela cheia; Esc e clique fora fecham', async ({ page }) => {
   await abrirSemCamera(page);
   const botao = page.getByRole('button', { name: 'Menu' });
   const menu = page.getByRole('menu');
   await botao.click();
-  await expect(menu.getByRole('menuitem')).toHaveText([/Notícias/, /Ajustes/, /Diagnóstico/, /Tela cheia/]);
+  await expect(menu.getByRole('menuitem')).toHaveText([/Questões/, /Notícias/, /Ajustes/, /Diagnóstico/, /Tela cheia/]);
 
   await page.keyboard.press('Enter');                                   // Enter com o menu aberto não inicia
   await page.keyboard.press('Escape');
