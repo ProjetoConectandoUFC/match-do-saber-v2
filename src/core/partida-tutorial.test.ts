@@ -20,7 +20,8 @@ const tick = (dtMs: number, presenca: Presenca | null = centro): Evento => ({ ti
 const enter: Evento = { tipo: 'enter' };
 const escolha = (resposta: Veredito): Evento => ({ tipo: 'escolha', resposta });
 const rodar = (s: Estado, eventos: Evento[], c = ctx()) => eventos.reduce((e, ev) => reduzir(e, ev, c), s);
-const SAIDA_E_FEEDBACK = TEMPOS.feedbackMs + TEMPOS.saidaMs;
+// v12.0.0 (AC-4.10, AC-9.25): o treino soma a saída do card e a carimbada, como a partida.
+const SAIDA_E_FEEDBACK = TEMPOS.feedbackMs + TEMPOS.carimboMs + TEMPOS.saidaMs;
 
 describe('tutorial: entrada (AC-15.1, AC-15.2)', () => {
   it('AC-15.1: desligado (sem perfis), a partida começa direto, como antes', () => {

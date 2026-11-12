@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ESTADO_INICIAL, TEMPOS, mensagemResumo, pontos, reduzir,
+  ESTADO_INICIAL, INICIO_RESULTADO_MS, TEMPOS, mensagemResumo, pontos, reduzir,
   type Contexto, type Estado, type Evento, type Presenca,
 } from './partida';
 import type { Noticia, Tecnica, Veredito } from './types';
@@ -83,10 +83,10 @@ describe('espera e calibração (v3.0.0: início só manual)', () => {
 });
 
 describe('card', () => {
-  it('AC-4.1: acerto soma ponto e mostra feedback de 3 s (após a saída do card)', () => {
+  it('AC-4.1: acerto soma ponto e mostra feedback de 3 s (após a saída do card e a carimbada)', () => {
     const s0 = emCard();
     const s = reduzir(s0, { tipo: 'escolha', resposta: cardAtual(s0).veredito }, ctx());
-    expect(s).toMatchObject({ tela: 'feedback', restanteMs: TEMPOS.saidaMs + TEMPOS.feedbackMs });
+    expect(s).toMatchObject({ tela: 'feedback', restanteMs: TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs });
     if (s.tela !== 'feedback') throw new Error();
     expect(s.partida.resultados).toEqual(['acerto']);
     expect(pontos(s.partida)).toBe(1);
@@ -107,25 +107,29 @@ describe('card', () => {
   });
   it.each(['verdadeira', 'falsa'] as const)('AC-2.1/AC-2.2: feedback guarda o lado escolhido (%s) para a animação de saída', (resposta) => {
     const s = reduzir(emCard(), { tipo: 'escolha', resposta }, ctx());
-    expect(s).toMatchObject({ tela: 'feedback', resposta, restanteMs: TEMPOS.saidaMs + TEMPOS.feedbackMs });
+    expect(s).toMatchObject({ tela: 'feedback', resposta, restanteMs: TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs });
   });
-  it('AC-4.1/AC-4.2: após uma escolha, o feedback dura a saída do card (250 ms) + 3 s inteiros', () => {
+  it('AC-4.1/AC-4.2/AC-4.9 (v12.0.0): após uma escolha, o feedback dura a saída (250 ms) + a carimbada (300 ms) + 3 s inteiros', () => {
     expect(TEMPOS.saidaMs).toBe(250);
+    expect(TEMPOS.carimboMs).toBe(300);
     const s1 = reduzir(emCard(), { tipo: 'escolha', resposta: 'falsa' }, ctx());
-    expect(rodar(s1, [tick(3249)])).toMatchObject({ tela: 'feedback', indice: 0 });
-    expect(rodar(s1, [tick(3250)])).toMatchObject({ tela: 'card', indice: 1 });
+    expect(rodar(s1, [tick(3549)])).toMatchObject({ tela: 'feedback', indice: 0 });
+    expect(rodar(s1, [tick(3550)])).toMatchObject({ tela: 'card', indice: 1 });
   });
-  it('AC-4.3: após tempo esgotado (sem saída do card), o feedback dura exatamente 3 s', () => {
+  it('AC-4.3/AC-4.9 (v12.0.0): após tempo esgotado (sem saída do card), o feedback dura a carimbada + 3 s', () => {
     const s1 = rodar(emCard(), [tick(TEMPOS.cardMs)]);
-    expect(s1).toMatchObject({ tela: 'feedback', resposta: null, restanteMs: TEMPOS.feedbackMs });
-    expect(rodar(s1, [tick(2999)])).toMatchObject({ tela: 'feedback', indice: 0 });
-    expect(rodar(s1, [tick(3000)])).toMatchObject({ tela: 'card', indice: 1 });
+    expect(s1).toMatchObject({ tela: 'feedback', resposta: null, restanteMs: TEMPOS.carimboMs + TEMPOS.feedbackMs });
+    expect(rodar(s1, [tick(3299)])).toMatchObject({ tela: 'feedback', indice: 0 });
+    expect(rodar(s1, [tick(3300)])).toMatchObject({ tela: 'card', indice: 1 });
+  });
+  it('AC-4.9 (v12.0.0): a tela do resultado começa com INICIO_RESULTADO_MS restantes (carimbada + 3 s)', () => {
+    expect(INICIO_RESULTADO_MS).toBe(TEMPOS.carimboMs + TEMPOS.feedbackMs);
   });
   it('AC-4.4: depois do feedback vem o próximo card com 15 s; escolha no feedback é ignorada', () => {
     const s1 = reduzir(emCard(), { tipo: 'escolha', resposta: 'falsa' }, ctx());
     const s2 = reduzir(s1, { tipo: 'escolha', resposta: 'falsa' }, ctx());
     expect(s2).toBe(s1);
-    expect(rodar(s1, [tick(TEMPOS.saidaMs + TEMPOS.feedbackMs)])).toMatchObject({ tela: 'card', indice: 1, restanteMs: TEMPOS.cardMs });
+    expect(rodar(s1, [tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs)])).toMatchObject({ tela: 'card', indice: 1, restanteMs: TEMPOS.cardMs });
   });
   it('AC-3.1/AC-3.2 (v5.0.0): o cronômetro continua correndo com o saiba mais aberto', () => {
     const s = rodar(emCard(), [tick(1000), { tipo: 'saibaMais' }, tick(3000)]);
@@ -178,7 +182,7 @@ describe('card', () => {
 describe('resumo', () => {
   const jogarTudo = (c = ctx()) => {
     let s = emCard(c);
-    for (let i = 0; i < 3; i++) s = rodar(s, [{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs + TEMPOS.feedbackMs)], c);
+    for (let i = 0; i < 3; i++) s = rodar(s, [{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs)], c);
     return s;
   };
   it('AC-5.1: resumo com os pontos da partida', () => {
@@ -220,7 +224,7 @@ describe('v2.0.0: tempo por card e sair', () => {
     const c = ctx({ tempoCardMs: 20000 });
     const s0 = emCard(c);
     expect(s0).toMatchObject({ tela: 'card', restanteMs: 20000 });
-    const s1 = rodar(s0, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.feedbackMs)], c);
+    const s1 = rodar(s0, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs)], c);
     expect(s1).toMatchObject({ tela: 'card', indice: 1, restanteMs: 20000 });
     expect(rodar(s1, [tick(10000), tick(9999)], c).tela).toBe('card');
     expect(rodar(s1, [tick(10000), tick(10000)], c).tela).toBe('feedback');
@@ -234,7 +238,7 @@ describe('v2.0.0: tempo por card e sair', () => {
     else if (onde === 'feedback') s = reduzir(emCard(c), { tipo: 'escolha', resposta: 'falsa' }, c);
     else {
       s = emCard(c);
-      for (let i = 0; i < 3; i++) s = rodar(s, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.feedbackMs)], c);
+      for (let i = 0; i < 3; i++) s = rodar(s, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs)], c);
     }
     expect(s.tela).toBe(onde === 'saibaMais' ? 'card' : onde);
     expect(reduzir(s, { tipo: 'sair' }, c)).toEqual(ESTADO_INICIAL);

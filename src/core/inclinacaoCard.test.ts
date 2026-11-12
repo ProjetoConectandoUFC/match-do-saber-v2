@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG_INCLINACAO_CARD, criarInclinacaoCard, deslocamentoCard, fracaoControle, situacaoDoCard } from './inclinacaoCard';
-import { TEMPOS } from './partida';
+import { INICIO_RESULTADO_MS, TEMPOS } from './partida';
 
 const { fracaoLargura, maxGraus, zonaMorta, constanteTempoMs } = CONFIG_INCLINACAO_CARD;
 const CARD = { largura: 600, altura: 640 };
@@ -133,17 +133,18 @@ describe('situacaoDoCard (AC-2.10)', () => {
   it('saída do card escolhido mantém a posição; o resultado do feedback e o tempo esgotado voltam ao centro', () => {
     const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null) =>
       ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, resposta });
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs + TEMPOS.saidaMs, 'verdadeira'), false)).toBe('saindo');
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs, 'falsa'), false)).toBe('centro');
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs, null), false)).toBe('centro');
+    expect(situacaoDoCard(fb(INICIO_RESULTADO_MS + TEMPOS.saidaMs, 'verdadeira'), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(INICIO_RESULTADO_MS + 1, 'verdadeira'), false)).toBe('saindo'); // v12.0.0: a carimbada é do resultado
+    expect(situacaoDoCard(fb(INICIO_RESULTADO_MS, 'falsa'), false)).toBe('centro');
+    expect(situacaoDoCard(fb(INICIO_RESULTADO_MS, null), false)).toBe('centro');
   });
 
   it('v10.2.0: o card de treino segue a leitura e sai da mesma forma; o feedback de treino volta ao centro', () => {
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, false)).toBe('jogando');
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, true)).toBe('centro');
     const fb = (restanteMs: number) => ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, resposta: 'falsa' as const });
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs + 1), false)).toBe('saindo');
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs), false)).toBe('centro');
+    expect(situacaoDoCard(fb(INICIO_RESULTADO_MS + 1), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(INICIO_RESULTADO_MS), false)).toBe('centro');
   });
 
   it('outras telas ficam no centro', () => {
