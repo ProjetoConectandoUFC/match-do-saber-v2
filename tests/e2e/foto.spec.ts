@@ -21,13 +21,13 @@ test('AC-13.3: sem câmera, o resumo não tem polaroid', async ({ page }) => {
   await expect(page.getByText(CAMERA_OFF)).toBeVisible();
   await page.keyboard.press('Enter');
   await escolher(page, 10);
-  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible();
+  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible({ timeout: 10_000 }); // o último feedback: saída + carimbada + 3 s (v12.0.0)
   await expect(page.locator('figure')).toHaveCount(0);
   await expect(page.locator('main img')).toHaveCount(0);
 });
 
 test('AC-13.1/AC-13.2/AC-13.4/AC-13.5: com câmera, polaroid do card do meio no resumo, só na memória', async ({ page }) => {
-  test.setTimeout(150_000); // modelo de pose + 10 feedbacks de 3 s + partida seguinte
+  test.setTimeout(180_000); // modelo de pose + 10 feedbacks de 3,3 s (v12.0.0: carimbada) + partida seguinte
   // Câmera simulada: um canvas 1280×720 repintado a cada quadro, entregue como MediaStream.
   await page.addInitScript(() => {
     const getUserMedia = async () => {
@@ -87,7 +87,7 @@ test('AC-13.1/AC-13.2/AC-13.4/AC-13.5: com câmera, polaroid do card do meio no 
   await page.keyboard.press('Enter');                                               // pula a calibração (AC-1.8)
   await escolher(page, 10);
 
-  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible();
+  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible({ timeout: 10_000 }); // o último feedback: saída + carimbada + 3 s (v12.0.0)
   const foto = page.getByRole('img', { name: FOTO });
   await expect(foto).toBeVisible();
   expect(await foto.getAttribute('src')).toMatch(/^data:image\/jpeg/);

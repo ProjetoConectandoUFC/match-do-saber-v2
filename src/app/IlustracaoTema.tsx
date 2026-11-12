@@ -15,8 +15,7 @@ const COR: Record<Tema, string> = {
   tecnologia: 'var(--cn-azul-medio)',
   curiosidades: 'var(--cn-roxo)',
   'meio-ambiente': 'var(--cn-turquesa)',
-  // TODO(v12): cor e ilustração de política pelo agente-visual (FR-4, FR-15); provisórias, só para o tema valer.
-  politica: 'var(--cn-teal)',
+  politica: 'var(--cn-indigo)',
 };
 
 const BRANCO = '#fff', CREME = 'var(--cn-creme)', NOITE = 'var(--cn-noite)', AMARELO = 'var(--cn-amarelo)';
@@ -88,6 +87,21 @@ const COMPOSICAO: Record<Tema, () => ReactNode> = {
       <P id="marca-estrela-5" x={290} y={100} w={30} cor={CREME} />
     </>
   ),
+  // Plenário: as cadeiras em semicírculo (estrelas de 5 pontas) e o arco amarelo; a estrela de 4 pontas no centro.
+  politica: () => (
+    <>
+      <P id="deco-arco" x={462} y={-58} w={130} cor={AMARELO} />
+      <P id="marca-estrela-5" x={222} y={115} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={235} y={68} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={270} y={33} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={317} y={20} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={365} y={33} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={399} y={68} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={412} y={115} w={26} cor={CREME} />
+      <P id="marca-estrela-4" x={315} y={84} w={30} cor={AMARELO} />
+      <Traco><line x1="190" y1="142" x2="470" y2="142" {...tracejado} stroke="var(--cn-creme)" strokeDasharray="10 8" /></Traco>
+    </>
+  ),
   'meio-ambiente': () => (
     <>
       <P id="anel-a" x={470} y={-40} w={100} cor={BRANCO} />
@@ -98,8 +112,6 @@ const COMPOSICAO: Record<Tema, () => ReactNode> = {
       <Traco><line x1="150" y1="131" x2="552" y2="131" {...tracejado} strokeDasharray="10 8" /></Traco>
     </>
   ),
-  // TODO(v12): ilustração de política pelo agente-visual; provisoriamente, a composição de História.
-  politica: () => COMPOSICAO.historia(),
 };
 
 /** Cor de ilustração do tema (também a faixa do "saiba mais"). */

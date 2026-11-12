@@ -100,44 +100,7 @@ describe('v11.0.0: card de app de namoro (FR-15)', () => {
   });
 });
 
-describe('v11.0.0: feedback "Deu match!" com ícones do design system (AC-4.1 a AC-4.3, AC-4.9)', () => {
-  it.each([
-    ['acerto', 'Deu match!', 'Acertou!'],
-    ['erro', 'Não deu match', 'Errou'],
-  ] as const)('%s: ícone, frase do match e o selo como texto próprio', (resultado, match, selo) => {
-    const { container } = render(<TelaFeedback noticia={noticia('n1')} resultado={resultado} pontos={0} />);
-    expect(screen.getByText(match)).toBeInTheDocument();
-    expect(screen.getByText(selo).textContent).toBe(selo);
-    const icone = container.querySelector(`svg[data-icone="${resultado}"]`)!;
-    expect(icone).toHaveAttribute('aria-hidden', 'true');
-    const ordem = [screen.getByRole('heading', { name: 'É verdade' }), icone, screen.getByText(match), screen.getByText('Explicação')];
-    for (let i = 1; i < ordem.length; i++) {
-      expect(ordem[i - 1]!.compareDocumentPosition(ordem[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    }
-  });
-
-  it('tempo esgotado: ampulheta e "Tempo esgotado", sem frase de match', () => {
-    const { container } = render(<TelaFeedback noticia={noticia('n1')} resultado="tempo" pontos={0} />);
-    expect(container.querySelector('svg[data-icone="tempo"]')).not.toBeNull();
-    expect(screen.getByText('Tempo esgotado')).toBeInTheDocument();
-    expect(container.textContent).not.toMatch(/match/i);
-  });
-
-  it('sem emoji nem caracteres como ícone (FR-15)', () => {
-    const { container } = render(<TelaFeedback noticia={noticia('n1')} resultado="acerto" pontos={0} />);
-    expect(container.textContent).not.toMatch(/[✓✗✔✖❤🙌]|\p{Extended_Pictographic}/u);
-  });
-
-  it.each([
-    ['verdadeira', 'Deu match!', 'Acertou!', 'acerto'],
-    ['falsa', 'Não deu match', 'Quase!', 'erro'],
-  ] as const)('treino (AC-15.3): resposta %s para um perfil verdadeiro', (resposta, match, selo, icone) => {
-    const { container } = render(<TelaFeedbackTutorial noticia={noticia('treino-2')} resposta={resposta} modo="corpo" treino={{ passo: 1, total: 4 }} />);
-    expect(screen.getByText(match)).toBeInTheDocument();
-    expect(screen.getByText(selo)).toBeInTheDocument();
-    expect(container.querySelector(`svg[data-icone="${icone}"]`)).not.toBeNull();
-  });
-});
+// O feedback "Deu match!" com ícones (v11.0.0) saiu na v12.0.0: ver TelasV12.test.tsx.
 
 const p = (x: number, y: number): Ponto => ({ x, y, visibility: 1 });
 function pose(): Ponto[] {

@@ -6,9 +6,12 @@ export const TEMPOS = {
   cardMs: 15000,
   feedbackMs: 3000,
   saidaMs: 250,
+  /** v12.0.0 (AC-4.9, AC-9.25): carimbada do veredito no começo do resultado; soma ao feedback, não desconta. */
+  carimboMs: 300,
   calibracaoMs: 2000,
   ausenciaMs: 10000,
 } as const;
+
 
 export type Resultado = 'acerto' | 'erro' | 'tempo';
 export interface Presenca { presente: boolean; centralizado: boolean }
@@ -29,7 +32,7 @@ export type Estado =
   | { tela: 'calibracao'; centradoMs: number; ausenteMs: number }
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
-  // `resultadoMs` (v12.0.0): quanto dura o resultado (AC-9.25), gravado ao entrar; enquanto `restanteMs` for maior, o card está saindo.
+  // `resultadoMs` (v12.0.0): quanto dura o resultado, carimbada + tempo configurado (AC-4.9, AC-9.25), gravado ao entrar; enquanto `restanteMs` for maior, o card está saindo.
   | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null; resultadoMs: number }
   // `decorridoMs`: só com a volta automática ligada (AC-5.2, AC-9.26, v12.0.0).
   | { tela: 'resumo'; partida: Partida; decorridoMs?: number }
@@ -67,6 +70,12 @@ export interface Contexto {
 /** Tempo do resultado no feedback (AC-9.25); a saída do card soma a ele (AC-4.1). */
 export const duracaoFeedbackMs = (ctx: Pick<Contexto, 'tempoFeedbackMs'>) => ctx.tempoFeedbackMs ?? TEMPOS.feedbackMs;
 
+/**
+ * Tela do resultado inteira, gravada em `resultadoMs`: a carimbada (AC-4.9) soma ao tempo configurado (AC-9.25),
+ * nunca desconta. Com o padrão, 300 + 3000 ms.
+ */
+export const duracaoResultadoMs = (ctx: Pick<Contexto, 'tempoFeedbackMs'>) => TEMPOS.carimboMs + duracaoFeedbackMs(ctx);
+
 export const ESTADO_INICIAL: Estado = { tela: 'espera' };
 const CALIBRACAO: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
 
@@ -90,10 +99,11 @@ function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null, ctx: 
     tela: 'feedback',
     partida: { ...e.partida, resultados: [...e.partida.resultados, r] },
     indice: e.indice,
-    // Escolha: o card sai antes (saidaMs) e o resultado ainda fica 3 s inteiros (AC-4.1/AC-4.2).
-    restanteMs: resposta === null ? duracaoFeedbackMs(ctx) : duracaoFeedbackMs(ctx) + TEMPOS.saidaMs,
+    // Escolha: o card sai antes (saidaMs); o resultado tem a carimbada e ainda fica o tempo configurado inteiro
+    // (AC-4.1/AC-4.2/AC-4.9, AC-9.25).
+    restanteMs: resposta === null ? duracaoResultadoMs(ctx) : duracaoResultadoMs(ctx) + TEMPOS.saidaMs,
     resposta,
-    resultadoMs: duracaoFeedbackMs(ctx),
+    resultadoMs: duracaoResultadoMs(ctx),
   };
 }
 
@@ -160,8 +170,8 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
       if (evento.tipo !== 'escolha') return estado;
       return {
-        ...estado, tela: 'tutorialFeedback', restanteMs: duracaoFeedbackMs(ctx) + TEMPOS.saidaMs, resposta: evento.resposta,
-        resultadoMs: duracaoFeedbackMs(ctx),
+        ...estado, tela: 'tutorialFeedback', restanteMs: duracaoResultadoMs(ctx) + TEMPOS.saidaMs, resposta: evento.resposta,
+        resultadoMs: duracaoResultadoMs(ctx),
       };
     }
     case 'tutorialFeedback': {

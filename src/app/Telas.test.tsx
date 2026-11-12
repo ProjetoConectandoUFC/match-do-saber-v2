@@ -56,30 +56,7 @@ describe('telas', () => {
     const { container } = render(<TelaCard noticia={noticia} restanteMs={1000} saibaMais={false} ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(container.querySelector('article')!.className).not.toMatch(/sai(Direita|Esquerda)/);
   });
-  it.each([
-    ['acerto', 'Acertou!'],
-    ['erro', 'Errou'],
-    ['tempo', 'Tempo esgotado'],
-  ] as const)('AC-4.x/AC-4.9 (v10.0.0, v11.0.0): feedback %s mostra veredito, selo, explicação e técnica, nessa ordem', (resultado, selo) => {
-    const { container } = render(<TelaFeedback noticia={noticia} resultado={resultado} pontos={0} />);
-    const veredito = screen.getByRole('heading', { name: 'É mentira' });
-    const elSelo = screen.getByText(selo);
-    const ordem = [veredito, elSelo, screen.getByText('Explicação W'), screen.getByText('Verificar a imagem')];
-    for (let i = 1; i < ordem.length; i++) {
-      expect(ordem[i - 1]!.compareDocumentPosition(ordem[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    }
-    expect(elSelo.querySelector('svg')).toBeNull();                       // AC-4.9 (v11.0.0): o ícone fica ao lado, não dentro do texto do selo
-    expect(elSelo.textContent).toBe(selo);
-    expect(container.querySelector('main')).toHaveAttribute('data-veredito', 'mentira');
-    expect(container.querySelector('main')).toHaveAttribute('data-resultado', resultado);
-    expect(container.textContent).not.toMatch(/falsa|verdadeira/i);
-  });
-  it('AC-4.1 (v10.0.0): notícia verdadeira mostra "É verdade" e o fundo de verdade', () => {
-    const { container } = render(<TelaFeedback noticia={{ ...noticia, veredito: 'verdadeira' }} resultado="acerto" pontos={1} />);
-    expect(screen.getByRole('heading', { name: 'É verdade' })).toBeInTheDocument();
-    expect(container.querySelector('main')).toHaveAttribute('data-veredito', 'verdade');
-    expect(container.querySelector('main')!.className).toMatch(/fbVerdade/);
-  });
+  // AC-4.1 a AC-4.3 e AC-4.9 (v12.0.0): feedback por resultado e carimbo em TelasV12.test.tsx.
   it('AC-4.1: card mostra o placar parcial', () => {
     render(<TelaCard noticia={noticia} restanteMs={1000} saibaMais={false} ausente={false} pontos={3} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(screen.getByText('Pontos: 3')).toBeInTheDocument();
@@ -293,9 +270,9 @@ describe('v10.2.0: telas do tutorial (Story 15, FR-16)', () => {
     expect(screen.queryByText(/Saiba mais/)).toBeNull();
     expect(container.querySelector('article img')).toBeNull(); // sem desenho próprio (AC-15.7): ilustração do tema
   });
-  it('AC-15.3: feedback de treino ensina o gesto, com o veredito, a explicação e a técnica', () => {
+  it('AC-15.3: feedback de treino ensina o gesto, com o carimbo do veredito, a explicação e a técnica', () => {
     const { container } = render(<TelaFeedbackTutorial noticia={treino} resposta="verdadeira" modo="corpo" treino={{ passo: 0, total: 4 }} />);
-    expect(screen.getByText('É mentira')).toBeInTheDocument();
+    expect(container.querySelector('[data-carimbo="mentira"]')).not.toBeNull(); // v12.0.0: o veredito é o carimbo (AC-4.10)
     expect(screen.getByText('Quase!')).toBeInTheDocument();
     expect(screen.getByText('Você foi para a direita com o corpo: escolheu Verdade.')).toBeInTheDocument();
     expect(screen.getByText('Era Mentira: corpo para a esquerda.')).toBeInTheDocument();

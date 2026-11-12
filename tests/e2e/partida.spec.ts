@@ -22,10 +22,10 @@ test('partida completa pelo teclado, sem câmera (AC-1.6, AC-2.5, AC-3.4, AC-4.x
     }
     await page.keyboard.press(i % 2 === 0 ? 'ArrowRight' : 'ArrowLeft');
     await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
-    await expect(page.getByText(/^É (verdade|mentira)$/)).toBeVisible();
+    await expect(page.locator('[data-carimbo]')).toHaveText(/^(Verdade|Mentira)$/); // v12.0.0: o veredito é o carimbo (AC-4.9)
   }
 
-  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible();
+  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible({ timeout: 10_000 }); // o último feedback: saída + carimbada + 3 s (v12.0.0)
   await expect(page.getByText(/^(Cuidado!|Você consegue|Parabéns!|Imune a fake news!)/)).toBeVisible(); // AC-5.7
   await page.waitForTimeout(16000);
   await expect(page.getByText(/^\d+ de 10$/)).toBeVisible(); // AC-5.2: não expira

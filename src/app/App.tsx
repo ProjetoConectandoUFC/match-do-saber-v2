@@ -165,7 +165,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       break;
     case 'feedback': {
       const noticia = estado.partida.cards[estado.indice]!;
-      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, o resultado, com a duração gravada no estado (AC-9.25).
+      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, o resultado (carimbada + tempo
+      // configurado), com a duração gravada no estado (AC-4.9, AC-9.25).
       const saindo = cardSaindo(estado);
       tela = saindo ? (
         <TelaCard

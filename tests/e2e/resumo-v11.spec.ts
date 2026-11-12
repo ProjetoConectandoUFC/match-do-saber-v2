@@ -19,7 +19,7 @@ async function jogarAteOResumo(page: Page) {
     await page.keyboard.press(i % 3 === 0 ? 'ArrowLeft' : 'ArrowRight');
     await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   }
-  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible();
+  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible({ timeout: 10_000 }); // o último feedback: saída + carimbada + 3 s (v12.0.0)
 }
 
 const caixa = async (l: Locator) => (await l.boundingBox())!;
@@ -115,6 +115,8 @@ test('AC-2.11/AC-2.12: botões redondos fora do card, pilha atrás e carimbo na 
   await expect(page.locator('[data-rotulo-lado="verdade"]')).toHaveClass(/carimbado/);
   await expect(verdade).toHaveAttribute('data-escolhido', 'true');
   await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
-  await expect(page.locator('svg[data-icone]')).toHaveCount(1);
-  await expect(page.getByText(/^(Deu match!|Não deu match)$/)).toBeVisible();
+  // v12.0.0 (AC-4.9): sem ícones nem "match" no feedback; o veredito é o carimbo.
+  await expect(page.locator('svg[data-icone]')).toHaveCount(0);
+  await expect(page.locator('[data-carimbo]')).toBeVisible();
+  await expect(page.locator('main')).not.toContainText(/match/i);
 });
