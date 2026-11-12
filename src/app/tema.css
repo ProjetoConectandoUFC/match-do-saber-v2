@@ -5,6 +5,7 @@
   --cn-azul-escuro: #035386;
   --cn-amarelo: #fde31f;
   --cn-coral: #e34a39;
+  --cn-coral-hover: #c63b2b;
   --cn-creme: #fcfaf1;
   --cn-branco: #ffffff;
   --cn-tinta: #0c0b0a;
@@ -23,11 +24,18 @@
   --cn-roxo: #a740b2;
   --cn-turquesa: #24c0c0;
   --cn-ceu: #3bb8ff;
+  /* v12.0.0 (FR-15, AC-4.9): cores do resultado no feedback, derivadas do design system, que não tem verde. */
+  /* Acerto: o teal (#309f9f, HSL 180° 54% 40%) girado para o verde (HSL 140° 54% 48%); texto noite 6,8:1. */
+  --cn-acerto: #38bc64;
+  /* Erro: o coral-hover do próprio design system, mais vermelho que o coral da Mentira; texto creme 4,9:1. */
+  --cn-erro: var(--cn-coral-hover);
 
   /* Papéis no jogo */
   --verdade: var(--cn-menta);
   --mentira: var(--cn-coral);
   --alerta: var(--cn-coral);
+  --acerto: var(--cn-acerto);
+  --erro: var(--cn-erro);
   --sombra: var(--cn-teal);
   --raio-pilula: 999px;
   --fonte: "Poppins", system-ui, sans-serif;
