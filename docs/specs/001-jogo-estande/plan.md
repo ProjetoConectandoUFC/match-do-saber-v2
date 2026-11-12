@@ -5450,6 +5450,8 @@ Spec: AC-4.1 a AC-4.3, AC-4.9, AC-4.10, AC-9.25 (só a soma do carimbo); FR-4, F
 - 42.5 Treino do tutorial no mesmo layout (AC-4.10).
 - 42.6 E2E de layout 1366×768 e 1920×1080 + capturas em `docs/visual/capturas/v12-feedback/`.
 
+Status (2026-11-12): concluída na branch 001-v12-integracao (commits `0a5ff76`, `ca84945`, `0baf4bc`, `d94b504`, `9e9e258`, `1ebea03`, `3a37fee`, `2a4828f` e `d1ea95a`, da `001-v12-feedback-carimbo`; integração em `5049ea4`, que trocou a soma fixa por `duracaoResultadoMs(ctx)` = carimbada + tempo configurado). 42.1 a 42.6 feitas, com testes. Pendências: decisões visuais do responsável (tokens `--cn-acerto`/`--cn-erro`, tamanhos, carimbo coral sobre o vermelho, se a ilustração de `politica` lembra a bandeira da UE) e a verificação no hardware a 2 m (45.2).
+
 ## Phase 43 (added v12.0.0): Ajustes, visibilidade e tema `politica`
 
 Spec: AC-5.2, AC-5.4, AC-5.5, AC-6.1 a AC-6.4, AC-7.2, AC-7.3, AC-7.7, AC-7.12, AC-9.1, AC-9.2, AC-9.4, AC-9.17, AC-9.23 a AC-9.30; FR-1, FR-5, FR-6, FR-7, FR-9, FR-14. Agente: agente-mecanico, branch `001-v12-ajustes`. TDD (lógica pura primeiro).
@@ -5463,6 +5465,8 @@ Spec: AC-5.2, AC-5.4, AC-5.5, AC-6.1 a AC-6.4, AC-7.2, AC-7.3, AC-7.7, AC-7.12, 
 - 43.7 UI: painel "Ajustes" com grupos, rolagem, teclado (↑/↓ pelos grupos, ←/→, Espaço nos temas), contagem de jogáveis/ocultas, "Revisar questões" (abre o painel da Fase 44 quando existir; até lá, o item fica oculto) e resumo da espera (AC-9.2); ☰ › "Ajustes".
 - 43.8 E2E: ajustes guardados e reaplicados, partida com N=5 e N=12, tema filtrado, oculta fora da partida.
 
+Status (2026-11-12): concluída na branch 001-v12-integracao (commits `5cbb261`, `8a29fde`, `aefeef7`, `89e9c7f`, `ea42215`, `40d6e1e`, `08ec692`, `0e2a12b`, `bc03fac`, `898f19c` e `b8a1bec`, da `001-v12-ajustes`; o tempo do feedback chega a som, tela e inclinação em `ff27fc4`). 43.1 a 43.8 feitas, com testes; a ilustração provisória de `politica` (43.6) foi trocada pela definitiva da Fase 42 na integração (`5049ea4`). Pendências: sensibilidade Menor/Maior conferida no estande (45.2) e as decisões do agente listadas no log de 2026-11-12 (entrada das 11:20).
+
 ## Phase 44 (added v12.0.0): Painel Questões
 
 Spec: Story 16 (AC-16.1 a AC-16.6), FR-17, FR-14, AC-9.31. Agente: agente-mecanico, branch `001-v12-painel-questoes` (sai da `001-v12-ajustes` depois da Fase 43). Referência: Prova ou Reprova (`develop`, `dist/editor-questoes.js`, `dist/menu-apresentador.js`). TDD.
@@ -5473,6 +5477,8 @@ Spec: Story 16 (AC-16.1 a AC-16.6), FR-17, FR-14, AC-9.31. Agente: agente-mecani
 - 44.4 Electron: links abrem no navegador do sistema (`shell.openExternal` via preload, só http/https).
 - 44.5 ☰ › "Questões" e Ajustes › "Revisar questões" (filtro Rascunho).
 - 44.6 E2E (web, só leitura) e E2E desktop (ocultar e aprovar gravam com backup).
+
+Status (2026-11-12): concluída na branch 001-v12-integracao (commits `78edf7d`, `6002b56`, `f3f22be`, `77f649f`, `65caa77`, `1f1b47d`, `30c5ffa` e `5a45dd3`, da `001-v12-painel-questoes`, e `0d68baa`, que guarda o nome do revisor só depois de a gravação dar certo). 44.1 a 44.6 feitas, com testes. Pendências: acabamento visual do painel (CSS provisório) e marcador próprio de Questões no ☰ (`agente-visual`); decisões 1 a 5 do agente (log de 2026-11-12, entrada das 11:54).
 
 ## Phase 45 (added v12.0.0): Lote 3 (política) e verificação
 
