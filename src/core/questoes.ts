@@ -4,7 +4,7 @@
  * para o painel nunca dizer que uma questão entra no jogo quando ela não entra.
  * As questões são identificadas pela posição no banco (`indice`): um id repetido ou vazio não confunde as ações.
  */
-import { jogaveis, oculta, validarBanco, type Problemas } from './banco';
+import { jogaveis, oculta, temProblemas, validarBanco, validarNoticia, type Problemas } from './banco';
 import { dominio, rotuloFonte, type RotuloFonte } from './fontesRodada';
 import { MAX_TITULO_CURTO, type ColunaBanco, type NoticiaBanco } from './types';
 
@@ -171,4 +171,13 @@ export function questaoVizinha(lista: readonly Questao[], atual: number | null, 
   const pos = lista.findIndex((q) => q.indice === atual);
   if (pos === -1) return lista[0]!.indice;
   return lista[Math.min(lista.length - 1, Math.max(0, pos + delta))]!.indice;
+}
+
+/** AC-16.5 › Editar: grava a questão do editor (AC-7.2) na mesma posição, com a validação de AC-7.3. */
+export function gravarQuestao(
+  banco: readonly NoticiaBanco[], indice: number, noticia: NoticiaBanco,
+): { banco: NoticiaBanco[] } | { problemas: Problemas } {
+  const problemas = validarNoticia(noticia, banco.filter((_, i) => i !== indice).map((x) => x.id));
+  if (temProblemas(problemas)) return { problemas };
+  return { banco: banco.map((x, i) => (i === indice ? noticia : x)) };
 }

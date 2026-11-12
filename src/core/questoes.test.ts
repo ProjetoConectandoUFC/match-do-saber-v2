@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { jogaveis } from './banco';
 import {
   FILTROS_VAZIOS, alterarVisibilidade, analisarQuestoes, aprovarQuestao, contarQuestoes, filtrarQuestoes, fontesDaQuestao,
-  questaoVizinha, voltarParaRascunho,
+  gravarQuestao, questaoVizinha, voltarParaRascunho,
 } from './questoes';
 import type { NoticiaBanco } from './types';
 
@@ -176,5 +176,20 @@ describe('AC-16.6: ↑/↓ andam na lista filtrada', () => {
     expect(questaoVizinha(lista, null, 1)).toBe(0);
     expect(questaoVizinha(lista, 2, -1)).toBe(0);
     expect(questaoVizinha([], null, 1)).toBeNull();
+  });
+});
+
+describe('AC-16.5 › Editar: grava pelo editor de AC-7.2, com a validação de AC-7.3', () => {
+  it('troca só a linha editada, pela posição, mesmo com outra linha de mesmo id', () => {
+    const banco = [n('a', { titulo: 'um' }), n('a', { titulo: 'dois' })];
+    const r = gravarQuestao(banco, 1, n('b', { titulo: 'novo' }));
+    expect('banco' in r && r.banco.map((x) => `${x.id}:${x.titulo}`)).toEqual(['a:um', 'b:novo']);
+  });
+
+  it('com problema, não grava e aponta o campo', () => {
+    expect(gravarQuestao(BANCO, 0, n('mds-0002'))).toEqual({ problemas: { id: 'id repetido' } });
+    expect(gravarQuestao(BANCO, 0, n('mds-0001', { status: 'aprovada', revisado_por: '' }))).toEqual({
+      problemas: { revisado_por: 'notícia aprovada precisa de quem revisou' },
+    });
   });
 });
