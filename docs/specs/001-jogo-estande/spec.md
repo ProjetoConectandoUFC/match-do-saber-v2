@@ -1,9 +1,9 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
-**Status:** Approved
-**Version:** 11.0.0
+**Status:** Draft (v12.0.0 aguardando aprovação do responsável)
+**Version:** 12.0.0
 **Created:** 2026-10-26
-**Last Updated:** 2026-11-10
+**Last Updated:** 2026-11-12
 **Branch:** `001-jogo-estande`
 **Origem:** [prd.md](prd.md) · ADRs: [frontend-stack](../../adr/001-frontend-stack.md), [motion-input](../../adr/001-motion-input.md), [content-pipeline](../../adr/001-content-pipeline.md)
 
@@ -35,6 +35,7 @@
 | 10.3.0 | 2026-11-10 | Decisões do responsável (Levi) depois de testar o app. O card mimetiza o controle em tempo real, como no Reigns: AC-2.10 reescrito (deslocamento proporcional desde o centro, até 38% da largura e 14° com eixo embaixo no limiar, rótulo "Verdade"/"Mentira" aparecendo aos poucos, suavização de ~100 ms, saída a partir da posição; com `prefers-reduced-motion`, só os rótulos). Um único controle por modo: no Corpo, só o tronco (AC-2.7 e AC-2.8 removidos; AC-2.4 e AC-2.9 reescritos); na Cabeça, a inclinação; na Mão, o swipe da mão ativa (AC-9.7 e AC-9.19 removidos; AC-9.9, AC-9.14, AC-9.20 e AC-9.22 reescritos). FR-2 e FR-9 acompanham. Diagnóstico liga e desliga pelo menu ☰ (AC-12.7; FR-12 e FR-14 sem o "até recarregar") |
 | 10.3.1 | 2026-11-10 | Decisão do responsável (Levi) depois de testar: AC-2.10 (a) o card gira 15° em torno do ponto central da base, que se desloca só um pouco (8% da largura) em direção à resposta, no lugar de 38% e 14°; AC-2.10 (f) o movimento vale também com `prefers-reduced-motion` (no teste, o Windows estava com os efeitos de animação desligados e o card ficava parado, só com os rótulos) |
 | 11.0.0 | 2026-11-10 | Prévia v11 aplicada (`docs/visual/previa-v11.html`) por ordem do responsável (Levi), com as recomendações do Agente Visual; detalhes a confirmar. **FR-15 reescrito:** pilha de cards atrás do card, botões redondos nas laterais que acendem com a fração do gesto (AC-2.11), carimbo VERDADE/MENTIRA (AC-2.10b, AC-2.12) e feedback "Deu match!"/"Não deu match" com ícones feitos com as formas do design system (AC-4.1 a AC-4.3 e AC-4.9 reescritos; o selo continua "Acertou!", "Errou", "Tempo esgotado"); estilo "recorte chapado" nas imagens desenhadas (FR-4, AC-15.7). **FR-13 reescrito:** filtro por faixa de acertos (lupa, detetive, repórter, herói) desenhado por cima da foto com as âncoras de AC-13.6 e selo da faixa na moldura (AC-13.2, AC-13.6, AC-13.8, AC-13.9). **Resumo (opção B):** lista de acertos e erros por notícia, com a fonte das verdadeiras e quem desmentiu as falsas, e um QR único que abre a página das fontes na versão web, só com os ids das notícias (AC-5.1 reescrito; AC-5.8 a AC-5.10 novos; Non-Goals e Security ajustados). **FR-6:** colunas opcionais `titulo_curto` e `fonte_nome` (AC-7.2, AC-7.3, AC-7.11). **FR-11 reescrito:** som de fim de partida, que cresce com a faixa (AC-11.6); sem tique nos últimos 5 s. **Tutorial:** o treino passa a ter os 2 perfis da prévia (Abacaxi Perfeito e Seu Caju) com o próprio desenho (campo opcional `ilustracao`; AC-15.2, AC-15.7 e FR-16 reescritos); os 4 perfis do rascunho ficam guardados em `perfisReserva`. O nome do jogo não muda. O movimento do card (AC-2.10) não muda |
+| 12.0.0 | 2026-11-12 | Pedido do responsável (Levi) depois do estande. **Feedback por resultado:** o fundo do feedback passa a dizer se o jogador acertou (verde) ou errou (vermelho, inclusive tempo esgotado), e não mais o veredito; o veredito vira um carimbo VERDADE/MENTIRA, com o símbolo (estrela ou triângulo), carimbado por cima do texto do resultado no centro da tela; sai "Deu match!"/"Não deu match" e saem os ícones de discos do feedback (reescritos AC-4.1 a AC-4.3, AC-4.9, FR-4; o tutorial, o logotipo e o resumo não mudam). **Ajustes:** o menu "Configurações" vira "Ajustes", com grupos Partida, Conteúdo, Detecção, Mídia e Questões e mais itens: notícias por partida, tempo por card ampliado, tempo do feedback, volta automática do resumo, temas, dificuldade, sensibilidade do gesto, tolerância sem pessoa, volume, QR das fontes e "Restaurar padrão", sem PIN (reescritos AC-9.1, AC-9.2, AC-9.4, AC-9.17, FR-9, AC-6.1, AC-6.2, FR-1; adicionados AC-9.23 a AC-9.31). **Visibilidade:** coluna opcional `visivel` (a notícia fica no banco, mas fora das partidas, até o operador religar) (AC-7.12, FR-6, AC-7.7). **Tema `politica`** (AC-7.2). **Painel "Questões"** para leitura, depuração e revisão, no estilo do Prova ou Reprova, com fontes, gabarito, problemas de validação, aprovação e visibilidade (Story 16, FR-17, FR-14). |
 
 ---
 
@@ -52,11 +53,12 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - Nenhuma imagem da câmera e nenhum dado de jogador sai do notebook ou fica salvo.
 - No fim da partida, o jogador vê um card polaroid com uma foto dele tirada no meio da partida; a foto some quando o resumo fecha.
 - Jogadores com baixa mobilidade completam uma partida sem tocar no notebook, usando o modo Mão (arrastar uma mão para o lado; até a v10.2.0, levantar uma mão) ou o modo Cabeça (inclinar a cabeça), escolhido pelo operador.
-- O operador ajusta o tempo por card ao público (de 10 a 30 s), liga ou desliga o som, e inicia ou encerra uma partida com um clique.
+- O operador ajusta o tempo por card ao público (de 10 a 60 s; até a v11.0.0, de 10 a 30 s), o número de notícias, os tempos da partida, o conteúdo e a mídia pelo menu Ajustes, e inicia ou encerra uma partida com um clique (v12.0.0).
+- O jogador sabe, sem ler, se acertou ou errou cada card: a tela inteira fica verde ou vermelha, e o carimbo VERDADE/MENTIRA mostra o veredito (v12.0.0).
 
 ## Non-Goals
 
-- Ranking, apelidos, contas de usuário ou qualquer dado de jogador salvo. (Os únicos valores guardados no notebook são as configurações do estande escolhidas pelo operador — modo de jogo, tempo por card, som e foto no resumo — e o banco de notícias com seus backups. Não são dados de jogador.)
+- Ranking, apelidos, contas de usuário ou qualquer dado de jogador salvo. (Os únicos valores guardados no notebook são os ajustes do estande escolhidos pelo operador (FR-9) e o banco de notícias com seus backups. Não são dados de jogador.)
 - Levar a foto da partida: baixar, imprimir, enviar ou gerar QR code da foto. (O QR do resumo, v11.0.0, leva só os ids das notícias da rodada para a página das fontes, AC-5.9; nunca a foto nem dado da pessoa.)
 - Modo para celular individual ou para sala de aula.
 - Multiplayer ou várias pessoas jogando ao mesmo tempo.
@@ -134,10 +136,11 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 **Acceptance criteria:**
 
-- [ ] **AC-4.1** Given o jogador escolheu um card When a escolha corresponde ao veredito da notícia Then aparece por 3 s o feedback: no topo o veredito, "É verdade" ou "É mentira", menor; logo abaixo, numa linha, o ícone de acerto e o selo, maior, com "Deu match!" e "Acertou!"; depois a explicação e a técnica de checagem da notícia; o fundo da tela inteira fica na cor do veredito (menta para verdade, coral para mentira); e o placar soma +1. (Reescrito v10.0.0 e v11.0.0.)
-- [ ] **AC-4.9** Given o feedback de qualquer resultado (AC-4.1 a AC-4.3) When ele aparece Then a ordem, os tamanhos e a cor do fundo seguem AC-4.1, e só o ícone e o selo mudam: acerto, os dois discos (você e o fato) que se encontram com uma estrela amarela, e "Deu match!" + "Acertou!"; erro, os discos separados por um triângulo partido, e "Não deu match" + "Errou"; tempo esgotado, a ampulheta de dois triângulos, e "Tempo esgotado". Os ícones são desenhados com as formas do design system, sem emoji (FR-15). "Acertou!", "Errou" e "Tempo esgotado" continuam aparecendo como texto próprio. (Adicionado v10.0.0; reescrito v11.0.0, que desfaz o "sem ícones" da v10.0.0; a confirmar.)
-- [ ] **AC-4.2** Given o jogador escolheu um card When a escolha não corresponde ao veredito Then aparece por 3 s o ícone de erro e o selo "Não deu match" + "Errou" com o veredito, a explicação e a técnica, e o placar não muda.
-- [ ] **AC-4.3** Given um card está na tela When o cronômetro chega a 0 sem escolha Then aparece por 3 s o ícone da ampulheta e o selo "Tempo esgotado" com o veredito, a explicação e a técnica, e o placar não muda.
+- [ ] **AC-4.1** Given o jogador escolheu um card When a escolha corresponde ao veredito da notícia Then aparece o feedback pelo tempo de feedback configurado (padrão 3 s, AC-9.25), com o fundo da tela inteira **verde** (cor de acerto); no centro da tela, o texto do resultado "Acertou!", grande, e por cima dele o carimbo do veredito (AC-4.9); abaixo, a explicação e a técnica de checagem da notícia; e o placar soma +1. Não aparece "match" no feedback. (Reescrito v10.0.0, v11.0.0 e v12.0.0: até a v11.0.0 o fundo tinha a cor do veredito e havia "Deu match!".)
+- [ ] **AC-4.9** Given o feedback de qualquer resultado (AC-4.1 a AC-4.3) When ele aparece Then o veredito da notícia é mostrado só por um carimbo, carimbado por cima do texto do resultado, os dois no centro da tela: "VERDADE" com a estrela (menta) nas notícias verdadeiras e "MENTIRA" com o triângulo (coral) nas falsas, o mesmo carimbo do card (AC-2.10b), legível tanto sobre o verde quanto sobre o vermelho (contraste mínimo 4,5:1 do texto do carimbo com o próprio fundo do carimbo). O carimbo entra com uma animação de carimbada (cai de maior para o tamanho final com um leve giro, cerca de 300 ms), que **soma** ao tempo do feedback (não desconta); com `prefers-reduced-motion`, aparece já no lugar. A cor do fundo diz o resultado: verde = acertou; vermelho = errou ou tempo esgotado. O texto do resultado ("Acertou!", "Errou", "Tempo esgotado") continua sempre visível, para não depender só da cor (daltonismo). Sem "Deu match!"/"Não deu match" e sem os ícones de discos e da ampulheta. (Adicionado v10.0.0; reescrito v11.0.0 e v12.0.0.)
+- [ ] **AC-4.2** Given o jogador escolheu um card When a escolha não corresponde ao veredito Then aparece o feedback com o fundo da tela inteira **vermelho** (cor de erro), o texto "Errou" com o carimbo do veredito por cima (AC-4.9), a explicação e a técnica, e o placar não muda. (Reescrito v12.0.0.)
+- [ ] **AC-4.3** Given um card está na tela When o cronômetro chega a 0 sem escolha Then aparece o feedback com o fundo **vermelho**, o texto "Tempo esgotado" com o carimbo do veredito por cima (AC-4.9), a explicação e a técnica, e o placar não muda. (Reescrito v12.0.0.)
+- [ ] **AC-4.10** Given o feedback de um card de treino do tutorial (FR-16) When ele aparece Then segue o mesmo layout de AC-4.1 a AC-4.3 e AC-4.9 (fundo verde ou vermelho pelo resultado, carimbo do veredito por cima do texto), com o texto didático do treino no lugar da explicação. (Adicionado v12.0.0.)
 - [ ] **AC-4.4** Given o feedback de um card terminou When ainda há cards na partida Then o próximo card aparece com o cronômetro no tempo por card configurado.
 - [ ] **AC-4.5** Given um card está na tela (parado ou saindo) When a tela tem 1366×768 ou 1920×1080 Then o card fica centralizado na vertical: o centro do card fica a no máximo 8 px do centro da área de jogo, que é a tela menos a barra de tempo (AC-4.6), sem cortar texto (FR-4) e sem ficar atrás da barra. A prévia da câmera (AC-2.6) não entra nessa conta. (Ajustado v10.0.0.)
 - [ ] **AC-4.6** Given um card está na tela When o tempo passa Then uma barra de tempo grossa, com a largura da tela e colada na base, diminui da direita para a esquerda na proporção do tempo restante e mostra dentro dela os segundos restantes (por exemplo, "12 s"); não há mais número de tempo em cima do card.
@@ -157,11 +160,11 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-5.9** Given a tela de resumo When ela aparece Then um cartão com um QR code único e a chamada "Fotografe e veja todas as fontes" fica ao lado do placar, com pelo menos 160 px em 1366×768; o QR é gerado no próprio jogo, sem rede, e abre a página das fontes da versão web (AC-5.10) com só os ids das notícias da rodada, depois do `#` do endereço (um `mds-NNNN` vira só o número). O QR não leva foto, âncoras, pontos, respostas nem qualquer dado da pessoa. (Adicionado v11.0.0; a confirmar.)
 - [ ] **AC-5.10** Given alguém abre no celular o endereço do QR When a página das fontes carrega Then ela mostra, para cada id pedido que está no banco embutido da versão web e é jogável (AC-7.7), a pílula do veredito, o título completo e os links: "Fonte:" nas verdadeiras ou "Desmentido por:" nas falsas, com `fonte_url` (nome do veículo) e cada link de `fontes_extras` (domínio); ids desconhecidos aparecem como "Notícia não encontrada nesta versão do jogo". Notícias criadas ou editadas só no banco local do app de desktop (FR-7) não aparecem, ou aparecem como estão no banco embutido: limite aceito na v11.0.0. A página não guarda nada e só se conecta à própria origem. (Adicionado v11.0.0; a confirmar.)
 - [ ] **AC-5.7** Given a tela de resumo de uma partida com N acertos em M cards When ela aparece Then, logo abaixo do "N de M", aparece uma mensagem conforme a proporção N/M: menos de 0,5 (0 a 4 de 10) — "Cuidado! Você precisa verificar melhor as manchetes."; de 0,5 até menos de 0,8 (5 a 7 de 10) — "Você consegue se proteger, mas ainda pode melhorar."; de 0,8 até menos de 1 (8 e 9 de 10) — "Parabéns! Você checa muito bem as notícias."; todos certos (10 de 10) — "Imune a fake news!". A mensagem aparece com ou sem a foto (AC-13.2), sem cortar nada em 1366×768 (FR-4).
-- [ ] **AC-5.2** Given a tela de resumo está aberta When o tempo passa sem ação do operador Then o resumo continua na tela, sem limite de tempo, mesmo que o jogador saia do quadro.
+- [ ] **AC-5.2** Given a tela de resumo está aberta e o ajuste "Volta automática do resumo" está Desligado (padrão, AC-9.26) When o tempo passa sem ação do operador Then o resumo continua na tela, sem limite de tempo, mesmo que o jogador saia do quadro. Com a volta automática em N s, o resumo fecha depois de N s sem ação, nada da partida é guardado (a foto é apagada, FR-13) e o jogo volta à tela de espera. (Reescrito v12.0.0.)
 - [ ] **AC-5.6** Given a tela de resumo está aberta When o operador pressiona Enter (iniciar nova partida) Then o resumo fecha, nada da partida anterior é guardado e o jogo vai para a calibração da nova partida (ou inicia direto pela entrada alternativa, se a câmera estiver indisponível).
 - [ ] **AC-5.3** Given uma partida no modo Corpo, iniciada pela calibração, está em andamento When ninguém é detectado na câmera Then o cronômetro pausa e aparece a mensagem "Volte para o centro".
-- [ ] **AC-5.4** Given a mensagem "Volte para o centro" está na tela (só no modo Corpo, AC-5.3) When a pessoa volta ao quadro antes de 10 s Then a partida continua do mesmo card, com o cronômetro retomando de onde parou.
-- [ ] **AC-5.5** Given a mensagem "Volte para o centro" está na tela (só no modo Corpo, AC-5.3) When se passam 10 s sem ninguém no quadro Then a partida é encerrada sem resumo e o jogo volta à tela de espera e permanece nela, mesmo que a pessoa volte ao quadro depois (AC-1.1).
+- [ ] **AC-5.4** Given a mensagem "Volte para o centro" está na tela (só no modo Corpo, AC-5.3) When a pessoa volta ao quadro antes da tolerância sem pessoa (padrão 10 s, AC-9.28) Then a partida continua do mesmo card, com o cronômetro retomando de onde parou.
+- [ ] **AC-5.5** Given a mensagem "Volte para o centro" está na tela (só no modo Corpo, AC-5.3) When passa a tolerância sem pessoa (padrão 10 s, AC-9.28) sem ninguém no quadro Then a partida é encerrada sem resumo e o jogo volta à tela de espera e permanece nela, mesmo que a pessoa volte ao quadro depois (AC-1.1).
 
 ### Story 6: Montar uma partida equilibrada
 
@@ -171,10 +174,10 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 **Acceptance criteria:**
 
-- [ ] **AC-6.1** Given há pelo menos 5 notícias verdadeiras e 5 falsas publicadas When uma partida começa Then ela tem 10 cards, 5 verdadeiros e 5 falsos, sem repetição, em ordem aleatória.
-- [ ] **AC-6.2** Given há menos de 5 notícias de um dos lados e pelo menos 10 publicadas no total When uma partida começa Then ela tem 10 cards, com todas as notícias do lado menor e o restante completado com o outro lado.
-- [ ] **AC-6.3** Given há entre 1 e 9 notícias publicadas When uma partida começa Then ela usa todas as notícias disponíveis, em ordem aleatória.
-- [ ] **AC-6.4** Given não há nenhuma notícia publicada When o jogo é aberto Then a tela de espera mostra "Nenhuma notícia publicada" e nenhuma partida pode começar.
+- [ ] **AC-6.1** Given o ajuste "Notícias por partida" vale N (padrão 10, AC-9.23) e há pelo menos ⌈N/2⌉ notícias verdadeiras e ⌈N/2⌉ falsas jogáveis dentro dos filtros de conteúdo (AC-9.27) When uma partida começa Then ela tem N cards, ⌊N/2⌋ de um lado e ⌈N/2⌉ do outro (o lado com uma a mais é sorteado quando N é ímpar), sem repetição, na ordem da dificuldade escolhida (AC-9.27; padrão: aleatória). (Reescrito v12.0.0: era sempre 10, 5 e 5.)
+- [ ] **AC-6.2** Given há menos de ⌊N/2⌋ notícias jogáveis de um dos lados e pelo menos N no total (dentro dos filtros) When uma partida começa Then ela tem N cards, com todas as notícias do lado menor e o restante completado com o outro lado. (Reescrito v12.0.0.)
+- [ ] **AC-6.3** Given há entre 1 e N−1 notícias jogáveis dentro dos filtros When uma partida começa Then ela usa todas as notícias disponíveis, na ordem da dificuldade escolhida. (Reescrito v12.0.0.)
+- [ ] **AC-6.4** Given não há nenhuma notícia jogável dentro dos filtros de conteúdo When o jogo está na tela de espera Then ela mostra "Nenhuma notícia publicada" (ou, se o banco tem notícias jogáveis fora dos filtros, "Nenhuma notícia para os ajustes atuais: revise Ajustes › Conteúdo") e nenhuma partida pode começar. (Reescrito v12.0.0.)
 
 ### Story 7: Gerenciar as notícias dentro do jogo (reescrito v9.0.0)
 
@@ -185,16 +188,17 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 **Acceptance criteria:**
 
 - [ ] **AC-7.1** Given o app de desktop na tela de espera When o operador abre ☰ › Notícias Then abre o painel "Notícias" com a lista de todas as notícias do banco (id, título, veredito, tema, status), a contagem total e por veredito, e filtros por texto, veredito, tema, dificuldade (v10.1.0) e status.
-- [ ] **AC-7.2** Given o painel Notícias When o operador escolhe "Nova notícia" ou edita uma existente e salva Then a notícia é gravada no banco com os campos `id` (gerado automaticamente na nova), `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras`, `imagem` (opcional), `revisado_por`, `status`, `dificuldade` (opcional, v10.1.0), `titulo_curto` e `fonte_nome` (opcionais, v11.0.0, AC-7.11); `veredito`, `tecnica`, `tema` e `status` só aceitam os valores das listas (`verdadeira`/`falsa`; `fonte`/`data`/`imagem`/`contexto`; `saude`/`ciencia`/`historia`/`tecnologia`/`curiosidades`/`meio-ambiente`; `rascunho`/`aprovada`), e `dificuldade` aceita `facil`/`medio`/`dificil` ou vazio.
+- [ ] **AC-7.2** Given o painel Notícias When o operador escolhe "Nova notícia" ou edita uma existente e salva Then a notícia é gravada no banco com os campos `id` (gerado automaticamente na nova), `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras`, `imagem` (opcional), `revisado_por`, `status`, `dificuldade` (opcional, v10.1.0), `titulo_curto` e `fonte_nome` (opcionais, v11.0.0, AC-7.11), `visivel` (opcional, v12.0.0, AC-7.12); `veredito`, `tecnica`, `tema` e `status` só aceitam os valores das listas (`verdadeira`/`falsa`; `fonte`/`data`/`imagem`/`contexto`; `saude`/`ciencia`/`historia`/`tecnologia`/`curiosidades`/`meio-ambiente`/`politica` (v12.0.0); `rascunho`/`aprovada`), e `dificuldade` aceita `facil`/`medio`/`dificil` ou vazio.
 - [ ] **AC-7.3** Given o editor de uma notícia When falta um campo obrigatório, o `id` é repetido, `fonte_url` não é um link http(s), `status = aprovada` sem `revisado_por`, um campo de lista (inclusive `dificuldade`, quando preenchida) tem valor fora da lista, ou `titulo_curto` passa de 34 caracteres (v11.0.0) Then o editor aponta o campo com o problema e não salva.
 - [ ] **AC-7.4** Given o painel Notícias com notícias selecionadas When o operador escolhe "Apagar" e confirma, ou "Alterar em massa" um campo de lista (`status`, `tema`, `tecnica`) e aplica Then todas as selecionadas são apagadas ou alteradas de uma vez.
 - [ ] **AC-7.5** Given o painel Notícias When o operador escolhe "Importar CSV" e um arquivo no formato de FR-6 Then aparece uma prévia com as linhas novas, as que já existem (mesmo `id`) e as inválidas com o motivo; ao confirmar "Adicionar N", só as novas válidas entram no banco.
 - [ ] **AC-7.6** Given qualquer gravação do banco (salvar, apagar, alterar em massa, importar) When ela termina Then o arquivo anterior foi copiado antes para a pasta de backups (FR-7) e a próxima partida já usa o banco novo, sem reabrir o jogo.
-- [ ] **AC-7.7** Given o banco tem notícias com `status = rascunho` When uma partida é sorteada Then só entram notícias com `status = aprovada`, `fonte_url` e `revisado_por` preenchidos (Princípio 1).
+- [ ] **AC-7.7** Given o banco tem notícias com `status = rascunho` ou `visivel = nao` When uma partida é sorteada Then só entram notícias com `status = aprovada`, `fonte_url` e `revisado_por` preenchidos (Princípio 1) e `visivel` diferente de `nao` (AC-7.12).
 - [ ] **AC-7.8** Given o painel Notícias When o operador escolhe "Exportar CSV" Then o jogo salva uma cópia do banco no formato de FR-6, que abre no Excel.
 - [ ] **AC-7.9** Given o jogo aberto no navegador (versão web) When o operador abre ☰ › Notícias Then aparece o aviso "O gerenciador de notícias está disponível no app de desktop", e o jogo usa o banco embutido.
 - [ ] **AC-7.10** Given o banco de notícias When uma notícia tem a coluna `dificuldade` vazia, ou o CSV (inclusive um arquivo de antes da v10.1.0) não tem essa coluna Then a notícia continua válida e jogável, com a dificuldade vazia; com um valor fora de `facil`/`medio`/`dificil` ela fica inválida (AC-7.3, AC-8.4). No painel Notícias, o editor mostra a dificuldade como lista (Fácil, Médio, Difícil ou vazia) e o filtro "Dificuldade" mostra só as notícias daquela dificuldade (ou só as sem dificuldade). A partir da v10.1.0 o CSV exportado sempre tem a coluna. O sorteio da partida (AC-6.1 a AC-6.3) ainda não usa a dificuldade. (Adicionado v10.1.0.)
 - [ ] **AC-7.11** Given o banco de notícias When uma notícia tem `titulo_curto` (até 34 caracteres) ou `fonte_nome` vazios, ou o CSV (inclusive de antes da v11.0.0) não tem essas colunas Then a notícia continua válida e jogável, e o resumo usa o título cortado e o domínio da fonte (AC-5.8). O editor mostra os dois campos como opcionais; o CSV exportado sempre tem as duas colunas, depois de `dificuldade`. (Adicionado v11.0.0.)
+- [ ] **AC-7.12** Given o banco de notícias When uma notícia tem `visivel = nao` Then ela continua no banco, válida, aparece no painel Notícias e no painel Questões (FR-17) com a marca "Oculta", mas não entra em nenhuma partida (AC-7.7) nem na página das fontes (AC-5.10), até o operador religá-la; `visivel` vazio, `sim` ou a coluna ausente (CSV de antes da v12.0.0) valem como visível. O operador liga e desliga a visibilidade por um interruptor no painel Questões e no editor, e em massa no painel Notícias ("Alterar em massa" passa a aceitar `visivel`). Um valor fora de `sim`/`nao`/vazio deixa a notícia inválida (AC-7.3). O CSV exportado sempre tem a coluna, depois de `fonte_nome`. Só no app de desktop: na versão web o interruptor aparece desabilitado com o aviso de AC-7.9. (Adicionado v12.0.0.)
 
 ### Story 8: Jogar offline no estande (reescrito v9.0.0)
 
@@ -218,10 +222,10 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 **Acceptance criteria:**
 
-- [ ] **AC-9.1** Given o jogo está na tela de espera When o operador pressiona M (ou escolhe ☰ › Configurações, FR-14; até a v8.2.0 era o botão "⚙") Then abre o menu "Configurações" com cinco itens e os valores atuais marcados: "Modo de jogo" (Corpo, Mão, Cabeça), "Tempo por card" (10, 15, 20, 25 ou 30 s), "Som" (Ligado, Desligado), "Foto no resumo" (Ligada, Desligada) e "Tutorial" (Ligado, Desligado; v10.2.0, FR-16).
-- [ ] **AC-9.2** Given o menu "Configurações" está aberto When o operador muda um valor (↑/↓ escolhem o item, ←/→ mudam o valor; ou clique no valor) Then o valor muda na hora, fica guardado, e a tela de espera passa a mostrar o resumo "Modo: <modo> · Tempo por card: <N> s · Som: <ligado|desligado> · Foto: <ligada|desligada> · Tutorial: <ligado|desligado>" (o trecho do tutorial entrou na v10.2.0).
+- [ ] **AC-9.1** Given o jogo está na tela de espera When o operador pressiona M (ou escolhe ☰ › Ajustes, FR-14) Then abre o painel "Ajustes" com os itens agrupados e os valores atuais marcados: **Partida** — "Notícias por partida", "Tempo por card", "Tempo do feedback", "Volta automática do resumo"; **Conteúdo** — "Temas", "Dificuldade"; **Detecção** — "Modo de jogo", "Sensibilidade do gesto", "Tolerância sem pessoa"; **Mídia** — "Som", "Volume", "Foto no resumo", "QR das fontes", "Tutorial"; **Questões** — "Revisar questões" (abre o painel de FR-17) e a contagem "N jogáveis de M no banco (K ocultas)"; e, no fim, "Restaurar padrão". (Reescrito v12.0.0: até a v11.0.0 era o menu "Configurações" com cinco itens.)
+- [ ] **AC-9.2** Given o painel "Ajustes" está aberto When o operador muda um valor (↑/↓ escolhem o item, passando pelos grupos; ←/→ mudam o valor; Espaço liga/desliga um tema; ou clique no valor) Then o valor muda na hora, fica guardado, e a tela de espera passa a mostrar o resumo "Modo: <modo> · <N> notícias · <T> s por card · Som: <ligado|desligado>" e, quando algum ajuste está fora do padrão além desses, "· Ajustes personalizados". (Reescrito v12.0.0.)
 - [ ] **AC-9.3** Given o menu está aberto When o operador pressiona Esc, M ou Enter, ou clica no "✕" do painel (nome acessível "Fechar") Then o menu fecha mantendo os valores escolhidos, e nenhuma partida começa.
-- [ ] **AC-9.4** Given nada foi configurado antes neste notebook When o jogo é aberto Then as configurações são: modo Corpo, 15 s por card, som ligado, foto no resumo ligada e tutorial desligado.
+- [ ] **AC-9.4** Given nada foi ajustado antes neste notebook (ou o operador escolheu "Restaurar padrão", AC-9.30) When o jogo é aberto Then os ajustes são: 10 notícias por partida, 15 s por card, 3 s de feedback, volta automática do resumo desligada, todos os temas, dificuldade "Misturada", modo Corpo, sensibilidade Normal, 10 s de tolerância sem pessoa, som ligado, volume Alto, foto no resumo ligada, QR das fontes ligado e tutorial desligado. (Reescrito v12.0.0.)
 - [ ] **AC-9.5** Given o operador mudou as configurações When o jogo é fechado e reaberto, inclusive sem internet Then as mesmas configurações continuam ativas.
 - [ ] **AC-9.6** Given o jogo não está na tela de espera When o operador pressiona M Then nada acontece: as configurações só mudam entre partidas.
 - [ ] ~~**AC-9.7**~~ (Removido na v10.3.0 por decisão do responsável: no modo Mão o único controle é o swipe, AC-9.20.) Texto anterior: mão direita acima do ombro por ~300 ms = match; mão esquerda = descarte.
@@ -234,12 +238,21 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-9.14** Given o modo Mão ou Cabeça When a tela de calibração ou um card aparece Then as instruções mostram os gestos do modo ativo: Mão — "Arraste a mão para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais" (v10.3.0); Cabeça — "Cabeça para a direita: é verdade · Cabeça para a esquerda: é mentira · Queixo para cima: saiba mais". ("falsa" virou "mentira" na v10.0.0.)
 - [ ] **AC-9.15** Given o modo Mão ou Cabeça e um jogador sentado diante da câmera, com ombros e rosto visíveis When ele fica no centro por 2 s Then a calibração conclui e a partida começa.
 - [ ] **AC-9.16** Given qualquer modo de jogo When o operador usa as setas, Enter ou o mouse/toque Then a entrada alternativa funciona exatamente como em FR-3.
-- [ ] **AC-9.17** Given o tempo por card configurado em N s When um card aparece Then o cronômetro começa em N s e o tempo esgota depois de N s; no menu, ← em 10 s e → em 30 s não mudam o valor.
+- [ ] **AC-9.17** Given o tempo por card configurado em N s When um card aparece Then o cronômetro começa em N s e o tempo esgota depois de N s; o tempo por card vai de 10 a 60 s (10, 15, 20, 25, 30, 45, 60); no painel, ← no menor valor e → no maior não mudam nenhum item. (Reescrito v12.0.0: ia até 30 s.)
 - [ ] **AC-9.18** Given a tela de espera When o menu "Configurações" abre Then ele aparece como um painel encostado na borda direita, com a altura da tela inteira e largura de até 26rem, sobre o restante da tela escurecido; o título "Configurações" e o "✕" ficam no topo do painel, e o botão "▶ Iniciar" continua no mesmo lugar.
 - [ ] ~~**AC-9.19**~~ (Removido na v10.3.0, junto com AC-9.7.) Texto anterior: as duas mãos juntas, abaixo dos ombros, além da linha de um ombro por ~300 ms escolhiam o lado.
 - [ ] **AC-9.20** Given o modo Mão e um card na tela When o jogador levanta uma mão à frente do corpo (punho acima do cotovelo; essa é a mão ativa; com as duas, vale a que está mais longe do meio do corpo) e a arrasta para o **próprio lado direito** Then o card segue a mão (AC-2.10), com a fração = deslocamento do punho a partir do meio do corpo ÷ 1 largura de ombro, e, quando o punho passa de 1 largura de ombro, o card é registrado como "match" na hora e sai pela direita; para o lado esquerdo, como "descarte". O limite de 1 largura de ombro é um ponto de partida, a calibrar no hardware. (Reescrito v10.3.0: era o arraste em até ~0,8 s, um de três jeitos de escolher.)
 - [ ] **AC-9.21** Given o modo Mão ou Cabeça e uma partida iniciada pela calibração When a câmera deixa de detectar a pessoa por qualquer tempo durante o card Then o cronômetro continua correndo, "Volte para o centro" não aparece e a partida não é encerrada por ausência.
 - [ ] **AC-9.22** Given o modo Mão When o jogador acabou de escolher pelo swipe ou de abrir o "saiba mais" com as duas mãos Then nenhuma nova escolha é aceita até a mão ativa voltar para a frente do peito (a menos de 0,5 largura de ombro do meio do corpo) ou não haver mão ativa. (Reescrito v10.3.0.)
+- [ ] **AC-9.23** Given o painel Ajustes When o operador muda "Notícias por partida" (5, 8, 10, 12, 15 ou 20) Then a próxima partida tem esse número de cards, com o equilíbrio de AC-6.1 a AC-6.3. (Adicionado v12.0.0.)
+- [ ] **AC-9.24** Given o painel Ajustes When o operador muda o "Tempo por card" Then vale AC-9.17. (Adicionado v12.0.0.)
+- [ ] **AC-9.25** Given o painel Ajustes When o operador muda o "Tempo do feedback" (3, 5, 8, 10 ou 15 s) Then cada feedback da partida (e do treino) fica na tela por esse tempo, mais a saída do card e a animação do carimbo, que somam (AC-4.9). (Adicionado v12.0.0.)
+- [ ] **AC-9.26** Given o painel Ajustes When o operador muda a "Volta automática do resumo" (Desligada, 30, 60 ou 120 s) Then o resumo se comporta como em AC-5.2. (Adicionado v12.0.0.)
+- [ ] **AC-9.27** Given o painel Ajustes, grupo Conteúdo When o operador desliga ou liga temas (lista dos temas de AC-7.2, cada um com a contagem de notícias jogáveis; pelo menos um fica ligado) ou escolhe a "Dificuldade" — Misturada (aleatória, padrão), Só fácil, Só médio, Só difícil ou Crescente (fáceis primeiro, depois médias, depois difíceis, aleatória dentro de cada nível; sem dificuldade conta como médio) Then o sorteio da próxima partida usa só as notícias jogáveis desses temas e níveis (as sem dificuldade só entram em Misturada e Crescente); a contagem "N jogáveis" do painel e a tela de espera (AC-6.4) refletem os filtros. (Adicionado v12.0.0.)
+- [ ] **AC-9.28** Given o painel Ajustes, grupo Detecção When o operador muda a "Sensibilidade do gesto" (Menor, Normal, Maior) ou a "Tolerância sem pessoa" (5, 10 ou 20 s; só modo Corpo) Then os limiares de distância dos gestos de todos os modos são multiplicados por 1,25 (Menor: exige gesto maior), 1 (Normal) ou 0,8 (Maior), sem mudar os tempos de permanência; e a pausa "Volte para o centro" encerra a partida depois da tolerância escolhida (AC-5.4, AC-5.5). O valor Normal mantém exatamente os limiares atuais. (Adicionado v12.0.0.)
+- [ ] **AC-9.29** Given o painel Ajustes, grupo Mídia When o operador muda "Volume" (Baixo, Médio, Alto) ou desliga o "QR das fontes" Then os sons tocam a 30%, 60% ou 100% do volume atual (Alto = como hoje), e o resumo deixa de mostrar o cartão do QR (AC-5.9), mantendo a lista das notícias (AC-5.8). (Adicionado v12.0.0.)
+- [ ] **AC-9.30** Given o painel Ajustes When o operador escolhe "Restaurar padrão" e confirma Then todos os ajustes voltam aos valores de AC-9.4; o banco de notícias não muda. (Adicionado v12.0.0.)
+- [ ] **AC-9.31** Given o painel Ajustes When o operador escolhe "Revisar questões" Then o painel Ajustes fecha e abre o painel Questões (FR-17) já filtrado por "Rascunho". (Adicionado v12.0.0.)
 
 ### Story 10: Iniciar e sair com um clique (adicionado v2.0.0)
 
@@ -321,6 +334,21 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-15.6** Given um card de treino When ninguém é detectado, ou o jogador faz o gesto de "saiba mais" Then nada muda: o treino não pausa, não encerra por ausência e não tem "saiba mais".
 - [ ] **AC-15.7** Given o arquivo de perfis When ele é carregado Then cada perfil tem `id`, `nome`, `frase`, `veredito`, `explicacao`, `tecnica` e `tema` válidos e o arquivo diz se é rascunho; um perfil pode ter `ilustracao` (opcional, v11.0.0: `perfil-falso-abacaxi` ou `perfil-verdadeiro-caju`, os desenhos "recorte chapado" da prévia v11), e então o card de treino mostra esse desenho numa imagem maior que a do card de notícia; sem ela, a ilustração do `tema`. Um desenho nunca aparece no perfil de outro (o de Seu Caju tem a placa "Banca 14"). Na v11.0.0 o treino tem os 2 perfis da prévia, Abacaxi Perfeito (falso) e Seu Caju (verdadeiro); os 4 perfis do rascunho do agente de notícias ficam no mesmo arquivo, em `perfisReserva`, fora do treino, até a revisão. (Reescrito v11.0.0; a confirmar.)
 
+### Story 16: Ler e revisar as questões disponíveis (adicionado v12.0.0)
+
+**As a** responsável pelo conteúdo e pela depuração do jogo
+**I want** um painel dentro do jogo para ler cada questão como ela aparece, com gabarito e fontes, e revisá-la
+**So that** eu confira o banco, ache problemas e aprove ou oculte questões sem abrir o CSV
+
+**Acceptance criteria:**
+
+- [ ] **AC-16.1** Given a tela de espera When o operador escolhe ☰ › Questões (ou Ajustes › Revisar questões, AC-9.31) Then abre, em tela cheia, o painel "Questões" no estilo do gerenciador do Prova ou Reprova (lista à esquerda, questão aberta à direita), com a contagem: total no banco, jogáveis, ocultas, rascunhos, inválidas, e verdadeiras/falsas entre as jogáveis.
+- [ ] **AC-16.2** Given o painel Questões When o operador escolhe uma questão da lista Then a área da direita mostra a questão como o jogador a vê (imagem ou ilustração, título, descrição; e o "saiba mais"), e abaixo: o gabarito (pílula "Verdade"/"Mentira"), a explicação, a técnica, o tema, a dificuldade, o status, quem revisou, a visibilidade e as fontes: "Fonte:" (verdadeiras) ou "Desmentido por:" (falsas) com `fonte_nome` (ou o domínio) e o link de `fonte_url`, e cada link de `fontes_extras` com o domínio. No app de desktop, os links abrem no navegador do sistema, nunca dentro da janela do jogo.
+- [ ] **AC-16.3** Given o painel Questões When o operador usa os filtros (texto, veredito, tema, dificuldade, status, visibilidade, "Só jogáveis", "Só com problemas") Then a lista mostra só as questões que passam em todos, e a contagem indica quantas estão filtradas.
+- [ ] **AC-16.4** Given uma questão inválida ou não jogável (AC-7.3, AC-7.7) When ela é aberta no painel Then o painel diz por que ela não entra nas partidas (ex.: "Sem revisor", "fonte_url não é um link", "Oculta", "Rascunho"), em linguagem simples.
+- [ ] **AC-16.5** Given o app de desktop e uma questão aberta When o operador usa "Ocultar"/"Mostrar no jogo" (interruptor de visibilidade, AC-7.12), "Aprovar" (pede o nome de quem revisou na primeira vez da sessão e preenche `revisado_por` e `status = aprovada`; só se a questão for válida), "Voltar para rascunho" ou "Editar" (abre o editor de AC-7.2) Then o banco é gravado como em AC-7.6 (com backup) e a lista e as contagens se atualizam. Na versão web, essas ações aparecem desabilitadas com o aviso de AC-7.9 e o painel é só leitura.
+- [ ] **AC-16.6** Given o painel Questões aberto When o operador usa ↑/↓ (questão anterior/próxima na lista), Esc ou o "✕" (fecha e volta à tela de espera) Then o painel responde, e a câmera e as teclas do jogo não chegam à partida enquanto ele estiver aberto (FR-14).
+
 ## Functional Requirements
 
 ### FR-1: Fluxo de estados da partida
@@ -329,9 +357,9 @@ O jogo passa por estes estados: espera → calibração → card → (saiba mais
 
 **Must:**
 - Começar a partida só por ação do operador: Enter ou "▶ Iniciar" na espera (AC-1.6, AC-1.7), ou Enter na calibração (AC-1.8). Com a câmera ativa, a partida só começa depois de 2 s contínuos de calibração, a menos que o operador pule a calibração.
-- Ter o tempo por card configurado (padrão 15 s, FR-9), 3 s de feedback, e 10 s de tolerância sem pessoa no quadro.
+- Ter o tempo por card, o tempo do feedback e a tolerância sem pessoa no quadro configurados em Ajustes (padrões 15 s, 3 s e 10 s, FR-9; até a v11.0.0, fixos 3 s de feedback e 10 s de tolerância).
 - Encerrar a partida a qualquer momento pelo botão "✕ Sair" ou por Esc (FR-10).
-- Manter o resumo na tela até o operador iniciar uma nova partida (Enter).
+- Manter o resumo na tela até o operador iniciar uma nova partida (Enter) ou, com a volta automática ligada, até o tempo escolhido (AC-5.2, AC-9.26).
 - Pausar o cronômetro do card só durante "Volte para o centro", e só no modo Corpo (AC-5.3, AC-9.21); com o "saiba mais" aberto o cronômetro continua correndo.
 - Manter o "saiba mais" aberto até o jogador fechá-lo (gesto ou ↑), fazer uma escolha ou o tempo esgotar; ele não fecha sozinho.
 
@@ -371,7 +399,7 @@ Este é o modo padrão (FR-9). Os modos Mão e Cabeça estão em FR-9.
 - Mostrar o tempo restante só numa barra grande na base da tela, com os segundos dentro (AC-4.6); destacar os últimos 5 s com a barra e o card pulsando na cor de alerta (coral, FR-15) (AC-4.7). (A barra do card saiu na v10.0.0.)
 - Chamar os dois lados de "Verdade" e "Mentira" em toda a interface (os valores do banco continuam `verdadeira`/`falsa`).
 - Mostrar no "saiba mais" o texto expandido da notícia.
-- Mostrar no feedback, para todo resultado: ícone e selo ("Deu match!" + "Acertou!", "Não deu match" + "Errou", "Tempo esgotado"; AC-4.9), veredito, explicação e técnica de checagem.
+- Mostrar no feedback, para todo resultado: o fundo na cor do resultado (verde = acertou; vermelho = errou ou tempo esgotado), o texto do resultado ("Acertou!", "Errou", "Tempo esgotado") no centro com o carimbo do veredito (VERDADE com a estrela, MENTIRA com o triângulo) carimbado por cima (AC-4.9), a explicação e a técnica de checagem. Sem "match" no feedback (v12.0.0).
 - Mostrar todos os textos em português do Brasil.
 - Centralizar o card na vertical da área de jogo (a tela menos a barra de tempo), parado ou saindo (AC-4.5).
 
@@ -383,16 +411,16 @@ Este é o modo padrão (FR-9). Os modos Mão e Cabeça estão em FR-9.
 **Must:**
 - Somar +1 por acerto e 0 por erro ou tempo esgotado.
 - Escolher a mensagem do resumo pela proporção de acertos N/M (AC-5.7): < 0,5, de 0,5 a < 0,8, de 0,8 a < 1, e 1. Assim uma partida com menos de 10 cards usa as mesmas faixas, e "Imune a fake news!" só aparece com todos certos. As mesmas faixas, numeradas de 1 a 4, escolhem o filtro e o selo da foto (AC-13.2, AC-13.8) e a vinheta de fim de partida (AC-11.6), numa única regra em lógica pura (v11.0.0).
-- Sortear os cards conforme AC-6.1 a AC-6.4, sem repetição dentro da partida.
+- Sortear os cards conforme AC-6.1 a AC-6.4, sem repetição dentro da partida, com o número de notícias, os temas e a dificuldade dos Ajustes (AC-9.23, AC-9.27), numa única função de lógica pura.
 
 ### FR-6: Formato do banco de notícias (reescrito v9.0.0)
 
-Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras` (links separados por espaço, opcional), `imagem` (opcional), `revisado_por`, `status`, `dificuldade` (opcional: `facil`, `medio`, `dificil` ou vazia; v10.1.0), `titulo_curto` (opcional, até 34 caracteres; v11.0.0) e `fonte_nome` (opcional: nome do veículo de `fonte_url`, a fonte nas verdadeiras e quem desmentiu nas falsas; v11.0.0).
+Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titulo`, `descricao`, `saiba_mais`, `veredito`, `explicacao`, `tecnica`, `tema`, `fonte_url`, `fontes_extras` (links separados por espaço, opcional), `imagem` (opcional), `revisado_por`, `status`, `dificuldade` (opcional: `facil`, `medio`, `dificil` ou vazia; v10.1.0), `titulo_curto` (opcional, até 34 caracteres; v11.0.0), `fonte_nome` (opcional: nome do veículo de `fonte_url`, a fonte nas verdadeiras e quem desmentiu nas falsas; v11.0.0) e `visivel` (opcional: `sim`, `nao` ou vazia = sim; v12.0.0, AC-7.12).
 
 **Must:**
 - Aceitar separador vírgula ou ponto e vírgula e codificação UTF-8 (com ou sem BOM), para abrir e salvar no Excel.
 - Restringir `veredito`, `tecnica`, `tema` e `status` às listas de AC-7.2, e `dificuldade`, quando preenchida, a `facil`/`medio`/`dificil`.
-- Ler um CSV sem a coluna `dificuldade` (arquivos de antes da v10.1.0) como se ela estivesse vazia (AC-7.10), e sem `titulo_curto` e `fonte_nome` (antes da v11.0.0) do mesmo jeito (AC-7.11).
+- Ler um CSV sem a coluna `dificuldade` (arquivos de antes da v10.1.0) como se ela estivesse vazia (AC-7.10), sem `titulo_curto` e `fonte_nome` (antes da v11.0.0) do mesmo jeito (AC-7.11), e sem `visivel` (antes da v12.0.0) como visível (AC-7.12).
 - Exportar sempre com cabeçalho, UTF-8 com BOM e ponto e vírgula.
 
 ### FR-7: Gerenciador de notícias (reescrito v9.0.0)
@@ -400,7 +428,7 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 **Must:**
 - Oferecer o painel "Notícias" pelo menu ☰ (FR-14), só na tela de espera, com as ações de AC-7.1 a AC-7.8.
 - Validar cada notícia (AC-7.3) ao salvar, importar e carregar o banco; uma notícia inválida nunca entra numa partida.
-- Sortear para as partidas só notícias `aprovada` com `fonte_url` e `revisado_por` (AC-7.7).
+- Sortear para as partidas só notícias `aprovada` com `fonte_url` e `revisado_por` e não ocultas (`visivel` diferente de `nao`) (AC-7.7, AC-7.12).
 - No app de desktop, gravar o banco em `Documentos/Match do Saber/noticias.csv` e, antes de cada gravação, copiar o arquivo anterior para `Documentos/Match do Saber/backups/` com data e hora no nome.
 - Gerar `id` novo no formato `mds-NNNN`, sem repetir os existentes.
 
@@ -417,19 +445,21 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 - Criar o banco local a partir do banco embutido na primeira abertura (AC-8.3) e lê-lo nas seguintes.
 - Manter a versão web (navegador) funcionando com o banco embutido (AC-8.5, AC-7.9).
 
-### FR-9: Configurações do estande — modos acessíveis, tempo e som (reescrito v2.0.0)
+### FR-9: Ajustes do estande (reescrito v2.0.0 e v12.0.0; até a v11.0.0, "Configurações")
 
 **Must:**
-- Oferecer, na tela de espera, o menu "Configurações" (tecla M ou ☰ › Configurações, FR-14), aberto como painel lateral à direita (AC-9.18), com cinco itens:
-  - "Modo de jogo": Corpo (padrão, FR-2), Mão ou Cabeça.
-  - "Tempo por card": 10, 15 (padrão), 20, 25 ou 30 s.
-  - "Som": Ligado (padrão) ou Desligado.
-  - "Foto no resumo": Ligada (padrão) ou Desligada (FR-13).
-  - "Tutorial": Desligado (padrão) ou Ligado (FR-16, v10.2.0).
+- Oferecer, na tela de espera, o painel "Ajustes" (tecla M ou ☰ › Ajustes, FR-14), aberto como painel lateral à direita (AC-9.18, com o título "Ajustes" e rolagem própria quando os itens não cabem na altura), com os itens agrupados (AC-9.1):
+  - Partida: "Notícias por partida" 5, 8, 10 (padrão), 12, 15 ou 20; "Tempo por card" 10, 15 (padrão), 20, 25, 30, 45 ou 60 s; "Tempo do feedback" 3 (padrão), 5, 8, 10 ou 15 s; "Volta automática do resumo" Desligada (padrão), 30, 60 ou 120 s.
+  - Conteúdo: "Temas" (todos ligados por padrão; pelo menos um ligado); "Dificuldade" Misturada (padrão), Só fácil, Só médio, Só difícil ou Crescente (AC-9.27).
+  - Detecção: "Modo de jogo" Corpo (padrão, FR-2), Mão ou Cabeça; "Sensibilidade do gesto" Menor, Normal (padrão) ou Maior; "Tolerância sem pessoa" 5, 10 (padrão) ou 20 s (AC-9.28).
+  - Mídia: "Som" Ligado (padrão) ou Desligado; "Volume" Baixo, Médio ou Alto (padrão); "Foto no resumo" Ligada (padrão) ou Desligada (FR-13); "QR das fontes" Ligado (padrão) ou Desligado (AC-9.29); "Tutorial" Desligado (padrão) ou Ligado (FR-16).
+  - Questões: "Revisar questões" (AC-9.31) e a contagem de jogáveis e ocultas.
+  - "Restaurar padrão", com confirmação (AC-9.30).
 - Navegar no menu com ↑/↓ (item) e ←/→ (valor), ou com clique; fechar com Esc, M, Enter ou o "✕" do painel ("Fechar"), sem iniciar partida.
-- Mostrar na tela de espera o resumo "Modo: <modo> · Tempo por card: <N> s · Som: <ligado|desligado> · Foto: <ligada|desligada> · Tutorial: <ligado|desligado>".
+- Mostrar na tela de espera o resumo de AC-9.2.
 - Aplicar o tempo por card a todos os cards da partida (AC-1.2, AC-4.4, AC-9.17).
-- Guardar as cinco configurações no próprio notebook e reaplicá-las ao reabrir o jogo, inclusive offline; valor ausente ou inválido usa o padrão daquele item.
+- Guardar os ajustes no próprio notebook (armazenamento local do jogo) e reaplicá-los ao reabrir o jogo, inclusive offline; valor ausente ou inválido usa o padrão daquele item; as cinco configurações já guardadas até a v11.0.0 continuam valendo depois da atualização.
+- Manter os valores e a lógica dos ajustes (opções, padrões, leitura e gravação, filtros do sorteio, multiplicador de sensibilidade) em `src/core/`, testáveis sem React.
 - Modo Mão: um único controle, o swipe da mão ativa (punho acima do cotovelo): o card segue a posição horizontal do punho e a escolha acontece quando ele passa de 1 largura de ombro do meio do corpo, a calibrar no hardware (AC-9.20); as duas mãos acima dos ombros (~500 ms) = saiba mais; entre duas escolhas, a mão volta à frente do peito ou baixa (AC-9.22). Medir as distâncias em larguras de ombro, para valer perto ou longe da câmera. (Reescrito v10.3.0.)
 - Nos modos Mão e Cabeça, ignorar a ausência da pessoa durante o card (AC-9.21); a calibração continua exigindo a pessoa no centro.
 - Modo Cabeça: inclinar a cabeça para o próprio lado direito (~15°, medido em relação à calibração, ~300 ms) = match; para o esquerdo = descarte; levantar o queixo (~500 ms) = saiba mais; exigir voltar a cabeça ao centro entre duas escolhas; o card só acompanha levemente a inclinação até a escolha (AC-2.3, AC-2.10, AC-9.13).
@@ -440,7 +470,8 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 
 **Must not:**
 - Mudar qualquer configuração durante uma partida.
-- Guardar no notebook qualquer coisa além das cinco configurações e do banco de notícias com seus backups (FR-7).
+- Guardar no notebook qualquer coisa além dos ajustes de FR-9 e do banco de notícias com seus backups (FR-7).
+- Pedir senha ou PIN para abrir os Ajustes (decisão do responsável, v12.0.0).
 - Usar outra fonte de imagem além da câmera já autorizada, nem enviar imagens para fora do notebook.
 
 ### FR-10: Iniciar e sair (adicionado v2.0.0)
@@ -500,7 +531,7 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 ### FR-14: Menu ☰ do operador (adicionado v9.0.0)
 
 **Must:**
-- Mostrar na tela de espera um botão ☰ discreto num canto (nome acessível "Menu"), que abre uma lista com: "Notícias" (FR-7), "Configurações" (FR-9), "Diagnóstico" (liga e desliga o painel de FR-12, AC-12.7) e "Tela cheia".
+- Mostrar na tela de espera um botão ☰ discreto num canto (nome acessível "Menu"), que abre uma lista com: "Questões" (FR-17, v12.0.0), "Notícias" (FR-7), "Ajustes" (FR-9; até a v11.0.0, "Configurações"), "Diagnóstico" (liga e desliga o painel de FR-12, AC-12.7) e "Tela cheia".
 - Fechar o menu com Esc, com um clique fora dele ou ao escolher um item.
 - Ignorar a câmera (presença e gestos) enquanto o menu ou um painel aberto por ele estiver aberto.
 
@@ -515,9 +546,10 @@ Referências: `docs/visual/previa.html` (revisão 3, aprovada na v10.0.0) e `doc
 **Must:**
 - Usar só a fonte Poppins, servida pelo próprio jogo (funciona offline), e as cores dos tokens do design system: tema Claro (azul e amarelo) na espera e no resumo; tema Sóbrio (fundo noite) no card e no feedback.
 - Marcar "Verdade" com menta e estrela, e "Mentira" com coral e triângulo; o coral também é a cor de alerta dos últimos 5 s; o botão "Iniciar" é amarelo.
+- No feedback (v12.0.0), o fundo usa uma cor de acerto (verde) e uma de erro (vermelho), lidas sem ambiguidade como verde e vermelho por quem está a 2 m; se a menta e o coral dos tokens não forem lidos assim, o Agente Visual propõe dois tokens novos (`--cn-acerto`, `--cn-erro`) derivados do design system. O carimbo do veredito (AC-4.9) mantém menta/estrela e coral/triângulo e precisa ficar legível sobre os dois fundos.
 - Mostrar, no card sem imagem, a ilustração da notícia ou do tema (FR-4): as imagens desenhadas pelo projeto seguem o estilo "recorte chapado" da prévia v11 (cor chapada, fundo na cor do tema, uma forma do design system cortada na borda, personagem de formas simples com contorno noite, sombra chapada, acentos só com os marcadores, sem pessoas reais, sem texto nas imagens de card, ilustração nunca imita prova); notícias com foto real continuam permitidas.
 - Decorar a tela de espera só com os anéis do design system, posicionados de modo que os cortes de cada desenho fiquem nas bordas da tela.
-- Manter o foco na notícia e no gesto, usando a linguagem de app de namoro só onde ela ajuda a ler o gesto e o resultado (v11.0.0; até a v10.3.1 não havia nenhuma forma decorativa no card, no feedback e no resumo): no card, a pilha de cards atrás (AC-2.12), os botões redondos que acendem com a fração do gesto (AC-2.11) e o carimbo (AC-2.10b); no feedback, os ícones de acerto, erro e tempo esgotado (AC-4.9); no resumo, a folha amarela atrás do polaroid, o filtro e o selo da faixa (AC-13.2, AC-13.8) e os marcadores de acerto e erro da lista (AC-5.8). Nenhuma outra forma decorativa entra no card, no feedback e no resumo.
+- Manter o foco na notícia e no gesto, usando a linguagem de app de namoro só onde ela ajuda a ler o gesto e o resultado (v11.0.0; até a v10.3.1 não havia nenhuma forma decorativa no card, no feedback e no resumo): no card, a pilha de cards atrás (AC-2.12), os botões redondos que acendem com a fração do gesto (AC-2.11) e o carimbo (AC-2.10b); no feedback, só o carimbo do veredito (AC-4.9; os ícones de acerto, erro e tempo esgotado saíram na v12.0.0); no resumo, a folha amarela atrás do polaroid, o filtro e o selo da faixa (AC-13.2, AC-13.8) e os marcadores de acerto e erro da lista (AC-5.8). Nenhuma outra forma decorativa entra no card, no feedback e no resumo.
 - Manter o card e o texto da notícia nos tamanhos da v10.0.0 (o card cabe em 1366×768 com o texto máximo, FR-4); as camadas da pilha, o carimbo e os botões não empurram o card nem mudam a centralização (AC-4.5).
 - Desligar com `prefers-reduced-motion` as transições e animações decorativas (a entrada do carimbo e do ícone); o movimento do card comandado pelo jogador continua (AC-2.10f).
 
@@ -537,6 +569,21 @@ Referências: `docs/visual/previa.html` (revisão 3, aprovada na v10.0.0) e `doc
 **Must not:**
 - Contar o treino no placar, no resumo, na foto ou no sorteio (AC-15.4).
 - Usar cronômetro, pausa por ausência ou "saiba mais" no treino (AC-15.6).
+
+### FR-17: Painel Questões (adicionado v12.0.0)
+
+Referência de estilo: gerenciador de questões do Prova ou Reprova (https://github.com/ProjetoConectandoUFC/prova-ou-reprova, branch `develop`, `dist/editor-questoes.js` e `dist/menu-apresentador.js`), com a identidade do Conectando (FR-15).
+
+**Must:**
+- Abrir pelo ☰ (FR-14) ou por Ajustes › Revisar questões, só na tela de espera, em tela cheia, com as funções de AC-16.1 a AC-16.6.
+- Ler do mesmo banco das partidas (`RepositorioNoticias`) e usar a mesma validação e a mesma regra de jogável (`jogaveis`), para que o painel nunca diga que uma questão entra no jogo quando ela não entra.
+- Mostrar todas as fontes de cada questão com o link inteiro acessível (copiar ou abrir fora do jogo).
+- Gravar só pelo mesmo caminho do gerenciador (FR-7), com backup.
+
+**Must not:**
+- Aparecer durante calibração, partida, feedback ou resumo.
+- Abrir sites dentro da janela do jogo.
+- Mudar o conteúdo da questão sem passar pelo editor (AC-7.2) e sua validação (AC-7.3).
 
 ## Non-Functional Requirements
 
