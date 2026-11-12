@@ -1,6 +1,6 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
-**Status:** Draft (v12.0.0 aguardando aprovação do responsável)
+**Status:** Approved (v12.0.0 aprovada pelo responsável em 2026-11-12)
 **Version:** 12.0.0
 **Created:** 2026-10-26
 **Last Updated:** 2026-11-12
