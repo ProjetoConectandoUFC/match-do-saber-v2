@@ -19,7 +19,7 @@ async function jogarAteOResumo(page: Page) {
     await page.keyboard.press(i % 3 === 0 ? 'ArrowLeft' : 'ArrowRight');
     await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   }
-  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible();
+  await expect(page.getByText(/^\d+ de 10$/)).toBeVisible({ timeout: 10_000 }); // o último feedback: saída + carimbada + 3 s (v12.0.0)
 }
 
 const caixa = async (l: Locator) => (await l.boundingBox())!;
