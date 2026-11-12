@@ -1,5 +1,9 @@
 # Match do Saber
 
+## Para revisar
+
+- **2026-11-12 · `001-v12-lote-3-politica` · lote 3 de notícias de política (só conteúdo).** 20 notícias novas (`mds-0023` a `mds-0042`), 10 verdadeiras e 10 falsas, todas em `rascunho`, sem nomes de políticos ou partidos no card. Como revisar: ler `docs/noticias/lotes/2026-11-12-lote-3.json` e os 7 pontos apontados pelo gestor em `.claude/memory/expediente/2026-11-12.md` (o principal: `mds-0023` descreve um discurso real com veredito "falsa"). O tema `politica` só funciona no jogo depois da v12. PR: abrir em <https://github.com/ProjetoConectandoUFC/match-do-saber-v2/compare/develop...001-v12-lote-3-politica>.
+
 Jogo educativo de checagem de notícias do projeto Conectando (UFC), feito para estandes de eventos. Um notebook com webcam mostra uma notícia por vez, no estilo de um "match": o jogador, de pé a uns 1,5–2 m, pende o corpo para a **direita** se acha que a notícia é **verdade** e para a **esquerda** se acha que é **mentira**. Depois de cada escolha o jogo mostra o veredito, a explicação e a técnica de checagem usada (fonte, data, imagem ou contexto). Uma partida tem até 10 cards, e no fim aparece o placar.
 
 - Público: estudantes do ensino médio e jovens adultos (muitos menores de idade).
