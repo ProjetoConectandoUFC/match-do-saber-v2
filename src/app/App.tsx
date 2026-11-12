@@ -5,7 +5,7 @@ import { avisoSemNoticias, contarConteudo } from '../core/contagem';
 import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
 import { enderecoFontes, linhasDoResumo } from '../core/fontesRodada';
 import { URL_PUBLICA } from './enderecoPublico';
-import { TEMPOS, duracaoFeedbackMs, pontos, type Estado } from '../core/partida';
+import { TEMPOS, cardSaindo, pontos, type Estado } from '../core/partida';
 import { filtrarConteudo } from '../core/sorteio';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
@@ -122,7 +122,6 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   // AC-2.10: o card acompanha levemente a inclinação, direto no DOM (sem re-renderizar a cada leitura).
   useInclinacaoCard({ inclinacaoRef, estado, pausado, cardRef, cardSaindoRef });
 
-  const tempoFeedbackMs = duracaoFeedbackMs({ tempoFeedbackMs: cfg.ajustes.feedbackS * 1000 });
   let tela;
   switch (estado.tela) {
     case 'espera':
@@ -166,8 +165,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       break;
     case 'feedback': {
       const noticia = estado.partida.cards[estado.indice]!;
-      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, o tempo do feedback (AC-9.25).
-      const saindo = estado.resposta !== null && estado.restanteMs > tempoFeedbackMs;
+      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, o resultado, com a duração gravada no estado (AC-9.25).
+      const saindo = cardSaindo(estado);
       tela = saindo ? (
         <TelaCard
           key={estado.indice}
@@ -193,7 +192,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       const perfil = PERFIS_TUTORIAL[estado.passo]!;
       const noticia = perfilComoNoticia(perfil);
       const treino = { passo: estado.passo, total: PERFIS_TUTORIAL.length, ilustracao: perfil.ilustracao };
-      const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > tempoFeedbackMs;
+      const saindo = cardSaindo(estado);
       tela = estado.tela === 'tutorialFeedback' && !saindo ? (
         <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.ajustes.modo} treino={treino} />
       ) : (

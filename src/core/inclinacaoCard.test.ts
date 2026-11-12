@@ -131,19 +131,26 @@ describe('situacaoDoCard (AC-2.10)', () => {
   });
 
   it('saída do card escolhido mantém a posição; o resultado do feedback e o tempo esgotado voltam ao centro', () => {
-    const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null) =>
-      ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, resposta });
+    const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null, resultadoMs: number = TEMPOS.feedbackMs) =>
+      ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, resposta, resultadoMs });
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs + TEMPOS.saidaMs, 'verdadeira'), false)).toBe('saindo');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs, 'falsa'), false)).toBe('centro');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs, null), false)).toBe('centro');
+    // AC-9.25: com o feedback em 8 s, a saída é só nos primeiros `saidaMs` (o limite é o do estado, não 3 s fixos).
+    expect(situacaoDoCard(fb(8000 + TEMPOS.saidaMs, 'falsa', 8000), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(8000, 'falsa', 8000), false)).toBe('centro');
+    expect(situacaoDoCard(fb(5000, 'falsa', 8000), false)).toBe('centro');
   });
 
   it('v10.2.0: o card de treino segue a leitura e sai da mesma forma; o feedback de treino volta ao centro', () => {
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, false)).toBe('jogando');
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, true)).toBe('centro');
-    const fb = (restanteMs: number) => ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, resposta: 'falsa' as const });
+    const fb = (restanteMs: number, resultadoMs: number = TEMPOS.feedbackMs) =>
+      ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, resposta: 'falsa' as const, resultadoMs });
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs + 1), false)).toBe('saindo');
     expect(situacaoDoCard(fb(TEMPOS.feedbackMs), false)).toBe('centro');
+    expect(situacaoDoCard(fb(5000, 8000), false)).toBe('centro');
+    expect(situacaoDoCard(fb(8001, 8000), false)).toBe('saindo');
   });
 
   it('outras telas ficam no centro', () => {

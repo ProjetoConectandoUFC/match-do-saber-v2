@@ -34,7 +34,9 @@ describe('AC-9.25: tempo do feedback configurado', () => {
   it('depois de uma escolha, a saída do card soma ao tempo configurado (fronteira)', () => {
     const c = ctx({ tempoFeedbackMs: 8000 });
     const fb = rodar(emCard(c), [escolha('falsa')], c);
-    expect(fb).toMatchObject({ tela: 'feedback', restanteMs: 8000 + TEMPOS.saidaMs });
+    // `resultadoMs`: quanto dura o resultado, para som, inclinação e tela saberem quando a saída do card acaba.
+    expect(fb).toMatchObject({ tela: 'feedback', restanteMs: 8000 + TEMPOS.saidaMs, resultadoMs: 8000 });
+    expect(rodar(emCard(c), [tick(TEMPOS.cardMs)], c)).toMatchObject({ tela: 'feedback', restanteMs: 8000, resultadoMs: 8000 });
     expect(rodar(fb, [tick(8000 + TEMPOS.saidaMs - 1)], c).tela).toBe('feedback');
     expect(rodar(fb, [tick(8000 + TEMPOS.saidaMs)], c)).toMatchObject({ tela: 'card', indice: 1 });
   });
@@ -51,7 +53,7 @@ describe('AC-9.25: tempo do feedback configurado', () => {
     const treino: PerfilTutorial[] = [{ id: 't1', nome: 't1', frase: '', veredito: 'falsa', explicacao: '', tecnica: 'imagem', tema: 'curiosidades' }];
     const c = ctx({ tempoFeedbackMs: 5000, tutorial: treino });
     const fb = rodar(ESTADO_INICIAL, [enter, enter, escolha('falsa')], c);
-    expect(fb).toMatchObject({ tela: 'tutorialFeedback', restanteMs: 5000 + TEMPOS.saidaMs });
+    expect(fb).toMatchObject({ tela: 'tutorialFeedback', restanteMs: 5000 + TEMPOS.saidaMs, resultadoMs: 5000 });
     expect(rodar(fb, [tick(5000 + TEMPOS.saidaMs - 1)], c).tela).toBe('tutorialFeedback');
     expect(rodar(fb, [tick(5000 + TEMPOS.saidaMs)], c).tela).toBe('card');
   });

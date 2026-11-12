@@ -29,12 +29,13 @@ export type Estado =
   | { tela: 'calibracao'; centradoMs: number; ausenteMs: number }
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
-  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null }
+  // `resultadoMs` (v12.0.0): quanto dura o resultado (AC-9.25), gravado ao entrar; enquanto `restanteMs` for maior, o card está saindo.
+  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null; resultadoMs: number }
   // `decorridoMs`: só com a volta automática ligada (AC-5.2, AC-9.26, v12.0.0).
   | { tela: 'resumo'; partida: Partida; decorridoMs?: number }
   // v10.2.0 (FR-16): treino antes da partida; `passo` indexa `Contexto.tutorial`. Sem cronômetro (AC-15.6).
   | { tela: 'tutorial'; passo: number; entrada: Entrada }
-  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; resposta: Veredito };
+  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; resposta: Veredito; resultadoMs: number };
 
 export type Evento =
   | { tipo: 'tick'; dtMs: number; presenca: Presenca | null }
@@ -92,6 +93,7 @@ function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null, ctx: 
     // Escolha: o card sai antes (saidaMs) e o resultado ainda fica 3 s inteiros (AC-4.1/AC-4.2).
     restanteMs: resposta === null ? duracaoFeedbackMs(ctx) : duracaoFeedbackMs(ctx) + TEMPOS.saidaMs,
     resposta,
+    resultadoMs: duracaoFeedbackMs(ctx),
   };
 }
 
@@ -157,7 +159,10 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       // AC-15.5: Enter pula o treino. AC-15.6: sem cronômetro, ausência nem "saiba mais".
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
       if (evento.tipo !== 'escolha') return estado;
-      return { ...estado, tela: 'tutorialFeedback', restanteMs: duracaoFeedbackMs(ctx) + TEMPOS.saidaMs, resposta: evento.resposta };
+      return {
+        ...estado, tela: 'tutorialFeedback', restanteMs: duracaoFeedbackMs(ctx) + TEMPOS.saidaMs, resposta: evento.resposta,
+        resultadoMs: duracaoFeedbackMs(ctx),
+      };
     }
     case 'tutorialFeedback': {
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
@@ -170,6 +175,16 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
         : iniciarPartida(ctx, estado.entrada);
     }
   }
+}
+
+/**
+ * Depois de uma escolha, os primeiros `TEMPOS.saidaMs` do feedback (e do feedback de treino) são a saída do card;
+ * depois vem o resultado, que dura `resultadoMs` (AC-4.1, AC-9.25). Som, inclinação e tela usam esta mesma regra.
+ */
+export function cardSaindo(estado: Estado): boolean {
+  if (estado.tela === 'feedback') return estado.resposta !== null && estado.restanteMs > estado.resultadoMs;
+  if (estado.tela === 'tutorialFeedback') return estado.restanteMs > estado.resultadoMs;
+  return false;
 }
 
 /** O centro do jogador é medido ao sair da calibração (FR-2), para o card ou, com o tutorial, para o treino. */
