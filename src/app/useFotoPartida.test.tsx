@@ -114,6 +114,16 @@ describe('useFotoPartida (FR-13)', () => {
     expect(result.current).toBeNull();
   });
 
+  it('AC-13.4 (v12.0.1): o resumo fechado pela volta automática (AC-5.2) apaga a foto', () => {
+    const capturar = vi.fn(() => FOTO);
+    const { result, rerender } = montar(true, capturar);
+    jogar(rerender);
+    rerender({ estado: { tela: 'resumo', partida, decorridoMs: 29000 } });
+    expect(result.current).toBe(FOTO);
+    rerender({ estado: espera });
+    expect(result.current).toBeNull();
+  });
+
   it('AC-13.4: partida encerrada antes do resumo (Esc no card 7) não leva a foto adiante', () => {
     const capturar = vi.fn(() => FOTO);
     const { result, rerender } = montar(true, capturar);
