@@ -99,6 +99,30 @@ describe('AC-5.2/AC-9.26: volta automática do resumo', () => {
     const c = ctx({ voltaResumoMs: 30000 });
     expect(rodar(resumo(c), [tick(29000), enter], c).tela).toBe('calibracao');
   });
+
+  // Fronteira pedida pelo gestor na revisão da Fase 43: o `decorridoMs` do resumo não pode vazar para a partida seguinte.
+  it.each([true, false])('Enter aos 29 s (câmera ativa: %s): a nova partida não é cortada nem volta à espera', (cameraAtiva) => {
+    const c = ctx({ voltaResumoMs: 30000, cameraAtiva });
+    let s = rodar(resumo(c), [tick(29000), enter], c);
+    expect(s).not.toHaveProperty('decorridoMs');
+    if (cameraAtiva) {
+      expect(s.tela).toBe('calibracao');
+      s = rodar(s, [tick(1000), tick(1000)], c); // calibra
+    }
+    expect(s).toMatchObject({ tela: 'card', indice: 0 });
+    // Bem mais que o 1 s que faltava ao resumo: a partida segue, card a card.
+    s = rodar(s, [tick(5000), tick(5000)], c);
+    expect(s).toMatchObject({ tela: 'card', indice: 0 });
+    for (let i = 0; i < 6; i++) {
+      expect(s).toMatchObject({ tela: 'card', indice: i });
+      s = rodar(s, [escolha('falsa'), tick(TEMPOS.saidaMs + duracaoFeedbackMs(c))], c);
+    }
+    // Chegou ao resumo de novo: o contador começa do zero.
+    expect(s.tela).toBe('resumo');
+    expect(s).not.toHaveProperty('decorridoMs');
+    expect(rodar(s, [tick(29999)], c).tela).toBe('resumo');
+    expect(rodar(s, [tick(29999), tick(1)], c)).toEqual(ESTADO_INICIAL);
+  });
 });
 
 describe('AC-9.23/AC-9.27: o sorteio usa os Ajustes', () => {
