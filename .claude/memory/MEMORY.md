@@ -5,5 +5,5 @@
 - [Estado v10](estado-v10.md) — estado até 2026-11-11 (v11.0.0 na main, develop recriada, Pages desativado, npm install após pull, audit); comece por aqui
 - [Git flow](git-flow.md) — repo match-do-saber-v2; tudo via develop com PR aprovado pelo responsável; cada agente na sua branch
 - [Agentes](agentes.md) — agentes de notícias, visual e mecânico e como orquestrá-los
-- [Expediente 2026-11-12](expediente/2026-11-12.md) — trabalho de 11/11 perdido, develop recriada, Electron consertado, spec v12.0.0 em Draft com 15 problemas apontados, lote 3 (política) em andamento
+- [Expediente 2026-11-12](expediente/2026-11-12.md) — trabalho de 11/11 perdido, develop recriada, Electron consertado, spec v12.0.0 em Draft com 15 problemas apontados, lote 3 (política) em andamento; Fase 42 (feedback por resultado e carimbo) conferida, com o ensaio de merge contra a 001-v12-ajustes
 - [Status do MVP e Fase 7](mvp-status-fase7.md) — histórico até a v8.2.0 e verificações de hardware pendentes
