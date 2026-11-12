@@ -8,13 +8,17 @@ import s from './App.module.css';
  * com o nome do tema. Composições da prévia aprovada (`docs/visual/previa.html`), num painel de 552 × 156 unidades de tela;
  * as formas usam o viewBox original e o painel as recorta nas bordas dele.
  */
-const COR: Record<Tema, string> = {
+// v12.0.0 (AC-7.2): `politica` entra aqui antes de entrar em `TEMAS` (Fase 43.6); `TemaIlustrado` vira `Tema` depois.
+type TemaIlustrado = Tema | 'politica';
+
+const COR: Record<TemaIlustrado, string> = {
   saude: 'var(--cn-rosa)',
   ciencia: 'var(--cn-ceu)',
   historia: 'var(--cn-laranja)',
   tecnologia: 'var(--cn-azul-medio)',
   curiosidades: 'var(--cn-roxo)',
   'meio-ambiente': 'var(--cn-turquesa)',
+  politica: 'var(--cn-indigo)',
 };
 
 const BRANCO = '#fff', CREME = 'var(--cn-creme)', NOITE = 'var(--cn-noite)', AMARELO = 'var(--cn-amarelo)';
@@ -36,7 +40,7 @@ function Traco({ children }: { children: ReactNode }) {
 }
 const tracejado = { fill: 'none', stroke: 'var(--cn-noite)', strokeWidth: 3 } as const;
 
-const COMPOSICAO: Record<Tema, () => ReactNode> = {
+const COMPOSICAO: Record<TemaIlustrado, () => ReactNode> = {
   saude: () => (
     <>
       <P id="anel-b" x={-30} y={-40} w={150} cor={BRANCO} />
@@ -84,6 +88,21 @@ const COMPOSICAO: Record<Tema, () => ReactNode> = {
       <P id="marca-estrela-4" x={250} y={30} w={30} cor={CREME} />
       <P id="marca-estrela-4" x={340} y={110} w={26} cor={CREME} />
       <P id="marca-estrela-5" x={290} y={100} w={30} cor={CREME} />
+    </>
+  ),
+  // Plenário: as cadeiras em semicírculo (estrelas de 5 pontas) e o arco amarelo; a estrela de 4 pontas no centro.
+  politica: () => (
+    <>
+      <P id="deco-arco" x={462} y={-58} w={130} cor={AMARELO} />
+      <P id="marca-estrela-5" x={222} y={115} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={235} y={68} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={270} y={33} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={317} y={20} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={365} y={33} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={399} y={68} w={26} cor={CREME} />
+      <P id="marca-estrela-5" x={412} y={115} w={26} cor={CREME} />
+      <P id="marca-estrela-4" x={315} y={84} w={30} cor={AMARELO} />
+      <Traco><line x1="190" y1="142" x2="470" y2="142" {...tracejado} stroke="var(--cn-creme)" strokeDasharray="10 8" /></Traco>
     </>
   ),
   'meio-ambiente': () => (

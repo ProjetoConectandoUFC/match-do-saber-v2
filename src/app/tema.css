@@ -24,6 +24,7 @@
   --cn-roxo: #a740b2;
   --cn-turquesa: #24c0c0;
   --cn-ceu: #3bb8ff;
+  --cn-indigo: #2f3470; /* v12.0.0: cor de ilustração do tema politica (AC-7.2) */
   /* v12.0.0 (FR-15, AC-4.9): cores do resultado no feedback, derivadas do design system, que não tem verde. */
   /* Acerto: o teal (#309f9f, HSL 180° 54% 40%) girado para o verde (HSL 140° 54% 48%); texto noite 6,8:1. */
   --cn-acerto: #38bc64;
