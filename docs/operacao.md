@@ -17,6 +17,13 @@
 6. Também dá para editar `Documentos/Match do Saber/noticias.csv` no Excel (colunas `id;titulo;descricao;saiba_mais;veredito;explicacao;tecnica;tema;fonte_url;fontes_extras;imagem;revisado_por;status;dificuldade`; a `dificuldade`, da v10.1.0, é opcional — `facil`, `medio`, `dificil` ou vazia — e um CSV antigo sem ela continua valendo). Feche o Excel antes de salvar pelo painel e aperte Ctrl+R no jogo para ler o arquivo novo; linhas inválidas aparecem no painel com o motivo e não entram nas partidas.
 7. Na versão web (navegador), ☰ › Notícias só avisa que o gerenciador está no app de desktop.
 
+## Questões (revisão e depuração, v12.0.0)
+1. Na tela de espera: ☰ › **Questões**, ou Ajustes (M) › **Revisar questões** (abre já filtrado por Rascunho).
+2. Lista à esquerda, questão aberta à direita: o card como o jogador vê, o "saiba mais", o gabarito (Verdade/Mentira), explicação, técnica, tema, dificuldade, status, quem revisou, visibilidade e as fontes com o link inteiro ("Copiar" copia o link). No app de desktop o link abre no navegador do sistema, nunca na janela do jogo.
+3. A contagem diz quantas há no banco, jogáveis, ocultas, rascunhos e inválidas; os filtros (texto, abas de tema, veredito, dificuldade, status, visibilidade, "Só jogáveis", "Só com problemas") mostram "Mostrando N de M". Uma questão fora do jogo diz por quê (ex.: "Sem revisor", "Rascunho", "Oculta").
+4. ↑/↓ passam para a questão anterior/próxima; Esc ou ✕ fecham. Com o painel aberto, câmera e teclas não chegam ao jogo.
+5. Só no app de desktop: "Ocultar"/"Mostrar no jogo", "Aprovar" (pede o nome de quem revisou na primeira vez; o nome fica só na memória até fechar o jogo; só aprova questão sem problemas), "Voltar para rascunho" e "Editar" (o mesmo editor do painel Notícias). Cada gravação faz backup antes, como no painel Notícias. Na versão web o painel é só leitura.
+
 ## No dia do evento (operador)
 1. Abrir o app de desktop pelo atalho (funciona sem internet). Na versão web: com internet, abrir o jogo no Chrome do notebook (ou pelo ícone instalado) e aguardar a tela de espera, o que baixa a versão mais recente para uso offline; para instalar, ícone de instalar na barra de endereço › Instalar.
 2. Conferir que o jogo mostra "Aperte ▶ Iniciar…" (câmera ativa); na web, permitir a câmera quando o navegador pedir.
