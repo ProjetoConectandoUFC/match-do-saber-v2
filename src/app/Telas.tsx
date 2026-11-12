@@ -1,4 +1,4 @@
-import { useRef, type ReactNode, type RefObject } from 'react';
+import { useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import {
   CONFIG_PADRAO, DICA_GESTOS, DICA_SAIBA_MAIS, ITENS_CONFIG, OPCOES, ROTULO_ITEM, resumoConfiguracoes, rotuloValor,
   type Configuracoes, type ModoJogo,
@@ -6,21 +6,19 @@ import {
 import type { AncorasRosto } from '../core/ancorasRosto';
 import { FAIXAS, faixaDeAcertos, type Faixa } from '../core/faixas';
 import type { LinhaResumo } from '../core/fontesRodada';
-import { mensagemResumo, type Resultado } from '../core/partida';
+import { TEMPOS, mensagemResumo, type Resultado } from '../core/partida';
 import { feedbackTutorial, type IlustracaoPerfil } from '../core/tutorial';
 import { TECNICA_ROTULO, type Noticia, type Veredito } from '../core/types';
 import { FiltroFoto } from './FiltroFoto';
 import { Forma, type IdForma } from './Forma';
-import { IconeFeedback, type IdIcone } from './IconesFeedback';
 import { IlustracaoTema, corDoTema } from './IlustracaoTema';
 import { ilustracaoDaNoticia, ilustracaoDoPerfil } from './ilustracoes';
 import { QrCode } from './QrCode';
 import type { StatusCamera } from './useJogo';
 import s from './App.module.css';
 
-const SELO: Record<Resultado, string> = { acerto: 'Acertou!', erro: 'Errou', tempo: 'Tempo esgotado' };
-/** Frase de app de namoro antes do selo (AC-4.9, v11.0.0); o tempo esgotado não tem match. */
-const MATCH: Record<Resultado, string | null> = { acerto: 'Deu match!', erro: 'Não deu match', tempo: null };
+/** Texto do resultado (AC-4.1 a AC-4.3): sempre na tela, para não depender só da cor (AC-4.9). */
+const TEXTO_RESULTADO: Record<Resultado, string> = { acerto: 'Acertou!', erro: 'Errou', tempo: 'Tempo esgotado' };
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(' ');
 const src = (caminho: string) => (/^(https?:|data:)/.test(caminho) ? caminho : `${import.meta.env.BASE_URL}${caminho}`);
 
@@ -190,21 +188,33 @@ export function BarraTempo({ restanteMs, totalMs, alerta }: { restanteMs: number
 }
 
 /**
- * Rótulo do lado para onde o card está indo (AC-2.10b): o carimbo VERDADE/MENTIRA (v11.0.0), só texto, no alto
- * do card; a opacidade é escrita por `useInclinacaoCard` a cada quadro. `carimbado`: aceso por inteiro na saída
- * do card (AC-2.12), por qualquer entrada.
+ * Carimbo VERDADE/MENTIRA (AC-2.10b, AC-4.9; v12.0.0: o mesmo no card e no feedback): cheio, menta com a estrela ou coral
+ * com o triângulo, o marcador num disco noite; a caixa alta vem do CSS.
  */
-function RotuloLado({ lado, carimbado }: { lado: 'mentira' | 'verdade'; carimbado: boolean }) {
+function Carimbo({ lado, className, style, ...dados }: {
+  lado: 'mentira' | 'verdade';
+  className?: string;
+  style?: CSSProperties;
+  'data-rotulo-lado'?: string;
+  'data-carimbo'?: string;
+  'aria-hidden'?: 'true';
+}) {
   const verdade = lado === 'verdade';
   return (
-    <span
-      data-rotulo-lado={lado}
-      aria-hidden="true"
-      className={cx(s.carimbo, verdade ? s.carimboVerdade : s.carimboMentira, carimbado && s.carimbado)}
-      style={{ opacity: 0 }}
-    >
+    <span {...dados} className={cx(s.carimbo, verdade ? s.carimboVerdade : s.carimboMentira, className)} style={style}>
+      <span className={s.carimboDisco} aria-hidden="true">{verdade ? <MarcaVerdade largura={20} /> : <MarcaMentira largura={20} />}</span>
       {verdade ? 'Verdade' : 'Mentira'}
     </span>
+  );
+}
+
+/**
+ * Rótulo do lado para onde o card está indo (AC-2.10b): o carimbo, no alto do card; a opacidade é escrita por
+ * `useInclinacaoCard` a cada quadro. `carimbado`: aceso por inteiro na saída do card (AC-2.12), por qualquer entrada.
+ */
+function RotuloLado({ lado, carimbado }: { lado: 'mentira' | 'verdade'; carimbado: boolean }) {
+  return (
+    <Carimbo lado={lado} data-rotulo-lado={lado} aria-hidden="true" className={cx(s.carimboCard, carimbado && s.carimbado)} style={{ opacity: 0 }} />
   );
 }
 
@@ -314,39 +324,37 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
 }
 
 /**
- * Ícone e selo do feedback (AC-4.9, v11.0.0): o ícone feito com as formas do design system e, no selo, a frase do
- * match ("Deu match!"/"Não deu match") e o resultado como texto próprio ("Acertou!", "Errou", "Tempo esgotado").
+ * Núcleo do feedback (AC-4.9, v12.0.0): o texto do resultado, grande, e o carimbo do veredito carimbado por cima dele,
+ * cobrindo só o alto do texto; os dois no centro da tela. A carimbada dura `TEMPOS.carimboMs`, somada ao feedback.
  */
-function LinhaSelo({ icone, match, selo, positivo }: { icone: IdIcone; match: string | null; selo: string; positivo: boolean }) {
+function NucleoFeedback({ texto, verdade }: { texto: string; verdade: boolean }) {
   return (
-    <div className={s.linhaSelo}>
-      <IconeFeedback icone={icone} largura={176} />
-      <p className={cx(s.selo, positivo ? s.seloAcerto : s.seloErro)}>
-        {match && <span className={s.seloMatch}>{match}</span>}
-        <span className={s.seloResultado}>{selo}</span>
-      </p>
+    <div className={s.nucleo} data-nucleo-feedback>
+      <h2 className={s.textoResultado}>{texto}</h2>
+      <Carimbo
+        lado={verdade ? 'verdade' : 'mentira'}
+        data-carimbo={verdade ? 'verdade' : 'mentira'}
+        className={s.carimboFeedback}
+        style={{ '--carimbo-ms': `${TEMPOS.carimboMs}ms` } as CSSProperties}
+      />
     </div>
   );
 }
 
 /**
- * Feedback (AC-4.1 a AC-4.3, AC-4.9): o fundo da tela inteira acende na cor do veredito; no topo o veredito,
- * menor ("É verdade"/"É mentira"); abaixo o ícone e o selo, maior; depois a explicação e a técnica.
+ * Feedback (AC-4.1 a AC-4.3, AC-4.9, v12.0.0): o fundo da tela inteira diz o resultado (verde = acertou; vermelho = errou
+ * ou tempo esgotado); no centro, o texto do resultado com o carimbo do veredito por cima; depois a explicação e a técnica.
  */
 export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia; resultado: Resultado; pontos: number }) {
   const verdade = noticia.veredito === 'verdadeira';
   return (
     <main
-      className={`${s.tela} ${verdade ? s.fbVerdade : s.fbMentira}`}
+      className={cx(s.tela, resultado === 'acerto' ? s.fbAcerto : s.fbErro)}
       data-veredito={verdade ? 'verdade' : 'mentira'}
       data-resultado={resultado}
     >
       <div className={s.feedback}>
-        <h2 className={s.veredito}>
-          {verdade ? <MarcaVerdade largura={30} /> : <MarcaMentira largura={30} />}
-          {verdade ? 'É verdade' : 'É mentira'}
-        </h2>
-        <LinhaSelo icone={resultado} match={MATCH[resultado]} selo={SELO[resultado]} positivo={resultado === 'acerto'} />
+        <NucleoFeedback texto={TEXTO_RESULTADO[resultado]} verdade={verdade} />
         <p className={s.explicacao}>{noticia.explicacao}</p>
         <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
       </div>
@@ -356,8 +364,8 @@ export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia;
 }
 
 /**
- * Feedback do treino (AC-15.3, FR-16): mesma estrutura do feedback (AC-4.1), com o selo "Acertou!"/"Quase!",
- * o gesto que o jogador fez e o que leva à resposta certa. Estilo provisório (classes do feedback), sem visual novo.
+ * Feedback do treino (AC-15.3, FR-16; AC-4.10, v12.0.0): o mesmo layout do feedback, com o selo do treino
+ * ("Acertou!"/"Quase!"), o gesto que o jogador fez e o que leva à resposta certa no lugar da explicação.
  */
 export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
   noticia: Noticia;
@@ -369,16 +377,12 @@ export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
   const t = feedbackTutorial(modo, resposta, noticia.veredito);
   return (
     <main
-      className={`${s.tela} ${verdade ? s.fbVerdade : s.fbMentira}`}
+      className={cx(s.tela, t.acertou ? s.fbAcerto : s.fbErro)}
       data-veredito={verdade ? 'verdade' : 'mentira'}
       data-resultado={t.acertou ? 'treino-acerto' : 'treino-erro'}
     >
       <div className={s.feedback}>
-        <h2 className={s.veredito}>
-          {verdade ? <MarcaVerdade largura={30} /> : <MarcaMentira largura={30} />}
-          {verdade ? 'É verdade' : 'É mentira'}
-        </h2>
-        <LinhaSelo icone={t.acertou ? 'acerto' : 'erro'} match={MATCH[t.acertou ? 'acerto' : 'erro']} selo={t.selo} positivo={t.acertou} />
+        <NucleoFeedback texto={t.selo} verdade={verdade} />
         <p className={s.explicacao}>{t.escolha}</p>
         <p className={s.explicacao}>{t.certo}</p>
         <p className={s.explicacao}>{noticia.explicacao}</p>

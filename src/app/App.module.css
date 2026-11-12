@@ -64,11 +64,19 @@
 .camadaPilha { position: absolute; inset: 0; border-radius: calc(24 * var(--u)); border: 2px solid rgb(252 250 241 / 0.25); pointer-events: none; }
 .camadaPilha1 { background: var(--cn-marinho); transform: translate(calc(14 * var(--u)), calc(10 * var(--u))) rotate(4deg); }
 .camadaPilha2 { background: var(--cn-grafite-azul); transform: translate(calc(-8 * var(--u)), calc(6 * var(--u))) rotate(-2.5deg); }
-/* Carimbo (AC-2.10b, AC-2.12): o rótulo do lado; opacidade = fração (useInclinacaoCard); inteiro na saída.
-   Coral sobre creme 3,8:1 e teal sobre creme 3,0:1, em texto de 40 px bold (regra de 3:1 para ≥ 24 px bold). */
-.carimbo { position: absolute; top: calc(30 * var(--u)); z-index: 3; padding: calc(2 * var(--u)) calc(16 * var(--u)); border: calc(6 * var(--u)) solid currentColor; border-radius: calc(14 * var(--u)); background: rgb(252 250 241 / 0.92); font: 900 calc(40 * var(--u)) / 1.1 var(--fonte); letter-spacing: 0.04em; text-transform: uppercase; pointer-events: none; }
-.carimboMentira { left: calc(24 * var(--u)); color: var(--cn-coral); rotate: -12deg; }
-.carimboVerdade { right: calc(24 * var(--u)); color: var(--cn-teal); rotate: 12deg; }
+/* Carimbo (AC-2.10b, AC-2.12, AC-4.9; v12.0.0): o mesmo no card e no feedback. Cheio, com o marcador do veredito num disco
+   noite: VERDADE menta com texto noite (11,2:1) e MENTIRA coral com texto tinta (5,0:1); contorno grosso da cor do texto. */
+.carimbo { display: inline-flex; align-items: center; gap: 0.25em; padding: 0.06em 0.4em 0.06em 0.16em; border: calc(6 * var(--u)) solid currentColor; border-radius: calc(14 * var(--u)); font: 900 calc(40 * var(--u)) / 1.1 var(--fonte); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
+.carimboVerdade { background: var(--verdade); color: var(--cn-noite); }
+.carimboMentira { background: var(--mentira); color: var(--cn-tinta); }
+.carimboDisco { display: grid; place-items: center; width: 1.2em; height: 1.2em; border-radius: 50%; background: var(--cn-noite); flex: none; }
+.carimboVerdade .carimboDisco { color: var(--verdade); }
+.carimboMentira .carimboDisco { color: var(--mentira); }
+.carimboDisco svg { width: 0.72em !important; height: 0.72em !important; }
+/* No card: no alto, do lado da escolha; a opacidade = fração (useInclinacaoCard); inteiro na saída. */
+.carimboCard { position: absolute; top: calc(30 * var(--u)); z-index: 3; }
+.carimboCard.carimboMentira { left: calc(24 * var(--u)); rotate: -12deg; }
+.carimboCard.carimboVerdade { right: calc(24 * var(--u)); rotate: 12deg; }
 .carimbado { opacity: 1 !important; animation: carimbar 160ms ease-out; }
 @keyframes carimbar { from { scale: 1.4; } to { scale: 1; } }
 .pilula { display: inline-flex; align-items: center; border-radius: var(--raio-pilula); padding: calc(6 * var(--u)) calc(26 * var(--u)); font-size: calc(32 * var(--u)); font-weight: 800; line-height: 1.2; border: calc(3 * var(--u)) solid var(--cn-creme); }
@@ -114,25 +122,25 @@
 .xis::after { transform: rotate(-45deg); }
 .faixa { position: absolute; top: 0; left: 0; right: 0; z-index: 4; margin: 0; background: var(--cn-amarelo); color: var(--cn-tinta); text-align: center; padding: calc(8 * var(--u)); font-size: calc(18 * var(--u)); font-weight: 700; }
 
-/* Feedback (AC-4.1 a AC-4.3, AC-4.9): fundo na cor do veredito; texto noite sobre menta (11,2:1) e tinta sobre coral (5,0:1). */
-.fbVerdade { background: var(--verdade); color: var(--cn-noite); }
-.fbMentira { background: var(--mentira); color: var(--cn-tinta); }
+/* Feedback (AC-4.1 a AC-4.3, AC-4.9, v12.0.0): o fundo diz o resultado. Acerto: verde com texto noite (6,8:1).
+   Erro e tempo esgotado: vermelho com texto creme (4,9:1). O veredito fica só no carimbo. */
+.fbAcerto { background: var(--acerto); color: var(--cn-noite); }
+.fbErro { background: var(--erro); color: var(--cn-creme); }
 /* "Sair" fica fora da tela (App); acompanha a cor do texto do feedback. */
-.app:has(> .fbVerdade) { color: var(--cn-noite); }
-.app:has(> .fbMentira) { color: var(--cn-tinta); }
+.app:has(> .fbAcerto) { color: var(--cn-noite); }
+.app:has(> .fbErro) { color: var(--cn-creme); }
 .feedback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(22 * var(--u)); text-align: center; padding: 0 calc(200 * var(--u)); }
-.veredito { margin: 0; display: inline-flex; align-items: center; gap: calc(12 * var(--u)); font-size: calc(30 * var(--u)); font-weight: 800; line-height: 1.2; }
-/* Ícone + selo numa linha (AC-4.9, v11.0.0); o ícone pulsa uma vez ao aparecer. */
-.linhaSelo { display: flex; align-items: center; justify-content: center; gap: calc(20 * var(--u)); }
-.iconeFeedback { display: block; flex: none; animation: aparecerIcone 420ms ease-out; }
-@keyframes aparecerIcone { 0% { scale: 0.6; } 60% { scale: 1.12; } 100% { scale: 1; } }
-.selo { margin: 0; display: inline-flex; align-items: baseline; gap: calc(16 * var(--u)); font-size: calc(44 * var(--u)); font-weight: 900; line-height: 1; padding: calc(14 * var(--u)) calc(36 * var(--u)); border-radius: var(--raio-pilula); white-space: nowrap; }
-.seloAcerto { background: var(--cn-noite); color: var(--cn-amarelo); }
-.seloAcerto .seloMatch + .seloResultado { color: var(--cn-creme); }
-.seloErro { background: var(--cn-creme); color: var(--cn-tinta); border: calc(3 * var(--u)) solid var(--cn-tinta); }
-.seloMatch + .seloResultado { font-size: calc(34 * var(--u)); font-weight: 800; }
+/* Núcleo: o texto do resultado vem antes no DOM (leitura) e o carimbo, depois, fica por cima (column-reverse), cobrindo só o
+   alto do texto. */
+.nucleo { display: flex; flex-direction: column-reverse; align-items: center; }
+.textoResultado { margin: 0; font-size: calc(100 * var(--u)); font-weight: 900; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
+.carimboFeedback { position: relative; z-index: 1; font-size: calc(52 * var(--u)); margin-bottom: calc(-2 * var(--u)); box-shadow: calc(8 * var(--u)) calc(8 * var(--u)) 0 var(--cn-noite); animation: carimbada var(--carimbo-ms) cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.carimboFeedback.carimboVerdade { rotate: 7deg; }
+.carimboFeedback.carimboMentira { rotate: -7deg; }
+/* Carimbada (AC-4.9): cai de maior para o tamanho final; os 300 ms somam ao tempo do feedback (TEMPOS.carimboMs). */
+@keyframes carimbada { from { scale: 2.4; opacity: 0; translate: 0 calc(-30 * var(--u)); } 60% { opacity: 1; } to { scale: 1; opacity: 1; translate: 0 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .iconeFeedback, .carimbado { animation: none; }
+  .carimboFeedback, .carimbado { animation: none; }
 }
 .explicacao { margin: 0; font-size: calc(30 * var(--u)); line-height: 1.4; font-weight: 500; max-width: calc(860 * var(--u)); }
 .tecnica { margin: 0; border: calc(3 * var(--u)) solid currentColor; border-radius: var(--raio-pilula); padding: calc(4 * var(--u)) calc(24 * var(--u)); font-size: calc(26 * var(--u)); font-weight: 600; }
