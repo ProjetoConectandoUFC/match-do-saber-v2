@@ -27,7 +27,7 @@ test('AC-13.3: sem câmera, o resumo não tem polaroid', async ({ page }) => {
 });
 
 test('AC-13.1/AC-13.2/AC-13.4/AC-13.5: com câmera, polaroid do card do meio no resumo, só na memória', async ({ page }) => {
-  test.setTimeout(150_000); // modelo de pose + 10 feedbacks de 3 s + partida seguinte
+  test.setTimeout(180_000); // modelo de pose + 10 feedbacks de 3,3 s (v12.0.0: carimbada) + partida seguinte
   // Câmera simulada: um canvas 1280×720 repintado a cada quadro, entregue como MediaStream.
   await page.addInitScript(() => {
     const getUserMedia = async () => {
