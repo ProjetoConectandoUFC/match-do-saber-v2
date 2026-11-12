@@ -15,7 +15,7 @@ function Montado({ onEscolher }: { onEscolher: (i: ItemMenu) => void }) {
 }
 
 describe('MenuOperador (FR-14)', () => {
-  it('botão "Menu" abre a lista com Notícias, Configurações, Diagnóstico e Tela cheia', () => {
+  it('botão "Menu" abre a lista com Notícias, Ajustes (v12.0.0), Diagnóstico e Tela cheia', () => {
     render(<Montado onEscolher={() => {}} />);
     const botao = screen.getByRole('button', { name: 'Menu' });
     expect(botao).toHaveAttribute('aria-expanded', 'false');
@@ -23,7 +23,7 @@ describe('MenuOperador (FR-14)', () => {
     fireEvent.click(botao);
     expect(botao).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getAllByRole('menuitem').map((b) => b.textContent)).toEqual(
-      [expect.stringContaining('Notícias'), expect.stringContaining('Configurações'), expect.stringContaining('Diagnóstico'), expect.stringContaining('Tela cheia')],
+      [expect.stringContaining('Notícias'), expect.stringContaining('Ajustes'), expect.stringContaining('Diagnóstico'), expect.stringContaining('Tela cheia')],
     );
   });
 

@@ -265,3 +265,28 @@ export function teclaNoPainel(p: PainelAjustes, aj: Ajustes, tecla: string, iten
   }
   return { painel: p };
 }
+
+// ---------- Ajustes → partida ----------
+
+/** O que o reducer da partida recebe dos Ajustes (FR-1, FR-9; `Contexto` em ./partida). */
+export interface ContextoAjustes {
+  tempoCardMs: number;
+  tempoFeedbackMs: number;
+  toleranciaMs: number;
+  /** 0 = desligada. */
+  voltaResumoMs: number;
+  /** AC-9.21: nos modos Mão e Cabeça a ausência não pausa nem encerra a partida. */
+  ignorarAusencia: boolean;
+  sorteio: { quantidade: number; temas: Tema[]; dificuldade: FiltroDificuldade };
+}
+
+export function contextoDosAjustes(aj: Ajustes): ContextoAjustes {
+  return {
+    tempoCardMs: aj.tempoCardS * 1000,
+    tempoFeedbackMs: aj.feedbackS * 1000,
+    toleranciaMs: aj.toleranciaS * 1000,
+    voltaResumoMs: aj.voltaResumoS * 1000,
+    ignorarAusencia: aj.modo !== 'corpo',
+    sorteio: { quantidade: aj.noticiasPorPartida, temas: aj.temas, dificuldade: aj.dificuldade },
+  };
+}

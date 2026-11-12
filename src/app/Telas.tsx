@@ -1,8 +1,6 @@
 import { useRef, type ReactNode, type RefObject } from 'react';
-import {
-  CONFIG_PADRAO, DICA_GESTOS, DICA_SAIBA_MAIS, ITENS_CONFIG, OPCOES, ROTULO_ITEM, resumoConfiguracoes, rotuloValor,
-  type Configuracoes, type ModoJogo,
-} from '../core/modos';
+import { AJUSTES_PADRAO, resumoAjustes, type Ajustes } from '../core/ajustes';
+import { DICA_GESTOS, DICA_SAIBA_MAIS, type ModoJogo } from '../core/modos';
 import type { AncorasRosto } from '../core/ancorasRosto';
 import { FAIXAS, faixaDeAcertos, type Faixa } from '../core/faixas';
 import type { LinhaResumo } from '../core/fontesRodada';
@@ -83,10 +81,12 @@ function Aneis() {
   );
 }
 
-export function TelaEspera({ semNoticias, camera, config = CONFIG_PADRAO, menu, onIniciar = () => {} }: {
+export function TelaEspera({ semNoticias, avisoSemNoticias = 'Nenhuma notícia publicada', camera, config = AJUSTES_PADRAO, menu, onIniciar = () => {} }: {
   semNoticias: boolean;
+  /** AC-6.4 (v12.0.0): o aviso muda quando há notícias jogáveis só fora dos filtros de conteúdo. */
+  avisoSemNoticias?: string;
   camera: StatusCamera;
-  config?: Configuracoes;
+  config?: Ajustes;
   /** Menu ☰ do operador (FR-14), no canto da tela de espera. */
   menu?: ReactNode;
   onIniciar?: () => void;
@@ -99,7 +99,7 @@ export function TelaEspera({ semNoticias, camera, config = CONFIG_PADRAO, menu, 
         <div className={s.espTexto}>
           <Logo />
           {semNoticias ? (
-            <p className={s.aviso}>Nenhuma notícia publicada</p>
+            <p className={s.aviso}>{avisoSemNoticias}</p>
           ) : camera === 'negada' || camera === 'indisponivel' ? (
             <p className={s.aviso}>Câmera desativada — jogue pelas setas (Enter para começar)</p>
           ) : (
@@ -112,7 +112,7 @@ export function TelaEspera({ semNoticias, camera, config = CONFIG_PADRAO, menu, 
         </div>
         <EsquemaGesto />
       </div>
-      <p className={s.dicaConfig}>{resumoConfiguracoes(config)}</p>
+      <p className={s.dicaConfig}>{resumoAjustes(config)}</p>
       {menu}
     </main>
   );
@@ -125,48 +125,6 @@ export function TelaCalibracao({ progresso, modo = 'corpo' }: { progresso: numbe
       <div className={s.barra}><div style={{ width: `${Math.round(progresso * 100)}%` }} /></div>
       <p className={s.calibracaoDica}>{DICA_GESTOS[modo]}</p>
     </main>
-  );
-}
-
-export function MenuConfiguracoes({ config, itemDestacado, onDefinir, onFechar }: {
-  config: Configuracoes;
-  itemDestacado: number;
-  onDefinir: (c: Configuracoes) => void;
-  onFechar: () => void;
-}) {
-  return (
-    <div className={s.painel} role="dialog" aria-modal="true" aria-label="Configurações">
-      <div className={s.menu}>
-        <div className={s.cabecalhoMenu}>
-          <h2>Configurações</h2>
-          <button type="button" className={s.fechar} aria-label="Fechar" onClick={onFechar}><span className={s.xis} aria-hidden="true" /></button>
-        </div>
-        <ul>
-          {ITENS_CONFIG.map((item, i) => (
-            <li key={item} className={i === itemDestacado ? s.destacado : undefined}>
-              <p className={s.rotuloItem} id={`cfg-${item}`}>{ROTULO_ITEM[item]}</p>
-              <div className={s.opcoes} role="group" aria-labelledby={`cfg-${item}`}>
-                {(OPCOES[item] as readonly Configuracoes[typeof item][]).map((valor) => {
-                  const ativo = config[item] === valor;
-                  return (
-                    <button
-                      key={String(valor)}
-                      type="button"
-                      aria-pressed={ativo}
-                      onClick={() => onDefinir({ ...config, [item]: valor } as Configuracoes)}
-                    >
-                      {`${ativo ? '◉' : '○'} ${rotuloValor(item, valor)}`}
-                    </button>
-                  );
-                })}
-              </div>
-              {item === 'modo' && <p className={s.dica}>{DICA_GESTOS[config.modo]}</p>}
-            </li>
-          ))}
-        </ul>
-        <p className={s.dica}>↑/↓ escolhem o item · ←/→ mudam o valor · Esc ou Enter fecham</p>
-      </div>
-    </div>
   );
 }
 

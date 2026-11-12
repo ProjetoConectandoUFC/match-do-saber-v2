@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   AJUSTES_PADRAO, FATOR_VOLUME, ITENS_AJUSTES, MULTIPLICADOR_SENSIBILIDADE, OPCOES, PAINEL_INICIAL,
-  alternarTema, itensDoPainel, lerAjustes, mudarValor, resumoAjustes, rotuloValor, salvarAjustes, teclaNoPainel,
+  alternarTema, contextoDosAjustes, itensDoPainel, lerAjustes, mudarValor, resumoAjustes, rotuloValor, salvarAjustes, teclaNoPainel,
   type Ajustes, type Armazenamento,
 } from './ajustes';
 import { TEMAS } from './types';
@@ -217,5 +217,21 @@ describe('teclado do painel Ajustes (AC-9.2, AC-9.3, AC-9.30)', () => {
     const com = itensDoPainel(true);
     const p = { ...PAINEL_INICIAL, item: com.findIndex((i) => i.id === 'revisar') };
     expect(teclaNoPainel(p, AJUSTES_PADRAO, ' ', com).revisar).toBe(true);
+  });
+});
+
+describe('contextoDosAjustes (FR-1, FR-9): o que a partida recebe dos Ajustes', () => {
+  it('padrão: 15 s por card, 3 s de feedback, 10 s de tolerância, resumo sem volta, 10 notícias', () => {
+    expect(contextoDosAjustes(AJUSTES_PADRAO)).toEqual({
+      tempoCardMs: 15000, tempoFeedbackMs: 3000, toleranciaMs: 10000, voltaResumoMs: 0, ignorarAusencia: false,
+      sorteio: { quantidade: 10, temas: [...TEMAS], dificuldade: 'misturada' },
+    });
+  });
+  it('valores escolhidos; nos modos Mão e Cabeça a ausência é ignorada (AC-9.21)', () => {
+    const c = contextoDosAjustes({ ...AJUSTES_PADRAO, modo: 'cabeca', tempoCardS: 45, feedbackS: 8, toleranciaS: 20, voltaResumoS: 60, noticiasPorPartida: 5, temas: ['politica'], dificuldade: 'crescente' });
+    expect(c).toEqual({
+      tempoCardMs: 45000, tempoFeedbackMs: 8000, toleranciaMs: 20000, voltaResumoMs: 60000, ignorarAusencia: true,
+      sorteio: { quantidade: 5, temas: ['politica'], dificuldade: 'crescente' },
+    });
   });
 });
