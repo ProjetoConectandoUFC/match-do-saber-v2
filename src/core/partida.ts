@@ -6,9 +6,14 @@ export const TEMPOS = {
   cardMs: 15000,
   feedbackMs: 3000,
   saidaMs: 250,
+  /** v12.0.0 (AC-4.9, AC-9.25): carimbada do veredito no começo do resultado; soma ao feedback, não desconta. */
+  carimboMs: 300,
   calibracaoMs: 2000,
   ausenciaMs: 10000,
 } as const;
+
+/** Tempo restante do feedback quando a tela do resultado aparece (depois da saída do card): a carimbada + o feedback. */
+export const INICIO_RESULTADO_MS = TEMPOS.carimboMs + TEMPOS.feedbackMs;
 
 export type Resultado = 'acerto' | 'erro' | 'tempo';
 export interface Presenca { presente: boolean; centralizado: boolean }
@@ -77,8 +82,8 @@ function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null): Esta
     tela: 'feedback',
     partida: { ...e.partida, resultados: [...e.partida.resultados, r] },
     indice: e.indice,
-    // Escolha: o card sai antes (saidaMs) e o resultado ainda fica 3 s inteiros (AC-4.1/AC-4.2).
-    restanteMs: resposta === null ? TEMPOS.feedbackMs : TEMPOS.feedbackMs + TEMPOS.saidaMs,
+    // Escolha: o card sai antes (saidaMs); o resultado tem a carimbada e ainda fica 3 s inteiros (AC-4.1/AC-4.2/AC-4.9).
+    restanteMs: resposta === null ? INICIO_RESULTADO_MS : INICIO_RESULTADO_MS + TEMPOS.saidaMs,
     resposta,
   };
 }
@@ -140,7 +145,7 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       // AC-15.5: Enter pula o treino. AC-15.6: sem cronômetro, ausência nem "saiba mais".
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
       if (evento.tipo !== 'escolha') return estado;
-      return { ...estado, tela: 'tutorialFeedback', restanteMs: TEMPOS.feedbackMs + TEMPOS.saidaMs, resposta: evento.resposta };
+      return { ...estado, tela: 'tutorialFeedback', restanteMs: INICIO_RESULTADO_MS + TEMPOS.saidaMs, resposta: evento.resposta };
     }
     case 'tutorialFeedback': {
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);

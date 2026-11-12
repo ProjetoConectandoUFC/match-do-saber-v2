@@ -3,7 +3,7 @@ import { jogaveis } from '../core/banco';
 import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
 import { enderecoFontes, linhasDoResumo } from '../core/fontesRodada';
 import { URL_PUBLICA } from './enderecoPublico';
-import { TEMPOS, pontos, type Estado } from '../core/partida';
+import { INICIO_RESULTADO_MS, TEMPOS, pontos, type Estado } from '../core/partida';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
 import { capturarFoto, type FotoPartida } from './foto';
@@ -136,8 +136,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       break;
     case 'feedback': {
       const noticia = estado.partida.cards[estado.indice]!;
-      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, 3 s de resultado.
-      const saindo = estado.resposta !== null && estado.restanteMs > TEMPOS.feedbackMs;
+      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, a carimbada e 3 s de resultado (AC-4.9).
+      const saindo = estado.resposta !== null && estado.restanteMs > INICIO_RESULTADO_MS;
       tela = saindo ? (
         <TelaCard
           key={estado.indice}
@@ -163,7 +163,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       const perfil = PERFIS_TUTORIAL[estado.passo]!;
       const noticia = perfilComoNoticia(perfil);
       const treino = { passo: estado.passo, total: PERFIS_TUTORIAL.length, ilustracao: perfil.ilustracao };
-      const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > TEMPOS.feedbackMs;
+      const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > INICIO_RESULTADO_MS;
       tela = estado.tela === 'tutorialFeedback' && !saindo ? (
         <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.config.modo} treino={treino} />
       ) : (

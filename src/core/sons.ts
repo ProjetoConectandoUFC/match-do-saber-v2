@@ -1,5 +1,5 @@
 import { faixaDeAcertos } from './faixas';
-import { TEMPOS, pontos, type Estado } from './partida';
+import { INICIO_RESULTADO_MS, pontos, type Estado } from './partida';
 
 /** `fim1`..`fim4`: vinheta do resumo, uma por faixa de acertos (AC-11.6, v11.0.0). */
 export type Som = 'deslizar' | 'acerto' | 'erro' | 'fim1' | 'fim2' | 'fim3' | 'fim4';
@@ -18,7 +18,7 @@ export function sonsDaTransicao(antes: Estado, depois: Estado): Som[] {
     antes.tela === 'feedback' &&
     antes.indice === depois.indice &&
     depois.resposta !== null &&
-    antes.restanteMs > TEMPOS.feedbackMs &&
-    depois.restanteMs <= TEMPOS.feedbackMs;
+    antes.restanteMs > INICIO_RESULTADO_MS &&
+    depois.restanteMs <= INICIO_RESULTADO_MS;
   return terminouSaida ? [resultado] : [];
 }

@@ -4,7 +4,7 @@
  * suavizada e, dela, o deslocamento, o giro (eixo na base do card) e a opacidade dos rótulos Verdade/Mentira.
  * Lógica pura: quem aplica no DOM é `src/app/useInclinacaoCard.ts`, fora do estado do React.
  */
-import { TEMPOS, type Estado } from './partida';
+import { INICIO_RESULTADO_MS, type Estado } from './partida';
 
 export const CONFIG_INCLINACAO_CARD = {
   /** Deslocamento lateral do centro da base no limiar, em fração da largura do card ("um pouco", v10.3.1). */
@@ -68,10 +68,10 @@ export function situacaoDoCard(estado: Estado, pausado: boolean): SituacaoCard {
   if (pausado) return 'centro';
   if (estado.tela === 'card') return estado.ausenteMs === null ? 'jogando' : 'centro';
   // Mesma regra do App: depois de uma escolha, os primeiros `saidaMs` do feedback são a saída do card.
-  if (estado.tela === 'feedback' && estado.resposta !== null && estado.restanteMs > TEMPOS.feedbackMs) return 'saindo';
+  if (estado.tela === 'feedback' && estado.resposta !== null && estado.restanteMs > INICIO_RESULTADO_MS) return 'saindo';
   // Treino (FR-16): o card de treino acompanha o corpo como o card, e sai do mesmo jeito.
   if (estado.tela === 'tutorial') return 'jogando';
-  if (estado.tela === 'tutorialFeedback' && estado.restanteMs > TEMPOS.feedbackMs) return 'saindo';
+  if (estado.tela === 'tutorialFeedback' && estado.restanteMs > INICIO_RESULTADO_MS) return 'saindo';
   return 'centro';
 }
 
