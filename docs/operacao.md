@@ -41,6 +41,33 @@
 7. O jogo nunca começa sozinho: o operador aperta "▶ Iniciar" (ou Enter). Com a câmera ativa, abre a calibração ("Fique no centro", 2 s) e a partida começa; Enter na calibração a pula e joga pelas setas. Sem câmera, começa direto. "✕ Sair" (ou Esc) encerra a partida na hora e o jogo fica na espera.
 8. Ocultar uma notícia sem apagá-la (app de desktop): ☰ › Notícias › Editar › desligar "Visível no jogo" (ou selecionar várias e "Alterar em massa" › Visibilidade › Oculta). Ela fica no banco, marcada "Oculta", e só volta às partidas quando for religada.
 
+## Dois computadores (equipe técnica, desde 2026-11-13)
+
+O projeto é desenvolvido em dois computadores (um deles é o notebook do estande). **O GitHub é a única ponte entre eles**: o que não foi enviado não existe para o outro. Em 2026-11-11 um dia inteiro de trabalho ficou só no notebook (branch nunca enviada e um stash), foi dado por perdido no outro computador e refeito do zero; está arquivado na tag `arquivo/2026-11-11-notebook`.
+
+**Ao abrir uma sessão** (o hook `SessionStart` do Claude Code, em `.claude/settings.json`, faz isto sozinho e mostra os avisos; à mão: `node scripts/conferir-sincronia.mjs --texto`):
+1. `git fetch --prune` e conferir: alterações sem commit, stash, branches à frente ou atrás do GitHub, branches que só existem aqui e branches já apagadas no GitHub.
+2. Se o `package-lock.json` pede pacotes que não estão em `node_modules`: `npm ci`.
+3. Ler o `.claude/memory/MEMORY.md` e o expediente mais recente **dos dois computadores** em `.claude/memory/expediente/`.
+
+**Durante o trabalho:**
+- Uma branch, um computador por vez. Antes de pegar uma branch que o outro computador estava usando, `git pull` nela.
+- O expediente é um arquivo por dia **e por computador**: `expediente/AAAA-MM-DD-<computador>.md` (nome do computador em minúsculas). Assim os dois podem registrar o mesmo dia sem conflito no merge.
+
+**Ao fechar a sessão:** tudo commitado e enviado, mesmo pela metade. Trabalho incompleto vai numa branch `wip/<computador>-<AAAA-MM-DD>` (ou na própria branch da tarefa) com `git push -u origin <branch>`. Nada de stash nem de branch só local de um dia para o outro.
+
+**O que NÃO passa pelo git** (conferir em cada computador):
+
+| O quê | Onde | Como acertar |
+|---|---|---|
+| Dependências | `node_modules/` | `npm ci` quando o `package-lock.json` mudar (o aviso do hook diz quando) |
+| Binário do Electron | `node_modules/electron/dist/` | se `npm run desktop` não abrir, reinstalar (`npm ci`) ou extrair o zip do cache, como em 2026-11-12 |
+| Banco do app de desktop | `Documentos/Match do Saber/noticias.csv` | o app só copia o banco embutido quando o arquivo não existe. Depois de mudar o `conteudo/noticias.csv`, copiar o novo por cima, guardando o atual em `backups/` (o hook avisa se o banco for o de teste) |
+| Ajustes do jogo | `localStorage` do navegador ou do app (origem `127.0.0.1:37425`) | conferir no painel Ajustes em cada computador; "Restaurar padrão" volta aos padrões da spec |
+| Memória pessoal do Claude Code | `~/.claude/` | não sincroniza; a memória do projeto que vale é `.claude/memory/`, que vai pelo git |
+| Letra do drive (Windows) | como a pasta foi aberta (`c:\` ou `C:\`) | com `c:\` minúsculo, `npm test` falha inteiro ("Vitest failed to find the current suite"); abrir ou rodar pelo caminho `C:\...` |
+| Arquivos gerados | `public/content/`, `public/mediapipe/`, `public/icons/*.png`, `dist/`, `out/` | `npm run dev`/`build` recriam; `npm run fixture` grava o banco de teste em `public/content/` |
+
 ## Diagnóstico do rastreio (equipe técnica)
 Para medir o rastreio no notebook do estande antes de ajustar os gestos:
 1. Ligar o painel por ☰ › Diagnóstico (vale até recarregar o jogo) ou abrir o jogo com `?diagnostico` no fim do endereço (por exemplo `…/match-do-saber/?diagnostico`).
