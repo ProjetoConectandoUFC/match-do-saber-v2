@@ -118,7 +118,8 @@ export function PainelQuestoes({
     if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !pedirNome && !editor) {
       const alvo = e.target as HTMLElement | null;
       const tag = alvo?.tagName;
-      if (tag === 'SELECT' || tag === 'TEXTAREA' || (tag === 'INPUT' && (alvo as HTMLInputElement).type === 'text')) return;
+      // Campos que usam ↑/↓ (lista, área de texto e campos de digitar: texto e busca) ficam com a tecla (v12.0.2).
+      if (tag === 'SELECT' || tag === 'TEXTAREA' || (tag === 'INPUT' && ['text', 'search'].includes((alvo as HTMLInputElement).type))) return;
       e.preventDefault();
       const prox = questaoVizinha(lista, aberta?.indice ?? null, e.key === 'ArrowDown' ? 1 : -1);
       if (prox !== null) setEscolhida(prox);

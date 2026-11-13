@@ -379,8 +379,13 @@ function Polaroid({ foto, ancoras, faixa, legenda }: { foto: string; ancoras?: A
   );
 }
 
-/** Lista "Notícias da rodada" (AC-5.8, v11.0.0): para ler de perto ou na foto do celular. */
+/**
+ * Lista "Notícias da rodada" (AC-5.8, v11.0.0): para ler de perto ou na foto do celular. Duas colunas preenchidas de
+ * cima para baixo, com metade das notícias em cada uma (v12.0.2: eram 5 linhas fixas, e com mais de 10 notícias as
+ * restantes caíam em colunas extras). Acima de 10 notícias (AC-9.23) as linhas ficam mais baixas, para caber em 1366×768.
+ */
 function ListaRodada({ linhas }: { linhas: readonly LinhaResumo[] }) {
+  const porColuna = Math.max(1, Math.ceil(linhas.length / 2));
   return (
     <section className={s.listaRodada} aria-labelledby="titulo-lista-rodada">
       <div className={s.listaTopo}>
@@ -390,9 +395,14 @@ function ListaRodada({ linhas }: { linhas: readonly LinhaResumo[] }) {
           <span><i className={cx(s.resultado, s.resultadoNao, s.resultadoMini)}><span className={s.xis} /></i>errou</span>
         </div>
       </div>
-      <ol className={s.gradeRodada}>
-        {linhas.map((l) => (
-          <li key={l.id} className={s.linhaRodada} data-resultado={l.acertou ? 'acertou' : 'errou'}>
+      <ol className={s.gradeRodada} style={{ '--linhas': porColuna } as CSSProperties} data-densa={linhas.length > 10 || undefined}>
+        {linhas.map((l, i) => (
+          <li
+            key={l.id}
+            className={s.linhaRodada}
+            data-resultado={l.acertou ? 'acertou' : 'errou'}
+            data-fim-coluna={(i + 1) % porColuna === 0 || i === linhas.length - 1 || undefined}
+          >
             <i className={cx(s.resultado, l.acertou ? s.resultadoOk : s.resultadoNao)} role="img" aria-label={l.acertou ? 'Acertou' : 'Errou'}>
               {l.acertou ? <Forma id="marca-estrela-4" largura={18} /> : <span className={s.xis} />}
             </i>
