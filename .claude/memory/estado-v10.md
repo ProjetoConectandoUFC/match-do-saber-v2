@@ -1,6 +1,6 @@
 ---
 name: estado-v10
-description: Estado do Match do Saber (atualizado em 2026-11-11: v11.0.0 na main, develop recriada, Pages desativado, audit); ponto de partida para retomar de outro dispositivo
+description: Estado do Match do Saber — histórico até 2026-11-11 e, na última seção, o estado em 2026-11-13 (v12.0.1 na develop, dois computadores); ponto de partida para retomar de outro dispositivo
 metadata:
   type: project
 ---
@@ -41,3 +41,10 @@ Ver [[agentes]].
 - `package.json` estava em 9.0.0; a branch `001-versao-11` passa para 11.0.0 (versão do exe do Electron).
 - **GitHub Pages não está ativado** no repo: o workflow "Publicar jogo" passa em teste e build mas falha no deploy (404). A versão web e o `fontes.html` que o QR do resumo abre não existem até ativar em Settings › Pages › Source: GitHub Actions.
 - `npm audit`: 0 vulnerabilidades em produção; 10 em devDependencies. A que importa é o Electron 33.4.11 (vai dentro do exe, sem suporte); as outras (deepmerge/glob/minimatch via vite-plugin-pwa, extract-zip via @electron/packager) são só de build. Não usar `npm audit fix --force` (rebaixa o vite-plugin-pwa para 1.1.0 e pula o Electron para 45 sem teste).
+
+## Atualização 2026-11-13 (substitui o que acima estiver em conflito)
+- **Dois computadores.** O trabalho de 11/11 foi feito no notebook (`DESKTOP-PJ0NRKU`) e nunca enviado; o outro computador o deu por perdido e refez a v12 em 12/11. Ele está arquivado na tag `arquivo/2026-11-11-notebook` (spec v12 alternativa, configurações, lote 3 com ids `mds-0023`–`mds-0032` que **colidem** com o lote 3 aprovado; não mesclar). Regras para não repetir: `docs/operacao.md`, seção "Dois computadores"; hook `SessionStart` em `.claude/settings.json` roda `scripts/conferir-sincronia.mjs`; expediente por computador (`expediente/AAAA-MM-DD-<computador>.md`).
+- **Git:** `develop` (6008a5c) tem a spec v12.0.1 e as Fases 42 a 44 (PRs #5 a #8, aceitos em 13/11); a `main` (af87661) ainda está na v11.0.0. A `develop-antiga` **foi apagada** em 12/11 por ordem do responsável (o "não apagar" acima vale só até essa data). `package.json` em 12.0.0.
+- **Decisões de 11/11 confrontadas com a v12.0.1 (13/11, responsável):** carimbo = status real da notícia e tempo esgotado em vermelho valem na v12; o responsável escolheu **manter o carimbo opaco da v12** (palavra + ícone), e não o ícone a 40% pedido em 11/11. Tempo entre cards, cards por partida, nível e ausência existem na v12 com outros nomes ("Tempo do feedback", "Notícias por partida" até 20, "Dificuldade" como filtro estrito e "Crescente", "Tolerância sem pessoa"). Ponto aberto: nenhum teste confere o resumo (lista e QR) com 15 ou 20 notícias por partida.
+- **Notebook:** o banco do app de desktop (`Documentos/Match do Saber/noticias.csv`) era o de teste de 09/11; trocado pelo banco da `develop` (16 notícias, todas jogáveis), com o antigo em `backups/noticias-teste-2026-11-09-antes-da-v12.csv`.
+- **GitHub Pages continua desativado** (404): o deploy falha e o QR do resumo abre uma página inexistente até ativar em Settings › Pages › Source: GitHub Actions.
