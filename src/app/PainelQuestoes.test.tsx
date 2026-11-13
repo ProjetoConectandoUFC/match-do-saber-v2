@@ -273,6 +273,34 @@ describe('AC-16.5: ações no desktop', () => {
     fireEvent.click(aberta().getByRole('button', { name: 'Ocultar' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('o arquivo mudou fora do painel');
   });
+
+  it('AC-16.5/AC-7.6: aprovação recusada na gravação não guarda o nome do revisor (a próxima aprovação pergunta de novo)', async () => {
+    const repo = repoFalso();
+    repo.salvar = vi.fn(async () => { throw new Error('Não foi possível salvar: o arquivo mudou fora do painel'); });
+    const onRevisor = vi.fn();
+    render(<PainelQuestoes repo={repo} estado={{ banco: BANCO, arquivo: ARQUIVO, versao: 'v1' }} onFechar={() => {}} revisor="" onRevisor={onRevisor} />);
+    fireEvent.click(lista().getByRole('button', { name: /Rascunho de história/ }));
+    fireEvent.click(aberta().getByRole('button', { name: 'Aprovar' }));
+    const pedido = screen.getByRole('dialog', { name: 'Quem revisou?' });
+    fireEvent.change(within(pedido).getByLabelText('Nome de quem revisou'), { target: { value: 'Levi' } });
+    fireEvent.click(within(pedido).getByRole('button', { name: 'Aprovar' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('o arquivo mudou fora do painel');
+    expect(repo.salvar).toHaveBeenCalledOnce();
+    expect(onRevisor).not.toHaveBeenCalled();
+  });
+
+  it('aprovação gravada guarda o nome do revisor (sem espaços nas pontas)', async () => {
+    const repo = repoFalso();
+    const onRevisor = vi.fn();
+    render(<PainelQuestoes repo={repo} estado={{ banco: BANCO, arquivo: ARQUIVO, versao: 'v1' }} onBancoAlterado={() => {}} onFechar={() => {}} revisor="" onRevisor={onRevisor} />);
+    fireEvent.click(lista().getByRole('button', { name: /Rascunho de história/ }));
+    fireEvent.click(aberta().getByRole('button', { name: 'Aprovar' }));
+    const pedido = screen.getByRole('dialog', { name: 'Quem revisou?' });
+    fireEvent.change(within(pedido).getByLabelText('Nome de quem revisou'), { target: { value: '  Levi ' } });
+    fireEvent.click(within(pedido).getByRole('button', { name: 'Aprovar' }));
+    await waitFor(() => expect(onRevisor).toHaveBeenCalledWith('Levi'));
+    expect(repo.salvar).toHaveBeenCalledOnce();
+  });
 });
 
 describe('AC-16.5: versão web só leitura', () => {

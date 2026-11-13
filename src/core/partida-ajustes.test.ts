@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ESTADO_INICIAL, TEMPOS, duracaoFeedbackMs, reduzir, type Contexto, type Estado, type Evento, type Presenca,
+  ESTADO_INICIAL, TEMPOS, duracaoFeedbackMs, duracaoResultadoMs, reduzir, type Contexto, type Estado, type Evento, type Presenca,
 } from './partida';
 import type { PerfilTutorial } from './tutorial';
 import type { Noticia, Tema, Veredito } from './types';
@@ -31,31 +31,43 @@ describe('AC-9.25: tempo do feedback configurado', () => {
     expect(duracaoFeedbackMs({ tempoFeedbackMs: 8000 })).toBe(8000);
   });
 
-  it('depois de uma escolha, a saída do card soma ao tempo configurado (fronteira)', () => {
+  it('AC-4.9: a carimbada (300 ms) soma ao tempo configurado do resultado, nunca desconta', () => {
+    expect(duracaoResultadoMs({})).toBe(TEMPOS.carimboMs + TEMPOS.feedbackMs);
+    expect(duracaoResultadoMs({ tempoFeedbackMs: 8000 })).toBe(8300);
+  });
+
+  it('feedback em 8 s, depois de uma escolha: saída (250) + carimbada (300) + 8 s inteiros (fronteira 8549/8550)', () => {
     const c = ctx({ tempoFeedbackMs: 8000 });
     const fb = rodar(emCard(c), [escolha('falsa')], c);
-    // `resultadoMs`: quanto dura o resultado, para som, inclinação e tela saberem quando a saída do card acaba.
-    expect(fb).toMatchObject({ tela: 'feedback', restanteMs: 8000 + TEMPOS.saidaMs, resultadoMs: 8000 });
-    expect(rodar(emCard(c), [tick(TEMPOS.cardMs)], c)).toMatchObject({ tela: 'feedback', restanteMs: 8000, resultadoMs: 8000 });
-    expect(rodar(fb, [tick(8000 + TEMPOS.saidaMs - 1)], c).tela).toBe('feedback');
-    expect(rodar(fb, [tick(8000 + TEMPOS.saidaMs)], c)).toMatchObject({ tela: 'card', indice: 1 });
+    // `resultadoMs`: quanto dura o resultado (carimbada + tempo), para som, inclinação e tela saberem quando a saída acaba.
+    expect(fb).toMatchObject({ tela: 'feedback', restanteMs: 8550, resultadoMs: 8300 });
+    expect(rodar(fb, [tick(8549)], c)).toMatchObject({ tela: 'feedback', indice: 0 });
+    expect(rodar(fb, [tick(8550)], c)).toMatchObject({ tela: 'card', indice: 1 });
   });
 
-  it('tempo esgotado: o feedback dura exatamente o tempo configurado', () => {
+  it('feedback em 8 s, tempo esgotado (sem saída do card): carimbada + 8 s (fronteira 8299/8300)', () => {
+    const c = ctx({ tempoFeedbackMs: 8000 });
+    const fb = rodar(emCard(c), [tick(TEMPOS.cardMs)], c);
+    expect(fb).toMatchObject({ tela: 'feedback', resposta: null, restanteMs: 8300, resultadoMs: 8300 });
+    expect(rodar(fb, [tick(8299)], c)).toMatchObject({ tela: 'feedback', indice: 0 });
+    expect(rodar(fb, [tick(8300)], c)).toMatchObject({ tela: 'card', indice: 1 });
+  });
+
+  it('tempo esgotado com 15 s: o feedback dura a carimbada + o tempo configurado', () => {
     const c = ctx({ tempoFeedbackMs: 15000 });
     const fb = rodar(emCard(c), [tick(TEMPOS.cardMs)], c);
-    expect(fb).toMatchObject({ tela: 'feedback', restanteMs: 15000 });
-    expect(rodar(fb, [tick(14999)], c).tela).toBe('feedback');
-    expect(rodar(fb, [tick(15000)], c).tela).toBe('card');
+    expect(fb).toMatchObject({ tela: 'feedback', restanteMs: 15300 });
+    expect(rodar(fb, [tick(15299)], c).tela).toBe('feedback');
+    expect(rodar(fb, [tick(15300)], c).tela).toBe('card');
   });
 
-  it('AC-15.3 (v12.0.1): o feedback do treino também usa o tempo configurado, mais a saída do card', () => {
+  it('AC-15.3 (v12.0.1): o feedback do treino em 8 s também tem saída + carimbada + o tempo configurado (fronteira 8549/8550)', () => {
     const treino: PerfilTutorial[] = [{ id: 't1', nome: 't1', frase: '', veredito: 'falsa', explicacao: '', tecnica: 'imagem', tema: 'curiosidades' }];
-    const c = ctx({ tempoFeedbackMs: 5000, tutorial: treino });
+    const c = ctx({ tempoFeedbackMs: 8000, tutorial: treino });
     const fb = rodar(ESTADO_INICIAL, [enter, enter, escolha('falsa')], c);
-    expect(fb).toMatchObject({ tela: 'tutorialFeedback', restanteMs: 5000 + TEMPOS.saidaMs, resultadoMs: 5000 });
-    expect(rodar(fb, [tick(5000 + TEMPOS.saidaMs - 1)], c).tela).toBe('tutorialFeedback');
-    expect(rodar(fb, [tick(5000 + TEMPOS.saidaMs)], c).tela).toBe('card');
+    expect(fb).toMatchObject({ tela: 'tutorialFeedback', restanteMs: 8550, resultadoMs: 8300 });
+    expect(rodar(fb, [tick(8549)], c).tela).toBe('tutorialFeedback');
+    expect(rodar(fb, [tick(8550)], c).tela).toBe('card');
   });
 });
 
@@ -78,7 +90,7 @@ describe('AC-9.28/AC-5.4/AC-5.5: tolerância sem pessoa configurada (modo Corpo)
 describe('AC-5.2/AC-9.26: volta automática do resumo', () => {
   const resumo = (c: Contexto) => {
     let s = emCard(c);
-    for (let i = 0; i < 6; i++) s = rodar(s, [escolha('falsa'), tick(TEMPOS.saidaMs + duracaoFeedbackMs(c))], c);
+    for (let i = 0; i < 6; i++) s = rodar(s, [escolha('falsa'), tick(TEMPOS.saidaMs + duracaoResultadoMs(c))], c);
     expect(s.tela).toBe('resumo');
     return s;
   };
@@ -117,7 +129,7 @@ describe('AC-5.2/AC-9.26: volta automática do resumo', () => {
     expect(s).toMatchObject({ tela: 'card', indice: 0 });
     for (let i = 0; i < 6; i++) {
       expect(s).toMatchObject({ tela: 'card', indice: i });
-      s = rodar(s, [escolha('falsa'), tick(TEMPOS.saidaMs + duracaoFeedbackMs(c))], c);
+      s = rodar(s, [escolha('falsa'), tick(TEMPOS.saidaMs + duracaoResultadoMs(c))], c);
     }
     // Chegou ao resumo de novo: o contador começa do zero.
     expect(s.tela).toBe('resumo');

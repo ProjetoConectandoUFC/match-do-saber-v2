@@ -13,7 +13,8 @@ export function sonsDaTransicao(antes: Estado, depois: Estado): Som[] {
   if (depois.tela !== 'feedback') return [];
   const resultado: Som = depois.partida.resultados[depois.indice] === 'acerto' ? 'acerto' : 'erro';
   if (antes.tela === 'card') return depois.resposta === null ? [resultado] : ['deslizar'];
-  // Depois da saída do card (TEMPOS.saidaMs), o resultado aparece: toca uma vez, seja qual for o tempo do feedback (AC-9.25).
+  // Depois da saída do card (TEMPOS.saidaMs), o resultado aparece com a carimbada (AC-4.9): toca uma vez, quando a
+  // carimbada começa, seja qual for o tempo do feedback (AC-9.25).
   const terminouSaida =
     antes.tela === 'feedback' &&
     antes.indice === depois.indice &&

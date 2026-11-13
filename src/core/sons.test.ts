@@ -27,6 +27,10 @@ describe('sonsDaTransicao', () => {
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(100), tick(100)])).toEqual(['deslizar']);
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(100), tick(100), tick(100)])).toEqual(['deslizar', 'acerto']);
   });
+  it('AC-4.9 (v12.0.0): o resultado soa quando a carimbada começa, logo depois da saída do card', () => {
+    expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs - 1)])).toEqual(['deslizar']);
+    expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs - 1), tick(1), tick(TEMPOS.carimboMs)])).toEqual(['deslizar', 'acerto']);
+  });
   it('AC-11.3: escolha errada = deslizar e erro', () => {
     expect(sons([{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs)])).toEqual(['deslizar', 'erro']);
   });
@@ -42,7 +46,7 @@ describe('sonsDaTransicao', () => {
 
   // Partida de 1 card (ctx tem uma notícia): o feedback termina e vai ao resumo.
   const ateResumo = (resposta: 'verdadeira' | 'falsa'): Evento[] =>
-    [{ tipo: 'escolha', resposta }, tick(TEMPOS.saidaMs), tick(TEMPOS.feedbackMs)];
+    [{ tipo: 'escolha', resposta }, tick(TEMPOS.saidaMs), tick(TEMPOS.carimboMs + TEMPOS.feedbackMs)];
 
   it('AC-11.6 (v11.0.0): ao chegar ao resumo toca uma vez a vinheta da faixa (1 de 1 = faixa 4; 0 de 1 = faixa 1)', () => {
     expect(sons(ateResumo('verdadeira'))).toEqual(['deslizar', 'acerto', 'fim4']);

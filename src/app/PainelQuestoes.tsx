@@ -163,8 +163,8 @@ export function PainelQuestoes({
       setMensagem({ texto: r.erro, erro: true });
       return;
     }
-    onRevisor(nome.trim());
-    await salvar(r.banco, `Questão ${banco[indice]!.id} aprovada.`);
+    // O nome só fica guardado na sessão se a gravação deu certo (gravação recusada não aprova nada; AC-7.6).
+    if (await salvar(r.banco, `Questão ${banco[indice]!.id} aprovada.`)) onRevisor(nome.trim());
   }
 
   function pedirAprovar(indice: number) {

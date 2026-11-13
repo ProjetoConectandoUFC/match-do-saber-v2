@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { CONFIG_INCLINACAO_CARD, criarInclinacaoCard, deslocamentoCard, fracaoControle, situacaoDoCard } from './inclinacaoCard';
-import { TEMPOS } from './partida';
+import { TEMPOS, duracaoResultadoMs } from './partida';
+
+/** Resultado com o tempo padrão: carimbada (300 ms) + feedback (3 s) (AC-4.9, AC-9.25). */
+const RESULTADO_PADRAO = duracaoResultadoMs({});
 
 const { fracaoLargura, maxGraus, zonaMorta, constanteTempoMs } = CONFIG_INCLINACAO_CARD;
 const CARD = { largura: 600, altura: 640 };
@@ -131,26 +134,32 @@ describe('situacaoDoCard (AC-2.10)', () => {
   });
 
   it('saída do card escolhido mantém a posição; o resultado do feedback e o tempo esgotado voltam ao centro', () => {
-    const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null, resultadoMs: number = TEMPOS.feedbackMs) =>
+    // v12.0.0: o resultado (carimbada + tempo configurado) vem gravado no estado em `resultadoMs` (AC-4.9, AC-9.25).
+    const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null, resultadoMs: number = RESULTADO_PADRAO) =>
       ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, resposta, resultadoMs });
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs + TEMPOS.saidaMs, 'verdadeira'), false)).toBe('saindo');
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs, 'falsa'), false)).toBe('centro');
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs, null), false)).toBe('centro');
+    expect(situacaoDoCard(fb(RESULTADO_PADRAO + TEMPOS.saidaMs, 'verdadeira'), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(RESULTADO_PADRAO + 1, 'verdadeira'), false)).toBe('saindo'); // a carimbada é do resultado
+    expect(situacaoDoCard(fb(RESULTADO_PADRAO, 'falsa'), false)).toBe('centro');
+    expect(situacaoDoCard(fb(RESULTADO_PADRAO, null), false)).toBe('centro');
     // AC-9.25: com o feedback em 8 s, a saída é só nos primeiros `saidaMs` (o limite é o do estado, não 3 s fixos).
-    expect(situacaoDoCard(fb(8000 + TEMPOS.saidaMs, 'falsa', 8000), false)).toBe('saindo');
-    expect(situacaoDoCard(fb(8000, 'falsa', 8000), false)).toBe('centro');
-    expect(situacaoDoCard(fb(5000, 'falsa', 8000), false)).toBe('centro');
+    const oito = duracaoResultadoMs({ tempoFeedbackMs: 8000 });
+    expect(situacaoDoCard(fb(oito + TEMPOS.saidaMs, 'falsa', oito), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(oito + 1, 'falsa', oito), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(oito, 'falsa', oito), false)).toBe('centro');
+    expect(situacaoDoCard(fb(5000, 'falsa', oito), false)).toBe('centro');
   });
 
   it('v10.2.0: o card de treino segue a leitura e sai da mesma forma; o feedback de treino volta ao centro', () => {
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, false)).toBe('jogando');
     expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, true)).toBe('centro');
-    const fb = (restanteMs: number, resultadoMs: number = TEMPOS.feedbackMs) =>
+    const fb = (restanteMs: number, resultadoMs: number = RESULTADO_PADRAO) =>
       ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, resposta: 'falsa' as const, resultadoMs });
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs + 1), false)).toBe('saindo');
-    expect(situacaoDoCard(fb(TEMPOS.feedbackMs), false)).toBe('centro');
-    expect(situacaoDoCard(fb(5000, 8000), false)).toBe('centro');
-    expect(situacaoDoCard(fb(8001, 8000), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(RESULTADO_PADRAO + 1), false)).toBe('saindo');
+    expect(situacaoDoCard(fb(RESULTADO_PADRAO), false)).toBe('centro');
+    const oito = duracaoResultadoMs({ tempoFeedbackMs: 8000 });
+    expect(situacaoDoCard(fb(5000, oito), false)).toBe('centro');
+    expect(situacaoDoCard(fb(oito, oito), false)).toBe('centro');
+    expect(situacaoDoCard(fb(oito + 1, oito), false)).toBe('saindo');
   });
 
   it('outras telas ficam no centro', () => {
