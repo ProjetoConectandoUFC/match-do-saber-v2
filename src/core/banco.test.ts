@@ -8,7 +8,7 @@ import type { NoticiaBanco } from './types';
 const n = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org/a',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', visivel: '', ...extra,
 });
 
 describe('título curto e veículo da fonte (AC-7.11, v11.0.0)', () => {
@@ -176,5 +176,32 @@ describe('gravar, apagar e alterar em massa (AC-7.2, AC-7.4)', () => {
     const r = alterarEmMassa(banco, ['a', 'b'], 'status', 'rascunho');
     expect(r.map((x) => x.status)).toEqual(['rascunho', 'rascunho', 'aprovada']);
     expect(banco[0]!.status).toBe('aprovada'); // não muda o original
+  });
+});
+
+describe('visibilidade (AC-7.12, v12.0.0)', () => {
+  it('vazia, sim ou nao é válida; outro valor invalida a notícia', () => {
+    for (const v of ['', 'sim', 'nao']) expect(validarNoticia(n('a', { visivel: v }))).toEqual({});
+    expect(validarNoticia(n('a', { visivel: 'talvez' })).visivel).toBe('use sim, nao ou deixe vazio');
+  });
+
+  it('AC-7.7: oculta (visivel = nao) continua válida, mas não entra na partida; vazia e sim entram', () => {
+    const banco = [n('a', { visivel: 'nao' }), n('b', { visivel: 'sim' }), n('c')];
+    expect(validarBanco(banco).invalidas).toEqual([]);
+    expect(jogaveis(banco).map((x) => x.id)).toEqual(['b', 'c']);
+  });
+
+  it('nova notícia nasce visível (vazia)', () => {
+    expect(novaNoticia([]).visivel).toBe('');
+  });
+
+  it('AC-7.4 (v12.0.1): "Alterar em massa" aceita visivel e dificuldade', () => {
+    const banco = [n('a'), n('b')];
+    expect(alterarEmMassa(banco, ['a'], 'visivel', 'nao').map((x) => x.visivel)).toEqual(['nao', '']);
+    expect(alterarEmMassa(banco, ['b'], 'dificuldade', 'facil').map((x) => x.dificuldade)).toEqual(['', 'facil']);
+  });
+
+  it('AC-7.2 (v12.0.0): tema politica é válido', () => {
+    expect(validarNoticia(n('a', { tema: 'politica' }))).toEqual({});
   });
 });

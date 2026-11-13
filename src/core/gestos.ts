@@ -1,3 +1,4 @@
+import { MULTIPLICADOR_SENSIBILIDADE, type Sensibilidade } from './ajustes';
 import type { ModoJogo } from './modos';
 import type { Presenca } from './partida';
 
@@ -27,6 +28,18 @@ export const CONFIG_GESTOS = {
 };
 export type ConfigGestos = typeof CONFIG_GESTOS;
 type Config = ConfigGestos;
+
+/**
+ * Limiares com a sensibilidade dos Ajustes (AC-9.28, v12.0.0): multiplica os limites que disparam um gesto
+ * (distâncias no Corpo e na Mão, ângulo e queixo na Cabeça); permanências e zonas de retorno não mudam.
+ * "Normal" devolve o próprio `CONFIG_GESTOS`.
+ */
+export function configGestos(sensibilidade: Sensibilidade): Config {
+  const k = MULTIPLICADOR_SENSIBILIDADE[sensibilidade];
+  if (k === 1) return CONFIG_GESTOS;
+  const c = CONFIG_GESTOS;
+  return { ...c, limiar: c.limiar * k, arrasteMinL: c.arrasteMinL * k, limiarCabecaGraus: c.limiarCabecaGraus * k, limiarQueixo: c.limiarQueixo * k };
+}
 
 const NARIZ = 0, ORELHA_E = 7, ORELHA_D = 8, OMBRO_E = 11, OMBRO_D = 12, COTOVELO_E = 13, COTOVELO_D = 14, PUNHO_E = 15, PUNHO_D = 16;
 const AUSENTE: LeituraGesto = { presenca: { presente: false, centralizado: false }, inclinacao: 0, gestos: [] };

@@ -10,7 +10,7 @@ import type { EstadoBanco, RepositorioNoticias } from './repositorio';
 const n = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'Descrição', saiba_mais: 'Saiba mais', veredito: 'falsa',
   explicacao: 'Explicação', tecnica: 'fonte', tema: 'saude', fonte_url: 'https://exemplo.org/a',
-  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
+  fontes_extras: '', imagem: '', revisado_por: 'Ana', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', visivel: '', ...extra,
 });
 
 const BANCO = [
@@ -240,5 +240,48 @@ describe('PainelNoticias no app de desktop', () => {
     expect(onFechar).not.toHaveBeenCalled();
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(onFechar).toHaveBeenCalledOnce();
+  });
+});
+
+describe('visibilidade no painel Notícias (AC-7.12, AC-7.4, v12.0.0)', () => {
+  it('a oculta aparece com a marca "Oculta" e não conta como "no jogo"', async () => {
+    const repo = repoFalso();
+    repo.carregar = vi.fn(async () => ({ banco: [n('mds-0001', { visivel: 'nao' }), n('mds-0002')], arquivo: 'x.csv', versao: 'v1' }));
+    await montar(repo);
+    expect(linhas()[0]).toHaveAttribute('data-situacao', 'oculta');
+    expect(linhas()[0]).toHaveTextContent('Oculta');
+    expect(linhas()[1]).toHaveAttribute('data-situacao', 'no-jogo');
+    expect(screen.getByText(/· 1 no jogo/)).toBeInTheDocument();
+  });
+
+  it('o editor tem o interruptor "Visível no jogo": desligar grava visivel = nao; religar grava vazio', async () => {
+    const repo = await montar();
+    fireEvent.click(within(linhas()[0]!).getByRole('button', { name: 'Editar' }));
+    const editor = screen.getByRole('dialog', { name: 'Editar notícia' });
+    const chave = within(editor).getByRole('checkbox', { name: 'Visível no jogo' });
+    expect(chave).toBeChecked();
+    fireEvent.click(chave);
+    expect(chave).not.toBeChecked();
+    await act(async () => fireEvent.click(within(editor).getByRole('button', { name: 'Salvar' })));
+    expect(repo.salvar).toHaveBeenLastCalledWith([{ ...BANCO[0], visivel: 'nao' }, BANCO[1], BANCO[2], BANCO[3]], 'v1');
+    fireEvent.click(within(linhas()[0]!).getByRole('button', { name: 'Editar' }));
+    const ed2 = screen.getByRole('dialog', { name: 'Editar notícia' });
+    fireEvent.click(within(ed2).getByRole('checkbox', { name: 'Visível no jogo' }));
+    await act(async () => fireEvent.click(within(ed2).getByRole('button', { name: 'Salvar' })));
+    expect(repo.salvar).toHaveBeenLastCalledWith([{ ...BANCO[0], visivel: '' }, BANCO[1], BANCO[2], BANCO[3]], 'v2');
+  });
+
+  it('"Alterar em massa" aceita Visibilidade (Visível/Oculta) e Dificuldade', async () => {
+    const repo = await montar();
+    fireEvent.click(within(linhas()[0]!).getByRole('checkbox'));
+    const campo = screen.getByLabelText('Campo');
+    expect([...campo.querySelectorAll('option')].map((o) => o.textContent)).toEqual(['—', 'Status', 'Tema', 'Técnica', 'Dificuldade', 'Visibilidade']);
+    fireEvent.change(campo, { target: { value: 'visivel' } });
+    const valor = screen.getByLabelText('Novo valor');
+    expect([...valor.querySelectorAll('option')].map((o) => o.textContent)).toEqual(['—', 'Visível', 'Oculta']);
+    fireEvent.change(valor, { target: { value: 'nao' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Aplicar' }));
+    await act(async () => fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Aplicar' })));
+    expect(repo.salvar).toHaveBeenCalledWith([{ ...BANCO[0], visivel: 'nao' }, BANCO[1], BANCO[2], BANCO[3]], 'v1');
   });
 });

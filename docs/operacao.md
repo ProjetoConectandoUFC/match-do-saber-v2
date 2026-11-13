@@ -17,14 +17,29 @@
 6. Também dá para editar `Documentos/Match do Saber/noticias.csv` no Excel (colunas `id;titulo;descricao;saiba_mais;veredito;explicacao;tecnica;tema;fonte_url;fontes_extras;imagem;revisado_por;status;dificuldade`; a `dificuldade`, da v10.1.0, é opcional — `facil`, `medio`, `dificil` ou vazia — e um CSV antigo sem ela continua valendo). Feche o Excel antes de salvar pelo painel e aperte Ctrl+R no jogo para ler o arquivo novo; linhas inválidas aparecem no painel com o motivo e não entram nas partidas.
 7. Na versão web (navegador), ☰ › Notícias só avisa que o gerenciador está no app de desktop.
 
+## Questões (revisão e depuração, v12.0.0)
+1. Na tela de espera: ☰ › **Questões**, ou Ajustes (M) › **Revisar questões** (abre já filtrado por Rascunho).
+2. Lista à esquerda, questão aberta à direita: o card como o jogador vê, o "saiba mais", o gabarito (Verdade/Mentira), explicação, técnica, tema, dificuldade, status, quem revisou, visibilidade e as fontes com o link inteiro ("Copiar" copia o link). No app de desktop o link abre no navegador do sistema, nunca na janela do jogo.
+3. A contagem diz quantas há no banco, jogáveis, ocultas, rascunhos e inválidas; os filtros (texto, abas de tema, veredito, dificuldade, status, visibilidade, "Só jogáveis", "Só com problemas") mostram "Mostrando N de M". Uma questão fora do jogo diz por quê (ex.: "Sem revisor", "Rascunho", "Oculta").
+4. ↑/↓ passam para a questão anterior/próxima; Esc ou ✕ fecham. Com o painel aberto, câmera e teclas não chegam ao jogo.
+5. Só no app de desktop: "Ocultar"/"Mostrar no jogo", "Aprovar" (pede o nome de quem revisou na primeira vez; o nome fica só na memória até fechar o jogo; só aprova questão sem problemas), "Voltar para rascunho" e "Editar" (o mesmo editor do painel Notícias). Cada gravação faz backup antes, como no painel Notícias. Na versão web o painel é só leitura.
+
 ## No dia do evento (operador)
 1. Abrir o app de desktop pelo atalho (funciona sem internet). Na versão web: com internet, abrir o jogo no Chrome do notebook (ou pelo ícone instalado) e aguardar a tela de espera, o que baixa a versão mais recente para uso offline; para instalar, ícone de instalar na barra de endereço › Instalar.
 2. Conferir que o jogo mostra "Aperte ▶ Iniciar…" (câmera ativa); na web, permitir a câmera quando o navegador pedir.
-3. Menu ☰ (canto superior direito, só na tela de espera): Notícias, Configurações, Diagnóstico e Tela cheia. Esc ou um clique fora fecham.
+3. Menu ☰ (canto superior direito, só na tela de espera): Notícias, Ajustes, Diagnóstico e Tela cheia. Esc ou um clique fora fecham.
 4. Teclas: → verdade, ← falsa, ↑ saiba mais, Enter iniciar / próxima partida.
 5. Clique uma vez na tela do jogo depois de abri-lo: o navegador só libera o som depois de uma interação.
-6. Configurações (tecla M ou ☰ › Configurações, só na tela de espera; abre um painel à direita): modo de jogo (Corpo, Mão, Cabeça), tempo por card (10–30 s) e som. Ficam guardadas no notebook.
+6. Ajustes (tecla M ou ☰ › Ajustes, só na tela de espera, sem senha; abre um painel à direita, com rolagem). ↑/↓ escolhem o item, ←/→ mudam o valor, Espaço liga/desliga um tema; Esc, M ou Enter fecham. Ficam guardados no notebook.
+   - Partida: notícias por partida (5 a 20; padrão 10), tempo por card (10 a 60 s; padrão 15), tempo do feedback (3 a 15 s; padrão 3), volta automática do resumo (desligada, 30, 60 ou 120 s).
+   - Conteúdo: temas (cada um com quantas notícias jogáveis tem; pelo menos um fica ligado) e dificuldade (Misturada, Só fácil, Só médio, Só difícil ou Crescente).
+   - Detecção: modo de jogo (Corpo, Mão, Cabeça), sensibilidade do gesto (Menor pede um gesto maior; Maior aceita um gesto menor) e tolerância sem pessoa (5, 10 ou 20 s, só no modo Corpo).
+   - Mídia: som, volume (Baixo, Médio, Alto), foto no resumo, QR das fontes e tutorial.
+   - Questões: quantas notícias estão jogáveis, quantas há no banco e quantas estão ocultas.
+   - "Restaurar padrão" (Espaço duas vezes, ou clique e confirmação) volta tudo ao padrão; o banco de notícias não muda.
+   A tela de espera resume "Modo · notícias · s por card · Som" e avisa "Ajustes personalizados" quando outro ajuste foge do padrão. Se os temas e a dificuldade escolhidos não deixam nenhuma notícia, a espera avisa "revise Ajustes › Conteúdo".
 7. O jogo nunca começa sozinho: o operador aperta "▶ Iniciar" (ou Enter). Com a câmera ativa, abre a calibração ("Fique no centro", 2 s) e a partida começa; Enter na calibração a pula e joga pelas setas. Sem câmera, começa direto. "✕ Sair" (ou Esc) encerra a partida na hora e o jogo fica na espera.
+8. Ocultar uma notícia sem apagá-la (app de desktop): ☰ › Notícias › Editar › desligar "Visível no jogo" (ou selecionar várias e "Alterar em massa" › Visibilidade › Oculta). Ela fica no banco, marcada "Oculta", e só volta às partidas quando for religada.
 
 ## Diagnóstico do rastreio (equipe técnica)
 Para medir o rastreio no notebook do estande antes de ajustar os gestos:

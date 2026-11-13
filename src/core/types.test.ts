@@ -3,7 +3,8 @@ import { COLUNAS_BANCO, DIFICULDADES, DIFICULDADE_ROTULO, STATUS, TEMAS, TEMA_RO
 
 describe('tipos do banco de notícias (v9.0.0)', () => {
   it('AC-7.2: temas e status só aceitam os valores das listas', () => {
-    expect(TEMAS).toEqual(['saude', 'ciencia', 'historia', 'tecnologia', 'curiosidades', 'meio-ambiente']);
+    expect(TEMAS).toEqual(['saude', 'ciencia', 'historia', 'tecnologia', 'curiosidades', 'meio-ambiente', 'politica']); // politica: v12.0.0
+    expect(TEMA_ROTULO.politica).toBe('Política');
     expect(STATUS).toEqual(['rascunho', 'aprovada']);
     for (const t of TEMAS) expect(TEMA_ROTULO[t]).toBeTruthy();
     expect(TEMA_ROTULO['meio-ambiente']).toBe('Meio ambiente');
@@ -13,7 +14,7 @@ describe('tipos do banco de notícias (v9.0.0)', () => {
     expect(COLUNAS_BANCO).toEqual([
       'id', 'titulo', 'descricao', 'saiba_mais', 'veredito', 'explicacao', 'tecnica', 'tema',
       'fonte_url', 'fontes_extras', 'imagem', 'revisado_por', 'status', 'dificuldade',
-      'titulo_curto', 'fonte_nome',
+      'titulo_curto', 'fonte_nome', 'visivel', // AC-7.12 (v12.0.0)
     ]);
   });
 

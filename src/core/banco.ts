@@ -12,6 +12,7 @@ const OBRIGATORIOS: readonly ColunaBanco[] = [
 const LISTAS: Partial<Record<ColunaBanco, readonly string[]>> = {
   veredito: VEREDITOS, tecnica: TECNICAS, tema: TEMAS, status: STATUS,
 };
+const VISIBILIDADES: readonly string[] = ['', 'sim', 'nao'];
 const LINK = /^https?:\/\/[^\s.]+\.\S+$/i;
 const chave = (id: string) => id.trim().toLowerCase();
 
@@ -29,6 +30,8 @@ export function validarNoticia(n: NoticiaBanco, outrosIds: Iterable<string> = []
   const dificuldade = n.dificuldade ?? '';
   if (dificuldade && !DIFICULDADES.includes(dificuldade as Dificuldade)) p.dificuldade = `use ${DIFICULDADES.join(', ')}`;
   // AC-7.11 (v11.0.0): opcional; cabe numa linha da lista do resumo.
+  // AC-7.12 (v12.0.0): opcional; vazia ou `sim` = visível, `nao` = oculta.
+  if (!VISIBILIDADES.includes(n.visivel ?? '')) p.visivel = 'use sim, nao ou deixe vazio';
   if ((n.titulo_curto ?? '').length > MAX_TITULO_CURTO) p.titulo_curto = `use até ${MAX_TITULO_CURTO} caracteres`;
   if (!p.fonte_url && !LINK.test(n.fonte_url)) p.fonte_url = 'precisa ser um link http(s)';
   const extras = (n.fontes_extras ?? '').split(/\s+/).filter(Boolean);
@@ -74,10 +77,13 @@ function paraNoticia(n: NoticiaBanco): Noticia {
   return x;
 }
 
-/** Notícias que podem entrar numa partida (AC-7.7, Princípio 1): válidas, aprovadas, com fonte e revisor. */
+/** Oculta pelo operador (AC-7.12): fica no banco, mas fora das partidas e da página das fontes. */
+export const oculta = (n: Pick<NoticiaBanco, 'visivel'>) => n.visivel === 'nao';
+
+/** Notícias que podem entrar numa partida (AC-7.7, Princípio 1): válidas, aprovadas, com fonte e revisor, e não ocultas. */
 export function jogaveis(banco: readonly NoticiaBanco[]): Noticia[] {
   return validarBanco(banco).validas
-    .filter((n) => n.status === 'aprovada' && n.fonte_url && n.revisado_por)
+    .filter((n) => n.status === 'aprovada' && n.fonte_url && n.revisado_por && !oculta(n))
     .map(paraNoticia);
 }
 
@@ -151,7 +157,8 @@ export function apagarNoticias(banco: readonly NoticiaBanco[], ids: Iterable<str
   return banco.filter((n) => !fora.has(n.id));
 }
 
-export type CampoEmMassa = 'status' | 'tema' | 'tecnica';
+/** AC-7.4 (v12.0.1): também `dificuldade` e `visivel`. */
+export type CampoEmMassa = 'status' | 'tema' | 'tecnica' | 'dificuldade' | 'visivel';
 
 export function alterarEmMassa(
   banco: readonly NoticiaBanco[], ids: Iterable<string>, campo: CampoEmMassa, valor: string,

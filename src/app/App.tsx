@@ -1,20 +1,26 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FATOR_VOLUME } from '../core/ajustes';
 import { jogaveis } from '../core/banco';
+import { avisoSemNoticias, contarConteudo } from '../core/contagem';
 import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
 import { enderecoFontes, linhasDoResumo } from '../core/fontesRodada';
 import { URL_PUBLICA } from './enderecoPublico';
-import { TEMPOS, pontos, type Estado } from '../core/partida';
+import { TEMPOS, cardSaindo, pontos, type Estado } from '../core/partida';
+import { filtrarConteudo } from '../core/sorteio';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
 import { capturarFoto, type FotoPartida } from './foto';
 import { MenuOperador, type ItemMenu } from './MenuOperador';
+import { PainelAjustes } from './PainelAjustes';
 import { PainelNoticias } from './PainelNoticias';
+import { PainelQuestoes } from './PainelQuestoes';
+import type { FiltrosQuestoes } from '../core/questoes';
 import { PainelDiagnostico } from './PainelDiagnostico';
 import { criarRepositorio, repositorioWeb, type EstadoBanco, type RepositorioNoticias } from './repositorio';
-import { BotaoSair, MenuConfiguracoes, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
+import { BotaoSair, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
 import { perfilComoNoticia } from '../core/tutorial';
 import { PERFIS_TUTORIAL } from './perfisTutorial';
-import { useConfiguracoes } from './useConfiguracoes';
+import { useAjustes } from './useAjustes';
 import { useFotoPartida } from './useFotoPartida';
 import { useInclinacaoCard } from './useInclinacaoCard';
 import { useJogo } from './useJogo';
@@ -24,6 +30,12 @@ import s from './App.module.css';
 function alternarTelaCheia() {
   const pedido = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
   pedido?.catch(() => {});
+}
+
+/** App de desktop: o preload abre links no navegador do sistema (AC-16.2); no navegador, não existe. */
+function abrirLinkDesktop(): ((url: string) => void) | undefined {
+  const abrir = (window as { matchDoSaber?: { abrirLink?: (url: string) => Promise<unknown> } }).matchDoSaber?.abrirLink;
+  return abrir ? (url) => { void abrir(url); } : undefined;
 }
 
 export function App() {
@@ -58,36 +70,52 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   estadoBanco: EstadoBanco;
   onBancoAlterado: (e: EstadoBanco) => void;
 }) {
-  // Só notícias válidas e aprovadas entram nas partidas (AC-7.7). Ao gravar, a próxima partida já usa o banco novo (AC-7.6).
-  const noticias = useMemo(() => jogaveis(estadoBanco.banco), [estadoBanco.banco]);
+  // Só notícias válidas, aprovadas e visíveis entram nas partidas (AC-7.7, AC-7.12). Ao gravar, a próxima partida já usa o banco novo (AC-7.6).
+  const todas = useMemo(() => jogaveis(estadoBanco.banco), [estadoBanco.banco]);
   const telaRef = useRef<Estado['tela']>('espera');
   // Menu ☰ do operador (FR-14) e o painel que ele abriu.
-  const [operador, setOperador] = useState<'fechado' | 'menu' | 'noticias'>('fechado');
+  const [operador, setOperador] = useState<'fechado' | 'menu' | 'noticias' | 'questoes'>('fechado');
+  // Painel Questões (FR-17): filtro com que abre (AC-9.31) e o nome de quem revisa, só na memória da sessão (AC-16.5).
+  const [filtroQuestoes, setFiltroQuestoes] = useState<Partial<FiltrosQuestoes>>({});
+  const [revisor, setRevisor] = useState('');
   const operadorRef = useRef(operador);
   operadorRef.current = operador;
   const podeAbrirMenu = useCallback(() => telaRef.current === 'espera' && operadorRef.current === 'fechado', []);
-  const cfg = useConfiguracoes(podeAbrirMenu);
+  // AC-9.31: Ajustes › Revisar questões fecha os Ajustes e abre Questões já filtrado por Rascunho.
+  const revisarQuestoes = useCallback(() => {
+    setFiltroQuestoes({ status: 'rascunho' });
+    setOperador('questoes');
+  }, []);
+  const cfg = useAjustes(podeAbrirMenu, { revisarQuestoes: true, onRevisar: revisarQuestoes });
+  const { temas, dificuldade } = cfg.ajustes;
+  // Filtros de conteúdo dos Ajustes (AC-9.27): o sorteio, a contagem do painel e o aviso da espera (AC-6.4).
+  const noticias = useMemo(() => filtrarConteudo(todas, { temas, dificuldade }), [todas, temas, dificuldade]);
+  const contagem = useMemo(() => contarConteudo(estadoBanco.banco, { temas, dificuldade }), [estadoBanco.banco, temas, dificuldade]);
   // Modo de diagnóstico (FR-12): começa ligado com ?diagnostico; o menu ☰ liga e desliga (AC-12.7).
   const [diagnostico, setDiagnostico] = useState(() =>
     (new URLSearchParams(window.location.search).has('diagnostico') ? criarRegistro() : undefined));
-  // Com o menu ☰, um painel dele ou as Configurações abertos, câmera e teclas não chegam ao jogo (FR-14).
-  const pausado = cfg.menuAberto || operador !== 'fechado';
-  const { estado, despachar, camera, videoRef, poseRef, inclinacaoRef } = useJogo(noticias, cfg.config, pausado, diagnostico);
+  // Com o menu ☰, um painel dele ou os Ajustes abertos, câmera e teclas não chegam ao jogo (FR-14).
+  const pausado = cfg.aberto || operador !== 'fechado';
+  const { estado, despachar, camera, videoRef, poseRef, inclinacaoRef } = useJogo(noticias, cfg.ajustes, pausado, diagnostico);
   const fecharOperador = useCallback(() => setOperador('fechado'), []);
   const escolherNoMenu = useCallback((item: ItemMenu) => {
-    if (item === 'configuracoes') {
+    if (item === 'ajustes') {
       operadorRef.current = 'fechado'; // o menu ☰ acabou de fechar; o setState ainda não chegou ao ref
       cfg.abrir();
     }
     else if (item === 'diagnostico') setDiagnostico(alternarDiagnostico);
     else if (item === 'telaCheia') alternarTelaCheia();
     else if (item === 'noticias') setOperador('noticias');
+    else if (item === 'questoes') {
+      setFiltroQuestoes({});
+      setOperador('questoes');
+    }
   }, [cfg.abrir]);
   telaRef.current = estado.tela;
-  useSons(estado, cfg.config.som);
+  useSons(estado, cfg.ajustes.som, FATOR_VOLUME[cfg.ajustes.volume]); // AC-9.29
   // Foto do resumo (FR-13): só com a câmera ativa; fica só neste estado React, com as âncoras do rosto
   // calculadas pela pose do mesmo quadro (AC-13.6), que posicionam o filtro da faixa no resumo (AC-13.8, v11.0.0).
-  const foto = useFotoPartida<FotoPartida>(estado, cfg.config.foto, () =>
+  const foto = useFotoPartida<FotoPartida>(estado, cfg.ajustes.foto, () =>
     camera === 'ativa' && videoRef.current ? capturarFoto(videoRef.current, poseRef.current) : null);
   const cardRef = useRef<HTMLElement>(null);
   const cardSaindoRef = useRef<HTMLElement>(null); // card que está saindo (AC-2.1/AC-2.2)
@@ -100,8 +128,9 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       tela = (
         <TelaEspera
           semNoticias={noticias.length === 0}
+          avisoSemNoticias={avisoSemNoticias(contagem) ?? undefined}
           camera={camera}
-          config={cfg.config}
+          config={cfg.ajustes}
           menu={(
             <MenuOperador
               aberto={operador === 'menu'}
@@ -116,7 +145,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       );
       break;
     case 'calibracao':
-      tela = <TelaCalibracao progresso={estado.centradoMs / TEMPOS.calibracaoMs} modo={cfg.config.modo} />;
+      tela = <TelaCalibracao progresso={estado.centradoMs / TEMPOS.calibracaoMs} modo={cfg.ajustes.modo} />;
       break;
     case 'card':
       tela = (
@@ -127,8 +156,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           saibaMais={estado.saibaMais}
           ausente={estado.ausenteMs !== null}
           pontos={pontos(estado.partida)}
-          modo={cfg.config.modo}
-          totalMs={cfg.config.tempoCardS * 1000}
+          modo={cfg.ajustes.modo}
+          totalMs={cfg.ajustes.tempoCardS * 1000}
           cardRef={cardRef}
           onArrastar={(lado) => despachar({ tipo: 'escolha', resposta: lado === 'direita' ? 'verdadeira' : 'falsa' })}
         />
@@ -136,8 +165,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       break;
     case 'feedback': {
       const noticia = estado.partida.cards[estado.indice]!;
-      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, 3 s de resultado.
-      const saindo = estado.resposta !== null && estado.restanteMs > TEMPOS.feedbackMs;
+      // Após uma escolha, os primeiros TEMPOS.saidaMs do feedback são a saída do card; depois, o resultado, com a duração gravada no estado (AC-9.25).
+      const saindo = cardSaindo(estado);
       tela = saindo ? (
         <TelaCard
           key={estado.indice}
@@ -146,8 +175,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           saibaMais={false}
           ausente={false}
           pontos={pontos(estado.partida)}
-          modo={cfg.config.modo}
-          totalMs={cfg.config.tempoCardS * 1000}
+          modo={cfg.ajustes.modo}
+          totalMs={cfg.ajustes.tempoCardS * 1000}
           saida={estado.resposta === 'verdadeira' ? 'direita' : 'esquerda'}
           cardRef={cardSaindoRef}
           onArrastar={() => {}}
@@ -163,9 +192,9 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       const perfil = PERFIS_TUTORIAL[estado.passo]!;
       const noticia = perfilComoNoticia(perfil);
       const treino = { passo: estado.passo, total: PERFIS_TUTORIAL.length, ilustracao: perfil.ilustracao };
-      const saindo = estado.tela === 'tutorialFeedback' && estado.restanteMs > TEMPOS.feedbackMs;
+      const saindo = cardSaindo(estado);
       tela = estado.tela === 'tutorialFeedback' && !saindo ? (
-        <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.config.modo} treino={treino} />
+        <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.ajustes.modo} treino={treino} />
       ) : (
         <TelaCard
           key={`treino-${estado.passo}`}
@@ -174,7 +203,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           saibaMais={false}
           ausente={false}
           pontos={0}
-          modo={cfg.config.modo}
+          modo={cfg.ajustes.modo}
           treino={treino}
           saida={estado.tela === 'tutorialFeedback' ? (estado.resposta === 'verdadeira' ? 'direita' : 'esquerda') : undefined}
           cardRef={saindo ? cardSaindoRef : cardRef}
@@ -193,7 +222,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           foto={foto?.imagem}
           ancoras={foto?.ancoras}
           linhas={linhasDoResumo(cards, resultados)}
-          enderecoQr={enderecoFontes(URL_PUBLICA, cards.map((c) => c.id))}
+          enderecoQr={cfg.ajustes.qrFontes ? enderecoFontes(URL_PUBLICA, cards.map((c) => c.id)) : undefined} // AC-9.29
         />
       );
       break;
@@ -210,8 +239,29 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       {operador === 'noticias' && (
         <PainelNoticias repo={repo} estado={estadoBanco} onBancoAlterado={onBancoAlterado} onFechar={fecharOperador} />
       )}
-      {cfg.menuAberto && (
-        <MenuConfiguracoes config={cfg.config} itemDestacado={cfg.itemDestacado} onDefinir={cfg.definir} onFechar={cfg.fechar} />
+      {operador === 'questoes' && (
+        <PainelQuestoes
+          repo={repo}
+          estado={estadoBanco}
+          onBancoAlterado={onBancoAlterado}
+          onFechar={fecharOperador}
+          filtroInicial={filtroQuestoes}
+          revisor={revisor}
+          onRevisor={setRevisor}
+          abrirLink={abrirLinkDesktop()}
+        />
+      )}
+      {cfg.aberto && (
+        <PainelAjustes
+          ajustes={cfg.ajustes}
+          itens={cfg.itens}
+          painel={cfg.painel}
+          contagem={contagem}
+          onDefinir={cfg.definir}
+          onFechar={cfg.fechar}
+          onConfirmarRestauro={cfg.confirmarRestauro}
+          onRevisar={cfg.revisar}
+        />
       )}
       {diagnostico && <PainelDiagnostico registro={diagnostico} onBaixar={() => baixarJson(diagnostico.exportar())} />}
       {/* A prévia da câmera não aparece no resumo (AC-2.6, v10.0.0); o vídeo continua ligado para a foto. */}

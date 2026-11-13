@@ -1,5 +1,5 @@
 import { faixaDeAcertos } from './faixas';
-import { TEMPOS, pontos, type Estado } from './partida';
+import { cardSaindo, pontos, type Estado } from './partida';
 
 /** `fim1`..`fim4`: vinheta do resumo, uma por faixa de acertos (AC-11.6, v11.0.0). */
 export type Som = 'deslizar' | 'acerto' | 'erro' | 'fim1' | 'fim2' | 'fim3' | 'fim4';
@@ -13,12 +13,12 @@ export function sonsDaTransicao(antes: Estado, depois: Estado): Som[] {
   if (depois.tela !== 'feedback') return [];
   const resultado: Som = depois.partida.resultados[depois.indice] === 'acerto' ? 'acerto' : 'erro';
   if (antes.tela === 'card') return depois.resposta === null ? [resultado] : ['deslizar'];
-  // Depois da saída do card (TEMPOS.saidaMs), o resultado aparece: toca uma vez.
+  // Depois da saída do card (TEMPOS.saidaMs), o resultado aparece: toca uma vez, seja qual for o tempo do feedback (AC-9.25).
   const terminouSaida =
     antes.tela === 'feedback' &&
     antes.indice === depois.indice &&
     depois.resposta !== null &&
-    antes.restanteMs > TEMPOS.feedbackMs &&
-    depois.restanteMs <= TEMPOS.feedbackMs;
+    cardSaindo(antes) &&
+    !cardSaindo(depois);
   return terminouSaida ? [resultado] : [];
 }

@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { AJUSTES_PADRAO } from '../core/ajustes';
 import type { Noticia } from '../core/types';
-import { BarraTempo, BotaoSair, MenuConfiguracoes, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
+import { BarraTempo, BotaoSair, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
 
 const noticia: Noticia = {
   id: 'n1', titulo: 'Título X', descricao: 'Descrição Y', saibaMais: 'Mais Z', imagem: 'content/img/n1.webp', tema: 'saude',
@@ -165,8 +166,9 @@ describe('v10.0.0: espera com a identidade Conectando (FR-15)', () => {
 describe('v2.0.0: configurações, iniciar e sair', () => {
   it('AC-9.2/AC-10.1 (v9.0.0): espera mostra o resumo, Iniciar e o menu ☰ no lugar do ⚙', () => {
     const iniciar = vi.fn();
-    render(<TelaEspera semNoticias={false} camera="ativa" config={{ modo: 'mao', tempoCardS: 20, som: false, foto: false, tutorial: true }} menu={<button type="button">Menu</button>} onIniciar={iniciar} />);
-    expect(screen.getByText('Modo: Mão · Tempo por card: 20 s · Som: desligado · Foto: desligada · Tutorial: ligado')).toBeInTheDocument();
+    render(<TelaEspera semNoticias={false} camera="ativa" config={{ ...AJUSTES_PADRAO, modo: 'mao', tempoCardS: 20, som: false, noticiasPorPartida: 8 }} menu={<button type="button">Menu</button>} onIniciar={iniciar} />);
+    // v12.0.0: resumo de AC-9.2
+    expect(screen.getByText('Modo: Mão · 8 notícias · 20 s por card · Som: desligado')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Configurações' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Menu' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar' }));
@@ -175,29 +177,24 @@ describe('v2.0.0: configurações, iniciar e sair', () => {
   it('AC-10.2: sem notícias, Iniciar fica desativado', () => {
     render(<TelaEspera semNoticias camera="ativa" />);
     expect(screen.getByRole('button', { name: 'Iniciar' })).toBeDisabled();
+    expect(screen.getByText('Nenhuma notícia publicada')).toBeInTheDocument();
   });
-  it('AC-9.1: menu mostra os cinco itens (v10.2.0: Tutorial) com os valores atuais marcados', () => {
-    const definir = vi.fn();
-    render(<MenuConfiguracoes config={{ modo: 'corpo', tempoCardS: 15, som: true, foto: true, tutorial: false }} itemDestacado={0} onDefinir={definir} onFechar={() => {}} />);
-    expect(screen.getByRole('dialog', { name: 'Configurações' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Modo de jogo' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Tempo por card' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Som' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Foto no resumo' })).toBeInTheDocument();
-    const tutorial = within(screen.getByRole('group', { name: 'Tutorial' }));
-    expect(tutorial.getByRole('button', { name: '◉ Desligado' })).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.click(tutorial.getByRole('button', { name: '○ Ligado' }));
-    expect(definir).toHaveBeenLastCalledWith({ modo: 'corpo', tempoCardS: 15, som: true, foto: true, tutorial: true });
-    expect(screen.getByRole('button', { name: '◉ Corpo' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '◉ 15 s' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '◉ Ligado' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '◉ Ligada' })).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.click(screen.getByRole('button', { name: '○ 25 s' }));
-    expect(definir).toHaveBeenCalledWith({ modo: 'corpo', tempoCardS: 25, som: true, foto: true, tutorial: false });
-    // AC-9.3/AC-9.18: o X no topo do painel fecha (desenhado, sem o caractere "✕", FR-15)
-    const fechar = screen.getByRole('button', { name: 'Fechar' });
-    expect(fechar.textContent).toBe('');
+  it('AC-6.4 (v12.0.0): com notícias fora dos filtros, a espera manda revisar Ajustes › Conteúdo', () => {
+    render(<TelaEspera semNoticias avisoSemNoticias="Nenhuma notícia para os ajustes atuais: revise Ajustes › Conteúdo" camera="ativa" />);
+    expect(screen.getByText('Nenhuma notícia para os ajustes atuais: revise Ajustes › Conteúdo')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Iniciar' })).toBeDisabled();
   });
+  it('AC-9.2 (v12.0.0): ajuste fora do padrão além do resumo aparece como "Ajustes personalizados"', () => {
+    render(<TelaEspera semNoticias={false} camera="ativa" config={{ ...AJUSTES_PADRAO, volume: 'baixo' }} />);
+    expect(screen.getByText('Modo: Corpo · 10 notícias · 15 s por card · Som: ligado · Ajustes personalizados')).toBeInTheDocument();
+  });
+  it('AC-9.29 (v12.0.0): com o QR das fontes desligado, o resumo fica sem o cartão do QR e mantém a lista', () => {
+    const linhas = [{ id: 'mds-0001', titulo: 'Curto', veredito: 'verdadeira' as const, acertou: true, rotuloFonte: 'Fonte:' as const, fonte: 'exemplo.org' }];
+    const { container } = render(<TelaResumo pontos={1} total={1} linhas={linhas} />);
+    expect(container.querySelector('[data-cartao-qr]')).toBeNull();
+    expect(screen.getByText('Curto')).toBeInTheDocument();
+  });
+  // AC-9.1 (v12.0.0): o painel "Ajustes" substituiu o menu "Configurações"; os testes estão em PainelAjustes.test.tsx.
   it('AC-10.5: botão Sair tem nome acessível "Sair da partida"', () => {
     const sair = vi.fn();
     render(<BotaoSair onSair={sair} />);
