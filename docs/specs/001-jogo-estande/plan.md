@@ -7,7 +7,7 @@
 ## Global Constraints
 
 - Tempos: 15 s por card (v2.0.0: configurável de 10 a 30 s, padrão 15 s), 3 s de feedback, 2 s de calibração, 10 s de tolerância sem pessoa (o "saiba mais" fechava sozinho após 5 s de inatividade até a v4.0.0; removido na v5.0.0); o resumo fica na tela até Enter.
-- 10 cards por partida, 5 verdadeiros + 5 falsos, sem repetição; completa com o outro lado; com menos de 10 notícias, usa todas.
+- 10 cards por partida (v12.0.0: configurável de 5 a 20, padrão 10), 5 verdadeiros + 5 falsos, sem repetição; completa com o outro lado; com menos de 10 notícias, usa todas.
 - Pontuação: +1 por acerto; 0 por erro ou tempo esgotado.
 - Gestos: tronco para a **própria direita** = match (verdadeira); para a própria esquerda = descarte (falsa); dois punhos acima do nariz = saiba mais; ~300 ms / ~500 ms de permanência; retorno ao centro entre escolhas.
 - Entrada alternativa: → match, ← descarte, ↑ saiba mais, Enter iniciar; arrastar o card com mouse/toque.
@@ -5439,6 +5439,48 @@ Spec: AC-2.10b, AC-2.11, AC-2.12, AC-4.1 a AC-4.3, AC-4.9, AC-5.1, AC-5.8 a AC-5
 - 41.8 Resumo: opção B (polaroid 384, placar, mensagem, cartão do QR e lista em duas colunas), 1366×768 e 1920×1080; E2E de layout, da página das fontes e capturas reais em `docs/visual/capturas/v11-aplicado/`.
 - 41.9 Verificação no hardware (pendente): ler o QR a 50–80 cm da TV com dois celulares; conferir os filtros com fotos reais (de frente, de lado, de boné); conferir a vinheta no som do estande.
 
+## Phase 42 (added v12.0.0): Feedback por resultado e carimbo do veredito
+
+Spec: AC-4.1 a AC-4.3, AC-4.9, AC-4.10, AC-9.25 (só a soma do carimbo); FR-4, FR-15. Agente: agente-visual (prévia em `docs/visual/` + aplicação na mesma branch `001-v12-feedback-carimbo`; o responsável aprova pelo PR). TDD nos testes de componente e E2E. Não mexe em `gestos.ts` nem na geometria do card.
+
+- 42.1 Teste vermelho: `Telas.test.tsx` — feedback de acerto tem a classe/estado de acerto (verde), erro e tempo esgotado de erro (vermelho); nenhum texto "match" no feedback; o carimbo VERDADE/MENTIRA aparece por cima do texto do resultado; "Acertou!"/"Errou"/"Tempo esgotado" sempre presentes.
+- 42.2 Tokens `--cn-acerto` e `--cn-erro` em `tema.css` (menta/coral se forem lidos como verde/vermelho; senão, derivados), com contraste conferido.
+- 42.3 Componente do carimbo reaproveitado do card (AC-2.10b) no centro do feedback, sobre o texto do resultado; animação de carimbada (~300 ms) desligada com `prefers-reduced-motion`.
+- 42.4 Reducer: `TEMPOS.carimboMs` somado ao tempo do feedback (teste de fronteira em `partida.test.ts`, regra "animação soma").
+- 42.5 Treino do tutorial no mesmo layout (AC-4.10).
+- 42.6 E2E de layout 1366×768 e 1920×1080 + capturas em `docs/visual/capturas/v12-feedback/`.
+
+## Phase 43 (added v12.0.0): Ajustes, visibilidade e tema `politica`
+
+Spec: AC-5.2, AC-5.4, AC-5.5, AC-6.1 a AC-6.4, AC-7.2, AC-7.3, AC-7.7, AC-7.12, AC-9.1, AC-9.2, AC-9.4, AC-9.17, AC-9.23 a AC-9.30; FR-1, FR-5, FR-6, FR-7, FR-9, FR-14. Agente: agente-mecanico, branch `001-v12-ajustes`. TDD (lógica pura primeiro).
+
+- 43.1 `src/core/ajustes.ts` (evolui `modos.ts`): itens, grupos, opções, padrões, leitura/gravação no armazenamento com compatibilidade das 5 chaves antigas, "Restaurar padrão".
+- 43.2 Sorteio parametrizado: `sortear(noticias, rng, { quantidade, temas, dificuldade })` com AC-6.1 a AC-6.4 para N qualquer (par e ímpar) e a ordem "Crescente".
+- 43.3 Reducer/contexto: tempo do feedback, tolerância sem pessoa e volta automática do resumo vindos dos ajustes (testes de fronteira).
+- 43.4 Gestos: multiplicador de sensibilidade aplicado aos limiares de distância de `CONFIG_GESTOS` (Normal = 1, sem mudar nenhum teste atual).
+- 43.5 Mídia: volume (30/60/100%) em `audio.ts`; QR das fontes desligável no resumo.
+- 43.6 Banco: coluna `visivel` (sim/nao/vazio) em `COLUNAS_BANCO`, validação, `jogaveis` exclui ocultas, "Alterar em massa" aceita `visivel`, página das fontes ignora ocultas; tema `politica` em `TEMAS` com ilustração de tema (pedir ao agente-visual se faltar).
+- 43.7 UI: painel "Ajustes" com grupos, rolagem, teclado (↑/↓ pelos grupos, ←/→, Espaço nos temas), contagem de jogáveis/ocultas, "Revisar questões" (abre o painel da Fase 44 quando existir; até lá, o item fica oculto) e resumo da espera (AC-9.2); ☰ › "Ajustes".
+- 43.8 E2E: ajustes guardados e reaplicados, partida com N=5 e N=12, tema filtrado, oculta fora da partida.
+
+## Phase 44 (added v12.0.0): Painel Questões
+
+Spec: Story 16 (AC-16.1 a AC-16.6), FR-17, FR-14, AC-9.31. Agente: agente-mecanico, branch `001-v12-painel-questoes` (sai da `001-v12-ajustes` depois da Fase 43). Referência: Prova ou Reprova (`develop`, `dist/editor-questoes.js`, `dist/menu-apresentador.js`). TDD.
+
+- 44.1 `src/core/questoes.ts` (puro): contagens, filtros, motivos de não jogável em linguagem simples (a partir da mesma validação e de `jogaveis`).
+- 44.2 UI `PainelQuestoes.tsx`: lista + questão aberta (como o card + gabarito, explicação, técnica, tema, dificuldade, status, revisor, visibilidade, fontes com links), filtros, ↑/↓, Esc/✕.
+- 44.3 Ações no desktop: ocultar/mostrar, aprovar (nome do revisor uma vez por sessão), voltar para rascunho, editar (editor de AC-7.2); gravação com backup; web só leitura.
+- 44.4 Electron: links abrem no navegador do sistema (`shell.openExternal` via preload, só http/https).
+- 44.5 ☰ › "Questões" e Ajustes › "Revisar questões" (filtro Rascunho).
+- 44.6 E2E (web, só leitura) e E2E desktop (ocultar e aprovar gravam com backup).
+
+## Phase 45 (added v12.0.0): Lote 3 (política) e verificação
+
+Spec: AC-7.2 (tema `politica`), AC-7.12. Agentes: agente-noticias (lote em `docs/noticias/lotes/2026-11-12-lote-3.json`, branch `001-v12-lote-3-politica`), revisão humana; agente-gestor depois de cada fase.
+
+- 45.1 Revisão do lote 3 pelo responsável (página de revisão); só as aprovadas entram no `conteudo/noticias.csv`, depois da Fase 43.6 (tema `politica` válido).
+- 45.2 Verificação no hardware: cores do feedback a 2 m, leitura do carimbo sobre verde e vermelho, sensibilidade Menor/Maior no estande.
+
 ## Quickstart Validation
 
 ```bash
@@ -5529,3 +5571,9 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 10.2.0 | 39 | Adicionada: âncoras do rosto, privacidade da foto, tutorial, E2E do relógio em série e modelo de dados |
 | 11.0.0 | 39.7 | Concluída pela Fase 41 (filtros desenhados com as âncoras) |
 | 11.0.0 | 41 | Adicionada: prévia v11 aplicada (tela final com lista e QR, filtros por faixa, pilha, botões redondos, carimbo, "Deu match!", som de fim de partida, recorte chapado) |
+| 12.0.0 | 36, 41.7 | Parcialmente invalidadas: o fundo do feedback deixa de seguir o veredito e os ícones e "Deu match!" saem do feedback (Fase 42) |
+| 12.0.0 | 33, 34, 38 | Parcialmente estendidas: coluna `visivel`, tema `politica`, sorteio com N, temas e dificuldade (Fase 43) |
+| 12.0.0 | 42 | Adicionada: feedback por resultado e carimbo do veredito |
+| 12.0.0 | 43 | Adicionada: Ajustes, visibilidade e tema `politica` |
+| 12.0.0 | 44 | Adicionada: painel Questões |
+| 12.0.0 | 45 | Adicionada: lote 3 de política e verificação no hardware |

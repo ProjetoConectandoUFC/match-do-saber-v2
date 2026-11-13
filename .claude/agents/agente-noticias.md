@@ -21,7 +21,7 @@ Um arquivo JSON em `docs/noticias/lotes/<AAAA-MM-DD>-lote-<N>.json` com um array
   "veredito": "verdadeira | falsa",
   "explicacao": "por que é verdadeira/falsa, citando o que as fontes mostram (≤ 400 caracteres)",
   "tecnica": "fonte | data | imagem | contexto",
-  "tema": "saude | ciencia | historia | tecnologia | curiosidades | meio-ambiente",
+  "tema": "saude | ciencia | historia | tecnologia | curiosidades | meio-ambiente | politica",
   "fonteUrl": "URL principal (checagem ou veículo jornalístico)",
   "fontesExtras": ["outras URLs que confirmam"],
   "imagemBoatoUrl": "URL da imagem do boato/da matéria, se houver (opcional)",
@@ -40,10 +40,17 @@ E no fim da resposta: tabela resumo (id, título, veredito, técnica, tema) + co
 4. **As verdadeiras também precisam soar absurdas/surpreendentes.** Se só as falsas forem absurdas, o jogador aprende "absurdo = falso", o oposto do objetivo. Exemplo de verdadeira boa: "Austrália perdeu uma 'guerra' contra emas em 1932".
 5. **Fatos estáveis no tempo** (clássicos, não notícias da semana), com foco no Brasil e fontes em português quando existirem.
 6. **Nada no card entrega a resposta.** Título, descrição e saibaMais apresentam a alegação como circulou; o veredito só aparece em `explicacao`. A imagem é sempre a do boato/da matéria original, nunca um print de checagem com selo "FALSO".
-7. **Temas puramente partidários: evite.** Sem candidatos, partidos ou eleições específicas. Saúde pública, ciência e história são preferíveis.
+7. **Política (tema `politica`, desde a v12.0.0): pelo mote, nunca pela pessoa.** Transforme a alegação em manchete sobre o assunto, sem nome de político, partido, sigla ou candidato (ex.: "Fulano disse que a vacina transforma em jacaré" vira "Vacina contra a covid pode transformar pessoas em jacaré"). Pode ser incisivo no mote, nunca ofensivo a pessoas ou grupos. **Equilíbrio contado entre os lados do espectro**, tanto nas falsas quanto nas verdadeiras (o mesmo número de boatos que circularam em cada campo, e verdadeiras surpreendentes dos dois campos). Na `explicacao` e nas fontes os fatos podem citar quem disse, mas o card (título, descrição, saiba mais) não. Fora do tema `politica`, temas partidários continuam evitados.
 8. **Adequado a menores:** sem violência gráfica, conteúdo sexual ou discurso de ódio, mesmo citado.
 9. **A técnica precisa ser a que de fato desmonta/confirma o caso:** fonte (quem disse?), data (é antigo/requentado?), imagem (montagem/fora de contexto?), contexto (verdade distorcida/exagero?).
 10. `explicacao` ensina o método: diga o que o jogador poderia ter checado.
+
+Regras da revisão do lote 3 (responsável, 2026-11-12), valem para todos os lotes:
+
+11. **Relevância para o público:** estudantes brasileiros, jovens, hoje. Curiosidade de política estrangeira ou caso esdrúxulo sem reflexo atual não entra, mesmo que seja verdadeiro e bem checado.
+12. **Data:** notícia anterior a 2020 só entra se for atemporal, se tiver sido repercutida recentemente, ou se for a retirada de contexto de uma notícia mais antiga ainda (o boato requentado). Fatos históricos e institucionais que conversam com o presente são bem-vindos (ex.: plebiscito sobre a volta da monarquia; analfabetos sem direito a voto por mais de 100 anos): o responsável indicou que esse caminho pode fazer mais sentido do que perguntas presas a um momento.
+13. **Sem referência relativa ao momento:** nada de "novo presidente", "o presidente", "o atual governo", "o ministro" soltos, que perdem o sentido com o tempo. Localize com o ano: "Em 2015, a então presidente…", "Em 2019, um ministro…". "O atual presidente"/"o atual governo" só quando for de fato o governo em exercício (mandato até 2027; com a reeleição, até 2030).
+14. **Cuidado com o ano e a idade do público:** o jogador tem 15 a 20 anos; um ano muito antigo não diz nada a ele. Prefira anos que ele viveu, ou deixe claro por que o caso antigo importa hoje.
 
 ## Limites
 
