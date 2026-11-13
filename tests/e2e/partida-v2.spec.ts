@@ -83,14 +83,33 @@ test('AC-11.1–11.3: som ligado toca na escolha e no resultado', async ({ page 
 test('AC-11.4: som desligado não toca nada', async ({ page }) => {
   await abrir(page);
   await page.keyboard.press('m');
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('ArrowDown');
+  for (let i = 0; i < 6; i++) await page.keyboard.press('ArrowDown');   // Som é o 7º item (AC-9.1, v12.0.0)
   await page.keyboard.press('ArrowRight');                       // Som → Desligado
   await page.keyboard.press('Escape');
-  await expect(page.getByText('Modo: Corpo · Tempo por card: 15 s · Som: desligado · Foto: ligada · Tutorial: desligado', { exact: true })).toBeVisible();
+  await expect(page.getByText('Modo: Corpo · Card: 15 s · Entre cards: 3 s · Cards: 10 · Nível: Todos · Ausência: 10 s · Som: desligado · Foto: ligada · Tutorial: desligado', { exact: true })).toBeVisible();
   await page.keyboard.press('Enter');
   await page.keyboard.press('ArrowRight');
   await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   await page.waitForTimeout(500);
   expect(await sonsTocados(page)).toBe(0);
+});
+
+test('AC-4.9/AC-4.10 (v12.0.0): o fundo do feedback segue o resultado e o carimbo do veredito fica por cima do texto a 40%', async ({ page }) => {
+  await abrir(page);
+  await page.keyboard.press('Enter');
+  await expect(page.locator('article')).toBeVisible();
+  await page.keyboard.press('ArrowRight');
+  const selo = page.getByText(/^(Acertou!|Errou)$/);
+  await expect(selo).toBeVisible();
+  const main = page.locator('main[data-resultado]');
+  const acertou = (await selo.textContent()) === 'Acertou!';
+  await expect(main).toHaveClass(acertou ? /fbAcerto/ : /fbErro/);
+  const veredito = await main.getAttribute('data-veredito');
+  const carimbo = page.locator('[data-carimbo-veredito]');
+  await expect(carimbo).toHaveAttribute('data-carimbo-veredito', veredito!);       // status real da notícia
+  await expect.poll(() => carimbo.evaluate((el) => getComputedStyle(el).opacity)).toBe('0.4');
+  // por cima da explicação: o centro do carimbo cai dentro do bloco de texto do feedback
+  const [c, bloco] = [(await carimbo.boundingBox())!, (await page.locator('main[data-resultado] > div').first().boundingBox())!];
+  expect(c.x + c.width / 2).toBeGreaterThan(bloco.x);
+  expect(c.x + c.width / 2).toBeLessThan(bloco.x + bloco.width);
 });

@@ -330,14 +330,27 @@ function LinhaSelo({ icone, match, selo, positivo }: { icone: IdIcone; match: st
 }
 
 /**
- * Feedback (AC-4.1 a AC-4.3, AC-4.9): o fundo da tela inteira acende na cor do veredito; no topo o veredito,
- * menor ("É verdade"/"É mentira"); abaixo o ícone e o selo, maior; depois a explicação e a técnica.
+ * Carimbo do veredito da notícia (AC-4.10, v12.0.0): por cima do texto do feedback, a 40%, decorativo. Mostra sempre o
+ * status real da notícia, não a resposta do jogador. Último filho do bloco do feedback, para ficar por cima do texto.
+ */
+function CarimboVeredito({ verdade }: { verdade: boolean }) {
+  return (
+    <span className={s.carimboVeredito} data-carimbo-veredito={verdade ? 'verdade' : 'mentira'} aria-hidden="true">
+      {verdade ? <MarcaVerdade largura={360} /> : <MarcaMentira largura={360} />}
+    </span>
+  );
+}
+
+/**
+ * Feedback (AC-4.1 a AC-4.3, AC-4.9, AC-4.10): o fundo da tela inteira diz se o jogador pontuou (v12.0.0; até a
+ * v11.0.0 era a cor do veredito); no topo o veredito, menor ("É verdade"/"É mentira"); abaixo o ícone e o selo,
+ * maior; depois a explicação e a técnica, com o carimbo do veredito por cima.
  */
 export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia; resultado: Resultado; pontos: number }) {
   const verdade = noticia.veredito === 'verdadeira';
   return (
     <main
-      className={`${s.tela} ${verdade ? s.fbVerdade : s.fbMentira}`}
+      className={`${s.tela} ${resultado === 'acerto' ? s.fbAcerto : s.fbErro}`}
       data-veredito={verdade ? 'verdade' : 'mentira'}
       data-resultado={resultado}
     >
@@ -349,6 +362,7 @@ export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia;
         <LinhaSelo icone={resultado} match={MATCH[resultado]} selo={SELO[resultado]} positivo={resultado === 'acerto'} />
         <p className={s.explicacao}>{noticia.explicacao}</p>
         <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
+        <CarimboVeredito verdade={verdade} />
       </div>
       <Placar pontos={pontos} />
     </main>
@@ -369,7 +383,7 @@ export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
   const t = feedbackTutorial(modo, resposta, noticia.veredito);
   return (
     <main
-      className={`${s.tela} ${verdade ? s.fbVerdade : s.fbMentira}`}
+      className={`${s.tela} ${t.acertou ? s.fbAcerto : s.fbErro}`}
       data-veredito={verdade ? 'verdade' : 'mentira'}
       data-resultado={t.acertou ? 'treino-acerto' : 'treino-erro'}
     >
@@ -383,6 +397,7 @@ export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
         <p className={s.explicacao}>{t.certo}</p>
         <p className={s.explicacao}>{noticia.explicacao}</p>
         <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
+        <CarimboVeredito verdade={verdade} />
       </div>
       <MarcaTreino treino={treino} />
     </main>

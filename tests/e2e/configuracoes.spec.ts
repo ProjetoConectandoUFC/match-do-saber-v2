@@ -15,7 +15,7 @@ test('menu pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (AC
   await abrirSemCamera(page);
   const menu = page.getByRole('dialog', { name: 'Configurações' });
   const resumo = (t: string) => page.getByText(t, { exact: true });
-  await expect(resumo('Modo: Corpo · Tempo por card: 15 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.4
+  await expect(resumo('Modo: Corpo · Card: 15 s · Entre cards: 3 s · Cards: 10 · Nível: Todos · Ausência: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.4
 
   await page.keyboard.press('m');
   await expect(menu).toBeVisible();                                                       // AC-9.1
@@ -29,7 +29,7 @@ test('menu pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (AC
   await page.keyboard.press('Enter');                                                     // fecha (AC-9.3)
   await expect(menu).toBeHidden();
   await expect(page.locator('article')).toHaveCount(0);                                   // Enter do menu não inicia
-  await expect(resumo('Modo: Mão · Tempo por card: 20 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.2
+  await expect(resumo('Modo: Mão · Card: 20 s · Entre cards: 3 s · Cards: 10 · Nível: Todos · Ausência: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.2
 
   await page.keyboard.press('m');
   await page.keyboard.press('ArrowDown');
@@ -37,11 +37,11 @@ test('menu pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (AC
   await page.keyboard.press('ArrowLeft');                                                 // 15 → 10
   await page.keyboard.press('ArrowLeft');                                                 // 10 fica (AC-9.17)
   await page.keyboard.press('m');                                                         // M também fecha
-  await expect(resumo('Modo: Mão · Tempo por card: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();
+  await expect(resumo('Modo: Mão · Card: 10 s · Entre cards: 3 s · Cards: 10 · Nível: Todos · Ausência: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();
 
   await page.reload();
   await expect(page.getByText(CAMERA_OFF)).toBeVisible();
-  await expect(resumo('Modo: Mão · Tempo por card: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.5
+  await expect(resumo('Modo: Mão · Card: 10 s · Entre cards: 3 s · Cards: 10 · Nível: Todos · Ausência: 10 s · Som: ligado · Foto: ligada · Tutorial: desligado')).toBeVisible();   // AC-9.5
 
   await page.keyboard.press('Enter');
   const card = page.locator('article');
@@ -53,6 +53,26 @@ test('menu pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (AC
   expect(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y).toBe(true); // FR-4
   await page.keyboard.press('m');
   await expect(menu).toHaveCount(0);                                                      // AC-9.6
+});
+
+test('AC-9.1/AC-9.23 (v12.0.0): os nove itens cabem no painel e 5 cards por partida dão um resumo "N de 5"', async ({ page }) => {
+  await abrirSemCamera(page);
+  await page.keyboard.press('m');
+  const menu = page.getByRole('dialog', { name: 'Configurações' });
+  await expect(menu.getByRole('group')).toHaveCount(9);
+  for (const nome of ['Tempo entre cards', 'Cards por partida', 'Nível', 'Tempo de ausência', 'Tutorial']) {
+    await expect(menu.getByRole('group', { name: nome })).toBeInViewport();             // cabe em 1366×768 sem rolar
+  }
+  await menu.getByRole('group', { name: 'Cards por partida' }).getByRole('button', { name: '○ 5' }).click();
+  await menu.getByRole('button', { name: 'Fechar' }).click();
+  await expect(page.getByText(/Cards: 5 · /)).toBeVisible();                              // AC-9.2
+  await page.keyboard.press('Enter');
+  for (let i = 0; i < 5; i++) {
+    await expect(page.locator('article')).toBeVisible();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
+  }
+  await expect(page.getByText(/^\d de 5$/)).toBeVisible({ timeout: 15000 });             // AC-6.1 com M = 5
 });
 
 test('menu pelo mouse, via ☰ › Configurações (AC-9.2, FR-14) e setas no modo Cabeça (AC-9.16)', async ({ page }) => {

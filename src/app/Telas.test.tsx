@@ -74,11 +74,35 @@ describe('telas', () => {
     expect(container.querySelector('main')).toHaveAttribute('data-resultado', resultado);
     expect(container.textContent).not.toMatch(/falsa|verdadeira/i);
   });
-  it('AC-4.1 (v10.0.0): notícia verdadeira mostra "É verdade" e o fundo de verdade', () => {
+  it('AC-4.1 (v10.0.0): notícia verdadeira mostra "É verdade"', () => {
     const { container } = render(<TelaFeedback noticia={{ ...noticia, veredito: 'verdadeira' }} resultado="acerto" pontos={1} />);
     expect(screen.getByRole('heading', { name: 'É verdade' })).toBeInTheDocument();
     expect(container.querySelector('main')).toHaveAttribute('data-veredito', 'verdade');
-    expect(container.querySelector('main')!.className).toMatch(/fbVerdade/);
+  });
+  it.each([
+    ['verdadeira', 'acerto', /fbAcerto/],
+    ['verdadeira', 'erro', /fbErro/],
+    ['falsa', 'acerto', /fbAcerto/],
+    ['falsa', 'tempo', /fbErro/],
+  ] as const)('AC-4.9 (v12.0.0): notícia %s com resultado %s pinta o fundo pelo resultado, não pelo veredito', (veredito, resultado, classe) => {
+    const { container } = render(<TelaFeedback noticia={{ ...noticia, veredito }} resultado={resultado} pontos={0} />);
+    const main = container.querySelector('main')!;
+    expect(main.className).toMatch(classe);
+    expect(main.className).not.toMatch(/fbVerdade|fbMentira/);
+  });
+  it.each([
+    ['verdadeira', 'erro', 'verdade', 'marca-estrela-4'],
+    ['falsa', 'acerto', 'mentira', 'marca-triangulo'],
+  ] as const)('AC-4.10 (v12.0.0): notícia %s, resultado %s: carimbo do veredito da notícia por cima do texto, decorativo', (veredito, resultado, carimbo, forma) => {
+    const { container } = render(<TelaFeedback noticia={{ ...noticia, veredito }} resultado={resultado} pontos={0} />);
+    const el = container.querySelector('[data-carimbo-veredito]')!;
+    expect(el).toHaveAttribute('data-carimbo-veredito', carimbo);
+    expect(el).toHaveAttribute('aria-hidden', 'true');
+    expect(el.querySelector(`[data-forma="${forma}"]`)).not.toBeNull();
+    // fica dentro do bloco do feedback e depois do texto, para ficar por cima dele
+    const bloco = el.parentElement!;
+    expect(bloco.contains(screen.getByText('Explicação W'))).toBe(true);
+    expect(bloco.lastElementChild).toBe(el);
   });
   it('AC-4.1: card mostra o placar parcial', () => {
     render(<TelaCard noticia={noticia} restanteMs={1000} saibaMais={false} ausente={false} pontos={3} cardRef={{ current: null }} onArrastar={() => {}} />);
@@ -295,6 +319,14 @@ describe('v10.2.0: telas do tutorial (Story 15, FR-16)', () => {
     id: 'treino-1', titulo: 'Morango Influencer', descricao: 'Acordei assim!', saibaMais: '', tema: 'tecnologia',
     veredito: 'falsa', explicacao: 'Mentira! Repare na imagem.', tecnica: 'imagem', fonteUrl: '',
   };
+  it.each([
+    ['verdadeira', /fbErro/],
+    ['falsa', /fbAcerto/],
+  ] as const)('AC-15.3 (v12.0.0): feedback do treino com resposta %s pinta pelo resultado e carimba o veredito do perfil (mentira)', (resposta, classe) => {
+    const { container } = render(<TelaFeedbackTutorial noticia={treino} resposta={resposta} modo="corpo" treino={{ passo: 0, total: 4 }} />);
+    expect(container.querySelector('main')!.className).toMatch(classe);
+    expect(container.querySelector('[data-carimbo-veredito]')).toHaveAttribute('data-carimbo-veredito', 'mentira');
+  });
   it('AC-15.2/AC-15.6: card de treino mostra "Treino N de 4", sem barra de tempo, sem placar e sem dica de saiba mais', () => {
     const { container } = render(<TelaCard noticia={treino} restanteMs={0} saibaMais={false} ausente={false} pontos={0} treino={{ passo: 1, total: 4 }} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(screen.getByText('Treino 2 de 4')).toBeInTheDocument();
