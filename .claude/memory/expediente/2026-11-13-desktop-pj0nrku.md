@@ -48,3 +48,21 @@ Primeiro arquivo no formato por computador (`AAAA-MM-DD-<computador>.md`, `docs/
 - Decidir se o resumo precisa de teste/ajuste para 15 e 20 notícias por partida.
 - No outro computador: puxar a `develop` depois do merge para ganhar o hook; conferir lá o banco do desktop e o `npm ci`.
 - Limpar o "Para revisar" do README (entradas de 12/11 já aceitas).
+
+## Tarde: v13.0.0, cartas de baralho e fan (branch `001-v13-cartas-baralho`, saiu da `develop`)
+
+**Pedido do responsável:** o card vira carta de baralho (retrato, só a manchete na frente, imagem grande com moldura), com um fan de cartas na base que abre e fecha; referências: leque de baralho na mão e cartas ilustradas (Bicycle Royal).
+
+**Feito:**
+- Spec v13.0.0 (commit `421c217`): Story 17, FR-18, AC-2.12/AC-3.x/FR-1/FR-4/FR-11/FR-15/FR-16 reescritos; abertura do fan 1,5 s e distribuição 0,9 s, **somadas** ao fluxo. Plano: Fases 46 a 49.
+- Fase 46 (reducer, agente-mecanico) **em andamento, parada no meio**: estado `abertura`, `distribuindoMs`, som `carta`, inclinação centrada na distribuição, E2E ajustados para esperar a carta pousar (`tests/e2e/carta.ts`). No fechamento: `npm test` 620/620 e `npm run build` verdes; **os E2E não foram rodados** (o agente foi parado quando ia rodar o `relogio-real`). Revisar o diff antes de seguir.
+- Fase 47.1 (prévia, agente-visual) **pronta**: `docs/visual/previa-v13.html` + capturas em `docs/visual/capturas/v13-cartas/`. Carta 460×644 em 1366×768; manchete Poppins 700 36 px (mínimo 30); verso de saiba mais 25→20 px.
+
+**Decisões do responsável sobre a prévia (13/11):** treino mantém a frase do perfil na frente (sem verso); o fan abre sempre no mesmo ângulo (espaça pela quantidade); a carta distribuída é a da ponta direita, em arco; limite de 250 caracteres no `saiba_mais` só como **aviso** no editor/painel Questões (AC-7.13, não bloqueia; 15 das 16 notícias passam do limite e não serão reescritas).
+
+**Pendente ao retomar:**
+- A spec está **pela metade na v13.1.0**: cabeçalho e linha do changelog já dizem 13.1.0, mas o corpo ainda não recebeu as edições (exceção do treino em AC-17.1, mínimo de 20 px em AC-17.2, ângulo fixo em AC-17.3, ponta direita em AC-17.6, AC-7.13 novo). Aplicar antes de qualquer código da Fase 47.
+- Fechar a Fase 46: revisar o diff, rodar `npm run e2e`.
+- Fases 47.2 em diante (aplicar a carta), 48 (fan), 49 (verificação e galeria de telas).
+- Pendências da prévia sem decisão: redesenhar em 412×380 as três ilustrações "recorte chapado" (hoje paisagem, cortadas na janela); naipes de Saúde e História parecidos de longe; o texto visível novo "Saiba mais" na faixa do verso.
+- PR #10 (`001-v12-correcoes`) continua aberto; a v13 saiu da `develop` sem ele.
