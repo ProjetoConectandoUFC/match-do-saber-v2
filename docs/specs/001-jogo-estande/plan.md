@@ -5487,6 +5487,44 @@ Spec: AC-7.2 (tema `politica`), AC-7.12. Agentes: agente-noticias (lote em `docs
 - 45.1 Revisão do lote 3 pelo responsável (página de revisão); só as aprovadas entram no `conteudo/noticias.csv`, depois da Fase 43.6 (tema `politica` válido).
 - 45.2 Verificação no hardware: cores do feedback a 2 m, leitura do carimbo sobre verde e vermelho, sensibilidade Menor/Maior no estande.
 
+## Phase 46 (added v13.0.0): Reducer — abertura do fan e distribuição das cartas
+
+Spec: AC-1.2, AC-17.5, AC-17.6, AC-17.7 (tempos independentes da animação), AC-17.8 (decisão do som), AC-3.1 a AC-3.4 (saiba mais só com a carta pousada); FR-1, FR-11, FR-18. Agente: agente-mecanico, branch `001-v13-cartas-baralho`. TDD com testes de fronteira (regra "animação soma").
+
+- 46.1 Teste vermelho em `partida.test.ts`: `TEMPOS.aberturaFanMs` = 1500 e `TEMPOS.distribuirMs` = 900; todo início de partida (calibração completa, Enter na espera sem câmera, Enter na calibração, Enter no resumo) passa por `{ tela: 'abertura' }` antes do tutorial ou do primeiro card; a abertura termina exatamente em 1500 ms, nem antes nem depois.
+- 46.2 Estado do card e do treino com `distribuindoMs` (começa em `distribuirMs`, vai a 0 com `tick`): o cronômetro (`restanteMs`) não corre enquanto `distribuindoMs > 0`; escolha, seta, arraste e "saiba mais" são ignorados; fronteira em 899/900 ms. A pausa "Volte para o centro" só conta com a carta pousada.
+- 46.3 A abertura sabe quantas cartas o fan tem: treinos + notícias da partida; seletor puro `cartasNoFan(estado)` (quantas ainda não saíram), usado pela tela.
+- 46.4 Esc/Sair na abertura e na distribuição voltam à espera (AC-10.3); Enter na abertura não pula nada (só Enter no treino pula o tutorial, AC-15.5).
+- 46.5 `sons.ts`: som `carta` na transição para um estado com distribuição começando (não na abertura), respeitando som e volume (teste puro); `audio.ts` sintetiza o "fff" de papel (ruído filtrado curto).
+- 46.6 `inclinacaoCard.ts` e `cardSaindo`: durante a distribuição a carta fica no centro (AC-2.10e).
+
+## Phase 47 (added v13.0.0): Carta de baralho — prévia e aplicação
+
+Spec: AC-17.1, AC-17.2, AC-3.6, AC-2.12, AC-4.5, AC-4.7; FR-4, FR-15, FR-18 (verso único). Agente: agente-visual (prévia em `docs/visual/previa-v13.html`, com as referências do responsável: leque de baralho e cartas ilustradas com moldura e índices nos cantos), depois aplicação na mesma branch. O responsável aprova a prévia antes da aplicação.
+
+- 47.1 Prévia: frente (janela da imagem com moldura entre 55% e 65% da altura, manchete, ícone do tema nos cantos), verso de "saiba mais", verso do fan (padrão Conectando, sem texto), fan aberto e fechado, em 1366×768 e 1920×1080, com a manchete e o "saiba mais" mais longos do banco.
+- 47.2 Teste vermelho (`TelasV13.test.tsx`, jsdom): a frente não mostra a descrição nem a dica; tem a manchete, a imagem/ilustração e dois ícones de tema; com `saibaMais`, a carta tem o estado de verso com descrição e "saiba mais"; o treino nunca mostra o verso; a pilha (`data-pilha-camada`) não existe mais.
+- 47.3 `TelaCard` vira carta de duas faces (frente/verso com `transform: rotateY`, ~400 ms, sem tempo no reducer); a dica de "saiba mais" sai da carta para junto de `dicaModo`; o carimbo de saída (AC-2.12) e o pulso dos últimos 5 s (AC-4.7) valem na carta.
+- 47.4 CSS da carta em `App.module.css` com tokens de `tema.css`; `prefers-reduced-motion` troca a face sem girar.
+- 47.5 E2E de layout: carta 5:7 (±2%), centralizada (AC-4.5), manchete e verso sem corte com os textos mais longos, em 1366×768 e 1920×1080; ajustar os E2E antigos que liam a descrição na frente.
+
+## Phase 48 (added v13.0.0): Fan na espera, na abertura e na distribuição
+
+Spec: AC-17.3 a AC-17.7, FR-18 (must not), AC-10.5, AC-2.11. Agentes: agente-visual (desenho e animação) e agente-mecanico (ligação com o estado). Depende das Fases 46 e 47.
+
+- 48.1 Componente `FanCartas` (props: quantidade, fase `parado` | `respirando` | `abrindo` | `distribuindo`, progresso 0–1 vindo do estado): leque com pivô abaixo da borda, no máximo 20 cartas desenhadas, ângulos calculados por função pura testável (`src/core/fan.ts`: ângulo de cada carta por quantidade e abertura).
+- 48.2 Teste vermelho de `fan.ts`: ângulos simétricos, abertura 0 = fechado, 1 = aberto; nunca mais de 20 cartas.
+- 48.3 Espera: fan respirando em loop (~4 s) sem cobrir título, chamada, "▶ Iniciar" e ☰; parado e meio aberto com `prefers-reduced-motion`.
+- 48.4 Abertura e distribuição: a carta sai do topo do fan e sobe virando até o centro; o progresso vem de `distribuindoMs`/`restanteMs` do estado (não de timers do CSS soltos), para a tela nunca discordar do reducer.
+- 48.5 Fan atrás da carta durante cartas e treino; fora do feedback, do resumo e da calibração; não cobre a barra de tempo, os botões redondos nem o "✕ Sair" (E2E com caixas delimitadoras).
+- 48.6 E2E: partida de 5 notícias com tutorial — o fan começa com 7 cartas e perde uma a cada carta; o cronômetro só começa depois da distribuição; Esc na abertura volta à espera.
+
+## Phase 49 (added v13.0.0): Verificação e telas
+
+- 49.1 `npm test`, `npm run build`, `npm run e2e`, `npm run e2e:desktop` verdes.
+- 49.2 Galeria de todas as telas atualizada (o artefato publicado em 2026-11-13) com abertura, distribuição, frente, verso e espera.
+- 49.3 Verificação no hardware a 2 m: leitura da manchete na carta retrato, fluidez do fan com a detecção de pose rodando (~6–7 fps de pose, a animação não pode travar), som da carta.
+
 ## Quickstart Validation
 
 ```bash
@@ -5582,4 +5620,9 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 12.0.0 | 42 | Adicionada: feedback por resultado e carimbo do veredito |
 | 12.0.0 | 43 | Adicionada: Ajustes, visibilidade e tema `politica` |
 | 12.0.0 | 44 | Adicionada: painel Questões |
+| 13.0.0 | 41, 42.5 | Parcialmente invalidadas: a pilha de cards atrás do card sai (AC-2.12) e o card de treino vira carta (Fases 47 e 48) |
+| 13.0.0 | 46 | Adicionada: abertura do fan e distribuição no reducer, som da carta |
+| 13.0.0 | 47 | Adicionada: carta de baralho (frente, verso de saiba mais, virada) |
+| 13.0.0 | 48 | Adicionada: fan na espera, na abertura e na distribuição |
+| 13.0.0 | 49 | Adicionada: verificação e galeria de telas |
 | 12.0.0 | 45 | Adicionada: lote 3 de política e verificação no hardware |

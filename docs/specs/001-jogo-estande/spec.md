@@ -1,9 +1,9 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
-**Status:** Approved (v12.0.0 aprovada pelo responsável em 2026-11-12; v12.0.1 só corrige coerência)
-**Version:** 12.0.1
+**Status:** Approved (v13.0.0: escopo e tempos confirmados pelo responsável em 2026-11-13)
+**Version:** 13.0.0
 **Created:** 2026-10-26
-**Last Updated:** 2026-11-12
+**Last Updated:** 2026-11-13
 **Branch:** `001-jogo-estande`
 **Origem:** [prd.md](prd.md) · ADRs: [frontend-stack](../../adr/001-frontend-stack.md), [motion-input](../../adr/001-motion-input.md), [content-pipeline](../../adr/001-content-pipeline.md)
 
@@ -37,6 +37,7 @@
 | 11.0.0 | 2026-11-10 | Prévia v11 aplicada (`docs/visual/previa-v11.html`) por ordem do responsável (Levi), com as recomendações do Agente Visual; detalhes a confirmar. **FR-15 reescrito:** pilha de cards atrás do card, botões redondos nas laterais que acendem com a fração do gesto (AC-2.11), carimbo VERDADE/MENTIRA (AC-2.10b, AC-2.12) e feedback "Deu match!"/"Não deu match" com ícones feitos com as formas do design system (AC-4.1 a AC-4.3 e AC-4.9 reescritos; o selo continua "Acertou!", "Errou", "Tempo esgotado"); estilo "recorte chapado" nas imagens desenhadas (FR-4, AC-15.7). **FR-13 reescrito:** filtro por faixa de acertos (lupa, detetive, repórter, herói) desenhado por cima da foto com as âncoras de AC-13.6 e selo da faixa na moldura (AC-13.2, AC-13.6, AC-13.8, AC-13.9). **Resumo (opção B):** lista de acertos e erros por notícia, com a fonte das verdadeiras e quem desmentiu as falsas, e um QR único que abre a página das fontes na versão web, só com os ids das notícias (AC-5.1 reescrito; AC-5.8 a AC-5.10 novos; Non-Goals e Security ajustados). **FR-6:** colunas opcionais `titulo_curto` e `fonte_nome` (AC-7.2, AC-7.3, AC-7.11). **FR-11 reescrito:** som de fim de partida, que cresce com a faixa (AC-11.6); sem tique nos últimos 5 s. **Tutorial:** o treino passa a ter os 2 perfis da prévia (Abacaxi Perfeito e Seu Caju) com o próprio desenho (campo opcional `ilustracao`; AC-15.2, AC-15.7 e FR-16 reescritos); os 4 perfis do rascunho ficam guardados em `perfisReserva`. O nome do jogo não muda. O movimento do card (AC-2.10) não muda |
 | 12.0.0 | 2026-11-12 | Pedido do responsável (Levi) depois do estande. **Feedback por resultado:** o fundo do feedback passa a dizer se o jogador acertou (verde) ou errou (vermelho, inclusive tempo esgotado), e não mais o veredito; o veredito vira um carimbo VERDADE/MENTIRA, com o símbolo (estrela ou triângulo), carimbado por cima do texto do resultado no centro da tela; sai "Deu match!"/"Não deu match" e saem os ícones de discos do feedback (reescritos AC-4.1 a AC-4.3, AC-4.9, FR-4; o tutorial, o logotipo e o resumo não mudam). **Ajustes:** o menu "Configurações" vira "Ajustes", com grupos Partida, Conteúdo, Detecção, Mídia e Questões e mais itens: notícias por partida, tempo por card ampliado, tempo do feedback, volta automática do resumo, temas, dificuldade, sensibilidade do gesto, tolerância sem pessoa, volume, QR das fontes e "Restaurar padrão", sem PIN (reescritos AC-9.1, AC-9.2, AC-9.4, AC-9.17, FR-9, AC-6.1, AC-6.2, FR-1; adicionados AC-9.23 a AC-9.31). **Visibilidade:** coluna opcional `visivel` (a notícia fica no banco, mas fora das partidas, até o operador religar) (AC-7.12, FR-6, AC-7.7). **Tema `politica`** (AC-7.2). **Painel "Questões"** para leitura, depuração e revisão, no estilo do Prova ou Reprova, com fontes, gabarito, problemas de validação, aprovação e visibilidade (Story 16, FR-17, FR-14). |
 | 12.0.1 | 2026-11-12 | Coerência da v12.0.0, apontada pelo Agente Gestor, sem mudar o que foi pedido: Out of Scope deixa de excluir sensibilidade, volume, número de cards e tempo do feedback; AC-9.18 passa a "Ajustes"; AC-7.10 (o sorteio usa a dificuldade, AC-9.27); AC-15.3, FR-16 e FR-1 (feedback de treino com o tempo configurado; 2 treinos, um por perfil, desde a v11.0.0); AC-7.4 (alterar em massa aceita `visivel`); AC-6.2 usa ⌈N/2⌉ (cobre N ímpar); AC-9.28 vale também para o ângulo do modo Cabeça; AC-7.2 exige ilustração e cor do tema `politica`; AC-13.4 e FR-13 apagam a foto também na volta automática do resumo; FR-15 sem "ícone" no feedback; Error Scenarios com a tolerância e os padrões configuráveis; AC-2.10b cita "menta"; AC-4.9 exige que o carimbo cubra só parte do texto do resultado. Itens que a v12.0.0 também mudou e o changelog dela não listava: AC-4.10, AC-5.2, AC-5.4, AC-5.5, AC-6.3, AC-6.4, AC-7.4, FR-5, FR-7, FR-15 e FR-16. |
+| 13.0.0 | 2026-11-13 | Pedido do responsável (Levi), com as referências de um leque de baralho na mão e de cartas ilustradas. **O card vira carta de baralho:** retrato (5:7), frente só com a imagem grande numa janela com moldura e a manchete, ícone do tema nos cantos (AC-17.1, FR-4 e FR-15 reescritos); a descrição e o "saiba mais" vão para o verso, e o gesto de "saiba mais" vira a carta (AC-3.1 a AC-3.4 reescritos, AC-3.6 novo). **Fan de cartas:** sai a pilha parada atrás do card (AC-2.12 reescrito); entra um leque de versos na base da tela, que perde uma carta a cada notícia (AC-17.3), abre e fecha em loop na tela de espera (AC-17.4), abre inteiro na abertura da partida (AC-17.5, 1,5 s) e solta cada carta, que sobe e vira (AC-17.6, 0,9 s). Os dois tempos **somam** à partida (o cronômetro só corre com a carta pousada); FR-1 e AC-1.2 ganham o estado de abertura e a distribuição. Som de carta distribuída (AC-17.8, FR-11). O treino usa a carta e sai do fan (AC-15.2). Story 17 e FR-18 novos. O movimento da carta com o corpo (AC-2.10), os botões das laterais (AC-2.11), o feedback, o resumo e o painel Questões não mudam. |
 
 ---
 
@@ -85,7 +86,7 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 **Acceptance criteria:**
 
 - [ ] **AC-1.1** Given o jogo está na tela de espera When uma pessoa entra no quadro, fica nele ou sai e volta Then nada acontece: o jogo continua na tela de espera, sem calibração e sem partida. A câmera nunca inicia nada sozinha.
-- [ ] **AC-1.2** Given a tela de calibração When a pessoa permanece na área central por 2 s contínuos Then a partida começa e o primeiro card aparece com o cronômetro no tempo por card configurado (padrão 15 s, FR-9).
+- [ ] **AC-1.2** Given a tela de calibração When a pessoa permanece na área central por 2 s contínuos Then a partida começa: o fan abre (AC-17.5), o primeiro card é distribuído (AC-17.6) e, com ele pousado, o cronômetro começa no tempo por card configurado (padrão 15 s, FR-9). (Abertura e distribuição desde a v13.0.0.)
 - [ ] **AC-1.3** Given a tela de calibração When a pessoa sai da área central antes de 2 s Then a contagem de calibração reinicia do zero.
 - [ ] **AC-1.4** Given a tela de calibração When ninguém é detectado por 10 s Then o jogo volta à tela de espera e permanece nela, mesmo que alguém entre no quadro depois (AC-1.1).
 - [ ] **AC-1.5** Given há duas ou mais pessoas no quadro When a calibração ou a partida acontece Then apenas a pessoa mais central e maior no quadro controla o jogo, e os movimentos das demais não geram escolhas.
@@ -112,7 +113,7 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-2.9** Given o modo Corpo When a tela de calibração aparece Then a instrução mostra "Corpo para a direita: é verdade · Para a esquerda: é mentira · Duas mãos para cima: saiba mais". (Reescrito v10.3.0.)
 - [ ] **AC-2.10** Given um card está na tela (inclusive um card de treino, FR-16) When o controle do modo se move (Corpo: o tronco, pelo meio dos ombros; Cabeça: a inclinação da cabeça; Mão: a posição horizontal da mão ativa no swipe, AC-9.20) Then o card mimetiza o controle em tempo real, como no jogo Reigns: (a) a fração do controle vai de 0 no centro a ±1 no limiar do gesto, e o card se desloca na proporção, sem zona morta além de 3%; no limiar, o card está girado 15° para aquele lado em torno do ponto central da base, e esse ponto se desloca um pouco (8% da largura do card) em direção à resposta; (b) conforme o card se aproxima de um lado, aparece o rótulo daquele lado ("Verdade" à direita, "Mentira" à esquerda) com opacidade igual à fração; desde a v11.0.0 o rótulo tem a forma de um carimbo no alto do card (caixa alta, contorno grosso, levemente girado; coral para Mentira e menta para Verdade, AC-2.12); (c) o movimento é interpolado a cada quadro de tela entre as leituras da câmera (~6–7 por segundo), com constante de tempo de 100 ms, para não andar aos saltos sem ficar atrasado; (d) ao chegar a ±1, vale a regra de escolha do modo (Corpo e Cabeça: mantido ~300 ms, AC-2.1, AC-9.10; Mão: na hora, AC-9.20) e o card sai pelo lado a partir da posição em que está; (e) o card fica no centro, sem rótulo, sem pessoa detectada, em "Volte para o centro", com o menu aberto e depois de uma escolha até o controle voltar ao centro (AC-2.4, AC-9.12, AC-9.22); (f) o movimento é comandado pelo jogador e é o retorno visual do gesto, por isso vale também quando o sistema pede menos movimento (`prefers-reduced-motion: reduce`). O deslocamento não muda tempos, gestos, pontos nem a centralização de AC-4.5, medida com o card no centro. Os números são pontos de partida a ajustar no notebook do estande. (Reescrito v10.3.0 e ajustado v10.3.1; decidido pelo responsável. Na v11.0.0 só o visual do rótulo mudou; geometria, tempos e gestos, não.)
 - [ ] **AC-2.11** Given um card está na tela (inclusive de treino) When o controle do modo se move Then as laterais são dois botões redondos, Mentira à esquerda (disco coral com o triângulo apontando para a esquerda) e Verdade à direita (disco menta com a estrela de 4 pontas), cada um com a pílula do nome embaixo; o botão do lado para onde o card vai acende na proporção da mesma fração de AC-2.10 (fonte única, escrita no mesmo quadro que move o card): cresce até 10% e ganha um anel amarelo de até 8 px; com o card no centro, os dois ficam apagados. Depois da escolha, o botão do lado escolhido fica aceso por inteiro durante a saída do card, por qualquer entrada (gesto, seta ou arraste). Os botões não recebem clique (a entrada alternativa continua a de FR-3). (Adicionado v11.0.0; a confirmar.)
-- [ ] **AC-2.12** Given um card está na tela When ele aparece e quando sai Then atrás dele ficam duas camadas paradas, levemente giradas, como uma pilha de cards (no lugar da sombra chapada do card), que não se movem com o card nem contam na centralização (AC-4.5); ao sair (AC-2.1, AC-2.2), o carimbo do lado escolhido aparece por inteiro no card ("VERDADE" ou "MENTIRA") durante os mesmos `TEMPOS.saidaMs` da saída, sem somar tempo. (Adicionado v11.0.0; a confirmar.)
+- [ ] **AC-2.12** Given uma carta está na tela When ela sai (AC-2.1, AC-2.2) Then o carimbo do lado escolhido aparece por inteiro na carta ("VERDADE" ou "MENTIRA") durante os mesmos `TEMPOS.saidaMs` da saída, sem somar tempo. Atrás da carta não há mais a pilha parada: o que fica atrás dela é o fan da base da tela (AC-17.3). (Adicionado v11.0.0; reescrito v13.0.0, que tirou as duas camadas paradas da pilha.)
 
 ### Story 3: Ver "saiba mais" antes de decidir
 
@@ -122,10 +123,11 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 **Acceptance criteria:**
 
-- [ ] **AC-3.1** Given um card está na tela When o jogador mantém os dois punhos acima da cabeça (acima do nariz) por ~500 ms Then o texto "saiba mais" do card é exibido e o cronômetro continua correndo, com a barra de tempo diminuindo normalmente (AC-4.6, AC-4.7).
-- [ ] **AC-3.2** Given o "saiba mais" está aberto When o jogador repete o gesto de duas mãos para cima (ou o operador pressiona ↑) Then o "saiba mais" fecha e o cronômetro segue do ponto em que está, sem ter parado.
-- [ ] **AC-3.3** Given o "saiba mais" está aberto When o jogador faz o gesto de match ou de descarte Then o "saiba mais" fecha e a escolha é registrada normalmente.
-- [ ] **AC-3.4** Given um card está na tela When o operador pressiona ↑ Then o resultado é o mesmo de AC-3.1.
+- [ ] **AC-3.1** Given uma carta pousada está na tela (fora da distribuição, AC-17.6) When o jogador mantém os dois punhos acima da cabeça (acima do nariz) por ~500 ms Then a carta vira e mostra o verso (AC-17.2), com a descrição e o texto "saiba mais" da notícia, e o cronômetro continua correndo, com a barra de tempo diminuindo normalmente (AC-4.6, AC-4.7). (Reescrito v13.0.0: até a v12, o texto trocava dentro do card.)
+- [ ] **AC-3.2** Given o "saiba mais" está aberto (a carta mostra o verso) When o jogador repete o gesto de duas mãos para cima (ou o operador pressiona ↑) Then a carta vira de volta para a frente e o cronômetro segue do ponto em que está, sem ter parado.
+- [ ] **AC-3.3** Given o "saiba mais" está aberto When o jogador faz o gesto de match ou de descarte Then a escolha é registrada normalmente e a carta sai mostrando o verso, com o carimbo do lado escolhido (AC-2.12); ela não vira antes de sair.
+- [ ] **AC-3.4** Given uma carta pousada está na tela When o operador pressiona ↑ Then o resultado é o mesmo de AC-3.1 (ou de AC-3.2, se o verso já estiver à mostra).
+- [ ] **AC-3.6** Given a carta vira (AC-3.1, AC-3.2) When a virada acontece Then ela gira em torno do eixo vertical em cerca de 400 ms, sem somar nem descontar tempo do cronômetro e sem bloquear gestos (uma escolha durante a virada vale); com `prefers-reduced-motion`, a face troca na hora. A virada se soma ao movimento da carta com o corpo (AC-2.10), que continua durante e depois dela. (Adicionado v13.0.0.)
 
 > AC-3.5 (o "saiba mais" fechar sozinho após 5 s) foi removido na v5.0.0 e o número não é reutilizado. O "saiba mais" só fecha por AC-3.2, AC-3.3 ou quando o tempo esgota (AC-4.3).
 
@@ -350,11 +352,28 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-16.5** Given o app de desktop e uma questão aberta When o operador usa "Ocultar"/"Mostrar no jogo" (interruptor de visibilidade, AC-7.12), "Aprovar" (pede o nome de quem revisou na primeira vez da sessão e preenche `revisado_por` e `status = aprovada`; só se a questão for válida), "Voltar para rascunho" ou "Editar" (abre o editor de AC-7.2) Then o banco é gravado como em AC-7.6 (com backup) e a lista e as contagens se atualizam. Na versão web, essas ações aparecem desabilitadas com o aviso de AC-7.9 e o painel é só leitura.
 - [ ] **AC-16.6** Given o painel Questões aberto When o operador usa ↑/↓ (questão anterior/próxima na lista), Esc ou o "✕" (fecha e volta à tela de espera) Then o painel responde, e a câmera e as teclas do jogo não chegam à partida enquanto ele estiver aberto (FR-14).
 
+### Story 17: Jogar com cartas que saem de um leque (adicionado v13.0.0)
+
+**As a** jogador e público em volta do estande
+**I want** que as notícias sejam cartas de baralho tiradas de um leque
+**So that** o jogo pareça um jogo de cartas, com a manchete em destaque e a imagem grande, e quem passa veja quantas cartas faltam
+
+**Acceptance criteria:**
+
+- [ ] **AC-17.1** Given uma carta (notícia ou treino) está na tela When ela mostra a frente Then ela é mais alta que larga, na proporção 5:7, com borda branca de carta e cantos arredondados, e mostra só: (a) a imagem da notícia (ou a ilustração, FR-4) numa janela com moldura que ocupa entre 55% e 65% da altura da carta, sem tomar a carta inteira; (b) a manchete (`titulo`) inteira, sem corte, abaixo da imagem; (c) o ícone do tema no canto superior esquerdo e o mesmo ícone girado 180° no canto inferior direito, como valor e naipe de baralho. A descrição e a dica de "saiba mais" não ficam na frente (a dica vai para fora da carta, junto às dicas de gesto). A carta cabe na área de jogo de 1366×768 com a manchete mais longa do banco.
+- [ ] **AC-17.2** Given o "saiba mais" está aberto When a carta mostra o verso Then o verso de "saiba mais" tem a mesma moldura e os mesmos cantos da frente, a faixa da cor do tema, a manchete em tamanho menor, a descrição e o texto "saiba mais", tudo inteiro em 1366×768. Esse verso é diferente do verso das cartas do fan (FR-18), que é igual para todas.
+- [ ] **AC-17.3** Given uma carta ou um treino está na tela (pousado, distribuído ou saindo) When o jogador olha a base da tela Then há um fan de cartas com o verso para cima, centrado sob a carta, como um leque na mão, com o pivô abaixo da borda da tela, que se abre para os dois lados da carta; ele tem uma carta para cada carta ainda não distribuída na partida (treinos e notícias), até no máximo 20 desenhadas; a carta em jogo fica sempre na frente do fan. O fan não cobre a barra de tempo nem os botões das laterais e não entra na centralização (AC-4.5).
+- [ ] **AC-17.4** Given a tela de espera When ela está aberta Then um fan de versos abre e fecha devagar em loop (ciclo de cerca de 4 s), sem cobrir o título, a chamada, o "▶ Iniciar" nem o menu ☰; com `prefers-reduced-motion`, ele fica parado, meio aberto.
+- [ ] **AC-17.5** Given a partida começa por qualquer caminho (AC-1.2, AC-1.6, AC-1.8, AC-5.6) When a abertura começa Then, por `TEMPOS.aberturaFanMs` (1,5 s), o fan com todas as cartas da partida (treinos e notícias) se abre por inteiro na base da tela e se fecha; durante a abertura não há cronômetro, placar parcial nem escolha (gestos, setas e arraste são ignorados); Esc e "✕ Sair" encerram a partida (AC-10.3). O tempo **soma** ao da partida e o próximo passo é a distribuição da primeira carta (AC-17.6).
+- [ ] **AC-17.6** Given o fim da abertura (AC-17.5) ou o fim de um feedback com mais cartas na partida When a próxima carta entra Then, por `TEMPOS.distribuirMs` (0,9 s), o fan se abre um pouco, a carta de cima sai do fan pelo verso, sobe até o centro da área de jogo virando para a frente, e o fan se fecha com uma carta a menos; durante a distribuição o cronômetro fica cheio e parado, a carta não acompanha o corpo (AC-2.10e) e nenhuma escolha nem "saiba mais" é aceita; só com a carta pousada o cronômetro começa (AC-1.2) e valem AC-2.4 e AC-2.10. O tempo **soma** ao tempo por card (não desconta). Esc e "✕ Sair" continuam valendo.
+- [ ] **AC-17.7** Given o sistema pede menos movimento (`prefers-reduced-motion: reduce`) When há abertura, distribuição ou virada Then o fan não se mexe e a carta aparece já de frente no centro, mas os tempos de AC-17.5 e AC-17.6 continuam os mesmos (a lógica não depende da animação).
+- [ ] **AC-17.8** Given o som está ligado (FR-9) When uma carta começa a sair do fan (AC-17.6) Then toca um som curto de carta (um "fff" de papel), gerado no próprio jogo, no volume dos Ajustes; não toca na abertura nem quando o som está desligado.
+
 ## Functional Requirements
 
 ### FR-1: Fluxo de estados da partida
 
-O jogo passa por estes estados: espera → calibração → card → (saiba mais) → feedback → … → resumo → espera, além do estado "Volte para o centro" durante a partida. Com o tutorial ligado (FR-16, v10.2.0), entre a calibração (ou o início sem câmera) e o primeiro card vêm card de treino → feedback de treino, uma vez por perfil do tutorial (2 desde a v11.0.0).
+O jogo passa por estes estados: espera → calibração → abertura do fan → card (distribuição → carta pousada → (saiba mais)) → feedback → … → resumo → espera, além do estado "Volte para o centro" durante a partida. Com o tutorial ligado (FR-16, v10.2.0), entre a abertura e o primeiro card vêm card de treino → feedback de treino, uma vez por perfil do tutorial (2 desde a v11.0.0), com a mesma distribuição. A abertura e a distribuição (AC-17.5, AC-17.6) existem desde a v13.0.0 e somam tempo ao fluxo.
 
 **Must:**
 - Começar a partida só por ação do operador: Enter ou "▶ Iniciar" na espera (AC-1.6, AC-1.7), ou Enter na calibração (AC-1.8). Com a câmera ativa, a partida só começa depois de 2 s contínuos de calibração, a menos que o operador pule a calibração.
@@ -396,16 +415,16 @@ Este é o modo padrão (FR-9). Os modos Mão e Cabeça estão em FR-9.
 ### FR-4: Conteúdo do card e do feedback
 
 **Must:**
-- Mostrar no card: imagem (se a notícia tiver; senão, a ilustração "recorte chapado" desenhada para aquela notícia, se houver (v11.0.0); senão, a ilustração do `tema` da notícia, feita com as formas do design system do projeto Conectando), título e descrição curta da notícia, e uma indicação de como abrir o "saiba mais". As ilustrações "recorte chapado" da prévia v11 (emas, banana, micro-ondas) ficam ligadas à notícia que ilustram, pelo `id`, e não ao tema inteiro: numa outra notícia do mesmo tema virariam uma pista falsa (regra "ilustração não é prova" da prévia).
+- Mostrar o card como carta (AC-17.1, v13.0.0): na frente, a imagem (se a notícia tiver; senão, a ilustração "recorte chapado" desenhada para aquela notícia, se houver (v11.0.0); senão, a ilustração do `tema` da notícia, feita com as formas do design system do projeto Conectando) e o título; no verso de "saiba mais" (AC-17.2), a descrição curta e o texto expandido. A indicação de como abrir o "saiba mais" fica fora da carta. (Até a v12, o card mostrava título e descrição juntos.) As ilustrações "recorte chapado" da prévia v11 (emas, banana, micro-ondas) ficam ligadas à notícia que ilustram, pelo `id`, e não ao tema inteiro: numa outra notícia do mesmo tema virariam uma pista falsa (regra "ilustração não é prova" da prévia).
 - Mostrar o tempo restante só numa barra grande na base da tela, com os segundos dentro (AC-4.6); destacar os últimos 5 s com a barra e o card pulsando na cor de alerta (coral, FR-15) (AC-4.7). (A barra do card saiu na v10.0.0.)
 - Chamar os dois lados de "Verdade" e "Mentira" em toda a interface (os valores do banco continuam `verdadeira`/`falsa`).
-- Mostrar no "saiba mais" o texto expandido da notícia.
+- Mostrar no "saiba mais", no verso da carta, a descrição e o texto expandido da notícia (AC-3.1, AC-17.2).
 - Mostrar no feedback, para todo resultado: o fundo na cor do resultado (verde = acertou; vermelho = errou ou tempo esgotado), o texto do resultado ("Acertou!", "Errou", "Tempo esgotado") no centro com o carimbo do veredito (VERDADE com a estrela, MENTIRA com o triângulo) carimbado por cima (AC-4.9), a explicação e a técnica de checagem. Sem "match" no feedback (v12.0.0).
 - Mostrar todos os textos em português do Brasil.
 - Centralizar o card na vertical da área de jogo (a tela menos a barra de tempo), parado ou saindo (AC-4.5).
 
 **Must not:**
-- Cortar título ou descrição do card: todo o texto cadastrado aparece por inteiro numa tela de 1366×768 ou maior.
+- Cortar o título na frente da carta, ou a descrição e o "saiba mais" no verso: todo o texto cadastrado aparece por inteiro numa tela de 1366×768 ou maior.
 
 ### FR-5: Pontuação e sorteio
 
@@ -492,12 +511,13 @@ Um arquivo CSV, uma linha por notícia, com cabeçalho e as colunas: `id`, `titu
 - Tocar um som curto de "deslizar" quando uma escolha é registrada, por qualquer entrada.
 - Tocar um som positivo quando o feedback "Acertou!" aparece, e um som de erro, diferente, quando aparece "Errou" ou "Tempo esgotado".
 - Tocar uma vez a vinheta de fim de partida, conforme a faixa de acertos, quando o resumo aparece (AC-11.6, v11.0.0).
+- Tocar um som curto de carta distribuída quando cada carta começa a sair do fan (AC-17.8, v13.0.0).
 - Decidir que som toca em cada transição de estado em lógica pura testável (`src/core/sons.ts`).
 - Gerar os sons no próprio jogo, sem baixar arquivos nem depender de rede.
 - Respeitar a configuração "Som: Desligado" (FR-9).
 
 **Must not:**
-- Tocar sons fora desses quatro momentos (sem música de fundo e sem tique nos últimos 5 s).
+- Tocar sons fora desses cinco momentos (sem música de fundo e sem tique nos últimos 5 s).
 - Atrasar a troca de tela por causa de um som.
 
 
@@ -550,9 +570,9 @@ Referências: `docs/visual/previa.html` (revisão 3, aprovada na v10.0.0) e `doc
 - No feedback (v12.0.0), o fundo usa uma cor de acerto (verde) e uma de erro (vermelho), lidas sem ambiguidade como verde e vermelho por quem está a 2 m; se a menta e o coral dos tokens não forem lidos assim, o Agente Visual propõe dois tokens novos (`--cn-acerto`, `--cn-erro`) derivados do design system. O carimbo do veredito (AC-4.9) mantém menta/estrela e coral/triângulo e precisa ficar legível sobre os dois fundos.
 - Mostrar, no card sem imagem, a ilustração da notícia ou do tema (FR-4): as imagens desenhadas pelo projeto seguem o estilo "recorte chapado" da prévia v11 (cor chapada, fundo na cor do tema, uma forma do design system cortada na borda, personagem de formas simples com contorno noite, sombra chapada, acentos só com os marcadores, sem pessoas reais, sem texto nas imagens de card, ilustração nunca imita prova); notícias com foto real continuam permitidas.
 - Decorar a tela de espera só com os anéis do design system, posicionados de modo que os cortes de cada desenho fiquem nas bordas da tela.
-- Manter o foco na notícia e no gesto, usando a linguagem de app de namoro só onde ela ajuda a ler o gesto e o resultado (v11.0.0; até a v10.3.1 não havia nenhuma forma decorativa no card, no feedback e no resumo): no card, a pilha de cards atrás (AC-2.12), os botões redondos que acendem com a fração do gesto (AC-2.11) e o carimbo (AC-2.10b); no feedback, só o carimbo do veredito (AC-4.9; os ícones de acerto, erro e tempo esgotado saíram na v12.0.0); no resumo, a folha amarela atrás do polaroid, o filtro e o selo da faixa (AC-13.2, AC-13.8) e os marcadores de acerto e erro da lista (AC-5.8). Nenhuma outra forma decorativa entra no card, no feedback e no resumo.
-- Manter o card e o texto da notícia nos tamanhos da v10.0.0 (o card cabe em 1366×768 com o texto máximo, FR-4); as camadas da pilha, o carimbo e os botões não empurram o card nem mudam a centralização (AC-4.5).
-- Desligar com `prefers-reduced-motion` as transições e animações decorativas (a entrada do carimbo; os ícones do feedback saíram na v12.0.0); o movimento do card comandado pelo jogador continua (AC-2.10f).
+- Manter o foco na notícia e no gesto, usando a linguagem de app de namoro só onde ela ajuda a ler o gesto e o resultado (v11.0.0; até a v10.3.1 não havia nenhuma forma decorativa no card, no feedback e no resumo): no card, a carta de baralho com o ícone do tema nos cantos (AC-17.1), o fan de versos na base (AC-17.3; até a v12, a pilha parada atrás do card), os botões redondos que acendem com a fração do gesto (AC-2.11) e o carimbo (AC-2.10b); no feedback, só o carimbo do veredito (AC-4.9; os ícones de acerto, erro e tempo esgotado saíram na v12.0.0); no resumo, a folha amarela atrás do polaroid, o filtro e o selo da faixa (AC-13.2, AC-13.8) e os marcadores de acerto e erro da lista (AC-5.8). Nenhuma outra forma decorativa entra no card, no feedback e no resumo.
+- Dimensionar a carta retrato (5:7) para caber em 1366×768 com a manchete mais longa na frente e o texto mais longo no verso (FR-4, AC-17.1, AC-17.2); o fan, o carimbo e os botões não empurram a carta nem mudam a centralização (AC-4.5). (Até a v12, valiam os tamanhos do card da v10.0.0.)
+- Desligar com `prefers-reduced-motion` as transições e animações decorativas (a entrada do carimbo, o fan da espera, a abertura, a distribuição e a virada da carta, AC-17.7); o movimento do card comandado pelo jogador continua (AC-2.10f).
 
 **Must not:**
 - Usar emoji ou caracteres unicode como ícone (✓, ✗, ▶, 🙌): viram formas do design system.
@@ -564,6 +584,7 @@ Referências: `docs/visual/previa.html` (revisão 3, aprovada na v10.0.0) e `doc
 **Must:**
 - Oferecer "Tutorial" nas Configurações (FR-9), desligado por padrão. Ligado, toda partida começa pelos cards de treino do arquivo (AC-15.2; 2 na v11.0.0); quando e para quem ele entra (sempre, só na primeira partida, escolha do operador) é decisão do responsável.
 - Ler os perfis de treino de um arquivo de dados próprio (`conteudo/tutorial.json`), separado do banco de notícias, validado ao carregar (AC-15.7).
+- Mostrar o treino no formato de carta (AC-17.1), distribuído do fan como as notícias (AC-17.6, v13.0.0); o fan da abertura (AC-17.5) já inclui as cartas de treino. O verso da carta de treino nunca aparece, porque o treino não tem "saiba mais" (AC-15.6).
 - Tratar o treino como telas do fluxo da partida (FR-1): card de treino → feedback de treino → … → primeiro card da partida, com o tempo do feedback configurado (AC-9.25) mais a saída do card e o carimbo, como em AC-4.1 e AC-4.10.
 - Ensinar o gesto no feedback de treino, com o texto do modo ativo (AC-15.3).
 
@@ -585,6 +606,21 @@ Referência de estilo: gerenciador de questões do Prova ou Reprova (https://git
 - Aparecer durante calibração, partida, feedback ou resumo.
 - Abrir sites dentro da janela do jogo.
 - Mudar o conteúdo da questão sem passar pelo editor (AC-7.2) e sua validação (AC-7.3).
+
+### FR-18: Cartas e fan (adicionado v13.0.0)
+
+Referências do responsável: um leque de baralho aberto na mão (o fan) e cartas ilustradas com moldura, mais altas que largas, com índices nos cantos.
+
+**Must:**
+- Mostrar cada notícia e cada treino como uma carta retrato (5:7), com frente (imagem e manchete) e verso de "saiba mais" (descrição e texto expandido) (AC-17.1, AC-17.2).
+- Mostrar o fan de versos na base da tela durante as cartas, com uma carta por carta ainda não distribuída (AC-17.3), e o fan em loop na tela de espera (AC-17.4).
+- Ter os tempos novos em `TEMPOS` (`aberturaFanMs` = 1500, `distribuirMs` = 900), somados ao fluxo e decididos no reducer; o cronômetro do card só corre com a carta pousada (AC-17.5, AC-17.6). A tela só desenha o que o estado diz.
+- Usar um verso único para todas as cartas, com o padrão e as cores do Conectando Design System, sem texto e sem dar pista do tema ou do veredito.
+
+**Must not:**
+- Deixar o fan cobrir a manchete, o verso, a barra de tempo, os botões das laterais ou o "✕ Sair", nem mudar a centralização da carta (AC-4.5).
+- Mostrar o fan no feedback, no resumo ou na calibração.
+- Revelar no fan qualquer coisa da próxima notícia (tema, imagem ou veredito).
 
 ## Non-Functional Requirements
 
