@@ -2,11 +2,12 @@
 // Modelo: electron/main.cjs do Prova ou Reprova. Serve o jogo compilado (dist/, com o modelo de
 // detecção em dist/mediapipe) e as rotas /api num servidor HTTP local (127.0.0.1), sem internet.
 
-const { app, BrowserWindow, Menu, session, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, session, shell } = require('electron');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { criarBancoLocal } = require('./banco-local.cjs');
+const { linkExterno } = require('./links.cjs');
 
 // Porta fixa para manter as configurações do jogo (localStorage é por origem); se ocupada, usa outra.
 const PORTA_PREFERIDA = 37425;
@@ -124,6 +125,13 @@ app.whenReady().then(async () => {
   session.defaultSession.setPermissionCheckHandler((wc, permissao, origem) =>
     origemDoJogo(`${origem}/`) && (permissao === 'media' || permissao === 'fullscreen'));
 
+  // Painel Questões (AC-16.2): o preload pede para abrir uma fonte no navegador do sistema.
+  ipcMain.handle('abrir-link', async (_evento, url) => {
+    if (!linkExterno(url)) return false;
+    await shell.openExternal(url);
+    return true;
+  });
+
   const porta = await iniciarServidor();
   Menu.setApplicationMenu(null); // sem barra de menus (AC-8.2)
 
@@ -141,10 +149,16 @@ app.whenReady().then(async () => {
   win.show();
   atualizarTitulo();
 
-  // Links externos (fontes das notícias) abrem no navegador do sistema, se houver internet.
+  // Links externos (fontes das notícias) abrem no navegador do sistema, se houver internet; nunca na
+  // janela do jogo (AC-16.2, FR-17). Só http e https.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//i.test(url)) shell.openExternal(url);
+    if (linkExterno(url)) shell.openExternal(url);
     return { action: 'deny' };
+  });
+  win.webContents.on('will-navigate', (evento, url) => {
+    if (url.startsWith(`http://127.0.0.1:${porta}/`)) return; // o próprio jogo (ex.: recarregar)
+    evento.preventDefault();
+    if (linkExterno(url)) shell.openExternal(url);
   });
 
   // F11 tela cheia; Ctrl+R recarrega (relê o banco, AC-8.4); Ctrl+Shift+O abre a pasta do banco; Ctrl+Shift+I ferramentas.

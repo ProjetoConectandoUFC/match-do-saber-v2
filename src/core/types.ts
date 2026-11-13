@@ -1,13 +1,14 @@
 export type Veredito = 'verdadeira' | 'falsa';
 export type Tecnica = 'fonte' | 'data' | 'imagem' | 'contexto';
-export type Tema = 'saude' | 'ciencia' | 'historia' | 'tecnologia' | 'curiosidades' | 'meio-ambiente';
+export type Tema = 'saude' | 'ciencia' | 'historia' | 'tecnologia' | 'curiosidades' | 'meio-ambiente' | 'politica';
 export type Status = 'rascunho' | 'aprovada';
-/** v10.1.0 (AC-7.10): opcional; ainda não muda o sorteio. */
+/** v10.1.0 (AC-7.10): opcional; desde a v12.0.0 filtra e ordena o sorteio (AC-9.27). */
 export type Dificuldade = 'facil' | 'medio' | 'dificil';
 
 export const VEREDITOS: readonly Veredito[] = ['verdadeira', 'falsa'];
 export const TECNICAS: readonly Tecnica[] = ['fonte', 'data', 'imagem', 'contexto'];
-export const TEMAS: readonly Tema[] = ['saude', 'ciencia', 'historia', 'tecnologia', 'curiosidades', 'meio-ambiente'];
+/** `politica`: v12.0.0 (AC-7.2). */
+export const TEMAS: readonly Tema[] = ['saude', 'ciencia', 'historia', 'tecnologia', 'curiosidades', 'meio-ambiente', 'politica'];
 export const STATUS: readonly Status[] = ['rascunho', 'aprovada'];
 export const DIFICULDADES: readonly Dificuldade[] = ['facil', 'medio', 'dificil'];
 
@@ -27,6 +28,7 @@ export const TEMA_ROTULO: Record<Tema, string> = {
   tecnologia: 'Tecnologia',
   curiosidades: 'Curiosidades',
   'meio-ambiente': 'Meio ambiente',
+  politica: 'Política',
 };
 
 /** O que o jogo recebe de cada notícia (FR-4). Sem `imagem`, o card mostra a ilustração do `tema`. */
@@ -55,12 +57,13 @@ export interface Catalogo {
 
 /**
  * Colunas do CSV do banco, na ordem em que são exportadas (FR-6). `dificuldade` (v10.1.0), `titulo_curto` e
- * `fonte_nome` (v11.0.0) são opcionais e vêm por último: um CSV antigo, sem elas, é lido com elas vazias (AC-7.10, AC-7.11).
+ * `fonte_nome` (v11.0.0) e `visivel` (v12.0.0) são opcionais e vêm por último: um CSV antigo, sem elas, é lido com elas
+ * vazias (AC-7.10, AC-7.11, AC-7.12; `visivel` vazia = visível).
  */
 export const COLUNAS_BANCO = [
   'id', 'titulo', 'descricao', 'saiba_mais', 'veredito', 'explicacao', 'tecnica', 'tema',
   'fonte_url', 'fontes_extras', 'imagem', 'revisado_por', 'status', 'dificuldade',
-  'titulo_curto', 'fonte_nome',
+  'titulo_curto', 'fonte_nome', 'visivel',
 ] as const;
 
 /** Limite de `titulo_curto` (AC-7.3, AC-7.11): cabe numa linha da lista do resumo. */

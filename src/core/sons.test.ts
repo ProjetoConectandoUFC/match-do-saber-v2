@@ -54,3 +54,23 @@ describe('sonsDaTransicao', () => {
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs), { tipo: 'sair' }])).toEqual(['deslizar', 'acerto']);
   });
 });
+
+describe('AC-9.25/AC-11.1: com "Tempo do feedback" em 8 s, o som do resultado toca quando o resultado aparece', () => {
+  const ctx8: Contexto = { ...ctx, tempoFeedbackMs: 8000 };
+  const sons8 = (eventos: Evento[]) => {
+    let s = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, ctx8);
+    const out: Som[] = [];
+    for (const e of eventos) {
+      const n = reduzir(s, e, ctx8);
+      out.push(...sonsDaTransicao(s, n));
+      s = n;
+    }
+    return out;
+  };
+
+  it('na virada da saída do card para o resultado, não 5 s depois', () => {
+    expect(sons8([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs - 1)])).toEqual(['deslizar']);
+    expect(sons8([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs)])).toEqual(['deslizar', 'acerto']);
+    expect(sons8([{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs), tick(5000), tick(2000)])).toEqual(['deslizar', 'erro']);
+  });
+});

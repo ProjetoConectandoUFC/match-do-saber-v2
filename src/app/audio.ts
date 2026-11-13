@@ -40,7 +40,8 @@ const SONS: Record<Som, Nota[]> = {
   ],
 };
 
-export interface Tocador { tocar(som: Som): void; desbloquear(): void }
+/** `fator`: volume dos Ajustes (AC-9.29): 1 = Alto (como antes), 0,6 = Médio, 0,3 = Baixo. */
+export interface Tocador { tocar(som: Som, fator?: number): void; desbloquear(): void }
 
 export function criarTocador(): Tocador {
   let ctx: AudioContext | null = null;
@@ -61,7 +62,7 @@ export function criarTocador(): Tocador {
       const c = obter();
       if (c?.state === 'suspended') c.resume().catch(() => {});
     },
-    tocar(som) {
+    tocar(som, fator = 1) {
       const c = obter();
       if (!c) return;
       for (const n of SONS[som]) {
@@ -71,7 +72,7 @@ export function criarTocador(): Tocador {
         osc.type = n.tipo;
         osc.frequency.setValueAtTime(n.freq, inicio);
         if (n.ate) osc.frequency.exponentialRampToValueAtTime(n.ate, inicio + n.duracao);
-        ganho.gain.setValueAtTime(n.volume, inicio);
+        ganho.gain.setValueAtTime(n.volume * fator, inicio);
         ganho.gain.exponentialRampToValueAtTime(0.001, inicio + n.duracao);
         osc.connect(ganho);
         ganho.connect(c.destination);

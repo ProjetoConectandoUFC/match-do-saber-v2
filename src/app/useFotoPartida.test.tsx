@@ -14,7 +14,7 @@ const partida: Partida = { cards: Array.from({ length: 10 }, (_, i) => noticia(i
 const espera: Estado = { tela: 'espera' };
 const calibracao: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
 const card = (indice: number): Estado => ({ tela: 'card', partida, indice, restanteMs: 15000, saibaMais: false, ausenteMs: null });
-const feedback = (indice: number, restanteMs = 3250): Estado => ({ tela: 'feedback', partida, indice, restanteMs, resposta: 'verdadeira' });
+const feedback = (indice: number, restanteMs = 3250): Estado => ({ tela: 'feedback', partida, indice, restanteMs, resposta: 'verdadeira', resultadoMs: 3000 });
 const resumo: Estado = { tela: 'resumo', partida };
 
 /** Joga uma partida de 10 cards inteira, do card 0 ao resumo, passando cada estado ao hook. */
@@ -111,6 +111,16 @@ describe('useFotoPartida (FR-13)', () => {
     const { result, rerender } = montar(true, capturar);
     jogar(rerender);
     rerender({ estado: { tela: 'tutorial', passo: 0, entrada: 'alternativa' } });
+    expect(result.current).toBeNull();
+  });
+
+  it('AC-13.4 (v12.0.1): o resumo fechado pela volta automática (AC-5.2) apaga a foto', () => {
+    const capturar = vi.fn(() => FOTO);
+    const { result, rerender } = montar(true, capturar);
+    jogar(rerender);
+    rerender({ estado: { tela: 'resumo', partida, decorridoMs: 29000 } });
+    expect(result.current).toBe(FOTO);
+    rerender({ estado: espera });
     expect(result.current).toBeNull();
   });
 

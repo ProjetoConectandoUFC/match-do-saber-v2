@@ -7,7 +7,7 @@ import { carregarPagina, desenharPagina } from './pagina';
 const linha = (id: string, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => ({
   id, titulo: `Título ${id}`, descricao: 'D', saiba_mais: 'S', veredito: 'verdadeira', explicacao: 'E', tecnica: 'fonte',
   tema: 'saude', fonte_url: 'https://www.correiobraziliense.com.br/x', fontes_extras: '', imagem: '', revisado_por: 'Ana',
-  status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', ...extra,
+  status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', visivel: '', ...extra,
 });
 
 describe('página das fontes (AC-5.10, v11.0.0)', () => {
@@ -52,6 +52,16 @@ describe('página das fontes (AC-5.10, v11.0.0)', () => {
     expect(itens.map((li) => li.getAttribute('data-id'))).toEqual(['mds-0003', 'mds-0001', 'mds-0002']);
     expect(itens[1]).toHaveTextContent('Fonte: Correio Braziliense');
     expect(itens[2]).toHaveTextContent('Notícia não encontrada nesta versão do jogo'); // rascunho não aparece
+  });
+
+  it('AC-7.12 (v12.0.0): notícia oculta não aparece na página das fontes', async () => {
+    const csv = escreverCsv([linha('mds-0001', { visivel: 'nao' }), linha('mds-0002')]);
+    const raiz = document.createElement('main');
+    await carregarPagina(raiz, '#1.2', async () => csv, 'base/');
+    const itens = [...raiz.querySelectorAll('li')];
+    expect(itens[0]).toHaveTextContent('Notícia não encontrada nesta versão do jogo');
+    expect(itens[1]).toHaveAttribute('data-id', 'mds-0002');
+    expect(itens[1]).not.toHaveTextContent('não encontrada');
   });
 
   it('sem conseguir ler o banco, mostra um aviso', async () => {

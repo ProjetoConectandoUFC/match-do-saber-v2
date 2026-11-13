@@ -1,4 +1,4 @@
-import { sortear } from './sorteio';
+import { sortear, type OpcoesSorteio } from './sorteio';
 import type { PerfilTutorial } from './tutorial';
 import type { Noticia, Veredito } from './types';
 
@@ -29,11 +29,13 @@ export type Estado =
   | { tela: 'calibracao'; centradoMs: number; ausenteMs: number }
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
-  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null }
-  | { tela: 'resumo'; partida: Partida }
+  // `resultadoMs` (v12.0.0): quanto dura o resultado (AC-9.25), gravado ao entrar; enquanto `restanteMs` for maior, o card está saindo.
+  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null; resultadoMs: number }
+  // `decorridoMs`: só com a volta automática ligada (AC-5.2, AC-9.26, v12.0.0).
+  | { tela: 'resumo'; partida: Partida; decorridoMs?: number }
   // v10.2.0 (FR-16): treino antes da partida; `passo` indexa `Contexto.tutorial`. Sem cronômetro (AC-15.6).
   | { tela: 'tutorial'; passo: number; entrada: Entrada }
-  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; resposta: Veredito };
+  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; resposta: Veredito; resultadoMs: number };
 
 export type Evento =
   | { tipo: 'tick'; dtMs: number; presenca: Presenca | null }
@@ -52,7 +54,18 @@ export interface Contexto {
   ignorarAusencia?: boolean;
   /** v10.2.0 (FR-16): perfis de treino; vazio ou ausente = tutorial desligado (AC-15.1). */
   tutorial?: readonly PerfilTutorial[];
+  /** v12.0.0 (Ajustes, FR-9): tempo do feedback (AC-9.25); sem valor, `TEMPOS.feedbackMs`. */
+  tempoFeedbackMs?: number;
+  /** v12.0.0 (AC-9.28): tolerância sem pessoa no card (modo Corpo); sem valor, `TEMPOS.ausenciaMs`. */
+  toleranciaMs?: number;
+  /** v12.0.0 (AC-5.2, AC-9.26): volta automática do resumo; sem valor ou 0, desligada. */
+  voltaResumoMs?: number;
+  /** v12.0.0 (AC-9.23, AC-9.27): notícias por partida, temas e dificuldade. */
+  sorteio?: OpcoesSorteio;
 }
+
+/** Tempo do resultado no feedback (AC-9.25); a saída do card soma a ele (AC-4.1). */
+export const duracaoFeedbackMs = (ctx: Pick<Contexto, 'tempoFeedbackMs'>) => ctx.tempoFeedbackMs ?? TEMPOS.feedbackMs;
 
 export const ESTADO_INICIAL: Estado = { tela: 'espera' };
 const CALIBRACAO: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
@@ -62,7 +75,7 @@ function card(partida: Partida, indice: number, tempoCardMs: number = TEMPOS.car
 }
 
 function iniciarPartida(ctx: Contexto, entrada: Entrada): Estado {
-  const cards = sortear(ctx.noticias, ctx.rng);
+  const cards = sortear(ctx.noticias, ctx.rng, ctx.sorteio);
   return cards.length === 0 ? ESTADO_INICIAL : card({ cards, resultados: [], entrada }, 0, ctx.tempoCardMs);
 }
 
@@ -72,14 +85,15 @@ function comecar(ctx: Contexto, entrada: Entrada): Estado {
   return ctx.tutorial?.length ? { tela: 'tutorial', passo: 0, entrada } : iniciarPartida(ctx, entrada);
 }
 
-function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null): Estado {
+function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null, ctx: Contexto): Estado {
   return {
     tela: 'feedback',
     partida: { ...e.partida, resultados: [...e.partida.resultados, r] },
     indice: e.indice,
     // Escolha: o card sai antes (saidaMs) e o resultado ainda fica 3 s inteiros (AC-4.1/AC-4.2).
-    restanteMs: resposta === null ? TEMPOS.feedbackMs : TEMPOS.feedbackMs + TEMPOS.saidaMs,
+    restanteMs: resposta === null ? duracaoFeedbackMs(ctx) : duracaoFeedbackMs(ctx) + TEMPOS.saidaMs,
     resposta,
+    resultadoMs: duracaoFeedbackMs(ctx),
   };
 }
 
@@ -109,7 +123,7 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
     case 'card': {
       if (evento.tipo === 'escolha') {
         const certo = evento.resposta === estado.partida.cards[estado.indice]!.veredito;
-        return registrar(estado, certo ? 'acerto' : 'erro', evento.resposta);
+        return registrar(estado, certo ? 'acerto' : 'erro', evento.resposta, ctx);
       }
       if (evento.tipo === 'saibaMais') return { ...estado, saibaMais: !estado.saibaMais };
       if (evento.tipo !== 'tick') return estado;
@@ -117,11 +131,11 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       const p = estado.partida.entrada === 'alternativa' || ctx.ignorarAusencia ? null : evento.presenca;
       if (p && !p.presente) {
         const ausenteMs = (estado.ausenteMs ?? 0) + evento.dtMs;
-        return ausenteMs >= TEMPOS.ausenciaMs ? ESTADO_INICIAL : { ...estado, ausenteMs };
+        return ausenteMs >= (ctx.toleranciaMs ?? TEMPOS.ausenciaMs) ? ESTADO_INICIAL : { ...estado, ausenteMs };
       }
       const base: EstadoCard = { ...estado, ausenteMs: null };
       const restanteMs = base.restanteMs - evento.dtMs;
-      return restanteMs <= 0 ? registrar(base, 'tempo', null) : { ...base, restanteMs };
+      return restanteMs <= 0 ? registrar(base, 'tempo', null, ctx) : { ...base, restanteMs };
     }
     case 'feedback': {
       if (evento.tipo !== 'tick') return estado;
@@ -133,6 +147,11 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
         : { tela: 'resumo', partida: estado.partida };
     }
     case 'resumo': {
+      // AC-5.2/AC-9.26: com a volta automática ligada, o resumo fecha sozinho depois do tempo escolhido.
+      if (evento.tipo === 'tick' && ctx.voltaResumoMs) {
+        const decorridoMs = (estado.decorridoMs ?? 0) + evento.dtMs;
+        return decorridoMs >= ctx.voltaResumoMs ? ESTADO_INICIAL : { ...estado, decorridoMs };
+      }
       if (evento.tipo !== 'enter') return estado;
       return ctx.cameraAtiva ? CALIBRACAO : comecar(ctx, 'alternativa');
     }
@@ -140,7 +159,10 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       // AC-15.5: Enter pula o treino. AC-15.6: sem cronômetro, ausência nem "saiba mais".
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
       if (evento.tipo !== 'escolha') return estado;
-      return { ...estado, tela: 'tutorialFeedback', restanteMs: TEMPOS.feedbackMs + TEMPOS.saidaMs, resposta: evento.resposta };
+      return {
+        ...estado, tela: 'tutorialFeedback', restanteMs: duracaoFeedbackMs(ctx) + TEMPOS.saidaMs, resposta: evento.resposta,
+        resultadoMs: duracaoFeedbackMs(ctx),
+      };
     }
     case 'tutorialFeedback': {
       if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
@@ -153,6 +175,16 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
         : iniciarPartida(ctx, estado.entrada);
     }
   }
+}
+
+/**
+ * Depois de uma escolha, os primeiros `TEMPOS.saidaMs` do feedback (e do feedback de treino) são a saída do card;
+ * depois vem o resultado, que dura `resultadoMs` (AC-4.1, AC-9.25). Som, inclinação e tela usam esta mesma regra.
+ */
+export function cardSaindo(estado: Estado): boolean {
+  if (estado.tela === 'feedback') return estado.resposta !== null && estado.restanteMs > estado.resultadoMs;
+  if (estado.tela === 'tutorialFeedback') return estado.restanteMs > estado.resultadoMs;
+  return false;
 }
 
 /** O centro do jogador é medido ao sair da calibração (FR-2), para o card ou, com o tutorial, para o treino. */

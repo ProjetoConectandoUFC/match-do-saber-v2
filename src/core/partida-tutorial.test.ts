@@ -61,7 +61,7 @@ describe('tutorial: card e feedback de treino (AC-15.3 a AC-15.6)', () => {
 
   it('AC-15.3: a escolha vai para o feedback de treino, com a saída do card + 3 s', () => {
     expect(rodar(treino(), [escolha('verdadeira')])).toEqual({
-      tela: 'tutorialFeedback', passo: 0, entrada: 'alternativa', restanteMs: SAIDA_E_FEEDBACK, resposta: 'verdadeira',
+      tela: 'tutorialFeedback', passo: 0, entrada: 'alternativa', restanteMs: SAIDA_E_FEEDBACK, resposta: 'verdadeira', resultadoMs: TEMPOS.feedbackMs,
     });
   });
 

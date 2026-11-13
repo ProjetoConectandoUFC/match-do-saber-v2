@@ -22,7 +22,8 @@ test('AC-15.1: com o tutorial desligado (padrão), Enter vai direto ao primeiro 
 test('AC-15.2 a AC-15.5: com o tutorial ligado, os treinos do arquivo (2 na v11.0.0) com feedback didático e Enter pula para a partida', async ({ page }) => {
   test.setTimeout(30_000);
   await abrir(page, 'ligado');
-  await expect(page.getByText(/Tutorial: ligado$/)).toBeVisible();
+  // v12.0.0 (AC-9.2): o tutorial ligado fica fora do resumo da espera e aparece como "Ajustes personalizados".
+  await expect(page.getByText(/· Ajustes personalizados$/)).toBeVisible();
   await page.keyboard.press('Enter');
 
   // Treino 1: Abacaxi Perfeito (mentira, v11.0.0), com o desenho do perfil, sem barra de tempo e sem placar.

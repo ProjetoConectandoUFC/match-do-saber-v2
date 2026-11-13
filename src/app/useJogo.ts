@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { extrairPontos, type Registro } from '../core/diagnostico';
-import { criarInterpretador, escolherJogador, medirCabeca, medirMaos, type Gesto, type Pose } from '../core/gestos';
-import { CONFIG_PADRAO, type Configuracoes } from '../core/modos';
+import { AJUSTES_PADRAO, contextoDosAjustes, type Ajustes } from '../core/ajustes';
+import { configGestos, criarInterpretador, escolherJogador, medirCabeca, medirMaos, type Gesto, type Pose } from '../core/gestos';
 import { ESTADO_INICIAL, calibrarAoSair, reduzir, type Contexto, type Estado, type Evento } from '../core/partida';
 import { dtDoQuadro } from '../core/relogio';
 import type { Noticia } from '../core/types';
@@ -24,11 +24,13 @@ const EVENTO_DA_TECLA: Record<string, Evento | undefined> = {
   Escape: { tipo: 'sair' }, // FR-10
 };
 
-export function useJogo(noticias: Noticia[], config: Configuracoes = CONFIG_PADRAO, pausado = false, registro?: Registro) {
+/** `noticias`: as jogáveis dentro dos filtros de conteúdo dos Ajustes (AC-9.27, AC-6.4). */
+export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, pausado = false, registro?: Registro) {
   const [camera, setCamera] = useState<StatusCamera>('carregando');
-  const ctx = useRef<Contexto>({ noticias, rng: Math.random, cameraAtiva: false, tempoCardMs: config.tempoCardS * 1000, ignorarAusencia: config.modo !== 'corpo' });
+  const ctx = useRef<Contexto>({ noticias, rng: Math.random, cameraAtiva: false });
+  // Tempos, tolerância, volta do resumo e sorteio vêm dos Ajustes (FR-1, FR-9, v12.0.0).
   ctx.current = {
-    noticias, rng: Math.random, cameraAtiva: camera === 'ativa', tempoCardMs: config.tempoCardS * 1000, ignorarAusencia: config.modo !== 'corpo',
+    noticias, rng: Math.random, cameraAtiva: camera === 'ativa', ...contextoDosAjustes(config),
     tutorial: config.tutorial ? PERFIS_TUTORIAL : [], // FR-16: desligado por padrão
   };
   const [estado, despachar] = useReducer((s: Estado, e: Evento) => reduzir(s, e, ctx.current), ESTADO_INICIAL);
@@ -36,7 +38,7 @@ export function useJogo(noticias: Noticia[], config: Configuracoes = CONFIG_PADR
   const videoRef = useRef<HTMLVideoElement>(null);
   const inclinacaoRef = useRef(0);
   const poseRef = useRef<Pose | null>(null);
-  const interp = useRef(criarInterpretador(config.modo));
+  const interp = useRef(criarInterpretador(config.modo, configGestos(config.sensibilidade)));
   const pausadoRef = useRef(pausado);
   pausadoRef.current = pausado;
   // Só para o modo de diagnóstico (FR-12): o laço lê a tela e o modo atuais sem recriar o efeito.
@@ -45,10 +47,10 @@ export function useJogo(noticias: Noticia[], config: Configuracoes = CONFIG_PADR
   const rastreador = useRef<Rastreador | null>(null);
   const telaAnterior = useRef(estado.tela);
 
-  // O modo só muda na tela de espera (FR-9), então trocar o interpretador aqui não afeta uma partida.
+  // Modo e sensibilidade (AC-9.28) só mudam na tela de espera (FR-9): trocar o interpretador não afeta uma partida.
   useEffect(() => {
-    interp.current = criarInterpretador(config.modo);
-  }, [config.modo]);
+    interp.current = criarInterpretador(config.modo, configGestos(config.sensibilidade));
+  }, [config.modo, config.sensibilidade]);
 
   // Calibra o centro ao sair da calibração para o primeiro card (ou para o treino, FR-16).
   useEffect(() => {
@@ -113,7 +115,7 @@ export function useJogo(noticias: Noticia[], config: Configuracoes = CONFIG_PADR
         const pose = escolherJogador(poses);
         poseRef.current = pose;
         const leitura = interp.current.ler(pose, agora);
-        // Com as Configurações, o menu ☰ ou um painel dele abertos, a câmera não gera presença nem gestos (FR-14).
+        // Com os Ajustes, o menu ☰ ou um painel dele abertos, a câmera não gera presença nem gestos (FR-14).
         inclinacaoRef.current = pausadoRef.current ? 0 : leitura.inclinacao;
         despachar({ tipo: 'tick', dtMs, presenca: pausadoRef.current ? null : leitura.presenca });
         if (!pausadoRef.current) for (const g of leitura.gestos) despachar(EVENTO_DO_GESTO[g]);
