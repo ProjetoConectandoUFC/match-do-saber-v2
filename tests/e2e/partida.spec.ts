@@ -1,5 +1,6 @@
 import { escreverCsv, lerCsv } from '../../src/core/csv';
 import { expect, test } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 test('partida completa pelo teclado, sem câmera (AC-1.6, AC-2.5, AC-3.4, AC-4.x, AC-5.1, AC-5.6)', async ({ page }) => {
   test.setTimeout(120_000); // 10 feedbacks de 3 s + 16 s de resumo
@@ -15,6 +16,7 @@ test('partida completa pelo teclado, sem câmera (AC-1.6, AC-2.5, AC-3.4, AC-4.x
   for (let i = 0; i < 10; i++) {
     const card = page.locator('article');
     await expect(card).toBeVisible();
+    await esperarCartaPousada(page); // v13.0.0: setas só valem com a carta pousada (AC-17.6)
     if (i === 0) {
       await page.keyboard.press('ArrowUp');
       await expect(card.getByText('Texto expandido de teste.', { exact: false })).toBeVisible();
@@ -40,6 +42,7 @@ test('arrastar o card com o mouse escolhe (AC-2.5)', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeVisible(); // jogo carregado
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page);
   const box = (await page.locator('article').boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
@@ -55,7 +58,7 @@ test('tempo esgotado mostra feedback (AC-4.3)', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeVisible(); // jogo carregado
   await page.keyboard.press('Enter');
-  await expect(page.getByText('Tempo esgotado')).toBeVisible({ timeout: 17000 });
+  await expect(page.getByText('Tempo esgotado')).toBeVisible({ timeout: 20_000 }); // v13.0.0: + abertura (1,5 s) + distribuição (0,9 s)
 });
 
 test('FR-4: texto no limite máximo não é cortado em 1366×768', async ({ page }) => {
@@ -70,6 +73,7 @@ test('FR-4: texto no limite máximo não é cortado em 1366×768', async ({ page
   await page.goto('/');
   await expect(page.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeVisible(); // jogo carregado
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page);
   const card = page.locator('article');
   const caixa = (await card.boundingBox())!;
   expect(caixa.y).toBeGreaterThanOrEqual(0);
@@ -86,6 +90,7 @@ async function iniciarSemCamera(page: import('@playwright/test').Page) {
   await expect(page.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeVisible(); // jogo carregado
   await page.keyboard.press('Enter');
   await expect(page.locator('article')).toBeVisible();
+  await esperarCartaPousada(page);
 }
 
 // No próprio navegador: espera o card ganhar a classe de saída, deixa a animação correr ~100 ms

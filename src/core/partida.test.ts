@@ -21,10 +21,12 @@ const tick = (dtMs: number, presenca: Presenca | null = centro): Evento => ({ ti
 function rodar(estado: Estado, eventos: Evento[], c = ctx()): Estado {
   return eventos.reduce((s, e) => reduzir(s, e, c), estado);
 }
+/** v13.0.0: a abertura do fan (AC-17.5) e a distribuição da carta (AC-17.6) vêm antes da carta pousada. */
+const POUSAR = [tick(TEMPOS.aberturaFanMs), tick(TEMPOS.distribuirMs)];
 /** Partida pelo teclado: Enter na espera abre a calibração (câmera ativa, AC-1.7) e Enter na calibração a pula (AC-1.8). */
-const emCard = (c = ctx()) => rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, { tipo: 'enter' }], c);
+const emCard = (c = ctx()) => rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, { tipo: 'enter' }, ...POUSAR], c);
 /** Partida pelo corpo: Enter abre a calibração e 2 s no centro iniciam a partida (AC-1.2, AC-1.7). */
-const emCardCalibrado = (c = ctx()) => rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(16), tick(1000), tick(1000)], c);
+const emCardCalibrado = (c = ctx()) => rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(16), tick(1000), tick(1000), ...POUSAR], c);
 function cardAtual(s: Estado) {
   if (s.tela !== 'card') throw new Error(`esperava card, veio ${s.tela}`);
   return s.partida.cards[s.indice]!;
@@ -40,7 +42,7 @@ describe('espera e calibração (v3.0.0: início só manual)', () => {
   });
   it('AC-1.6: sem câmera, Enter inicia na hora, sem calibração', () => {
     const c = ctx({ cameraAtiva: false });
-    const s = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, c);
+    const s = rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, ...POUSAR], c);
     expect(s).toMatchObject({ tela: 'card', indice: 0 });
     if (s.tela !== 'card') throw new Error();
     expect(s.partida.entrada).toBe('alternativa');
@@ -49,7 +51,7 @@ describe('espera e calibração (v3.0.0: início só manual)', () => {
     expect(reduzir(ESTADO_INICIAL, { tipo: 'enter' }, ctx()).tela).toBe('calibracao');
   });
   it('AC-1.2: depois do Enter, 2 s contínuos no centro iniciam a partida com 15 s (entrada "corpo")', () => {
-    const s = rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(1000), tick(1000)]);
+    const s = rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(1000), tick(1000), ...POUSAR]);
     expect(s).toMatchObject({ tela: 'card', indice: 0, restanteMs: TEMPOS.cardMs });
     if (s.tela !== 'card') throw new Error();
     expect(s.partida.entrada).toBe('corpo');
@@ -64,7 +66,7 @@ describe('espera e calibração (v3.0.0: início só manual)', () => {
     expect(rodar(s, [tick(100), tick(5000), tick(5000)]).tela).toBe('espera');
   });
   it('AC-1.8: Enter na calibração a pula e inicia pela entrada alternativa', () => {
-    const s = rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(16, lado), { tipo: 'enter' }]);
+    const s = rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(16, lado), { tipo: 'enter' }, ...POUSAR]);
     expect(s).toMatchObject({ tela: 'card', indice: 0 });
     if (s.tela !== 'card') throw new Error();
     expect(s.partida.entrada).toBe('alternativa');
@@ -114,7 +116,7 @@ describe('card', () => {
     expect(TEMPOS.carimboMs).toBe(300);
     const s1 = reduzir(emCard(), { tipo: 'escolha', resposta: 'falsa' }, ctx());
     expect(rodar(s1, [tick(3549)])).toMatchObject({ tela: 'feedback', indice: 0 });
-    expect(rodar(s1, [tick(3550)])).toMatchObject({ tela: 'card', indice: 1 });
+    expect(rodar(s1, [tick(3550)])).toMatchObject({ tela: 'card', indice: 1, distribuindoMs: TEMPOS.distribuirMs });
   });
   it('AC-4.3/AC-4.9 (v12.0.0): após tempo esgotado (sem saída do card), o feedback dura a carimbada + 3 s', () => {
     const s1 = rodar(emCard(), [tick(TEMPOS.cardMs)]);
@@ -183,7 +185,9 @@ describe('card', () => {
 describe('resumo', () => {
   const jogarTudo = (c = ctx()) => {
     let s = emCard(c);
-    for (let i = 0; i < 3; i++) s = rodar(s, [{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs)], c);
+    for (let i = 0; i < 3; i++) {
+      s = rodar(s, [{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs), tick(TEMPOS.distribuirMs)], c);
+    }
     return s;
   };
   it('AC-5.1: resumo com os pontos da partida', () => {
@@ -197,7 +201,7 @@ describe('resumo', () => {
   it('AC-5.6: Enter no resumo vai para a calibração (câmera ativa) ou inicia direto (sem câmera)', () => {
     expect(reduzir(jogarTudo(), { tipo: 'enter' }, ctx()).tela).toBe('calibracao');
     const semCamera = ctx({ cameraAtiva: false });
-    const s = reduzir(jogarTudo(semCamera), { tipo: 'enter' }, semCamera);
+    const s = rodar(jogarTudo(semCamera), [{ tipo: 'enter' }, ...POUSAR], semCamera);
     expect(s).toMatchObject({ tela: 'card', indice: 0 });
     if (s.tela !== 'card') throw new Error();
     expect(s.partida.resultados).toEqual([]);
@@ -225,7 +229,7 @@ describe('v2.0.0: tempo por card e sair', () => {
     const c = ctx({ tempoCardMs: 20000 });
     const s0 = emCard(c);
     expect(s0).toMatchObject({ tela: 'card', restanteMs: 20000 });
-    const s1 = rodar(s0, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs)], c);
+    const s1 = rodar(s0, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs), tick(TEMPOS.distribuirMs)], c);
     expect(s1).toMatchObject({ tela: 'card', indice: 1, restanteMs: 20000 });
     expect(rodar(s1, [tick(10000), tick(9999)], c).tela).toBe('card');
     expect(rodar(s1, [tick(10000), tick(10000)], c).tela).toBe('feedback');
@@ -239,7 +243,9 @@ describe('v2.0.0: tempo por card e sair', () => {
     else if (onde === 'feedback') s = reduzir(emCard(c), { tipo: 'escolha', resposta: 'falsa' }, c);
     else {
       s = emCard(c);
-      for (let i = 0; i < 3; i++) s = rodar(s, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs)], c);
+      for (let i = 0; i < 3; i++) {
+        s = rodar(s, [{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs + TEMPOS.carimboMs + TEMPOS.feedbackMs), tick(TEMPOS.distribuirMs)], c);
+      }
     }
     expect(s.tela).toBe(onde === 'saibaMais' ? 'card' : onde);
     expect(reduzir(s, { tipo: 'sair' }, c)).toEqual(ESTADO_INICIAL);

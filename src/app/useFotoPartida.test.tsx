@@ -13,7 +13,7 @@ const partida: Partida = { cards: Array.from({ length: 10 }, (_, i) => noticia(i
 
 const espera: Estado = { tela: 'espera' };
 const calibracao: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
-const card = (indice: number): Estado => ({ tela: 'card', partida, indice, restanteMs: 15000, saibaMais: false, ausenteMs: null });
+const card = (indice: number): Estado => ({ tela: 'card', partida, indice, restanteMs: 15000, saibaMais: false, ausenteMs: null, distribuindoMs: 0 });
 const feedback = (indice: number, restanteMs = 3250): Estado => ({ tela: 'feedback', partida, indice, restanteMs, resposta: 'verdadeira', resultadoMs: 3000 });
 const resumo: Estado = { tela: 'resumo', partida };
 
@@ -110,7 +110,15 @@ describe('useFotoPartida (FR-13)', () => {
     const capturar = vi.fn(() => FOTO);
     const { result, rerender } = montar(true, capturar);
     jogar(rerender);
-    rerender({ estado: { tela: 'tutorial', passo: 0, entrada: 'alternativa' } });
+    rerender({ estado: { tela: 'tutorial', passo: 0, treinos: 2, partida, distribuindoMs: 0 } });
+    expect(result.current).toBeNull();
+  });
+
+  it('AC-13.4/AC-17.5 (v13.0.0): a abertura do fan de uma nova partida também apaga a foto', () => {
+    const capturar = vi.fn(() => FOTO);
+    const { result, rerender } = montar(true, capturar);
+    jogar(rerender);
+    rerender({ estado: { tela: 'abertura', partida, treinos: 0, restanteMs: 1500 } });
     expect(result.current).toBeNull();
   });
 

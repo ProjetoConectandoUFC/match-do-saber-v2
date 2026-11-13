@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
 
@@ -9,6 +10,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText(CAMERA_OFF)).toBeVisible();
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page); // v13.0.0: o cronômetro só corre com a carta pousada (AC-17.6)
 });
 
 test('AC-2.3/AC-2.10 (v10.1.0): sem pessoa detectada, o card fica no centro, sem deslocar nem girar', async ({ page }) => {

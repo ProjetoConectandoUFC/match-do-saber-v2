@@ -10,6 +10,10 @@ export const TEMPOS = {
   carimboMs: 300,
   calibracaoMs: 2000,
   ausenciaMs: 10000,
+  /** v13.0.0 (AC-17.5): o fan com todas as cartas da partida abre e fecha; soma à partida. */
+  aberturaFanMs: 1500,
+  /** v13.0.0 (AC-17.6): cada carta sai do fan e pousa no centro; soma ao tempo por card, não desconta. */
+  distribuirMs: 900,
 } as const;
 
 
@@ -25,11 +29,15 @@ export type EstadoCard = {
   restanteMs: number;
   saibaMais: boolean;
   ausenteMs: number | null;
+  /** v13.0.0 (AC-17.6): > 0 enquanto a carta sai do fan; nesse tempo o cronômetro não corre e nada é aceito. */
+  distribuindoMs: number;
 };
 
 export type Estado =
   | { tela: 'espera' }
   | { tela: 'calibracao'; centradoMs: number; ausenteMs: number }
+  // v13.0.0 (AC-17.5): a partida já vem sorteada, para o fan saber quantas cartas tem (`treinos` + `partida.cards`).
+  | { tela: 'abertura'; partida: Partida; treinos: number; restanteMs: number }
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
   // `resultadoMs` (v12.0.0): quanto dura o resultado, carimbada + tempo configurado (AC-4.9, AC-9.25), gravado ao entrar; enquanto `restanteMs` for maior, o card está saindo.
@@ -37,8 +45,9 @@ export type Estado =
   // `decorridoMs`: só com a volta automática ligada (AC-5.2, AC-9.26, v12.0.0).
   | { tela: 'resumo'; partida: Partida; decorridoMs?: number }
   // v10.2.0 (FR-16): treino antes da partida; `passo` indexa `Contexto.tutorial`. Sem cronômetro (AC-15.6).
-  | { tela: 'tutorial'; passo: number; entrada: Entrada }
-  | { tela: 'tutorialFeedback'; passo: number; entrada: Entrada; restanteMs: number; resposta: Veredito; resultadoMs: number };
+  // v13.0.0: a partida (com a entrada) já está sorteada desde a abertura; `treinos` é o total de treinos dela.
+  | { tela: 'tutorial'; passo: number; treinos: number; partida: Partida; distribuindoMs: number }
+  | { tela: 'tutorialFeedback'; passo: number; treinos: number; partida: Partida; restanteMs: number; resposta: Veredito; resultadoMs: number };
 
 export type Evento =
   | { tipo: 'tick'; dtMs: number; presenca: Presenca | null }
@@ -79,20 +88,38 @@ export const duracaoResultadoMs = (ctx: Pick<Contexto, 'tempoFeedbackMs'>) => TE
 export const ESTADO_INICIAL: Estado = { tela: 'espera' };
 const CALIBRACAO: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
 
+/** Toda carta de notícia chega distribuída do fan (AC-17.6), com o cronômetro cheio. */
 function card(partida: Partida, indice: number, tempoCardMs: number = TEMPOS.cardMs): EstadoCard {
-  return { tela: 'card', partida, indice, restanteMs: tempoCardMs, saibaMais: false, ausenteMs: null };
+  return {
+    tela: 'card', partida, indice, restanteMs: tempoCardMs, saibaMais: false, ausenteMs: null, distribuindoMs: TEMPOS.distribuirMs,
+  };
 }
 
-function iniciarPartida(ctx: Contexto, entrada: Entrada): Estado {
-  const cards = sortear(ctx.noticias, ctx.rng, ctx.sorteio);
-  return cards.length === 0 ? ESTADO_INICIAL : card({ cards, resultados: [], entrada }, 0, ctx.tempoCardMs);
+/** A carta de treino também sai do fan (FR-16, v13.0.0). */
+function treino(partida: Partida, treinos: number, passo: number): Estado {
+  return { tela: 'tutorial', passo, treinos, partida, distribuindoMs: TEMPOS.distribuirMs };
 }
 
-/** Começo de uma partida: com o tutorial ligado, passa antes pelos cards de treino (AC-15.2). */
+/**
+ * Começo de uma partida (AC-1.2, AC-1.6, AC-1.8, AC-5.6): sorteia já aqui, antes do treino, para a abertura do fan
+ * (AC-17.5) saber o total de cartas (treinos + notícias). Sem notícias sorteáveis, fica na espera (AC-6.4).
+ */
 function comecar(ctx: Contexto, entrada: Entrada): Estado {
   if (ctx.noticias.length === 0) return ESTADO_INICIAL;
-  return ctx.tutorial?.length ? { tela: 'tutorial', passo: 0, entrada } : iniciarPartida(ctx, entrada);
+  const cards = sortear(ctx.noticias, ctx.rng, ctx.sorteio);
+  if (cards.length === 0) return ESTADO_INICIAL;
+  return {
+    tela: 'abertura', partida: { cards, resultados: [], entrada }, treinos: ctx.tutorial?.length ?? 0, restanteMs: TEMPOS.aberturaFanMs,
+  };
 }
+
+/** Depois da abertura: o 1º treino, com o tutorial ligado (AC-15.2), ou o 1º card. */
+function primeiraCarta(partida: Partida, treinos: number, ctx: Contexto): Estado {
+  return treinos > 0 ? treino(partida, treinos, 0) : card(partida, 0, ctx.tempoCardMs);
+}
+
+/** A distribuição só desconta o próprio tempo; o que sobra de um tick grande não desconta do cronômetro (AC-17.6). */
+const distribuir = (distribuindoMs: number, dtMs: number) => Math.max(0, distribuindoMs - dtMs);
 
 function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null, ctx: Contexto): Estado {
   return {
@@ -130,7 +157,17 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       const centradoMs = estado.centradoMs + evento.dtMs;
       return centradoMs >= TEMPOS.calibracaoMs ? comecar(ctx, 'corpo') : { tela: 'calibracao', centradoMs, ausenteMs: 0 };
     }
+    case 'abertura': {
+      // AC-17.5: só o tempo corre; escolha, "saiba mais", Enter e ausência são ignorados (Sair já foi tratado acima).
+      if (evento.tipo !== 'tick') return estado;
+      const restanteMs = estado.restanteMs - evento.dtMs;
+      return restanteMs > 0 ? { ...estado, restanteMs } : primeiraCarta(estado.partida, estado.treinos, ctx);
+    }
     case 'card': {
+      // AC-17.6: durante a distribuição o cronômetro não corre, nada é aceito e a ausência não conta.
+      if (estado.distribuindoMs > 0) {
+        return evento.tipo === 'tick' ? { ...estado, distribuindoMs: distribuir(estado.distribuindoMs, evento.dtMs) } : estado;
+      }
       if (evento.tipo === 'escolha') {
         const certo = evento.resposta === estado.partida.cards[estado.indice]!.veredito;
         return registrar(estado, certo ? 'acerto' : 'erro', evento.resposta, ctx);
@@ -166,23 +203,24 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       return ctx.cameraAtiva ? CALIBRACAO : comecar(ctx, 'alternativa');
     }
     case 'tutorial': {
-      // AC-15.5: Enter pula o treino. AC-15.6: sem cronômetro, ausência nem "saiba mais".
-      if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
+      // AC-15.5: Enter pula o treino (também durante a distribuição). AC-15.6: sem cronômetro, ausência nem "saiba mais".
+      if (evento.tipo === 'enter') return card(estado.partida, 0, ctx.tempoCardMs);
+      if (estado.distribuindoMs > 0) {
+        return evento.tipo === 'tick' ? { ...estado, distribuindoMs: distribuir(estado.distribuindoMs, evento.dtMs) } : estado;
+      }
       if (evento.tipo !== 'escolha') return estado;
       return {
-        ...estado, tela: 'tutorialFeedback', restanteMs: duracaoResultadoMs(ctx) + TEMPOS.saidaMs, resposta: evento.resposta,
-        resultadoMs: duracaoResultadoMs(ctx),
+        tela: 'tutorialFeedback', passo: estado.passo, treinos: estado.treinos, partida: estado.partida,
+        restanteMs: duracaoResultadoMs(ctx) + TEMPOS.saidaMs, resposta: evento.resposta, resultadoMs: duracaoResultadoMs(ctx),
       };
     }
     case 'tutorialFeedback': {
-      if (evento.tipo === 'enter') return iniciarPartida(ctx, estado.entrada);
+      if (evento.tipo === 'enter') return card(estado.partida, 0, ctx.tempoCardMs);
       if (evento.tipo !== 'tick') return estado;
       const restanteMs = estado.restanteMs - evento.dtMs;
       if (restanteMs > 0) return { ...estado, restanteMs };
       const passo = estado.passo + 1;
-      return passo < (ctx.tutorial?.length ?? 0)
-        ? { tela: 'tutorial', passo, entrada: estado.entrada }
-        : iniciarPartida(ctx, estado.entrada);
+      return passo < estado.treinos ? treino(estado.partida, estado.treinos, passo) : card(estado.partida, 0, ctx.tempoCardMs);
     }
   }
 }
@@ -197,9 +235,33 @@ export function cardSaindo(estado: Estado): boolean {
   return false;
 }
 
-/** O centro do jogador é medido ao sair da calibração (FR-2), para o card ou, com o tutorial, para o treino. */
+/** O centro do jogador é medido ao sair da calibração (FR-2): desde a v13.0.0, sempre para a abertura do fan. */
 export function calibrarAoSair(antes: Estado['tela'], depois: Estado['tela']): boolean {
-  return antes === 'calibracao' && (depois === 'card' || depois === 'tutorial');
+  return antes === 'calibracao' && depois === 'abertura';
+}
+
+/** Carta (notícia ou treino) saindo do fan até o centro (AC-17.6); som, inclinação e tela usam esta regra. */
+export function distribuindo(estado: Estado): boolean {
+  return (estado.tela === 'card' || estado.tela === 'tutorial') && estado.distribuindoMs > 0;
+}
+
+/**
+ * Cartas ainda no fan (AC-17.3): as que não começaram a ser distribuídas, treinos e notícias. A carta em jogo (inclusive a
+ * que está sendo distribuída) já saiu; a tela anima a saída dela com `distribuindoMs`. Fora da partida, nenhuma.
+ */
+export function cartasNoFan(estado: Estado): number {
+  switch (estado.tela) {
+    case 'abertura':
+      return estado.treinos + estado.partida.cards.length;
+    case 'tutorial':
+    case 'tutorialFeedback':
+      return estado.treinos - estado.passo - 1 + estado.partida.cards.length;
+    case 'card':
+    case 'feedback':
+      return estado.partida.cards.length - estado.indice - 1;
+    default:
+      return 0;
+  }
 }
 
 export function pontos(p: Partida): number {

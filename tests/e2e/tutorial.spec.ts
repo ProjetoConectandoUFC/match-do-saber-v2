@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 // Story 15 / FR-16 (v10.2.0, a confirmar pelo responsável): treino antes da partida, desligado por padrão.
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
@@ -32,6 +33,7 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, os treinos do arquivo (2 na v11.
   await expect(page.locator('article img')).toHaveAttribute('src', /perfil-falso-abacaxi/);
   await expect(page.getByRole('timer')).toHaveCount(0);
   await expect(page.getByText(/^Pontos:/)).toHaveCount(0);
+  await esperarCartaPousada(page); // v13.0.0: o treino também sai do fan (FR-16, AC-17.6)
   await page.keyboard.press('ArrowLeft');
   await expect(page.getByText('Acertou!')).toBeVisible();
   await expect(page.getByText('Você foi para a esquerda com o corpo: escolheu Mentira.')).toBeVisible();
@@ -39,6 +41,7 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, os treinos do arquivo (2 na v11.
   // Treino 2 aparece sozinho depois do feedback (3 s + saída).
   await expect(page.getByText('Treino 2 de 2')).toBeVisible({ timeout: 6000 });
   await expect(page.locator('article img')).toHaveAttribute('src', /perfil-verdadeiro-caju/);
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowLeft'); // Seu Caju é verdade: errar ensina o gesto certo
   await expect(page.getByText('Quase!')).toBeVisible();
   await expect(page.getByText('Era Verdade: corpo para a direita.')).toBeVisible();

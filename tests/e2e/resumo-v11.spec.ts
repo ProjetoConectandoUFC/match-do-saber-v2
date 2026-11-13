@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 // v11.0.0: resumo da opção B (lista + QR, AC-5.8, AC-5.9), página das fontes (AC-5.10), botões redondos e
 // carimbo (AC-2.11, AC-2.12), sem câmera (setas).
@@ -16,6 +17,7 @@ async function jogarAteOResumo(page: Page) {
   await page.keyboard.press('Enter');
   for (let i = 0; i < 10; i++) {
     await expect(page.locator('article')).toBeVisible();
+    await esperarCartaPousada(page); // v13.0.0: setas só valem com a carta pousada (AC-17.6)
     await page.keyboard.press(i % 3 === 0 ? 'ArrowLeft' : 'ArrowRight');
     await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   }
@@ -98,6 +100,7 @@ test('AC-2.11/AC-2.12: botões redondos fora do card, pilha atrás e carimbo na 
   await page.keyboard.press('Enter');
   const card = page.locator('article');
   await expect(card).toBeVisible();
+  await esperarCartaPousada(page);
   const c = await caixa(card);
   const barra = await caixa(page.getByRole('timer', { name: 'Tempo restante' }));
   expect(Math.abs(c.y + c.height / 2 - barra.y / 2)).toBeLessThanOrEqual(8); // AC-4.5 com a pilha

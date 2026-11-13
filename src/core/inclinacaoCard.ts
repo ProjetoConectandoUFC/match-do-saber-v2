@@ -4,7 +4,7 @@
  * suavizada e, dela, o deslocamento, o giro (eixo na base do card) e a opacidade dos rótulos Verdade/Mentira.
  * Lógica pura: quem aplica no DOM é `src/app/useInclinacaoCard.ts`, fora do estado do React.
  */
-import { cardSaindo, type Estado } from './partida';
+import { cardSaindo, distribuindo, type Estado } from './partida';
 
 export const CONFIG_INCLINACAO_CARD = {
   /** Deslocamento lateral do centro da base no limiar, em fração da largura do card ("um pouco", v10.3.1). */
@@ -24,7 +24,7 @@ export interface TamanhoCard { largura: number; altura: number }
 
 /**
  * `jogando`: card na tela, segue a leitura. `saindo`: card escolhido saindo, fica onde estava.
- * `centro`: sem pessoa, "Volte para o centro", feedback, menu aberto ou outra tela; volta ao zero.
+ * `centro`: sem pessoa, "Volte para o centro", carta saindo do fan (AC-17.6), feedback, menu aberto ou outra tela; volta ao zero.
  */
 export type SituacaoCard = 'jogando' | 'saindo' | 'centro';
 
@@ -66,6 +66,8 @@ export function deslocamentoCard(
 /** Em que situação o card está, pela tela da partida e pelo menu/painel aberto (`pausado`, FR-14). */
 export function situacaoDoCard(estado: Estado, pausado: boolean): SituacaoCard {
   if (pausado) return 'centro';
+  // AC-17.6 (v13.0.0): a carta que sobe do fan não acompanha o corpo; só depois de pousada (AC-2.10e).
+  if (distribuindo(estado)) return 'centro';
   if (estado.tela === 'card') return estado.ausenteMs === null ? 'jogando' : 'centro';
   // Mesma regra do App: depois de uma escolha, os primeiros `saidaMs` do feedback são a saída do card.
   if (cardSaindo(estado)) return 'saindo'; // feedback e feedback de treino (AC-9.25: limite do próprio estado)

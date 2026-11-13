@@ -22,8 +22,11 @@ const tick = (dtMs: number, presenca: Presenca | null = centro): Evento => ({ ti
 const enter: Evento = { tipo: 'enter' };
 const escolha = (resposta: Veredito): Evento => ({ tipo: 'escolha', resposta });
 const rodar = (s: Estado, eventos: Evento[], c: Contexto) => eventos.reduce((e, ev) => reduzir(e, ev, c), s);
-const emCard = (c: Contexto) => rodar(ESTADO_INICIAL, [enter, enter], c);
-const emCardCalibrado = (c: Contexto) => rodar(ESTADO_INICIAL, [enter, tick(16), tick(1000), tick(1000)], c);
+// v13.0.0: abertura do fan (AC-17.5) e distribuição da carta (AC-17.6) antes da carta pousada.
+const ABRIR = tick(TEMPOS.aberturaFanMs);
+const POUSAR = tick(TEMPOS.distribuirMs);
+const emCard = (c: Contexto) => rodar(ESTADO_INICIAL, [enter, enter, ABRIR, POUSAR], c);
+const emCardCalibrado = (c: Contexto) => rodar(ESTADO_INICIAL, [enter, tick(16), tick(1000), tick(1000), ABRIR, POUSAR], c);
 
 describe('AC-9.25: tempo do feedback configurado', () => {
   it('sem ajuste, vale TEMPOS.feedbackMs', () => {
@@ -64,7 +67,7 @@ describe('AC-9.25: tempo do feedback configurado', () => {
   it('AC-15.3 (v12.0.1): o feedback do treino em 8 s também tem saída + carimbada + o tempo configurado (fronteira 8549/8550)', () => {
     const treino: PerfilTutorial[] = [{ id: 't1', nome: 't1', frase: '', veredito: 'falsa', explicacao: '', tecnica: 'imagem', tema: 'curiosidades' }];
     const c = ctx({ tempoFeedbackMs: 8000, tutorial: treino });
-    const fb = rodar(ESTADO_INICIAL, [enter, enter, escolha('falsa')], c);
+    const fb = rodar(ESTADO_INICIAL, [enter, enter, ABRIR, POUSAR, escolha('falsa')], c);
     expect(fb).toMatchObject({ tela: 'tutorialFeedback', restanteMs: 8550, resultadoMs: 8300 });
     expect(rodar(fb, [tick(8549)], c).tela).toBe('tutorialFeedback');
     expect(rodar(fb, [tick(8550)], c).tela).toBe('card');
@@ -90,7 +93,7 @@ describe('AC-9.28/AC-5.4/AC-5.5: tolerância sem pessoa configurada (modo Corpo)
 describe('AC-5.2/AC-9.26: volta automática do resumo', () => {
   const resumo = (c: Contexto) => {
     let s = emCard(c);
-    for (let i = 0; i < 6; i++) s = rodar(s, [escolha('falsa'), tick(TEMPOS.saidaMs + duracaoResultadoMs(c))], c);
+    for (let i = 0; i < 6; i++) s = rodar(s, [POUSAR, escolha('falsa'), tick(TEMPOS.saidaMs + duracaoResultadoMs(c))], c);
     expect(s.tela).toBe('resumo');
     return s;
   };
@@ -123,6 +126,8 @@ describe('AC-5.2/AC-9.26: volta automática do resumo', () => {
       expect(s.tela).toBe('calibracao');
       s = rodar(s, [tick(1000), tick(1000)], c); // calibra
     }
+    expect(s).toMatchObject({ tela: 'abertura' });
+    s = rodar(s, [ABRIR, POUSAR], c);
     expect(s).toMatchObject({ tela: 'card', indice: 0 });
     // Bem mais que o 1 s que faltava ao resumo: a partida segue, card a card.
     s = rodar(s, [tick(5000), tick(5000)], c);
@@ -130,6 +135,7 @@ describe('AC-5.2/AC-9.26: volta automática do resumo', () => {
     for (let i = 0; i < 6; i++) {
       expect(s).toMatchObject({ tela: 'card', indice: i });
       s = rodar(s, [escolha('falsa'), tick(TEMPOS.saidaMs + duracaoResultadoMs(c))], c);
+      if (s.tela === 'card') s = rodar(s, [POUSAR], c);
     }
     // Chegou ao resumo de novo: o contador começa do zero.
     expect(s.tela).toBe('resumo');

@@ -7,7 +7,7 @@ import type { Estado } from '../core/partida';
 import { useInclinacaoCard } from './useInclinacaoCard';
 
 const partida = { cards: [], resultados: [], entrada: 'corpo' as const };
-const CARD: Estado = { tela: 'card', partida, indice: 0, restanteMs: 10000, saibaMais: false, ausenteMs: null };
+const CARD: Estado = { tela: 'card', partida, indice: 0, restanteMs: 10000, saibaMais: false, ausenteMs: null, distribuindoMs: 0 };
 const TAMANHO = { largura: 600, altura: 640 };
 const px = (v: number) => `${Math.round(v * 10) / 10}px`;
 const NO_LIMIAR = deslocamentoCard(1, TAMANHO);
