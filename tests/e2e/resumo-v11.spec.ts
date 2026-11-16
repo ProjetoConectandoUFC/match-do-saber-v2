@@ -95,7 +95,7 @@ test('AC-5.8/AC-5.9/AC-5.10: resumo com lista e QR em 1366×768 e 1920×1080; o 
   await expect(page.getByText('Notícia não encontrada nesta versão do jogo')).toHaveCount(1);
 });
 
-test('AC-2.11/AC-2.12: botões redondos fora do card, pilha atrás e carimbo na saída, sem tirar o card do centro', async ({ page }) => {
+test('AC-2.11/AC-2.12: botões redondos fora da carta, sem pilha atrás (v13.0.0) e carimbo na saída, sem tirar a carta do centro', async ({ page }) => {
   await semCamera(page);
   await page.keyboard.press('Enter');
   const card = page.locator('article');
@@ -103,7 +103,7 @@ test('AC-2.11/AC-2.12: botões redondos fora do card, pilha atrás e carimbo na 
   await esperarCartaPousada(page);
   const c = await caixa(card);
   const barra = await caixa(page.getByRole('timer', { name: 'Tempo restante' }));
-  expect(Math.abs(c.y + c.height / 2 - barra.y / 2)).toBeLessThanOrEqual(8); // AC-4.5 com a pilha
+  expect(Math.abs(c.y + c.height / 2 - barra.y / 2)).toBeLessThanOrEqual(8); // AC-4.5
   const mentira = page.locator('[data-botao-lado="mentira"]');
   const verdade = page.locator('[data-botao-lado="verdade"]');
   for (const b of [await caixa(mentira), await caixa(verdade)]) {
@@ -112,7 +112,7 @@ test('AC-2.11/AC-2.12: botões redondos fora do card, pilha atrás e carimbo na 
   }
   expect((await caixa(mentira)).x).toBeLessThan(c.x);
   expect((await caixa(verdade)).x).toBeGreaterThan(c.x + c.width);
-  await expect(page.locator('[data-pilha-camada]')).toHaveCount(2);
+  await expect(page.locator('[data-pilha-camada]')).toHaveCount(0); // AC-2.12 (v13.0.0): a pilha parada saiu
 
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('[data-rotulo-lado="verdade"]')).toHaveClass(/carimbado/);
