@@ -14,14 +14,18 @@ export async function criarRastreador(): Promise<Rastreador> {
     });
   const landmarker = await criar('GPU').catch(() => criar('CPU'));
   let ultimo = -1;
+  let fechado = false;
   return {
     detectar(video, tMs) {
       const t = Math.max(tMs, ultimo + 1);
       ultimo = t;
       return landmarker.detectForVideo(video, t).landmarks;
     },
+    // Pode ser chamado mais de uma vez (erro na detecção e depois a reabertura da câmera, v12.1.0).
     fechar() {
-      landmarker.close();
+      if (fechado) return;
+      fechado = true;
+      try { landmarker.close(); } catch { /* contexto gráfico já perdido */ }
     },
   };
 }
