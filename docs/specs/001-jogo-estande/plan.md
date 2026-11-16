@@ -5583,3 +5583,4 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 12.0.0 | 43 | Adicionada: Ajustes, visibilidade e tema `politica` |
 | 12.0.0 | 44 | Adicionada: painel Questões |
 | 12.0.0 | 45 | Adicionada: lote 3 de política e verificação no hardware |
+| 12.0.2 | 42–44 | Correções da revisão de 2026-11-13: lista do resumo com metade das notícias em cada coluna e linhas mais baixas acima de 10 (AC-5.8; E2E `resumo-muitas.spec.ts` com 12 e 20); ↑/↓ no campo de busca do painel Questões ficam com o campo |

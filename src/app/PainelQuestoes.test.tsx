@@ -332,6 +332,16 @@ describe('AC-16.6: teclado', () => {
     expect(onFechar).toHaveBeenCalledOnce();
   });
 
+  it('↓/↑ dentro do campo "Buscar" movem o cursor do campo e não trocam a questão aberta (v12.0.2)', async () => {
+    await montar(repoFalso());
+    const antes = aberta().getByRole('heading', { level: 3 }).textContent;
+    const busca = screen.getByLabelText('Buscar');
+    busca.focus();
+    const evento = fireEvent.keyDown(busca, { key: 'ArrowDown' });
+    expect(evento).toBe(true);                                             // sem preventDefault: o campo trata a tecla
+    expect(aberta().getByRole('heading', { level: 3 }).textContent).toBe(antes);
+  });
+
   it('as teclas não chegam ao jogo enquanto o painel está aberto', async () => {
     await montar();
     const jogo = vi.fn();

@@ -121,6 +121,24 @@ describe('v11.0.0: resumo com lista, QR e filtro (AC-5.8, AC-5.9, AC-13.2, AC-13
   const linhas = linhasDoResumo(cards, ['acerto', 'erro', 'tempo']);
   const qr = 'https://exemplo.github.io/jogo/fontes.html#1.2.3';
 
+  it.each([
+    [5, 3, false],
+    [10, 5, false],
+    [12, 6, true],
+    [15, 8, true],
+    [20, 10, true],
+  ])('AC-5.8 (v12.0.2): com %i notícias, duas colunas de %i linhas; compacta acima de 10 (densa=%s)', (n, porColuna, densa) => {
+    const muitas = Array.from({ length: n }, (_, i) => noticia(`mds-${String(i + 1).padStart(4, '0')}`));
+    render(<TelaResumo pontos={0} total={n} linhas={linhasDoResumo(muitas, muitas.map(() => 'erro'))} />);
+    const grade = within(screen.getByRole('region', { name: 'Notícias da rodada' })).getByRole('list');
+    expect(grade.style.getPropertyValue('--linhas')).toBe(String(porColuna));
+    expect(grade.hasAttribute('data-densa')).toBe(densa);
+    const itens = within(grade).getAllByRole('listitem');
+    expect(itens).toHaveLength(n);
+    // a última de cada coluna fica sem o traço de baixo
+    const fins = itens.flatMap((li, i) => (li.hasAttribute('data-fim-coluna') ? [i + 1] : []));
+    expect(fins).toEqual([porColuna, n]);
+  });
   it('AC-5.8: "Notícias da rodada" com uma linha por notícia: resultado, título curto, veredito e fonte', () => {
     render(<TelaResumo pontos={1} total={3} linhas={linhas} enderecoQr={qr} />);
     const lista = screen.getByRole('region', { name: 'Notícias da rodada' });
