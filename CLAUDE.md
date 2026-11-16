@@ -52,6 +52,7 @@ npm run package:win    # executável Windows em out/ (com o banco padrão; rode 
 - Efeitos que abrem a câmera usam `AbortController` (StrictMode roda o efeito duas vezes).
 - Em E2E, espere um texto de "tela pronta" antes de `keyboard.press`; não leia valores exatos de barras que correm em tempo real.
 - Terminais do VS Code podem ter `ELECTRON_RUN_AS_NODE=1`, que faz o Electron rodar como Node (`app` undefined); o teste desktop remove essa variável.
+- Windows: com a pasta aberta pela letra do drive minúscula (`c:\...`), `npm test` falha em todos os arquivos ("Vitest failed to find the current suite" no `tests/setup.ts`); rode com o caminho `C:\...` (o hook de sincronia avisa).
 - Testes de componente declaram `// @vitest-environment jsdom` no topo (o padrão do Vitest aqui é `node`).
 
 ## Privacidade
@@ -62,6 +63,7 @@ Público inclui menores (LGPD): a imagem da câmera nunca é gravada nem enviada
 
 - Features seguem SDD: specs em `docs/specs/NNN-slug/` (`spec.md`, `plan.md`, `prd.md`, `data-model.md`, `contracts/`), versionadas (ex.: v8.2.0) com fases numeradas no `plan.md`. ACs/FRs (ex.: AC-4.8, FR-9) são citados em código e nomes de testes.
 - Decisões de arquitetura em `docs/adr/`.
+- Dois computadores: o GitHub é a única ponte; o hook `SessionStart` (`.claude/settings.json` → `scripts/conferir-sincronia.mjs`) avisa sobre trabalho não enviado, stash, branch atrasada, dependências e banco de teste no desktop. Ao fechar a sessão, tudo commitado e enviado; expediente em `expediente/AAAA-MM-DD-<computador>.md`. Regras e o que não passa pelo git: `docs/operacao.md`, "Dois computadores".
 - Git: `docs/git-convention.md` (branches `NNN-slug`, Conventional Commits, prefixo ClickUp `CU-`). Tudo entra pela `develop` via PR aprovado pelo responsável (`.claude/memory/git-flow.md`); push na `main` publica a web.
 - Subagentes do projeto em `.claude/agents/`: `agente-mecanico` (mecânica, gestos, reducer, Electron), `agente-visual` (identidade visual) e `agente-noticias` (redige lotes de notícias com fontes; só rascunhos, revisão humana obrigatória). Orquestração: `.claude/memory/agentes.md`.
 - Operação do estande, app de desktop e gerenciador de notícias: `docs/operacao.md`.
