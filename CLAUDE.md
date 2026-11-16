@@ -18,7 +18,7 @@ npm run build          # tsc --noEmit + vite build (é a checagem de tipos; não
 npm run fixture        # grava public/content/noticias.csv de teste (12 aprovadas, metade com imagem, + rascunho e inválida)
 npm run e2e            # fixture + build + Playwright contra `vite preview` em :4173 (E2E_PORT=4183 muda a porta)
 npx playwright test tests/e2e/partida.spec.ts  # um E2E (exige fixture + build já feitos)
-npm run desktop        # build + abre o app Electron (num terminal sem ELECTRON_RUN_AS_NODE)
+npm run desktop        # build com o banco padrão + abre o app Electron (num terminal sem ELECTRON_RUN_AS_NODE; apaga o fixture de public/content, rode `npm run fixture` antes do E2E web)
 npm run e2e:desktop    # fixture + build + Playwright no app Electron real (tests/desktop)
 npm run package:win    # executável Windows em out/ (com o banco padrão; rode `npm run fixture` depois)
 ```

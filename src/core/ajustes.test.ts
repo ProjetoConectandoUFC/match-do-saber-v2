@@ -16,9 +16,9 @@ const quebrado: Armazenamento = {
 };
 
 describe('ajustes do estande (FR-9, v12.0.0)', () => {
-  it('AC-9.4: padrões', () => {
+  it('AC-9.4: padrões (AC-5.2/AC-9.26, v12.1.0: volta automática do resumo em 60 s)', () => {
     expect(AJUSTES_PADRAO).toEqual({
-      noticiasPorPartida: 10, tempoCardS: 15, feedbackS: 3, voltaResumoS: 0,
+      noticiasPorPartida: 10, tempoCardS: 15, feedbackS: 3, voltaResumoS: 60,
       temas: [...TEMAS], dificuldade: 'misturada',
       modo: 'corpo', sensibilidade: 'normal', toleranciaS: 10,
       som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false,
@@ -84,6 +84,12 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
     expect(a.dados['match-do-saber:tutorial']).toBe('ligado');
   });
 
+  it('AC-9.26 (v12.1.0): quem já tinha a volta do resumo salva (inclusive Desligada) mantém o seu valor', () => {
+    expect(lerAjustes(memoria({ 'match-do-saber:voltaResumo': '0' })).voltaResumoS).toBe(0);
+    expect(lerAjustes(memoria({ 'match-do-saber:voltaResumo': '120' })).voltaResumoS).toBe(120);
+    expect(lerAjustes(memoria()).voltaResumoS).toBe(60);
+  });
+
   it('FR-9: tema novo (ex.: politica) nasce ligado, porque o armazenamento guarda os temas desligados', () => {
     const a = memoria({ 'match-do-saber:temasDesligados': 'saude,historia' });
     expect(lerAjustes(a).temas).toEqual(TEMAS.filter((t) => t !== 'saude' && t !== 'historia'));
@@ -126,7 +132,8 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
     expect(mudarValor(AJUSTES_PADRAO, 'som', 1).som).toBe(false);
     expect(mudarValor(AJUSTES_PADRAO, 'tutorial', -1).tutorial).toBe(true);
     expect(mudarValor(AJUSTES_PADRAO, 'noticiasPorPartida', 1).noticiasPorPartida).toBe(12);
-    expect(mudarValor(AJUSTES_PADRAO, 'voltaResumoS', 1).voltaResumoS).toBe(30);
+    expect(mudarValor(AJUSTES_PADRAO, 'voltaResumoS', 1).voltaResumoS).toBe(120);
+    expect(mudarValor(AJUSTES_PADRAO, 'voltaResumoS', -1).voltaResumoS).toBe(30);
   });
 
   it('AC-9.27: alternar tema; pelo menos um fica ligado; a ordem segue a lista de temas', () => {
@@ -221,9 +228,9 @@ describe('teclado do painel Ajustes (AC-9.2, AC-9.3, AC-9.30)', () => {
 });
 
 describe('contextoDosAjustes (FR-1, FR-9): o que a partida recebe dos Ajustes', () => {
-  it('padrão: 15 s por card, 3 s de feedback, 10 s de tolerância, resumo sem volta, 10 notícias', () => {
+  it('padrão: 15 s por card, 3 s de feedback, 10 s de tolerância, resumo volta em 60 s (v12.1.0), 10 notícias', () => {
     expect(contextoDosAjustes(AJUSTES_PADRAO)).toEqual({
-      tempoCardMs: 15000, tempoFeedbackMs: 3000, toleranciaMs: 10000, voltaResumoMs: 0, ignorarAusencia: false,
+      tempoCardMs: 15000, tempoFeedbackMs: 3000, toleranciaMs: 10000, voltaResumoMs: 60000, ignorarAusencia: false,
       sorteio: { quantidade: 10, temas: [...TEMAS], dificuldade: 'misturada' },
     });
   });

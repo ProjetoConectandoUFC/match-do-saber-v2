@@ -47,7 +47,7 @@ describe('painel Ajustes (AC-9.1, AC-9.2, AC-9.18, AC-9.27, AC-9.30)', () => {
     expect(marcado('Notícias por partida')).toEqual(['◉ 10']);
     expect(marcado('Tempo por card')).toEqual(['◉ 15 s']);
     expect(marcado('Tempo do feedback')).toEqual(['◉ 3 s']);
-    expect(marcado('Volta automática do resumo')).toEqual(['◉ Desligada']);
+    expect(marcado('Volta automática do resumo')).toEqual(['◉ 60 s']); // AC-9.26 (v12.1.0)
     expect(marcado('Dificuldade')).toEqual(['◉ Misturada']);
     expect(marcado('Sensibilidade do gesto')).toEqual(['◉ Normal']);
     expect(marcado('Volume')).toEqual(['◉ Alto']);

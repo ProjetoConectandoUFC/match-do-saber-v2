@@ -30,9 +30,9 @@ export interface Ajustes {
   tutorial: boolean;
 }
 
-/** AC-9.4. */
+/** AC-9.4. `voltaResumoS` 60 desde a v12.1.0 (AC-5.2, AC-9.26): a foto não fica exposta sem operador; valor salvo continua valendo. */
 export const AJUSTES_PADRAO: Ajustes = {
-  noticiasPorPartida: 10, tempoCardS: 15, feedbackS: 3, voltaResumoS: 0,
+  noticiasPorPartida: 10, tempoCardS: 15, feedbackS: 3, voltaResumoS: 60,
   temas: [...TEMAS], dificuldade: 'misturada',
   modo: MODO_PADRAO, sensibilidade: 'normal', toleranciaS: 10,
   som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false,

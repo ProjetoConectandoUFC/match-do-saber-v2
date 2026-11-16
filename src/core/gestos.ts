@@ -7,11 +7,46 @@ export type Pose = Ponto[];
 /** 'maosParaCima' é o gesto de "saiba mais" do modo ativo (no modo Cabeça, queixo para cima). */
 export type Gesto = 'direita' | 'esquerda' | 'maosParaCima';
 export interface LeituraGesto { presenca: Presenca; inclinacao: number; gestos: Gesto[] }
-export interface Interpretador { ler(pose: Pose | null, tMs: number): LeituraGesto; calibrar(): void }
+/** Leitura de um quadro com várias pessoas: a pose do jogador acompanhado (AC-1.5) e o que ela gerou. */
+export interface LeituraJogador extends LeituraGesto { pose: Pose | null }
+export interface Interpretador {
+  /** Lê a pose de um jogador já escolhido (sem acompanhamento). */
+  ler(pose: Pose | null, tMs: number): LeituraGesto;
+  /** v12.1.0 (AC-1.5): escolhe o jogador entre as poses do quadro, acompanhando-o entre quadros, e lê a pose dele. */
+  lerPoses(poses: Pose[], tMs: number): LeituraJogador;
+  calibrar(): void;
+  /**
+   * v12.1.0 (AC-2.13): zera as permanências em andamento (lado, mãos, queixo; no modo Mão, desarma a mão).
+   * Não destrava o retorno ao centro (AC-2.4). Chamado ao entrar num card.
+   */
+  zerar(): void;
+}
 
 export const CONFIG_GESTOS = {
   limiar: 0.12,
-  zonaRetorno: 0.05,
+  /**
+   * AC-2.4 (v12.1.0), modo Corpo, frações do limiar (acompanham a sensibilidade): a escolha é liberada com o tronco
+   * a menos de `retornoFracao` do centro; parado (variação < `paradoVariacao` da imagem) por `paradoMs` a menos de
+   * `recentroFracao`, o centro passa a ser ali e a escolha é liberada. Antes, 0,05 do centro fixo.
+   */
+  retornoFracao: 0.5,
+  recentroFracao: 0.75,
+  paradoVariacao: 0.02,
+  paradoMs: 1000,
+  /**
+   * AC-1.5 (v12.1.0): o jogador acompanhado é a pose mais parecida com a dele no quadro anterior
+   * (|Δ centro| + |Δ largura dos ombros|, frações da imagem) até `semelhancaMax`; sumido por mais de
+   * `perdaJogadorMs`, volta a valer a pessoa mais central e maior, que só escolhe depois de passar pelo centro.
+   */
+  semelhancaMax: 0.3,
+  perdaJogadorMs: 1000,
+  /**
+   * Modos Mão e Cabeça (v12.1.0): de lado, a largura (ombros na Mão, orelhas na Cabeça) cai perto de zero e as
+   * medidas divididas por ela explodem. Abaixo de `larguraMinFracao` da mediana dos últimos `janelaLargura`
+   * quadros, o gesto é ignorado.
+   */
+  larguraMinFracao: 0.5,
+  janelaLargura: 15,
   zonaCalibracao: 0.1,
   permanenciaLadoMs: 300,
   permanenciaMaosMs: 500,
@@ -85,6 +120,7 @@ export function medirCabeca(pose: Pose): MedidaCabeca {
 
 const limitar = (v: number) => Math.max(-1, Math.min(1, v));
 
+/** AC-1.5 (a): a pessoa mais central e maior no quadro, sem memória entre quadros. */
 export function escolherJogador(poses: Pose[]): Pose | null {
   let melhor: Pose | null = null;
   let nota = -Infinity;
@@ -96,7 +132,59 @@ export function escolherJogador(poses: Pose[]): Pose | null {
   return melhor;
 }
 
+export interface SeletorJogador {
+  /** `novo`: a pose vem de quem foi escolhido depois de o acompanhado sumir por mais de `perdaJogadorMs`. */
+  escolher(poses: Pose[], tMs: number): { pose: Pose | null; novo: boolean };
+}
+
+/**
+ * AC-1.5 (v12.1.0): acompanha o jogador entre quadros. (a) Sem ninguém acompanhado, vale `escolherJogador`;
+ * (b) com alguém, a pose mais parecida com a dele no quadro anterior, mesmo que outra seja maior ou mais central;
+ * sem nenhuma parecida, ninguém controla naquele quadro; (c) sumido por mais de `perdaJogadorMs`, volta a (a).
+ */
+export function criarSeletorJogador(cfg: Config = CONFIG_GESTOS): SeletorJogador {
+  let ref: { cx: number; largura: number; tMs: number } | null = null;
+  let perdido = false;
+  return {
+    escolher(poses, tMs) {
+      if (ref && tMs - ref.tMs > cfg.perdaJogadorMs) { ref = null; perdido = true; }
+      if (ref) {
+        let melhor: Pose | null = null;
+        let menor = Infinity;
+        for (const p of poses) {
+          const m = medir(p);
+          const dist = Math.abs(m.cx - ref.cx) + Math.abs(m.largura - ref.largura);
+          if (dist < menor) { menor = dist; melhor = p; }
+        }
+        if (!melhor || menor > cfg.semelhancaMax) return { pose: null, novo: false };
+        ref = { ...medir(melhor), tMs };
+        return { pose: melhor, novo: false };
+      }
+      const pose = escolherJogador(poses);
+      if (!pose) return { pose: null, novo: false };
+      const novo = perdido;
+      perdido = false;
+      ref = { ...medir(pose), tMs };
+      return { pose, novo };
+    },
+  };
+}
+
+/** Largura normal da pessoa (v12.1.0): falso quando cai abaixo de `larguraMinFracao` da mediana recente (de lado). */
+function criarLarguraNormal(cfg: Config) {
+  const historico: number[] = [];
+  return (largura: number): boolean => {
+    historico.push(largura);
+    if (historico.length > cfg.janelaLargura) historico.shift();
+    const ordenadas = [...historico].sort((a, b) => a - b);
+    return largura >= cfg.larguraMinFracao * ordenadas[Math.floor(ordenadas.length / 2)]!;
+  };
+}
+
 type Lado = 'direita' | 'esquerda';
+
+/** Interpretador de um modo; `travar` exige a volta ao centro antes da próxima escolha (pessoa nova, AC-1.5 c). */
+type InterpretadorModo = Omit<Interpretador, 'lerPoses'> & { travar(): void };
 
 /** Escolha de um lado: a mesma postura mantida por `permanenciaLadoMs` dispara uma vez; depois trava até `livre`. */
 function criarEscolha(cfg: Config) {
@@ -104,6 +192,7 @@ function criarEscolha(cfg: Config) {
   let travado = false;
   return {
     zerar() { lado = null; },
+    travar() { lado = null; travado = true; },
     /** Depois de uma escolha, até `livre`: o card fica no centro (AC-2.4, AC-2.10). */
     get travado() { return travado; },
     ler(postura: Lado | null, livre: boolean, tMs: number): Gesto | null {
@@ -128,6 +217,7 @@ function criarLado(limiar: number, retorno: number, cfg: Config) {
   const escolha = criarEscolha(cfg);
   return {
     zerar: escolha.zerar,
+    travar: escolha.travar,
     get travado() { return escolha.travado; },
     ler: (d: number, tMs: number): Gesto | null =>
       escolha.ler(d > limiar ? 'direita' : d < -limiar ? 'esquerda' : null, Math.abs(d) < retorno, tMs),
@@ -149,25 +239,35 @@ function criarGatilho(ms: number) {
   };
 }
 
-function interpretadorCorpo(cfg: Config): Interpretador {
+function interpretadorCorpo(cfg: Config): InterpretadorModo {
   let centro: number | null = null;
   let ultimoCx = 0.5;
+  /** Onde e desde quando o tronco está parado (variação < `paradoVariacao`), para o recentro de AC-2.4. */
+  let parado: { cx: number; desde: number } | null = null;
   const escolha = criarEscolha(cfg);
   const maos = criarGatilho(cfg.permanenciaMaosMs);
   return {
     calibrar() { centro = ultimoCx; },
+    zerar() { escolha.zerar(); maos.zerar(); },
+    travar() { escolha.travar(); },
     ler(pose, tMs) {
-      if (!pose) { escolha.zerar(); maos.zerar(); return AUSENTE; }
+      if (!pose) { escolha.zerar(); maos.zerar(); parado = null; return AUSENTE; }
       const gestos: Gesto[] = [];
       const { cx } = medir(pose);
       ultimoCx = cx;
-      const d = cx - (centro ?? 0.5);
+      if (!parado || Math.abs(cx - parado.cx) >= cfg.paradoVariacao) parado = { cx, desde: tMs };
+      let d = cx - (centro ?? 0.5);
+      // AC-2.4 (v12.1.0): travado e parado perto do centro por 1 s, o centro passa a ser ali (quem voltou torto não fica preso).
+      if (escolha.travado && tMs - parado.desde >= cfg.paradoMs && Math.abs(d) < cfg.recentroFracao * cfg.limiar) {
+        centro = cx;
+        d = 0;
+      }
       const nariz = pose[NARIZ]!.y;
       const maosAcima = pose[PUNHO_E]!.y < nariz && pose[PUNHO_D]!.y < nariz;
 
-      // v10.3.0: um único controle, o tronco (AC-2.7/AC-2.8 removidos). AC-2.4: libera com o tronco no centro.
+      // v10.3.0: um único controle, o tronco (AC-2.7/AC-2.8 removidos). AC-2.4: libera com o tronco na área central.
       const tronco: Lado | null = d > cfg.limiar ? 'direita' : d < -cfg.limiar ? 'esquerda' : null;
-      const g = escolha.ler(tronco, Math.abs(d) < cfg.zonaRetorno, tMs);
+      const g = escolha.ler(tronco, Math.abs(d) < cfg.retornoFracao * cfg.limiar, tMs);
       if (g) gestos.push(g);
       if (maos.ler(maosAcima, tMs)) gestos.push('maosParaCima');
       // AC-2.10: fração do tronco até o limiar; travado depois de uma escolha, o card fica no centro.
@@ -191,21 +291,26 @@ function maoAtiva(pose: Pose, m: MedidaMaos): number | null {
  * e a escolha sai na hora ao passar do limite. Depois de escolher, de abrir o "saiba mais" ou de baixar a mão,
  * desarma, com o card no centro, até a mão voltar à frente do peito.
  */
-function interpretadorMao(cfg: Config): Interpretador {
+function interpretadorMao(cfg: Config): InterpretadorModo {
   let armada = false;
   const ambas = criarGatilho(cfg.permanenciaMaosMs);
+  const larguraNormal = criarLarguraNormal(cfg);
   return {
     calibrar() {},
+    zerar() { armada = false; ambas.zerar(); },
+    travar() { armada = false; },
     ler(pose, tMs) {
       if (!pose) { armada = false; ambas.zerar(); return AUSENTE; }
       const gestos: Gesto[] = [];
-      const { cx } = medir(pose);
+      const { cx, largura } = medir(pose);
+      const deFrente = larguraNormal(largura);
       const m = medirMaos(pose, cfg);
       const duasAcima = m.direita && m.esquerda;
       if (ambas.ler(duasAcima, tMs)) gestos.push('maosParaCima');
 
       // As duas mãos acima dos ombros são o "saiba mais" (AC-9.8): não há mão ativa nesse quadro.
-      const desloc = duasAcima ? null : maoAtiva(pose, m);
+      // De lado (ombros quase sobrepostos), o deslocamento em larguras de ombro explode: sem mão ativa (v12.1.0).
+      const desloc = duasAcima || !deFrente ? null : maoAtiva(pose, m);
       if (desloc === null) {
         armada = false;
         return { presenca: presenca(cx, cfg), inclinacao: 0, gestos };
@@ -220,22 +325,31 @@ function interpretadorMao(cfg: Config): Interpretador {
   };
 }
 
-function interpretadorCabeca(cfg: Config): Interpretador {
+function interpretadorCabeca(cfg: Config): InterpretadorModo {
   let ultimoRoll = 0;
   let ultimoQueixo: number | null = null;
   let rollCentro = 0;
   let queixoCentro: number | null = null;
   const lado = criarLado(cfg.limiarCabecaGraus, cfg.retornoCabecaGraus, cfg);
   const queixo = criarGatilho(cfg.permanenciaMaosMs);
+  const larguraNormal = criarLarguraNormal(cfg);
   return {
     calibrar() {
       rollCentro = ultimoRoll;
       queixoCentro = ultimoQueixo;
     },
+    zerar() { lado.zerar(); queixo.zerar(); },
+    travar() { lado.travar(); },
     ler(pose, tMs) {
       if (!pose) { lado.zerar(); queixo.zerar(); return AUSENTE; }
       const gestos: Gesto[] = [];
       const { cx } = medir(pose);
+      // De perfil (orelhas quase sobrepostas), o ângulo e o queixo explodem: o quadro não gera gesto (v12.1.0).
+      if (!larguraNormal(Math.abs(pose[ORELHA_E]!.x - pose[ORELHA_D]!.x))) {
+        lado.zerar();
+        queixo.zerar();
+        return { presenca: presenca(cx, cfg), inclinacao: 0, gestos };
+      }
       const { rollGraus: roll, queixo: q } = medirCabeca(pose);
       ultimoRoll = roll;
       ultimoQueixo = q;
@@ -252,7 +366,17 @@ function interpretadorCabeca(cfg: Config): Interpretador {
 }
 
 export function criarInterpretador(modo: ModoJogo = 'corpo', cfg: Config = CONFIG_GESTOS): Interpretador {
-  if (modo === 'mao') return interpretadorMao(cfg);
-  if (modo === 'cabeca') return interpretadorCabeca(cfg);
-  return interpretadorCorpo(cfg);
+  const base = modo === 'mao' ? interpretadorMao(cfg) : modo === 'cabeca' ? interpretadorCabeca(cfg) : interpretadorCorpo(cfg);
+  const seletor = criarSeletorJogador(cfg);
+  return {
+    ler: (pose, tMs) => base.ler(pose, tMs),
+    calibrar: () => base.calibrar(),
+    zerar: () => base.zerar(),
+    lerPoses(poses, tMs) {
+      const { pose, novo } = seletor.escolher(poses, tMs);
+      // AC-1.5 (c): a pessoa nova só escolhe depois de passar pelo centro (AC-2.4).
+      if (novo) base.travar();
+      return { ...base.ler(pose, tMs), pose };
+    },
+  };
 }
