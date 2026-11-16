@@ -5506,6 +5506,7 @@ Spec: AC-17.1, AC-17.2, AC-3.6, AC-2.12, AC-4.5, AC-4.7; FR-4, FR-15, FR-18 (ver
 - 47.2 Teste vermelho (`TelasV13.test.tsx`, jsdom): a frente não mostra a descrição nem a dica; tem a manchete, a imagem/ilustração e dois ícones de tema; com `saibaMais`, a carta tem o estado de verso com descrição e "saiba mais"; o treino nunca mostra o verso; a pilha (`data-pilha-camada`) não existe mais.
 - 47.3 `TelaCard` vira carta de duas faces (frente/verso com `transform: rotateY`, ~400 ms, sem tempo no reducer); a dica de "saiba mais" sai da carta para junto de `dicaModo`; o carimbo de saída (AC-2.12) e o pulso dos últimos 5 s (AC-4.7) valem na carta.
 - 47.4 CSS da carta em `App.module.css` com tokens de `tema.css`; `prefers-reduced-motion` troca a face sem girar.
+- 47.6 (v13.1.0) Aviso não bloqueante de `saiba_mais` acima de 250 caracteres no editor e no painel Questões (AC-7.13), em `src/core/banco.ts`/`questoes.ts` separado dos erros de validação; frase do perfil na frente da carta de treino (AC-17.1).
 - 47.5 E2E de layout: carta 5:7 (±2%), centralizada (AC-4.5), manchete e verso sem corte com os textos mais longos, em 1366×768 e 1920×1080; ajustar os E2E antigos que liam a descrição na frente.
 
 ## Phase 48 (added v13.0.0): Fan na espera, na abertura e na distribuição
@@ -5513,7 +5514,7 @@ Spec: AC-17.1, AC-17.2, AC-3.6, AC-2.12, AC-4.5, AC-4.7; FR-4, FR-15, FR-18 (ver
 Spec: AC-17.3 a AC-17.7, FR-18 (must not), AC-10.5, AC-2.11. Agentes: agente-visual (desenho e animação) e agente-mecanico (ligação com o estado). Depende das Fases 46 e 47.
 
 - 48.1 Componente `FanCartas` (props: quantidade, fase `parado` | `respirando` | `abrindo` | `distribuindo`, progresso 0–1 vindo do estado): leque com pivô abaixo da borda, no máximo 20 cartas desenhadas, ângulos calculados por função pura testável (`src/core/fan.ts`: ângulo de cada carta por quantidade e abertura).
-- 48.2 Teste vermelho de `fan.ts`: ângulos simétricos, abertura 0 = fechado, 1 = aberto; nunca mais de 20 cartas.
+- 48.2 Teste vermelho de `fan.ts`: ângulos simétricos, abertura 0 = fechado, 1 = aberto; nunca mais de 20 cartas; o ângulo total não depende da quantidade (v13.1.0); a carta distribuída é a da ponta direita.
 - 48.3 Espera: fan respirando em loop (~4 s) sem cobrir título, chamada, "▶ Iniciar" e ☰; parado e meio aberto com `prefers-reduced-motion`.
 - 48.4 Abertura e distribuição: a carta sai do topo do fan e sobe virando até o centro; o progresso vem de `distribuindoMs`/`restanteMs` do estado (não de timers do CSS soltos), para a tela nunca discordar do reducer.
 - 48.5 Fan atrás da carta durante cartas e treino; fora do feedback, do resumo e da calibração; não cobre a barra de tempo, os botões redondos nem o "✕ Sair" (E2E com caixas delimitadoras).
