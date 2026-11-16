@@ -5487,6 +5487,17 @@ Spec: AC-7.2 (tema `politica`), AC-7.12. Agentes: agente-noticias (lote em `docs
 - 45.1 Revisão do lote 3 pelo responsável (página de revisão); só as aprovadas entram no `conteudo/noticias.csv`, depois da Fase 43.6 (tema `politica` válido).
 - 45.2 Verificação no hardware: cores do feedback a 2 m, leitura do carimbo sobre verde e vermelho, sensibilidade Menor/Maior no estande.
 
+## Phase 50 (added v12.1.0): Robustez para o teste com público (2026-11-18)
+
+Spec: AC-1.4, AC-1.5, AC-2.4, AC-2.13, AC-5.2, AC-5.4, AC-9.26, NFR Reliability (v12.1.0). Origem: revisão de defeitos de 2026-11-16 (três revisores, achados confirmados no código). Branch `001-v12-robustez` (sai da `001-v12-correcoes`, PR #10). Numerada 50 para não confundir com as Fases 46 a 49 do experimento das cartas, que vive só na branch `001-v13-cartas-baralho`. TDD.
+
+- 50.1 Gestos (`src/core/gestos.ts`): acompanhar o jogador (AC-1.5), área central = metade do limiar e recentro parado (AC-2.4), `zerar()` no `Interpretador` para AC-2.13. Testes com poses sintéticas: passante maior não escolhe; jogador volta torto e escolhe de novo; inclinação vinda do feedback não responde o card.
+- 50.2 Reducer (`src/core/partida.ts`): `TEMPOS.calibracaoMaxMs` = 30000 (AC-1.4); presença contínua de 500 ms para sair da ausência (AC-5.4); `ajustes.ts` com `voltaResumoS` padrão 60 (AC-5.2). Testes de fronteira.
+- 50.3 App (`src/app/useJogo.ts`, `src/main.tsx`): rAF reagendado no começo do quadro e try/catch na detecção (erro → rastreador fechado, câmera "indisponível"); `interp.zerar()` ao entrar num card; reabrir a câmera na espera (~5 s e `devicechange`), `NotAllowedError` separado; parar o stream se o modelo falhar e no `ended` fechar o rastreador; ErrorBoundary que recarrega; Wake Lock na web.
+- 50.4 Desktop (`electron/main.cjs`, `package.json`): `powerSaveBlocker('prevent-display-sleep')`; `listen` cai para porta 0 em qualquer erro; `whenReady` com `.catch` → caixa de erro e sair; `second-instance` sem janela sai; `npm run desktop` usa o banco padrão (`build:desktop`).
+- 50.5 Conteúdo: explicação da mds-0036 ("a segunda maior da história até então") — revisão humana.
+- 50.6 Verificação: `npm test`, `npm run build`, `npm run e2e`, `npm run e2e:desktop`; ensaio manual com duas pessoas no quadro e a webcam desconectada e reconectada.
+
 ## Quickstart Validation
 
 ```bash
@@ -5584,3 +5595,4 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 12.0.0 | 44 | Adicionada: painel Questões |
 | 12.0.0 | 45 | Adicionada: lote 3 de política e verificação no hardware |
 | 12.0.2 | 42–44 | Correções da revisão de 2026-11-13: lista do resumo com metade das notícias em cada coluna e linhas mais baixas acima de 10 (AC-5.8; E2E `resumo-muitas.spec.ts` com 12 e 20); ↑/↓ no campo de busca do painel Questões ficam com o campo |
+| 12.1.0 | 50 | Adicionada: robustez para o teste com público (gestos, ausência, calibração, câmera, laço, repouso, desktop) |
