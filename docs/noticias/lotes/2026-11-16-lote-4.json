@@ -1,0 +1,253 @@
+{
+  "criterioDificuldade": {
+    "facil": "O palpite de bom senso acerta. Falsa com absurdo evidente (promessa impossível, foto ou alerta exagerado) ou verdadeira muito conhecida, ensinada na escola ou famosa.",
+    "medio": "Soa estranho, mas é plausível. O jogador precisa de uma pista do card (quem diz, quando, como é a foto) ou de uma informação que nem todo mundo tem.",
+    "dificil": "O palpite intuitivo tende a errar: falsa repetida como fato por muita gente, ou verdadeira que parece invenção. Só checando fonte, data ou contexto dá para acertar.",
+    "observacao": "Lote 4 (2026-11-16), para o teste aberto de 2026-11-18. Sem o tema politica. 6 verdadeiras e 6 falsas; 2 notícias por tema (uma verdadeira e uma falsa em cada); 4 fáceis, 4 médias e 4 difíceis, cada nível com 2 V e 2 F. Técnicas: fonte 5, data 3, imagem 2, contexto 2. As verdadeiras foram escolhidas para soar absurdas, para o jogador não aprender que absurdo = falso."
+  },
+  "noticias": [
+    {
+      "id": "mds-0047",
+      "titulo": "Remédio para pressão alta foi criado a partir de veneno de cobra",
+      "descricao": "Um dos remédios mais usados contra a pressão alta teria surgido de uma pesquisa com o veneno da jararaca, feita no Brasil.",
+      "saibaMais": "A jararaca é uma cobra venenosa encontrada no Brasil. A pressão alta, ou hipertensão, é uma doença comum que aumenta o risco de problemas no coração e costuma ser controlada com remédios de uso diário.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo a Agência FAPESP, Sérgio Henrique Ferreira, da USP de Ribeirão Preto, achou no veneno da jararaca uma substância que combate o aumento da pressão. A pesquisa foi fundamental para criar o captopril, confirma o Estado de Minas. Para checar, procure a universidade e os cientistas por trás da notícia.",
+      "tecnica": "fonte",
+      "tema": "saude",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://agencia.fapesp.br/morre-o-farmacologista-sergio-henrique-ferreira/23595",
+      "fontesExtras": [
+        "https://www.em.com.br/tecnologia/2025/11/7289082-como-a-ciencia-usa-o-veneno-de-animais-para-criar-remedios.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0048",
+      "titulo": "Comprimido de paracetamol vem contaminado com vírus perigoso",
+      "descricao": "Alerta no WhatsApp pede para não tomar o \"Paracetamol P/500\", que estaria contaminado com um dos vírus mais perigosos do mundo.",
+      "saibaMais": "O paracetamol é um remédio comum contra dor e febre. A mensagem cita o nome de um vírus pouco conhecido e, em algumas versões, um alerta de uma rádio estrangeira. Ela pede que todos repassem o aviso à família.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo o AFP Checamos, publicado pelo Estado de Minas, o boato circula desde 2015, quando falava em ebola, e volta com outros vírus e países. A Anvisa disse que o remédio tem registro, e especialistas explicam que o vírus não sobreviveria num comprimido seco. O Observador o desmentiu de novo em 2023. Alerta que volta todo ano é boato requentado.",
+      "tecnica": "data",
+      "tema": "saude",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.em.com.br/app/noticia/internacional/factcheck/2020/08/26/interna_internacional,1179692/checamos-virus-machupo-nao-sobreviveria-dentro-de-um-comprimido.shtml",
+      "fontesExtras": [
+        "https://observador.pt/factchecks/fact-check-paracetamol-500-contem-um-dos-virus-mais-perigosos-do-mundo-e-com-alta-taxa-de-mortalidade/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0049",
+      "titulo": "Em Vênus, um dia dura mais do que um ano inteiro",
+      "descricao": "O planeta vizinho levaria mais tempo para dar uma volta em torno de si mesmo do que para dar uma volta completa no Sol.",
+      "saibaMais": "Vênus é o segundo planeta a partir do Sol, entre Mercúrio e a Terra. Aqui, um dia dura 24 horas e um ano, 365 dias. Cada planeta gira e dá a volta no Sol num ritmo próprio.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. A NASA informa que Vênus leva cerca de 243 dias terrestres para girar uma vez em torno de si e só 225 para dar a volta no Sol. Itatiaia e Olhar Digital confirmam. O contexto importa: contado de um nascer do sol ao outro, o dia lá dura uns 117 dias. Veja o que a frase compara antes de duvidar.",
+      "tecnica": "contexto",
+      "tema": "ciencia",
+      "dificuldade": "medio",
+      "fonteUrl": "https://science.nasa.gov/venus/venus-facts/",
+      "fontesExtras": [
+        "https://www.itatiaia.com.br/ciencia-e-tecnologia/conheca-o-planeta-onde-o-dia-dura-mais-que-o-ano",
+        "https://olhardigital.com.br/2021/04/29/ciencia-e-espaco/cientistas-desvendam-quanto-tempo-dura-um-dia-em-venus/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0050",
+      "titulo": "Ciência confirma: um raio nunca cai duas vezes no mesmo lugar",
+      "descricao": "O ditado popular estaria certo: depois que um raio atinge um ponto, aquele lugar fica livre de novas descargas.",
+      "saibaMais": "A frase é repetida há gerações, às vezes como conselho durante tempestades, às vezes para dizer que algo raro não se repete com a mesma pessoa.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo o grupo de eletricidade atmosférica do Inpe, citado por A Gazeta e Canaltech, o Cristo Redentor, no Rio, é atingido em média por seis raios por ano. Lugares altos e pontudos atraem descargas várias vezes. Pergunte quem confirma: ditado não é estudo, e o Inpe é quem mede raios no Brasil.",
+      "tecnica": "fonte",
+      "tema": "ciencia",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.agazeta.com.br/clima/mitos-e-verdades-e-verdade-que-um-raio-nao-cai-duas-vezes-no-mesmo-lugar-1223",
+      "fontesExtras": [
+        "https://canaltech.com.br/internet/e-falso-que-um-raio-nao-cai-duas-vezes-no-mesmo-lugar-como-diz-o-ditado-popular/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0051",
+      "titulo": "Primeiro vídeo do YouTube mostra um rapaz falando de elefantes",
+      "descricao": "O vídeo que inaugurou a plataforma teria só 19 segundos e mostraria um jovem num zoológico comentando a tromba dos elefantes.",
+      "saibaMais": "O YouTube foi criado nos Estados Unidos por três cofundadores e virou um dos sites mais acessados do mundo, com vídeos de todo tipo, de aulas a clipes de música.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. \"Me at the zoo\" foi postado em abril de 2005 por Jawed Karim, um dos cofundadores, no zoológico de San Diego, segundo CNN Brasil e Canaltech. Tem 19 segundos e mais de 300 milhões de visualizações. Confira a data: o vídeo continua no ar, e a data de publicação aparece na própria página.",
+      "tecnica": "data",
+      "tema": "tecnologia",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.cnnbrasil.com.br/tecnologia/primeiro-video-publicado-no-youtube-completa-20-anos-assista/",
+      "fontesExtras": [
+        "https://canaltech.com.br/internet/primeiro-video-publicado-no-youtube-completa-20-anos-relembre/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0052",
+      "titulo": "Celular caiu na água? Deixar no arroz é o jeito certo de salvar",
+      "descricao": "Dica que circula há anos diz que basta enterrar o celular molhado num pote de arroz cru para ele secar e voltar a funcionar.",
+      "saibaMais": "A dica aparece em vídeos e posts sempre que alguém deixa o celular cair na pia, na piscina ou no vaso. A ideia é que o arroz cru puxe a umidade de dentro do aparelho.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Na página de suporte, a Apple diz para não pôr o iPhone no arroz: partículas dos grãos podem danificar o aparelho, informa o Olhar Digital. O Canaltech cita um teste em que o arroz foi o pior método de secagem. O indicado é desligar, deixar secar em lugar ventilado e esperar antes de carregar. Confira a fonte: o que diz o fabricante?",
+      "tecnica": "fonte",
+      "tema": "tecnologia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://olhardigital.com.br/2024/02/21/reviews/caso-seu-iphone-fique-molhado-a-apple-avisa-nao-o-coloque-no-arroz/",
+      "fontesExtras": [
+        "https://canaltech.com.br/smartphone/nao-adianta-colocar-o-celular-molhado-no-arroz-entenda-esse-mito/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0053",
+      "titulo": "Ninguém sabe como era de verdade o rosto de Tiradentes",
+      "descricao": "O rosto de barba e cabelo comprido que aparece nos livros e até em cédulas teria sido inventado quase cem anos depois da morte dele.",
+      "saibaMais": "Tiradentes foi um dos líderes da Inconfidência Mineira, movimento contra o domínio de Portugal no século 18. Ele morreu em 1792 e é lembrado com um feriado nacional em 21 de abril.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo a revista Pesquisa FAPESP, não há retrato feito em vida. A imagem famosa foi criada em 1890 pelo desenhista Angelo Agostini, inspirada em pinturas de Cristo. O Correio Braziliense lembra que, pelos registros do processo, em 1792 ele estava sem barba e de cabeça raspada. Pergunte de quando é a imagem: desenho não é foto.",
+      "tecnica": "imagem",
+      "tema": "historia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://revistapesquisa.fapesp.br/representacao-de-um-heroi/",
+      "fontesExtras": [
+        "https://www.correiobraziliense.com.br/brasil/2026/04/7402531-cinco-curiosidades-sobre-tiradentes-que-voce-nao-aprendeu.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0054",
+      "titulo": "Quadro famoso mostra como foi o grito da Independência",
+      "descricao": "A pintura retrata o momento de 1822: Dom Pedro I em roupa de gala, num cavalo, erguendo a espada às margens do Ipiranga.",
+      "saibaMais": "A pintura Independência ou Morte! fica no Museu do Ipiranga, em São Paulo, e aparece em livros didáticos de todo o país. O 7 de setembro é feriado nacional e marca a separação entre Brasil e Portugal.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo texto da Agência Senado publicado pelo O Povo, Pedro Américo pintou o quadro entre 1886 e 1888, mais de 60 anos depois, e não viu a cena. A National Geographic Brasil diz que a obra tem mais ficção que realidade: na subida da serra, a comitiva usava mulas, não cavalos. Confira a data: imagem feita décadas depois não é registro do fato.",
+      "tecnica": "data",
+      "tema": "historia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.nationalgeographicbrasil.com/historia/2022/09/nos-200-anos-da-independencia-do-brasil-conheca-mitos-e-verdades-sobre-o-7-de-setembro",
+      "fontesExtras": [
+        "https://mais.opovo.com.br/reportagens-especiais/2023/09/06/7-de-setembro-veja-7-curiosidades-sobre-a-mais-famosa-representacao-da-independencia.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0055",
+      "titulo": "Taça que o Brasil ganhou para sempre foi roubada e sumiu",
+      "descricao": "O troféu que a seleção conquistou em definitivo ao ser tricampeã mundial teria sido furtado no Rio e nunca mais encontrado.",
+      "saibaMais": "A taça Jules Rimet foi o troféu das primeiras Copas do Mundo. Pela regra da época, o primeiro país a vencer três Copas ficaria com ela de vez. O Brasil foi tricampeão no México, em 1970.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Em dezembro de 1983, a taça foi furtada da sede da CBF, no Rio, segundo Lance! e Trivela. Os envolvidos disseram na época que ela foi derretida, mas isso nunca foi comprovado, e a taça nunca apareceu. O Brasil recebeu depois uma réplica. Busque veículos de esporte sérios: o caso tem registros de época e foi lembrado várias vezes.",
+      "tecnica": "fonte",
+      "tema": "curiosidades",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.lance.com.br/copa-do-mundo/curiosidades-das-copas-jules-rimet-taca-que-foi-roubada-duas-vezes.html",
+      "fontesExtras": [
+        "https://trivela.com.br/brasil/o-que-foi-a-taca-jules-rimet-e-como-ela-foi-roubada-em-dezembro-de-1983/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0056",
+      "titulo": "Chiclete engolido fica grudado sete anos no estômago",
+      "descricao": "Quem engole chiclete teria de esperar sete anos até o corpo conseguir se livrar da goma, que ficaria presa no estômago.",
+      "saibaMais": "Muita gente ouviu esse aviso na infância. O chiclete pode ser mascado por muito tempo sem se desmanchar, e o que cai no chão fica grudado nas calçadas por muito tempo.",
+      "veredito": "falsa",
+      "explicacao": "Falsa, mas com base real. O corpo não digere a goma, mas ela segue pelo intestino e sai nas fezes em poucos dias, explicam Correio Braziliense e Canaltech. O risco aparece só quando se engolem muitos de uma vez, principalmente crianças pequenas. Veja o contexto: \"não é digerido\" não quer dizer \"fica preso por anos\".",
+      "tecnica": "contexto",
+      "tema": "curiosidades",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.correiobraziliense.com.br/cbradar/mito-ou-verdade-chiclete-leva-7-anos-para-ser-digerido/",
+      "fontesExtras": [
+        "https://canaltech.com.br/saude/engolir-chiclete-faz-mal/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0057",
+      "titulo": "Ilha no litoral de São Paulo é proibida por causa de cobras",
+      "descricao": "Uma ilha a cerca de 35 km da costa paulista teria milhares de cobras venenosas, e turistas não podem desembarcar nela.",
+      "saibaMais": "No Brasil, algumas ilhas são áreas protegidas, com regras de visita definidas por órgãos ambientais e, em certos casos, pela Marinha. A viagem de barco até a ilha citada leva mais de três horas.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. É a Ilha da Queimada Grande, entre Itanhaém e Peruíbe. Lá vive a jararaca-ilhoa, que só existe nessa ilha e está criticamente ameaçada. Segundo Olhar Digital e Canaltech, a visita é proibida desde 1985, e só pesquisadores autorizados pelo ICMBio entram. Para checar, procure o órgão ambiental responsável pela área.",
+      "tecnica": "fonte",
+      "tema": "meio-ambiente",
+      "dificuldade": "facil",
+      "fonteUrl": "https://olhardigital.com.br/2026/03/18/curiosidades/a-ilha-brasileira-onde-o-acesso-e-proibido-e-milhares-de-cobras-venenosas-dominam/",
+      "fontesExtras": [
+        "https://canaltech.com.br/meio-ambiente/ilha-das-cobras-conheca-a-ilha-brasileira-dominada-por-serpentes/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0058",
+      "titulo": "Vídeo mostra sucuri gigante nadando num rio da Amazônia",
+      "descricao": "Gravação feita de um helicóptero mostraria uma cobra de tamanho nunca visto deslizando pela superfície do rio Amazonas.",
+      "saibaMais": "O vídeo se espalhou em maio de 2025 e foi compartilhado dezenas de milhares de vezes. As sucuris, também chamadas de anacondas, vivem em rios e áreas alagadas da América do Sul e estão entre as maiores cobras do mundo.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Checagens do La Silla Vacía e da AFP, relatada pelo naiz, mostram que o vídeo foi feito com inteligência artificial: aos 8 segundos, a cobra parece ter duas cabeças, e a tela da câmera mostra outra paisagem. Ela teria uns 20 metros; as maiores conhecidas têm 8 ou 9. Olhe a imagem quadro a quadro: erros assim denunciam IA.",
+      "tecnica": "imagem",
+      "tema": "meio-ambiente",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.lasillavacia.com/?p=344949",
+      "fontesExtras": [
+        "https://www.naiz.eus/es/info/noticia/20250515/el-video-de-una-anaconda-gigante-desplazandose-en-el-amazonas-fue-creado-digitalmente"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    }
+  ],
+  "descartadasNaCriacao": [
+    {
+      "titulo": "WhatsApp vai começar a cobrar por mensagem",
+      "motivo": "Instável em 2026: a Meta testa assinatura opcional no Brasil e cobra empresas e bots; o gabarito poderia mudar."
+    },
+    {
+      "titulo": "Vídeo \"Martinelli\" hackeia o celular de quem abrir",
+      "motivo": "Só achei checagens em inglês e espanhol; nenhuma brasileira."
+    },
+    {
+      "titulo": "Brasil trocou o Acre por um cavalo",
+      "motivo": "Historiadores divergem (houve um cavalo dado em 1867, noutra negociação); gabarito discutível."
+    },
+    {
+      "titulo": "Tomar banho depois de comer causa congestão",
+      "motivo": "Fontes divergem sobre banho muito quente ou frio; gabarito discutível."
+    },
+    {
+      "titulo": "Existe um recife de corais na foz do Amazonas",
+      "motivo": "Ligado à disputa pela exploração de petróleo na região; tema com carga política."
+    },
+    {
+      "titulo": "Foto mostra a ilha de lixo do Pacífico / pinguins numa ilha de plástico",
+      "motivo": "Só fontes em inglês e caso de 2018; preferi um boato recente de vídeo feito com IA."
+    }
+  ]
+}
