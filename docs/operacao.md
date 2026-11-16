@@ -3,7 +3,7 @@
 ## App de desktop (v9.0.0, equipe técnica)
 1. Gerar o executável num computador com o projeto: `npm install` e `npm run package:win`. O app sai em `out/Match do Saber-win32-x64/`; copiar essa pasta inteira para o notebook (pen drive) e criar um atalho para `Match do Saber.exe`.
    - `package:win` usa o banco padrão do repositório (`conteudo/noticias.csv`). Depois dele, rode `npm run fixture` antes dos testes E2E.
-   - Para testar sem empacotar: `npm run desktop` (num terminal sem `ELECTRON_RUN_AS_NODE`, que o VS Code às vezes define).
+   - Para testar sem empacotar: `npm run desktop` (num terminal sem `ELECTRON_RUN_AS_NODE`, que o VS Code às vezes define). Desde a v12.1.0 ele embute sempre o banco padrão (`conteudo/noticias.csv`), nunca o de teste.
 2. Na primeira abertura o app cria `Documentos/Match do Saber/noticias.csv` a partir do banco embutido; nas seguintes, lê esse arquivo. Antes de cada gravação pelo painel, o arquivo anterior é copiado para `Documentos/Match do Saber/backups/` com data e hora no nome (ficam os 100 mais recentes).
 3. Atalhos do app: F11 tela cheia, Ctrl+R recarrega (relê o banco), Ctrl+Shift+O abre a pasta `Documentos/Match do Saber`.
 4. A versão web (GitHub Pages) continua publicada a cada push na `main` e usa o banco embutido (`conteudo/noticias.csv`). A Planilha Google e o `npm run sync` estão desativados desde a v9.0.0 (o código fica em `scripts/sync/`).

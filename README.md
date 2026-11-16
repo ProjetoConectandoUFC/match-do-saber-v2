@@ -35,7 +35,7 @@ Um teste só: `npx vitest run src/core/partida.test.ts` ou `npx vitest run -t "t
 ### App de desktop (Windows)
 
 ```bash
-npm run desktop        # build + abre o app Electron
+npm run desktop        # build com o banco padrão + abre o app Electron (depois, `npm run fixture` antes do E2E web)
 npm run e2e:desktop    # testes E2E no app Electron real
 npm run package:win    # gera o executável em out/Match do Saber-win32-x64/ (com o banco padrão)
 ```

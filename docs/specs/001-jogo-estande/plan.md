@@ -5498,6 +5498,8 @@ Spec: AC-1.4, AC-1.5, AC-2.4, AC-2.13, AC-5.2, AC-5.4, AC-9.26, NFR Reliability 
 - 50.5 Conteúdo: explicação da mds-0036 ("a segunda maior da história até então") — revisão humana.
 - 50.6 Verificação: `npm test`, `npm run build`, `npm run e2e`, `npm run e2e:desktop`; ensaio manual com duas pessoas no quadro e a webcam desconectada e reconectada.
 
+Status (2026-11-16): 50.1 a 50.5 feitas (agente-mecanico em duas frentes, integração e revisão pelo orquestrador). `npm test` 642/642, build ok, E2E web 62/62 e desktop 3/3. AC-2.13 ficou no laço do `useJogo`: fora de card/treino as permanências são zeradas a cada quadro. Pendentes: o ensaio manual de 50.6 no notebook do estande e a revisão humana da mds-0036. Limites conhecidos: pular a calibração com o quadro vazio deixa o centro anterior; quem entra depois longe dele fica travado até a próxima partida (Esc + nova partida resolve).
+
 ## Quickstart Validation
 
 ```bash

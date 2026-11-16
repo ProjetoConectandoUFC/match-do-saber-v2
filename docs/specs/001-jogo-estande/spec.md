@@ -628,7 +628,7 @@ Referência de estilo: gerenciador de questões do Prova ou Reprova (https://git
 | Jogador sai do quadro durante a partida | No modo Corpo: pausa com "Volte para o centro"; retoma se ele voltar dentro da tolerância sem pessoa (padrão 10 s, AC-9.28); senão encerra sem resumo e volta à espera (AC-5.3 a AC-5.5). Nos modos Mão e Cabeça: o tempo continua e nada aparece (AC-9.21). |
 | Iluminação ruim impede a detecção | A calibração não conclui e a mensagem "Fique no centro" continua; o operador pressiona Enter para pular a calibração e joga pelas setas (AC-1.8). |
 | Jogador sai do quadro, partida termina ou operador usa Sair, e alguém continua no quadro | O jogo fica na tela de espera até o operador iniciar de novo (AC-1.1, AC-10.3). |
-| Várias pessoas no quadro | Só a pessoa mais central e maior controla (AC-1.5). |
+| Várias pessoas no quadro | Só uma pessoa controla: o jogador acompanhado desde a calibração; sem ele, a mais central e maior, que só escolhe depois de passar pelo centro (AC-1.5, v12.1.0). |
 | Nenhuma notícia publicada | Tela de espera com "Nenhuma notícia publicada"; não inicia partida (AC-6.4). |
 | Linha do banco incompleta, com `id` duplicado ou valor fora das listas | A linha não entra em partidas e aparece no painel Notícias com o motivo (AC-7.3, AC-8.4). |
 | Arquivo do banco ausente, ilegível ou vazio no app de desktop | O app recria o arquivo a partir do banco embutido, guardando o arquivo ilegível na pasta de backups. |
