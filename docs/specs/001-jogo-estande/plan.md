@@ -5498,6 +5498,8 @@ Spec: AC-1.2, AC-17.5, AC-17.6, AC-17.7 (tempos independentes da animação), AC
 - 46.5 `sons.ts`: som `carta` na transição para um estado com distribuição começando (não na abertura), respeitando som e volume (teste puro); `audio.ts` sintetiza o "fff" de papel (ruído filtrado curto).
 - 46.6 `inclinacaoCard.ts` e `cardSaindo`: durante a distribuição a carta fica no centro (AC-2.10e).
 
+Status (2026-11-16): concluída (commit `382c120`; revisada). A partida passou a ser sorteada na abertura, antes do treino, para o fan saber o total; `calibrarAoSair` mede o centro na passagem calibração → abertura. `npm test` 620/620, `npm run build` e `npm run e2e` 60/60 verdes. A tela da abertura é provisória (vazia) até a Fase 48.
+
 ## Phase 47 (added v13.0.0): Carta de baralho — prévia e aplicação
 
 Spec: AC-17.1, AC-17.2, AC-3.6, AC-2.12, AC-4.5, AC-4.7; FR-4, FR-15, FR-18 (verso único). Agente: agente-visual (prévia em `docs/visual/previa-v13.html`, com as referências do responsável: leque de baralho e cartas ilustradas com moldura e índices nos cantos), depois aplicação na mesma branch. O responsável aprova a prévia antes da aplicação.
