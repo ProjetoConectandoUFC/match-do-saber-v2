@@ -155,7 +155,8 @@ describe('card', () => {
   it('AC-5.3/AC-5.4: sem pessoa pausa; voltando antes de 10 s continua do mesmo card', () => {
     const s = rodar(emCardCalibrado(), [tick(1000), tick(4000, ninguem)]);
     expect(s).toMatchObject({ tela: 'card', ausenteMs: 4000, restanteMs: 14000 });
-    expect(rodar(s, [tick(1000)])).toMatchObject({ tela: 'card', indice: 0, ausenteMs: null, restanteMs: 13000 });
+    // v12.1.0: os primeiros 500 ms de volta confirmam a presença (AC-5.4) e não descontam do cronômetro.
+    expect(rodar(s, [tick(1000)])).toMatchObject({ tela: 'card', indice: 0, ausenteMs: null, restanteMs: 13500 });
   });
   it('AC-5.5: 10 s sem pessoa encerra e volta à espera', () => {
     expect(rodar(emCardCalibrado(), [tick(6000, ninguem), tick(4000, ninguem)]).tela).toBe('espera');

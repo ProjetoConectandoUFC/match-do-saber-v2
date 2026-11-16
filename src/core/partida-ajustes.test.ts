@@ -76,7 +76,8 @@ describe('AC-9.28/AC-5.4/AC-5.5: tolerância sem pessoa configurada (modo Corpo)
     const c = ctx({ toleranciaMs: tol });
     const card = emCardCalibrado(c);
     expect(rodar(card, [tick(tol - 1, ninguem)], c)).toMatchObject({ tela: 'card', ausenteMs: tol - 1 });
-    expect(rodar(card, [tick(tol - 1, ninguem), tick(1, centro)], c)).toMatchObject({ tela: 'card', ausenteMs: null }); // AC-5.4
+    expect(rodar(card, [tick(tol - 1, ninguem), tick(500, centro)], c)).toMatchObject({ tela: 'card', ausenteMs: null }); // AC-5.4 (v12.1.0: 500 ms)
+    expect(rodar(card, [tick(tol - 1, ninguem), tick(499, centro), tick(1, ninguem)], c)).toEqual(ESTADO_INICIAL);
     expect(rodar(card, [tick(tol, ninguem)], c)).toEqual(ESTADO_INICIAL);
   });
 

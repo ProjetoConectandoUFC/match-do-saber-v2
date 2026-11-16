@@ -9,7 +9,11 @@ export const TEMPOS = {
   /** v12.0.0 (AC-4.9, AC-9.25): carimbada do veredito no começo do resultado; soma ao feedback, não desconta. */
   carimboMs: 300,
   calibracaoMs: 2000,
+  /** v12.1.0 (AC-1.4): a calibração volta à espera depois deste tempo sem completar, mesmo com alguém fora do centro. */
+  calibracaoMaxMs: 30000,
   ausenciaMs: 10000,
+  /** v12.1.0 (AC-5.4): presença contínua que encerra o "Volte para o centro"; soma à pausa, não desconta do card. */
+  retornoPresencaMs: 500,
 } as const;
 
 
@@ -25,11 +29,14 @@ export type EstadoCard = {
   restanteMs: number;
   saibaMais: boolean;
   ausenteMs: number | null;
+  /** v12.1.0 (AC-5.4): presença contínua desde o último quadro sem pessoa, enquanto `ausenteMs` não é null. */
+  presenteMs?: number;
 };
 
 export type Estado =
   | { tela: 'espera' }
-  | { tela: 'calibracao'; centradoMs: number; ausenteMs: number }
+  // `totalMs` (v12.1.0, AC-1.4): tempo desde que a calibração abriu; sem valor, 0.
+  | { tela: 'calibracao'; centradoMs: number; ausenteMs: number; totalMs?: number }
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
   // `resultadoMs` (v12.0.0): quanto dura o resultado, carimbada + tempo configurado (AC-4.9, AC-9.25), gravado ao entrar; enquanto `restanteMs` for maior, o card está saindo.
@@ -122,13 +129,17 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       if (evento.tipo === 'enter') return comecar(ctx, 'alternativa');
       if (evento.tipo !== 'tick') return estado;
       const p = evento.presenca;
+      // AC-1.4 (v12.1.0): com ninguém completando a calibração em 30 s, volta à espera (alguém fora do centro não a prende).
+      const totalMs = (estado.totalMs ?? 0) + evento.dtMs;
       if (!p || !p.presente) {
         const ausenteMs = estado.ausenteMs + evento.dtMs;
-        return ausenteMs >= TEMPOS.ausenciaMs ? ESTADO_INICIAL : { tela: 'calibracao', centradoMs: 0, ausenteMs };
+        return ausenteMs >= TEMPOS.ausenciaMs || totalMs >= TEMPOS.calibracaoMaxMs
+          ? ESTADO_INICIAL
+          : { tela: 'calibracao', centradoMs: 0, ausenteMs, totalMs };
       }
-      if (!p.centralizado) return { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
-      const centradoMs = estado.centradoMs + evento.dtMs;
-      return centradoMs >= TEMPOS.calibracaoMs ? comecar(ctx, 'corpo') : { tela: 'calibracao', centradoMs, ausenteMs: 0 };
+      const centradoMs = p.centralizado ? estado.centradoMs + evento.dtMs : 0;
+      if (centradoMs >= TEMPOS.calibracaoMs) return comecar(ctx, 'corpo');
+      return totalMs >= TEMPOS.calibracaoMaxMs ? ESTADO_INICIAL : { tela: 'calibracao', centradoMs, ausenteMs: 0, totalMs };
     }
     case 'card': {
       if (evento.tipo === 'escolha') {
@@ -141,10 +152,19 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       const p = estado.partida.entrada === 'alternativa' || ctx.ignorarAusencia ? null : evento.presenca;
       if (p && !p.presente) {
         const ausenteMs = (estado.ausenteMs ?? 0) + evento.dtMs;
-        return ausenteMs >= (ctx.toleranciaMs ?? TEMPOS.ausenciaMs) ? ESTADO_INICIAL : { ...estado, ausenteMs };
+        return ausenteMs >= (ctx.toleranciaMs ?? TEMPOS.ausenciaMs) ? ESTADO_INICIAL : { ...estado, ausenteMs, presenteMs: 0 };
+      }
+      // AC-5.4 (v12.1.0): só sai do "Volte para o centro" com presença contínua; detecções soltas não zeram a tolerância.
+      // Os 500 ms de confirmação ficam pausados (somam à pausa, não descontam do card); o que passar deles corre.
+      let dtMs = evento.dtMs;
+      if (p && estado.ausenteMs !== null) {
+        const presenteMs = (estado.presenteMs ?? 0) + dtMs;
+        if (presenteMs < TEMPOS.retornoPresencaMs) return { ...estado, presenteMs };
+        dtMs = presenteMs - TEMPOS.retornoPresencaMs;
       }
       const base: EstadoCard = { ...estado, ausenteMs: null };
-      const restanteMs = base.restanteMs - evento.dtMs;
+      delete base.presenteMs;
+      const restanteMs = base.restanteMs - dtMs;
       return restanteMs <= 0 ? registrar(base, 'tempo', null, ctx) : { ...base, restanteMs };
     }
     case 'feedback': {

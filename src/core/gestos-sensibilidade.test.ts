@@ -35,11 +35,12 @@ describe('configGestos (AC-9.28)', () => {
     expect(c.limiarCabecaGraus).toBeCloseTo(CONFIG_GESTOS.limiarCabecaGraus * k);
     expect(c.limiarQueixo).toBeCloseTo(CONFIG_GESTOS.limiarQueixo * k);
     // Permanências e zonas de retorno/calibração não mudam.
-    for (const chave of ['permanenciaLadoMs', 'permanenciaMaosMs', 'zonaRetorno', 'zonaCalibracao', 'retornoCabecaGraus', 'centroArrasteL', 'margemMaoOmbro'] as const) {
+    for (const chave of ['permanenciaLadoMs', 'permanenciaMaosMs', 'retornoFracao', 'recentroFracao', 'paradoVariacao', 'paradoMs', 'zonaCalibracao', 'retornoCabecaGraus', 'centroArrasteL', 'margemMaoOmbro'] as const) {
       expect(c[chave]).toBe(CONFIG_GESTOS[chave]);
     }
     // O limite continua maior que a zona de retorno (a trava depois da escolha segue funcionando).
-    expect(c.limiar).toBeGreaterThan(c.zonaRetorno);
+    // AC-2.4 (v12.1.0): a área central é uma fração do limiar, então acompanha a sensibilidade.
+    expect(c.retornoFracao).toBeLessThan(1);
     expect(c.limiarCabecaGraus).toBeGreaterThan(c.retornoCabecaGraus);
     expect(c.arrasteMinL).toBeGreaterThan(c.centroArrasteL);
   });
