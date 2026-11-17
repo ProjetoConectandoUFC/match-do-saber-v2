@@ -30,7 +30,8 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, os treinos do arquivo (2 na v11.
   // Treino 1: Abacaxi Perfeito (mentira, v11.0.0), com o desenho do perfil, sem barra de tempo e sem placar.
   await expect(page.getByText('Treino 1 de 2')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Abacaxi Perfeito, 19' })).toBeVisible();
-  await expect(page.locator('article [data-janela] img')).toHaveAttribute('src', /perfil-falso-abacaxi/);
+  // v13.2.0: seletor que vale nas duas interfaces (na Clássica não há janela; nas Cartas, o fan também tem imagem).
+  await expect(page.locator('article img[src*="perfil-falso-abacaxi"]')).toHaveCount(1);
   await expect(page.getByRole('timer')).toHaveCount(0);
   await expect(page.getByText(/^Pontos:/)).toHaveCount(0);
   await esperarCartaPousada(page); // v13.0.0: o treino também sai do fan (FR-16, AC-17.6)
@@ -40,7 +41,7 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, os treinos do arquivo (2 na v11.
 
   // Treino 2 aparece sozinho depois do feedback (3 s + saída).
   await expect(page.getByText('Treino 2 de 2')).toBeVisible({ timeout: 6000 });
-  await expect(page.locator('article [data-janela] img')).toHaveAttribute('src', /perfil-verdadeiro-caju/);
+  await expect(page.locator('article img[src*="perfil-verdadeiro-caju"]')).toHaveCount(1);
   await esperarCartaPousada(page);
   await page.keyboard.press('ArrowLeft'); // Seu Caju é verdade: errar ensina o gesto certo
   await expect(page.getByText('Quase!')).toBeVisible();

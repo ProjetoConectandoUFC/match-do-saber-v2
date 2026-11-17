@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { esperarCartaPousada } from './carta';
+import { esperarCartaPousada, interfaceDoProjeto } from './carta';
 
 // v11.0.0: resumo da opção B (lista + QR, AC-5.8, AC-5.9), página das fontes (AC-5.10), botões redondos e
 // carimbo (AC-2.11, AC-2.12), sem câmera (setas).
@@ -95,7 +95,7 @@ test('AC-5.8/AC-5.9/AC-5.10: resumo com lista e QR em 1366×768 e 1920×1080; o 
   await expect(page.getByText('Notícia não encontrada nesta versão do jogo')).toHaveCount(1);
 });
 
-test('AC-2.11/AC-2.12: botões redondos fora da carta, sem pilha atrás (v13.0.0) e carimbo na saída, sem tirar a carta do centro', async ({ page }) => {
+test('AC-2.11/AC-2.12: botões redondos fora da carta, pilha só na Clássica (AC-18.4) e carimbo na saída, sem tirar a carta do centro', async ({ page }) => {
   await semCamera(page);
   await page.keyboard.press('Enter');
   const card = page.locator('article');
@@ -112,7 +112,8 @@ test('AC-2.11/AC-2.12: botões redondos fora da carta, sem pilha atrás (v13.0.0
   }
   expect((await caixa(mentira)).x).toBeLessThan(c.x);
   expect((await caixa(verdade)).x).toBeGreaterThan(c.x + c.width);
-  await expect(page.locator('[data-pilha-camada]')).toHaveCount(0); // AC-2.12 (v13.0.0): a pilha parada saiu
+  // AC-2.12: na Clássica, a pilha de duas camadas da v11.0.0 (AC-18.4); nas Cartas, a pilha parada saiu (v13.0.0).
+  await expect(page.locator('[data-pilha-camada]')).toHaveCount(interfaceDoProjeto() === 'classica' ? 2 : 0);
 
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('[data-rotulo-lado="verdade"]')).toHaveClass(/carimbado/);

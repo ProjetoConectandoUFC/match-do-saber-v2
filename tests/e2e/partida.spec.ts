@@ -1,6 +1,6 @@
 import { escreverCsv, lerCsv } from '../../src/core/csv';
 import { expect, test } from '@playwright/test';
-import { esperarCartaPousada } from './carta';
+import { esperarCartaPousada, interfaceDoProjeto } from './carta';
 
 test('partida completa pelo teclado, sem câmera (AC-1.6, AC-2.5, AC-3.4, AC-4.x, AC-5.1, AC-5.6)', async ({ page }) => {
   test.setTimeout(120_000); // 10 feedbacks de 3 s + 16 s de resumo
@@ -68,6 +68,7 @@ const DESCRICAO_LONGA = 'Em 1932, soldados com metralhadoras foram enviados para
 const SAIBA_MAIS_LONGO = 'A história se passa no oeste da Austrália, logo após a Primeira Guerra Mundial. Agricultores, muitos deles ex-soldados, plantavam trigo numa região atingida pela seca e pela crise econômica de 1929. Grandes bandos de emas, aves enormes que não voam, invadiam as lavouras em busca de água e comida. Os agricultores pediram ajuda ao ministro da Defesa do país.';
 for (const vp of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
   test(`FR-4/AC-17.1/AC-17.2: carta 5:7 sem corte, frente e verso, com os textos mais longos em ${vp.width}×${vp.height}`, async ({ page }) => {
+    test.skip(interfaceDoProjeto() !== 'cartas', 'carta de baralho: só na interface Cartas (AC-18.5)');
     await page.setViewportSize(vp);
     await page.route('**/content/noticias.csv', async (route) => {
       const r = await route.fetch();
@@ -105,6 +106,29 @@ for (const vp of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) 
     expect(letra).toBeGreaterThanOrEqual(20 * Math.min(vp.width / 1366, vp.height / 768) - 0.5); // AC-17.2: mínimo de 20
   });
 }
+
+// AC-18.4 (v13.2.0): na Clássica vale o teste da v12.1.0 do card com o texto no limite máximo.
+test('FR-4 (Clássica): texto no limite máximo não é cortado em 1366×768', async ({ page }) => {
+  test.skip(interfaceDoProjeto() !== 'classica', 'card da v12.1.0: só na interface Clássica (AC-18.4)');
+  await page.route('**/content/noticias.csv', async (route) => {
+    const r = await route.fetch();
+    const banco = lerCsv(await r.text()).map((n) => ({ ...n, titulo: 'T'.repeat(100), descricao: 'D '.repeat(110).trim() }));
+    await route.fulfill({ body: escreverCsv(banco) });
+  });
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'mediaDevices', { value: { getUserMedia: () => Promise.reject(new Error('x')) } });
+  });
+  await page.goto('/');
+  await expect(page.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeVisible(); // jogo carregado
+  await page.keyboard.press('Enter');
+  const card = page.locator('article');
+  await expect(card).toBeVisible();
+  const caixa = (await card.boundingBox())!;
+  expect(caixa.y).toBeGreaterThanOrEqual(0);
+  expect(caixa.y + caixa.height).toBeLessThanOrEqual(768);
+  const cortado = await card.evaluate((el) => el.scrollHeight > el.clientHeight + 1);
+  expect(cortado).toBe(false);
+});
 
 async function iniciarSemCamera(page: import('@playwright/test').Page) {
   await page.addInitScript(() => {
@@ -150,8 +174,11 @@ for (const [tecla, lado, classe, sinal] of [
 ] as const) {
   test(`AC-2.5 + AC-${lado === 'direita' ? '2.1' : '2.2'}: ${tecla} faz o card sair pela ${lado} antes do feedback`, async ({ page }) => {
     await iniciarSemCamera(page);
+    // v13.2.0: a observação começa antes da tecla; com as duas interfaces em paralelo, a máquina carregada às vezes
+    // só começava a olhar depois dos 250 ms da saída ("o card não saiu").
+    const observacao = saidaAntesDoFeedback(page);
     await page.keyboard.press(tecla);
-    const r = await saidaAntesDoFeedback(page);
+    const r = await observacao;
     expect(r.classe).toMatch(classe);
     expect(r.visivelFeedback).toBe(false);
     expect(Math.sign(r.tx)).toBe(sinal);

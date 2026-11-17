@@ -93,7 +93,7 @@ test('AC-11.1–11.3: som ligado toca na escolha e no resultado', async ({ page 
 test('AC-11.4: som desligado não toca nada', async ({ page }) => {
   await abrir(page);
   await page.keyboard.press('m');
-  for (let i = 0; i < 9; i++) await page.keyboard.press('ArrowDown'); // Ajustes (v12.0.0): … Mídia › Som
+  for (let i = 0; i < 10; i++) await page.keyboard.press('ArrowDown'); // Ajustes (v13.2.0: Interface primeiro): … Mídia › Som
   await page.keyboard.press('ArrowRight');                       // Som → Desligado
   await page.keyboard.press('Escape');
   await expect(page.getByText('Modo: Corpo · 10 notícias · 15 s por card · Som: desligado', { exact: true })).toBeVisible();
