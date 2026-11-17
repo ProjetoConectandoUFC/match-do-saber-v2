@@ -5511,6 +5511,8 @@ Spec: AC-17.1, AC-17.2, AC-3.6, AC-2.12, AC-4.5, AC-4.7; FR-4, FR-15, FR-18 (ver
 - 47.6 (v13.1.0) Aviso não bloqueante de `saiba_mais` acima de 250 caracteres no editor e no painel Questões (AC-7.13), em `src/core/banco.ts`/`questoes.ts` separado dos erros de validação; frase do perfil na frente da carta de treino (AC-17.1).
 - 47.5 E2E de layout: carta 5:7 (±2%), centralizada (AC-4.5), manchete e verso sem corte com os textos mais longos, em 1366×768 e 1920×1080; ajustar os E2E antigos que liam a descrição na frente.
 
+Status (2026-11-17): concluída. O WIP `1da3664` (carta de duas faces, naipes, letra que cabe, aviso de 250 caracteres e frase do perfil no treino) foi conferido item a item contra 47.1 a 47.6, com `npm test`, `npm run build` e o E2E inteiro verdes; a espera ganhou o desenho do gesto com uma carta (prévia v13). Capturas do jogo em `docs/visual/capturas/v13-cartas/2*-*.png` (`docs/visual/capturar-cartas-v13.mjs`).
+
 ## Phase 48 (added v13.0.0): Fan na espera, na abertura e na distribuição
 
 Spec: AC-17.3 a AC-17.7, FR-18 (must not), AC-10.5, AC-2.11. Agentes: agente-visual (desenho e animação) e agente-mecanico (ligação com o estado). Depende das Fases 46 e 47.
@@ -5521,6 +5523,8 @@ Spec: AC-17.3 a AC-17.7, FR-18 (must not), AC-10.5, AC-2.11. Agentes: agente-vis
 - 48.4 Abertura e distribuição: a carta sai do topo do fan e sobe virando até o centro; o progresso vem de `distribuindoMs`/`restanteMs` do estado (não de timers do CSS soltos), para a tela nunca discordar do reducer.
 - 48.5 Fan atrás da carta durante cartas e treino; fora do feedback, do resumo e da calibração; não cobre a barra de tempo, os botões redondos nem o "✕ Sair" (E2E com caixas delimitadoras).
 - 48.6 E2E: partida de 5 notícias com tutorial — o fan começa com 7 cartas e perde uma a cada carta; o cronômetro só começa depois da distribuição; Esc na abertura volta à espera.
+
+Status (2026-11-17): concluída (agente-visual). `src/core/fan.ts` (geometria pura, com teste) e `FanCartas` (verso único em `src/app/ilustracoes/verso-fan.svg`, feito com `marca-estrela-6` e `anel-b`). As animações (abertura, distribuição, respiração da espera) são Web Animations só de `transform`, amostradas das funções de `fan.ts`: rodam no compositor, fluidas mesmo com a pose travando o laço principal, e começam no progresso que o reducer diz (`restanteMs`/`distribuindoMs`); depois só são adiantadas se ficarem para trás do estado, nunca voltam. Nenhuma mudança em `src/core/partida.ts`. `TelaEspera` ganhou `cartas={false}` (espera da v12, sem fan) para o teste A/B. E2E em `tests/e2e/fan.spec.ts` (hit-test do navegador para "não cobre"). Pendente: 49.3 no hardware (leitura a 2 m, fluidez com a pose rodando); na espera, com a câmera ligada, a prévia da câmera (canto inferior direito, AC-2.6) fica por cima da ponta direita do fan.
 
 ## Phase 49 (added v13.0.0): Verificação e telas
 
