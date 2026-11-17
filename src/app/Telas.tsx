@@ -1,10 +1,11 @@
-import { useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import { AJUSTES_PADRAO, resumoAjustes, rotuloInterface, type Ajustes } from '../core/ajustes';
 import { DICA_GESTOS, DICA_SAIBA_MAIS, type ModoJogo } from '../core/modos';
 import type { AncorasRosto } from '../core/ancorasRosto';
 import { FAIXAS, faixaDeAcertos, type Faixa } from '../core/faixas';
 import type { LinhaResumo } from '../core/fontesRodada';
 import { LETRA_MANCHETE, LETRA_VERSO, maiorTamanhoQueCabe } from '../core/carta';
+import { FAN, PIVO_NA_MESA, poseCartaDistribuida, progresso as progressoDe } from '../core/fan';
 import { TEMPOS, mensagemResumo, type Resultado } from '../core/partida';
 import { feedbackTutorial, type IlustracaoPerfil } from '../core/tutorial';
 import { TECNICA_ROTULO, type Noticia, type Veredito } from '../core/types';
@@ -12,6 +13,7 @@ import { FiltroFoto } from './FiltroFoto';
 import { Forma, type IdForma } from './Forma';
 import { IlustracaoTema, corDoTema, tintaDoTema } from './IlustracaoTema';
 import { Naipe } from './Naipe';
+import { FanCartas, VERSO_FAN, podeAnimar, quadrosChave, sincronizar } from './FanCartas';
 import { ilustracaoDaNoticia, ilustracaoDoPerfil } from './ilustracoes';
 import { QrCode } from './QrCode';
 import type { StatusCamera } from './useJogo';
@@ -51,17 +53,27 @@ function Logo() {
 }
 
 /** Desenho mudo do gesto na espera: card no meio, Mentira à esquerda, Verdade à direita. */
-function EsquemaGesto() {
+function EsquemaGesto({ cartas }: { cartas: boolean }) {
   return (
     <div className={s.esquema} data-esquema-gesto aria-hidden="true">
       <div className={s.esquemaLado}>
         <span className={`${s.discoP} ${s.discoMentira}`}><MarcaMentira largura={34} /></span>
         <span className={`${s.pilP} ${s.pilMentira}`} data-lado="mentira">Mentira</span>
       </div>
-      <div className={s.esquemaCard}>
-        <div className={s.esquemaIlu}><Forma id="marca-estrela-5" largura={40} /></div>
-        <i /><i /><i className={s.curta} />
-      </div>
+      {cartas ? (
+        // v13.0.0 (prévia v13): a carta em miniatura, com o naipe nos cantos.
+        <div className={s.esquemaCarta}>
+          <span className={cx(s.esquemaNaipe, s.esquemaNaipeA)} />
+          <span className={cx(s.esquemaNaipe, s.esquemaNaipeB)} />
+          <div className={s.esquemaIlu}><Forma id="marca-estrela-5" largura={40} /></div>
+          <i /><i /><i className={s.curta} />
+        </div>
+      ) : (
+        <div className={s.esquemaCard}>
+          <div className={s.esquemaIlu}><Forma id="marca-estrela-5" largura={40} /></div>
+          <i /><i /><i className={s.curta} />
+        </div>
+      )}
       <div className={s.esquemaLado}>
         <span className={`${s.discoP} ${s.discoVerdade}`}><MarcaVerdade largura={34} /></span>
         <span className={`${s.pilP} ${s.pilVerdade}`} data-lado="verdade">Verdade</span>
@@ -81,8 +93,12 @@ function Aneis() {
   );
 }
 
-export function TelaEspera({ semNoticias, avisoSemNoticias = 'Nenhuma notícia publicada', camera, config = AJUSTES_PADRAO, menu, onIniciar = () => {} }: {
+export function TelaEspera({
+  semNoticias, avisoSemNoticias = 'Nenhuma notícia publicada', camera, config = AJUSTES_PADRAO, menu, onIniciar = () => {}, cartas = true,
+}: {
   semNoticias: boolean;
+  /** v13.0.0: interface de cartas (fan respirando e o desenho do gesto com uma carta); `false` = a espera da v12. */
+  cartas?: boolean;
   /** AC-6.4 (v12.0.0): o aviso muda quando há notícias jogáveis só fora dos filtros de conteúdo. */
   avisoSemNoticias?: string;
   camera: StatusCamera;
@@ -94,8 +110,10 @@ export function TelaEspera({ semNoticias, avisoSemNoticias = 'Nenhuma notícia p
   return (
     <main className={`${s.tela} ${s.claro}`}>
       <Aneis />
+      {/* AC-17.4: o fan respira sob o desenho do gesto (atrás do texto e do Iniciar). */}
+      {cartas && <FanCartas quantidade={FAN.cartasEspera} fase="respirando" lugar="espera" />}
       <div className={s.assinatura}><Forma id="conectando-assinatura" largura={104} /></div>
-      <div className={s.espLinha}>
+      <div className={cx(s.espLinha, cartas && s.espLinhaCartas)}>
         <div className={s.espTexto}>
           <Logo />
           {semNoticias ? (
@@ -110,7 +128,7 @@ export function TelaEspera({ semNoticias, avisoSemNoticias = 'Nenhuma notícia p
             <Forma id="marca-triangulo" largura={20} quadrado style={{ transform: 'rotate(90deg)' }} />Iniciar
           </button>
         </div>
-        <EsquemaGesto />
+        <EsquemaGesto cartas={cartas} />
       </div>
       {/* AC-18.3 (v13.2.0): a interface ativa, numa linha própria logo acima do resumo, legível a 1 m. */}
       <p className={s.dicaInterface} data-interface={config.interface}>{rotuloInterface(config)}</p>
@@ -126,6 +144,25 @@ export function TelaCalibracao({ progresso, modo = 'corpo' }: { progresso: numbe
       <p className={s.calibracaoTitulo}>Fique no centro</p>
       <div className={s.barra}><div style={{ width: `${Math.round(progresso * 100)}%` }} /></div>
       <p className={s.calibracaoDica}>{DICA_GESTOS[modo]}</p>
+    </main>
+  );
+}
+
+/**
+ * Abertura da partida (AC-17.5, v13.0.0): o fan com todas as cartas (treinos e notícias) abre por inteiro e fecha até a
+ * posição de jogo em `TEMPOS.aberturaFanMs`, pelo `restanteMs` do estado. As laterais já ficam no lugar e a barra fica
+ * vazia (sem cronômetro nem placar), para nada mudar de lugar quando a primeira carta chegar. "✕ Sair" vem do App.
+ */
+export function TelaAbertura({ cartas, restanteMs }: { cartas: number; restanteMs: number }) {
+  return (
+    <main className={`${s.tela} ${s.sobrio}`} aria-label="Abrindo as cartas">
+      <FanCartas quantidade={cartas} fase="abrindo" progresso={progressoDe(TEMPOS.aberturaFanMs, restanteMs)} />
+      <div className={s.mesa} data-mesa>
+        <Lado lado="mentira" escolhido={false} />
+        <div className={s.lugarCarta} aria-hidden="true" />
+        <Lado lado="verdade" escolhido={false} />
+      </div>
+      <div className={s.barraTempo} aria-hidden="true" />
     </main>
   );
 }
@@ -288,7 +325,69 @@ function VersoCarta({ noticia, oculta }: { noticia: Noticia; oculta: boolean }) 
   );
 }
 
-export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, treino, cardRef, onArrastar }: {
+/** Face de baixo da carta enquanto ela sai do fan (AC-17.6, FR-18): o verso único do fan, que não diz nada da notícia. */
+function FaceFan() {
+  return (
+    <div className={cx(s.face, s.faceFan)} data-face-carta="fan" aria-hidden="true">
+      <img src={VERSO_FAN} alt="" draggable={false} />
+    </div>
+  );
+}
+
+/**
+ * Distribuição (AC-17.6, v13.1.0, Fase 48.4): a carta sai da ponta direita do fan pelo verso, sobe em arco até o centro
+ * da mesa virando para a frente. O caminho vem de `poseCartaDistribuida` (fan.ts) e roda no compositor (Web Animations,
+ * só `transform`), preso ao `distribuindoMs` do estado: começa no ponto em que o reducer está e é corrigido se se afastar.
+ * Com "menos movimento" (AC-17.7), não há animação: a carta já aparece de frente no centro; os tempos não mudam.
+ */
+function useVooDaCarta(voo: RefObject<HTMLDivElement>, giro: RefObject<HTMLDivElement>, nAntes: number, distribuindoMs: number) {
+  const ativo = distribuindoMs > 0;
+  const p = progressoDe(TEMPOS.distribuirMs, distribuindoMs);
+  const pRef = useRef(p);
+  pRef.current = p;
+  const animacoes = useRef<Animation[]>([]);
+  useLayoutEffect(() => {
+    const el = voo.current;
+    const g = giro.current;
+    if (!ativo || !podeAnimar(el) || !g) return undefined;
+    const u = el.offsetWidth / FAN.larguraCarta;
+    // O pivô real do fan (outra proporção de tela muda a distância até o centro da mesa); 1366×768 = PIVO_NA_MESA.
+    let pivo: { x: number; y: number } = PIVO_NA_MESA;
+    const fan = el.closest('main')?.querySelector('[data-fan]');
+    if (fan && u > 0) {
+      const a = fan.getBoundingClientRect();
+      const b = el.getBoundingClientRect();
+      pivo = { x: (a.left - (b.left + b.width / 2)) / u, y: (a.top - (b.top + b.height / 2)) / u };
+    }
+    const pose = (t: number) => poseCartaDistribuida(nAntes, t, pivo);
+    const opcoes = { duration: TEMPOS.distribuirMs, easing: 'linear' };
+    const lista = [
+      el.animate(quadrosChave((t) => {
+        const q = pose(t);
+        return `translate(${(q.x * u).toFixed(1)}px, ${(q.y * u).toFixed(1)}px) rotate(${q.graus.toFixed(2)}deg) scale(${q.escala.toFixed(4)})`;
+      }), opcoes),
+      g.animate(quadrosChave((t) => `rotateY(${pose(t).giroY.toFixed(1)}deg)`), opcoes),
+    ];
+    for (const a of lista) a.currentTime = pRef.current * TEMPOS.distribuirMs;
+    animacoes.current = lista;
+    return () => {
+      for (const a of lista) a.cancel();
+      animacoes.current = [];
+    };
+  }, [ativo, nAntes]);
+  useEffect(() => {
+    if (ativo) sincronizar(animacoes.current, p, TEMPOS.distribuirMs);
+  }, [ativo, p]);
+}
+
+export function TelaCard({
+  noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, treino, cardRef, onArrastar,
+  cartasNoFan, distribuindoMs = 0,
+}: {
+  /** v13.0.0 (AC-17.3): cartas ainda no fan, do estado (`cartasNoFan`); sem valor, a tela não tem fan. */
+  cartasNoFan?: number;
+  /** v13.0.0 (AC-17.6): > 0 enquanto a carta sai do fan (`distribuindoMs` do estado). */
+  distribuindoMs?: number;
   /** Card de treino do tutorial (FR-16): sem barra de tempo, sem placar e sem "saiba mais" (AC-15.2, AC-15.6). */
   treino?: PassoTreino;
   noticia: Noticia;
@@ -308,20 +407,35 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
   const inicioX = useRef<number | null>(null);
   const alerta = !saida && !treino && restanteMs <= 5000;
   const pulsando = alerta && !ausente; // AC-4.7: só "Volte para o centro" pausa o cronômetro (v5.0.0)
-  const verso = saibaMais && !treino; // AC-15.6: o treino nunca vira
+  const distribuindo = distribuindoMs > 0;
+  const verso = saibaMais && !treino && !distribuindo; // AC-15.6: o treino nunca vira; AC-17.6: nem a carta saindo do fan
+  const voo = useRef<HTMLDivElement>(null);
+  const giro = useRef<HTMLDivElement>(null);
+  useVooDaCarta(voo, giro, (cartasNoFan ?? 0) + 1, distribuindoMs);
   return (
     <main className={`${s.tela} ${s.sobrio}`}>
+      {/* AC-17.3: o fan fica atrás de tudo (primeiro na tela); a carta, os botões, as dicas e a barra vêm por cima. */}
+      {cartasNoFan !== undefined && (
+        <FanCartas
+          quantidade={cartasNoFan}
+          fase={distribuindo ? 'distribuindo' : 'parado'}
+          progresso={progressoDe(TEMPOS.distribuirMs, distribuindoMs)}
+        />
+      )}
       <div className={s.mesa} data-mesa>
       <Lado lado="mentira" escolhido={saida === 'esquerda'} />
       {/*
         Carta de baralho (v13.0.0, AC-17.1, AC-17.2, AC-3.6): o article recebe o movimento com o corpo (useInclinacaoCard),
         a saída e o pulso; dentro, o giro vira as duas faces em ~400 ms (CSS, sem tempo no reducer). O carimbo fica fora
-        das faces, para não virar junto. Atrás da carta, a pilha parada saiu (AC-2.12); o fan entra na Fase 48.
+        das faces, para não virar junto. Atrás da carta, a pilha parada saiu (AC-2.12): o que fica atrás é o fan.
+        O .voo leva a carta do fan até a mesa (AC-17.6) sem brigar com o movimento do corpo, que fica no article.
       */}
+      <div className={s.voo} ref={voo}>
       <article
         ref={cardRef}
         data-carta
         data-face={verso ? 'verso' : 'frente'}
+        data-distribuindo={distribuindo || undefined}
         className={cx(s.carta, verso && s.virada, saida && (saida === 'direita' ? s.saiDireita : s.saiEsquerda), pulsando && s.pulsando)}
         onPointerDown={(e) => { inicioX.current = e.clientX; }}
         onPointerUp={(e) => {
@@ -332,19 +446,21 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
           else if (dx < -100) onArrastar('esquerda');
         }}
       >
-        <div className={s.giro}>
+        <div className={s.giro} ref={giro}>
           <FrenteCarta noticia={noticia} treino={treino} oculta={verso} />
           {!treino && <VersoCarta noticia={noticia} oculta={!verso} />}
+          {distribuindo && <FaceFan />}
         </div>
         <RotuloLado lado="mentira" carimbado={saida === 'esquerda'} />
         <RotuloLado lado="verdade" carimbado={saida === 'direita'} />
       </article>
+      </div>
       <Lado lado="verdade" escolhido={saida === 'direita'} />
       </div>
       {/* Fora da carta, para não tirar espaço da notícia (FR-4); a dica de "saiba mais" saiu da carta (AC-17.1). */}
       <div className={s.dicas}>
         {modo !== 'corpo' && <p className={s.dicaModo}>{DICA_GESTOS[modo]}</p>}
-        {!treino && !saida && (
+        {!treino && !saida && !distribuindo && (
           <p className={s.dicaModo} data-dica-saiba-mais>
             <Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />
             {DICA_SAIBA_MAIS[modo]}
