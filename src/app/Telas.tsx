@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
-import { AJUSTES_PADRAO, resumoAjustes, type Ajustes } from '../core/ajustes';
+import { AJUSTES_PADRAO, resumoAjustes, rotuloInterface, type Ajustes } from '../core/ajustes';
 import { DICA_GESTOS, DICA_SAIBA_MAIS, type ModoJogo } from '../core/modos';
 import type { AncorasRosto } from '../core/ancorasRosto';
 import { FAIXAS, faixaDeAcertos, type Faixa } from '../core/faixas';
@@ -112,6 +112,8 @@ export function TelaEspera({ semNoticias, avisoSemNoticias = 'Nenhuma notícia p
         </div>
         <EsquemaGesto />
       </div>
+      {/* AC-18.3 (v13.2.0): a interface ativa, numa linha própria logo acima do resumo, legível a 1 m. */}
+      <p className={s.dicaInterface} data-interface={config.interface}>{rotuloInterface(config)}</p>
       <p className={s.dicaConfig}>{resumoAjustes(config)}</p>
       {menu}
     </main>
@@ -537,3 +539,6 @@ export function TelaResumo({ pontos, total, foto, ancoras, linhas = [], endereco
     </main>
   );
 }
+
+// v13.2.0 (FR-19): peças comuns, usadas também pelo card da interface Clássica (CardClassico.tsx).
+export { Lado, MarcaTreino, Placar, RotuloLado, cx, src };

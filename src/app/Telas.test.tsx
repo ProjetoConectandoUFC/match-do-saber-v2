@@ -151,6 +151,15 @@ describe('v2.0.0: configurações, iniciar e sair', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar' }));
     expect(iniciar).toHaveBeenCalledOnce();
   });
+  it.each([
+    ['classica', 'Interface: Clássica'],
+    ['cartas', 'Interface: Cartas'],
+  ] as const)('AC-18.3 (v13.2.0): a espera mostra a interface ativa (%s), à parte do resumo', (iface, texto) => {
+    const { container } = render(<TelaEspera semNoticias={false} camera="ativa" config={{ ...AJUSTES_PADRAO, interface: iface }} />);
+    expect(screen.getByText(texto)).toHaveAttribute('data-interface', iface);
+    expect(container.querySelectorAll('[data-interface]')).toHaveLength(1);
+    expect(screen.getByText('Modo: Corpo · 10 notícias · 15 s por card · Som: ligado')).toBeInTheDocument();
+  });
   it('AC-10.2: sem notícias, Iniciar fica desativado', () => {
     render(<TelaEspera semNoticias camera="ativa" />);
     expect(screen.getByRole('button', { name: 'Iniciar' })).toBeDisabled();

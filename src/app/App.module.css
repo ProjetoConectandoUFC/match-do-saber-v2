@@ -40,6 +40,8 @@
 .esquemaCard i.curta { width: 60%; }
 .esquemaIlu { height: calc(76 * var(--u)); border-radius: calc(8 * var(--u)); display: grid; place-items: center; flex: none; background: var(--cn-roxo); color: var(--cn-amarelo); }
 .dicaConfig { position: absolute; left: calc(40 * var(--u)); bottom: calc(24 * var(--u)); margin: 0; z-index: 1; font-size: calc(17 * var(--u)); font-weight: 500; color: var(--cn-creme); }
+/* AC-18.3 (v13.2.0): interface ativa, acima do resumo, maior para o operador ler a 1 m. */
+.dicaInterface { position: absolute; left: calc(40 * var(--u)); bottom: calc(52 * var(--u)); margin: 0; z-index: 1; font-size: calc(22 * var(--u)); font-weight: 800; color: var(--cn-creme); }
 
 /* Calibração (tema Sóbrio) */
 .calibracao { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(28 * var(--u)); text-align: center; padding: calc(32 * var(--u)); }
