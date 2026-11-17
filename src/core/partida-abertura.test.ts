@@ -7,6 +7,7 @@ import type { PerfilTutorial } from './tutorial';
 import type { Noticia, Veredito } from './types';
 
 // v13.0.0 (Fase 46): abertura do fan (AC-17.5) e distribuição de cada carta (AC-17.6); FR-1, FR-18.
+// Só na interface Cartas (v13.2.0, AC-18.5); a Clássica está em partida-interface.test.ts.
 const n = (id: string, veredito: Veredito): Noticia => ({
   id, veredito, tecnica: 'fonte', titulo: id, descricao: '', saibaMais: '', tema: 'ciencia', explicacao: '', fonteUrl: '',
 });
@@ -16,7 +17,7 @@ const p = (id: string, veredito: Veredito): PerfilTutorial => ({
 const noticias = [n('v1', 'verdadeira'), n('f1', 'falsa'), n('v2', 'verdadeira'), n('f2', 'falsa'), n('v3', 'verdadeira')];
 const TREINO = [p('t1', 'falsa'), p('t2', 'verdadeira')];
 const ctx = (over: Partial<Contexto> = {}): Contexto => ({
-  noticias, rng: () => 0.5, cameraAtiva: true, tempoCardMs: TEMPOS.cardMs, ...over,
+  noticias, rng: () => 0.5, cameraAtiva: true, tempoCardMs: TEMPOS.cardMs, interface: 'cartas', ...over,
 });
 const centro: Presenca = { presente: true, centralizado: true };
 const ninguem: Presenca = { presente: false, centralizado: false };

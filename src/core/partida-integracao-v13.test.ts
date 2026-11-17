@@ -5,6 +5,7 @@ import type { Noticia, Veredito } from './types';
 
 // Integração v12.1.0 + v13.0.0: AC-2.13 (a permanência só começa com o card na tela) com AC-17.5/AC-17.6
 // (abertura do fan e distribuição, em que nada é aceito). A carta só está "na tela" para escolher quando pousa.
+// Só a interface Cartas tem abertura e distribuição (v13.2.0, AC-18.5); a Clássica está em partida-interface.test.ts.
 const n = (id: string, veredito: Veredito): Noticia => ({
   id, veredito, tecnica: 'fonte', titulo: id, descricao: '', saibaMais: '', tema: 'ciencia', explicacao: '', fonteUrl: '',
 });
@@ -12,7 +13,7 @@ const p = (id: string, veredito: Veredito): PerfilTutorial => ({
   id, nome: id, frase: '', veredito, explicacao: '', tecnica: 'imagem', tema: 'curiosidades',
 });
 const ctx = (over: Partial<Contexto> = {}): Contexto => ({
-  noticias: [n('v1', 'verdadeira'), n('f1', 'falsa')], rng: () => 0.5, cameraAtiva: true, ...over,
+  noticias: [n('v1', 'verdadeira'), n('f1', 'falsa')], rng: () => 0.5, cameraAtiva: true, interface: 'cartas', ...over,
 });
 const centro: Presenca = { presente: true, centralizado: true };
 const tick = (dtMs: number): Evento => ({ tipo: 'tick', dtMs, presenca: centro });

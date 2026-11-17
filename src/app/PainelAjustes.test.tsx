@@ -37,13 +37,14 @@ describe('painel Ajustes (AC-9.1, AC-9.2, AC-9.18, AC-9.27, AC-9.30)', () => {
     const painel = screen.getByRole('dialog', { name: 'Ajustes' });
     expect(within(painel).getByRole('heading', { level: 2 })).toHaveTextContent('Ajustes');
     expect(within(painel).getAllByRole('heading', { level: 3 }).map((h) => h.textContent))
-      .toEqual(['Partida', 'Conteúdo', 'Detecção', 'Mídia', 'Questões']);
-    for (const nome of ['Notícias por partida', 'Tempo por card', 'Tempo do feedback', 'Volta automática do resumo', 'Temas', 'Dificuldade',
+      .toEqual(['Interface', 'Partida', 'Conteúdo', 'Detecção', 'Mídia', 'Questões']);
+    for (const nome of ['Interface do jogo', 'Notícias por partida', 'Tempo por card', 'Tempo do feedback', 'Volta automática do resumo', 'Temas', 'Dificuldade',
       'Modo de jogo', 'Sensibilidade do gesto', 'Tolerância sem pessoa', 'Som', 'Volume', 'Foto no resumo', 'QR das fontes', 'Tutorial']) {
       expect(screen.getByRole('group', { name: nome })).toBeInTheDocument();
     }
     const marcado = (grupo: string) => within(screen.getByRole('group', { name: grupo }))
       .getAllByRole('button').filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.textContent);
+    expect(marcado('Interface do jogo')).toEqual(['◉ Clássica']); // AC-18.1
     expect(marcado('Notícias por partida')).toEqual(['◉ 10']);
     expect(marcado('Tempo por card')).toEqual(['◉ 15 s']);
     expect(marcado('Tempo do feedback')).toEqual(['◉ 3 s']);
@@ -55,6 +56,16 @@ describe('painel Ajustes (AC-9.1, AC-9.2, AC-9.18, AC-9.27, AC-9.30)', () => {
     expect(screen.getByRole('button', { name: 'Restaurar padrão' })).toBeInTheDocument();
     // AC-9.3: o X do topo fecha (desenhado, sem o caractere "✕", FR-15)
     expect(screen.getByRole('button', { name: 'Fechar' }).textContent).toBe('');
+  });
+
+  it('AC-18.1 (v13.2.0): "Interface do jogo" é o primeiro item, Clássica ou Cartas, e o clique troca', () => {
+    const { onDefinir } = montar({ ajustes: { ...AJUSTES_PADRAO, interface: 'cartas' } });
+    const grupos = screen.getAllByRole('group');
+    expect(grupos[0]).toHaveAccessibleName('Interface do jogo');
+    const botoes = within(grupos[0]!).getAllByRole('button');
+    expect(botoes.map((b) => [b.textContent, b.getAttribute('aria-pressed')])).toEqual([['○ Clássica', 'false'], ['◉ Cartas', 'true']]);
+    fireEvent.click(botoes[0]!);
+    expect(onDefinir).toHaveBeenLastCalledWith({ ...AJUSTES_PADRAO, interface: 'classica' });
   });
 
   it('AC-9.2: clicar num valor muda o ajuste', () => {

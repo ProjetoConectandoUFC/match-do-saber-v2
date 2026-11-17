@@ -24,7 +24,11 @@ export const TEMPOS = {
 export type Resultado = 'acerto' | 'erro' | 'tempo';
 export interface Presenca { presente: boolean; centralizado: boolean }
 export type Entrada = 'corpo' | 'alternativa';
-export interface Partida { cards: Noticia[]; resultados: Resultado[]; entrada: Entrada }
+/**
+ * `interface` (v13.2.0, AC-18.7): gravada no começo da partida; uma troca nos Ajustes só vale para a próxima.
+ * Sem valor (partidas montadas à mão nos testes), vale a do Contexto.
+ */
+export interface Partida { cards: Noticia[]; resultados: Resultado[]; entrada: Entrada; interface?: InterfaceJogo }
 
 export type EstadoCard = {
   tela: 'card';
@@ -63,6 +67,10 @@ export type Evento =
   | { tipo: 'enter' }
   | { tipo: 'sair' };
 
+/** v13.2.0 (FR-19): Clássica (v12.1.0: sem abertura nem distribuição) ou Cartas (v13.1.0). */
+export const INTERFACES_JOGO = ['classica', 'cartas'] as const;
+export type InterfaceJogo = (typeof INTERFACES_JOGO)[number];
+
 /** `tempoCardMs`: tempo por card configurado (FR-9); sem valor, vale `TEMPOS.cardMs`. */
 export interface Contexto {
   noticias: Noticia[];
@@ -81,6 +89,8 @@ export interface Contexto {
   voltaResumoMs?: number;
   /** v12.0.0 (AC-9.23, AC-9.27): notícias por partida, temas e dificuldade. */
   sorteio?: OpcoesSorteio;
+  /** v13.2.0 (FR-19, AC-18.4, AC-18.5): sem valor, Clássica (o padrão dos Ajustes). */
+  interface?: InterfaceJogo;
 }
 
 /** Tempo do resultado no feedback (AC-9.25); a saída do card soma a ele (AC-4.1). */
@@ -95,34 +105,44 @@ export const duracaoResultadoMs = (ctx: Pick<Contexto, 'tempoFeedbackMs'>) => TE
 export const ESTADO_INICIAL: Estado = { tela: 'espera' };
 const CALIBRACAO: Estado = { tela: 'calibracao', centradoMs: 0, ausenteMs: 0 };
 
-/** Toda carta de notícia chega distribuída do fan (AC-17.6), com o cronômetro cheio. */
-function card(partida: Partida, indice: number, tempoCardMs: number = TEMPOS.cardMs): EstadoCard {
+/** A interface da partida (AC-18.7): a gravada nela; senão, a do Contexto; senão, a Clássica (padrão, FR-19). */
+const interfaceDa = (partida: Partida, ctx: Contexto): InterfaceJogo => partida.interface ?? ctx.interface ?? 'classica';
+
+/** Cartas (AC-17.6): toda carta sai do fan em `TEMPOS.distribuirMs`; Clássica (AC-18.4): o card aparece na hora. */
+const distribuicaoMs = (partida: Partida, ctx: Contexto) => (interfaceDa(partida, ctx) === 'cartas' ? TEMPOS.distribuirMs : 0);
+
+/** Toda carta de notícia chega com o cronômetro cheio; nas Cartas, distribuída do fan (AC-17.6). */
+function card(partida: Partida, indice: number, ctx: Contexto): EstadoCard {
   return {
-    tela: 'card', partida, indice, restanteMs: tempoCardMs, saibaMais: false, ausenteMs: null, distribuindoMs: TEMPOS.distribuirMs,
+    tela: 'card', partida, indice, restanteMs: ctx.tempoCardMs ?? TEMPOS.cardMs, saibaMais: false, ausenteMs: null,
+    distribuindoMs: distribuicaoMs(partida, ctx),
   };
 }
 
-/** A carta de treino também sai do fan (FR-16, v13.0.0). */
-function treino(partida: Partida, treinos: number, passo: number): Estado {
-  return { tela: 'tutorial', passo, treinos, partida, distribuindoMs: TEMPOS.distribuirMs };
+/** A carta de treino também sai do fan nas Cartas (FR-16, v13.0.0). */
+function treino(partida: Partida, treinos: number, passo: number, ctx: Contexto): Estado {
+  return { tela: 'tutorial', passo, treinos, partida, distribuindoMs: distribuicaoMs(partida, ctx) };
 }
 
 /**
  * Começo de uma partida (AC-1.2, AC-1.6, AC-1.8, AC-5.6): sorteia já aqui, antes do treino, para a abertura do fan
- * (AC-17.5) saber o total de cartas (treinos + notícias). Sem notícias sorteáveis, fica na espera (AC-6.4).
+ * (AC-17.5) saber o total de cartas (treinos + notícias); nas duas interfaces, o mesmo sorteio (AC-18.6). Sem notícias
+ * sorteáveis, fica na espera (AC-6.4). Cartas: abertura do fan; Clássica (AC-18.4): direto ao 1º treino ou card.
  */
 function comecar(ctx: Contexto, entrada: Entrada): Estado {
   if (ctx.noticias.length === 0) return ESTADO_INICIAL;
   const cards = sortear(ctx.noticias, ctx.rng, ctx.sorteio);
   if (cards.length === 0) return ESTADO_INICIAL;
-  return {
-    tela: 'abertura', partida: { cards, resultados: [], entrada }, treinos: ctx.tutorial?.length ?? 0, restanteMs: TEMPOS.aberturaFanMs,
-  };
+  const iface = ctx.interface ?? 'classica';
+  const partida: Partida = { cards, resultados: [], entrada, interface: iface };
+  const treinos = ctx.tutorial?.length ?? 0;
+  if (iface === 'classica') return primeiraCarta(partida, treinos, ctx);
+  return { tela: 'abertura', partida, treinos, restanteMs: TEMPOS.aberturaFanMs };
 }
 
-/** Depois da abertura: o 1º treino, com o tutorial ligado (AC-15.2), ou o 1º card. */
+/** Depois da abertura (ou no começo, na Clássica): o 1º treino, com o tutorial ligado (AC-15.2), ou o 1º card. */
 function primeiraCarta(partida: Partida, treinos: number, ctx: Contexto): Estado {
-  return treinos > 0 ? treino(partida, treinos, 0) : card(partida, 0, ctx.tempoCardMs);
+  return treinos > 0 ? treino(partida, treinos, 0, ctx) : card(partida, 0, ctx);
 }
 
 /** A distribuição só desconta o próprio tempo; o que sobra de um tick grande não desconta do cronômetro (AC-17.6). */
@@ -210,7 +230,7 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       if (restanteMs > 0) return { ...estado, restanteMs };
       const proximo = estado.indice + 1;
       return proximo < estado.partida.cards.length
-        ? card(estado.partida, proximo, ctx.tempoCardMs)
+        ? card(estado.partida, proximo, ctx)
         : { tela: 'resumo', partida: estado.partida };
     }
     case 'resumo': {
@@ -224,7 +244,7 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
     }
     case 'tutorial': {
       // AC-15.5: Enter pula o treino (também durante a distribuição). AC-15.6: sem cronômetro, ausência nem "saiba mais".
-      if (evento.tipo === 'enter') return card(estado.partida, 0, ctx.tempoCardMs);
+      if (evento.tipo === 'enter') return card(estado.partida, 0, ctx);
       if (estado.distribuindoMs > 0) {
         return evento.tipo === 'tick' ? { ...estado, distribuindoMs: distribuir(estado.distribuindoMs, evento.dtMs) } : estado;
       }
@@ -235,12 +255,12 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       };
     }
     case 'tutorialFeedback': {
-      if (evento.tipo === 'enter') return card(estado.partida, 0, ctx.tempoCardMs);
+      if (evento.tipo === 'enter') return card(estado.partida, 0, ctx);
       if (evento.tipo !== 'tick') return estado;
       const restanteMs = estado.restanteMs - evento.dtMs;
       if (restanteMs > 0) return { ...estado, restanteMs };
       const passo = estado.passo + 1;
-      return passo < estado.treinos ? treino(estado.partida, estado.treinos, passo) : card(estado.partida, 0, ctx.tempoCardMs);
+      return passo < estado.treinos ? treino(estado.partida, estado.treinos, passo, ctx) : card(estado.partida, 0, ctx);
     }
   }
 }
@@ -255,9 +275,19 @@ export function cardSaindo(estado: Estado): boolean {
   return false;
 }
 
-/** O centro do jogador é medido ao sair da calibração (FR-2): desde a v13.0.0, sempre para a abertura do fan. */
+/**
+ * O centro do jogador é medido ao sair da calibração (FR-2): nas Cartas, para a abertura do fan (v13.0.0); na Clássica
+ * (AC-18.4), para o 1º card ou, com o tutorial, para o treino (v12.1.0).
+ */
 export function calibrarAoSair(antes: Estado['tela'], depois: Estado['tela']): boolean {
-  return antes === 'calibracao' && depois === 'abertura';
+  return antes === 'calibracao' && (depois === 'abertura' || depois === 'card' || depois === 'tutorial');
+}
+
+/**
+ * Interface que a tela usa (AC-18.4, AC-18.7): dentro da partida, a gravada nela no começo; fora dela, a dos Ajustes.
+ */
+export function interfaceDoEstado(estado: Estado, ajustes: InterfaceJogo): InterfaceJogo {
+  return ('partida' in estado ? estado.partida.interface : undefined) ?? ajustes;
 }
 
 /** Carta (notícia ou treino) saindo do fan até o centro (AC-17.6); som, inclinação e tela usam esta regra. */

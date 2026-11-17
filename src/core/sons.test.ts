@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ESTADO_INICIAL, TEMPOS, reduzir, type Contexto, type Estado, type Evento } from './partida';
+import { ESTADO_INICIAL, INTERFACES_JOGO, TEMPOS, reduzir, type Contexto, type Estado, type Evento, type InterfaceJogo } from './partida';
 import { sonsATocar, sonsDaTransicao, type Som } from './sons';
 import type { PerfilTutorial } from './tutorial';
 import type { Noticia } from './types';
@@ -7,15 +7,17 @@ import type { Noticia } from './types';
 const noticia: Noticia = {
   id: 'v1', veredito: 'verdadeira', tecnica: 'fonte', titulo: '', descricao: '', saibaMais: '', imagem: '', tema: 'ciencia', explicacao: '', fonteUrl: '',
 };
-const ctx: Contexto = { noticias: [noticia], rng: () => 0.5, cameraAtiva: false, tempoCardMs: TEMPOS.cardMs };
+const ctxDe = (iface: InterfaceJogo): Contexto =>
+  ({ noticias: [noticia], rng: () => 0.5, cameraAtiva: false, tempoCardMs: TEMPOS.cardMs, interface: iface });
 const tick = (dtMs: number): Evento => ({ tipo: 'tick', dtMs, presenca: null });
 
-/** v13.0.0: Enter, abertura do fan (AC-17.5) e distribuição (AC-17.6); a carta pousada é o início dos testes antigos. */
-const pousada = (c: Contexto = ctx) =>
-  [{ tipo: 'enter' } as Evento, tick(TEMPOS.aberturaFanMs), tick(TEMPOS.distribuirMs)].reduce((s, e) => reduzir(s, e, c), ESTADO_INICIAL);
+/** Cartas (v13.0.0): Enter, abertura do fan (AC-17.5) e distribuição (AC-17.6); a carta pousada é o início dos testes antigos. */
+const pousada = (c: Contexto) =>
+  [{ tipo: 'enter' } as Evento, ...(c.interface === 'cartas' ? [tick(TEMPOS.aberturaFanMs), tick(TEMPOS.distribuirMs)] : [])]
+    .reduce((s, e) => reduzir(s, e, c), ESTADO_INICIAL);
 
 /** Aplica os eventos um a um e junta os sons de cada transição. */
-function sons(eventos: Evento[], inicio: Estado = pousada(), c: Contexto = ctx): Som[] {
+function sonsCom(c: Contexto, eventos: Evento[], inicio: Estado = pousada(c)): Som[] {
   let s = inicio;
   const out: Som[] = [];
   for (const e of eventos) {
@@ -26,7 +28,9 @@ function sons(eventos: Evento[], inicio: Estado = pousada(), c: Contexto = ctx):
   return out;
 }
 
-describe('AC-17.8 (v13.0.0): som de carta quando uma carta começa a sair do fan', () => {
+describe('AC-17.8 (v13.0.0): som de carta quando uma carta começa a sair do fan (só nas Cartas, AC-18.5)', () => {
+  const ctx = ctxDe('cartas');
+  const sons = (eventos: Evento[], inicio: Estado = pousada(ctx), c: Contexto = ctx) => sonsCom(c, eventos, inicio);
   const dois: Contexto = { ...ctx, noticias: [noticia, { ...noticia, id: 'f1', veredito: 'falsa' }] };
   const treino: PerfilTutorial[] = [{ id: 't1', nome: 't1', frase: '', veredito: 'falsa', explicacao: '', tecnica: 'imagem', tema: 'curiosidades' }];
   const fimFeedback = tick(TEMPOS.carimboMs + TEMPOS.feedbackMs);
@@ -63,6 +67,25 @@ describe('AC-17.8 (v13.0.0): som de carta quando uma carta começa a sair do fan
   });
 });
 
+describe('AC-18.4 (v13.2.0): na Clássica não há som de carta', () => {
+  it('a partida inteira, com o treino e o Enter que o pula, nunca toca "carta"', () => {
+    const treino: PerfilTutorial[] = [{ id: 't1', nome: 't1', frase: '', veredito: 'falsa', explicacao: '', tecnica: 'imagem', tema: 'curiosidades' }];
+    const c: Contexto = { ...ctxDe('classica'), noticias: [noticia, { ...noticia, id: 'f1', veredito: 'falsa' }], tutorial: treino };
+    const fim = [tick(TEMPOS.saidaMs), tick(TEMPOS.carimboMs + TEMPOS.feedbackMs)];
+    const tudo = sonsCom(c, [
+      { tipo: 'enter' }, { tipo: 'escolha', resposta: 'falsa' }, ...fim,
+      { tipo: 'escolha', resposta: 'verdadeira' }, ...fim, { tipo: 'escolha', resposta: 'verdadeira' }, ...fim,
+    ], ESTADO_INICIAL);
+    expect(tudo).not.toContain('carta');
+    expect(tudo.filter((x) => x.startsWith('fim'))).toHaveLength(1);
+    expect(sonsCom(c, [{ tipo: 'enter' }, { tipo: 'enter' }], ESTADO_INICIAL)).toEqual([]);
+  });
+});
+
+describe.each(INTERFACES_JOGO)('interface %s', (iface) => {
+const ctx = ctxDe(iface);
+const sons = (eventos: Evento[], inicio: Estado = pousada(ctx)) => sonsCom(ctx, eventos, inicio);
+
 describe('sonsDaTransicao', () => {
   it('AC-11.1/AC-11.2: escolha certa = deslizar e, depois da saída do card, acerto', () => {
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }])).toEqual(['deslizar']);
@@ -82,7 +105,7 @@ describe('sonsDaTransicao', () => {
   it('nada toca no resto do feedback nem fora dele', () => {
     expect(sons([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs), tick(1000), tick(1000)])).toEqual(['deslizar', 'acerto']);
     expect(sons([tick(1000), { tipo: 'saibaMais' }, tick(1000)])).toEqual([]);
-    const s = pousada();
+    const s = pousada(ctx);
     expect(sonsDaTransicao(s, s)).toEqual([]);
   });
 
@@ -103,20 +126,12 @@ describe('sonsDaTransicao', () => {
 
 describe('AC-9.25/AC-11.1: com "Tempo do feedback" em 8 s, o som do resultado toca quando o resultado aparece', () => {
   const ctx8: Contexto = { ...ctx, tempoFeedbackMs: 8000 };
-  const sons8 = (eventos: Evento[]) => {
-    let s = pousada(ctx8);
-    const out: Som[] = [];
-    for (const e of eventos) {
-      const n = reduzir(s, e, ctx8);
-      out.push(...sonsDaTransicao(s, n));
-      s = n;
-    }
-    return out;
-  };
+  const sons8 = (eventos: Evento[]) => sonsCom(ctx8, eventos);
 
   it('na virada da saída do card para o resultado, não 5 s depois', () => {
     expect(sons8([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs - 1)])).toEqual(['deslizar']);
     expect(sons8([{ tipo: 'escolha', resposta: 'verdadeira' }, tick(TEMPOS.saidaMs)])).toEqual(['deslizar', 'acerto']);
     expect(sons8([{ tipo: 'escolha', resposta: 'falsa' }, tick(TEMPOS.saidaMs), tick(5000), tick(2000)])).toEqual(['deslizar', 'erro']);
   });
+});
 });
