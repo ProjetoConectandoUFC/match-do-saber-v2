@@ -5558,6 +5558,8 @@ Spec: Story 18 (AC-18.1 a AC-18.7), FR-19; AC-2.12 (v11.0.0, Clássica), AC-2.13
 - 51.5 Testes parametrizados: reducer, `Telas` e E2E de partida, tutorial, ajustes, feedback-v12, resumo e questões nas duas interfaces (ex.: projeto Playwright por interface, com a interface gravada no `localStorage` antes de abrir).
 - 51.6 Verificação: `npm test`, `npm run build`, E2E web nas duas interfaces, `e2e:desktop`; versão 13.2.0 no `package.json`; release pela tag `v13.2.0` (workflow `.github/workflows/release.yml`).
 
+Status (2026-11-17, agente-mecanico, branch `001-v13-ab`): 51.1 a 51.6 feitas, com as Fases 47 e 48 do agente-visual mescladas. Reducer: `Contexto.interface` (sem valor = Clássica) e `Partida.interface` gravada no começo (AC-18.7); `interfaceDoEstado` escolhe a tela. Clássica: `src/app/CardClassico.tsx` + `CardClassico.module.css` (o card da v12.1.0); `App.tsx` troca `TelaCard` por `TelaCardClassico` e passa `cartas` à espera. Testes do reducer, do som, do card e os E2E rodam nas duas interfaces (projetos Playwright `classica` e `cartas`, com a interface no `localStorage` pelo `storageState`; `fan.spec.ts` só em `cartas`).
+
 
 ```bash
 npm install
