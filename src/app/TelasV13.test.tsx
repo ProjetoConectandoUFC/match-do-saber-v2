@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import type { Noticia, NoticiaBanco } from '../core/types';
 import { EditorNoticia } from './EditorNoticia';
 import { PainelQuestoes } from './PainelQuestoes';
-import { TelaCard } from './Telas';
+import { TelaAbertura, TelaCard, TelaEspera } from './Telas';
 
 const noticia = (extra: Partial<Noticia> = {}): Noticia => ({
   id: 'n1', titulo: 'Manchete da carta', descricao: 'Descrição curta', saibaMais: 'Texto do saiba mais', tema: 'historia',
@@ -144,5 +144,69 @@ describe('AC-7.13 (v13.1.0): aviso de "saiba mais" longo no editor e no painel Q
     const q = within(screen.getByRole('region', { name: 'Questão aberta' }));
     expect(q.getByText(AVISO)).toBeInTheDocument();
     expect(q.getByText('Entra nas partidas')).toBeInTheDocument();
+  });
+});
+
+describe('Fase 48: o fan na tela (AC-17.3 a AC-17.6, FR-18)', () => {
+  const fanDe = (c: HTMLElement) => c.querySelector<HTMLElement>('[data-fan]');
+  const nCartas = (c: HTMLElement) => c.querySelectorAll('[data-fan-carta]').length;
+
+  it('AC-17.3: atrás da carta pousada há um fan com as cartas que faltam, antes da mesa (a carta fica na frente)', () => {
+    const { container } = carta(noticia(), { cartasNoFan: 6 });
+    const fan = fanDe(container)!;
+    expect(fan).toHaveAttribute('data-fan-fase', 'parado');
+    expect(nCartas(container)).toBe(6);
+    const mesa = container.querySelector('[data-mesa]')!;
+    expect(fan.compareDocumentPosition(mesa) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(mesa.contains(fan)).toBe(false);
+  });
+
+  it('AC-17.6: distribuindo, a carta sai do fan pelo verso; sem dica de "saiba mais"; barra cheia', () => {
+    const { container } = carta(noticia(), { cartasNoFan: 5, distribuindoMs: 600, restanteMs: 15000, totalMs: 15000 });
+    expect(fanDe(container)).toHaveAttribute('data-fan-fase', 'distribuindo');
+    expect(nCartas(container)).toBe(5);
+    const art = container.querySelector('article')!;
+    expect(art).toHaveAttribute('data-distribuindo');
+    expect(art.querySelector('[data-face-carta="fan"] img')).toBeInTheDocument();
+    expect(screen.queryByText('Saiba mais: levante as duas mãos (ou ↑)')).toBeNull();
+    expect(screen.getByText('15 s')).toBeInTheDocument();
+  });
+
+  it('pousada, a carta não tem mais a face do fan', () => {
+    const { container } = carta(noticia(), { cartasNoFan: 5, distribuindoMs: 0 });
+    expect(container.querySelector('article')).not.toHaveAttribute('data-distribuindo');
+    expect(container.querySelector('[data-face-carta="fan"]')).toBeNull();
+  });
+
+  it('o treino também sai do fan (AC-15.2, v13.0.0)', () => {
+    const { container } = carta(noticia({ id: 'treino-caju' }), { treino: { passo: 0, total: 2 }, cartasNoFan: 6, distribuindoMs: 900 });
+    expect(fanDe(container)).toHaveAttribute('data-fan-fase', 'distribuindo');
+  });
+
+  it('sem `cartasNoFan` (fora da partida de cartas), não há fan', () => {
+    const { container } = carta(noticia());
+    expect(fanDe(container)).toBeNull();
+  });
+
+  it('AC-17.5: a abertura mostra o fan com todas as cartas abrindo, sem cronômetro, sem placar e sem carta', () => {
+    const { container } = render(<TelaAbertura cartas={12} restanteMs={1000} />);
+    expect(fanDe(container)).toHaveAttribute('data-fan-fase', 'abrindo');
+    expect(nCartas(container)).toBe(12);
+    expect(screen.queryByRole('timer')).toBeNull();
+    expect(screen.queryByText(/Pontos/)).toBeNull();
+    expect(container.querySelector('article')).toBeNull();
+    expect(screen.getByText('Mentira')).toBeInTheDocument(); // as laterais já estão no lugar
+    expect(screen.getByText('Verdade')).toBeInTheDocument();
+  });
+
+  it('AC-17.4: a espera tem o fan respirando', () => {
+    const { container } = render(<TelaEspera semNoticias={false} camera="ativa" />);
+    expect(fanDe(container)).toHaveAttribute('data-fan-fase', 'respirando');
+    expect(fanDe(container)).toHaveAttribute('data-fan-lugar', 'espera');
+  });
+
+  it('a espera da interface clássica (cartas={false}) não tem fan (teste A/B)', () => {
+    const { container } = render(<TelaEspera semNoticias={false} camera="ativa" cartas={false} />);
+    expect(fanDe(container)).toBeNull();
   });
 });

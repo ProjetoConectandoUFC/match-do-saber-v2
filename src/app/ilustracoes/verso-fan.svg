@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 350" width="250" height="350">
+<!-- Verso único das cartas do fan (FR-18, prévia v13 aprovada): azul do design system, borda branca de carta, moldura creme,
+     estrelas de 6 pontas a 22% em grade alternada, dois anel-b a 20% e o medalhão noite com a estrela de 6 pontas amarela.
+     Formas copiadas de src/app/svg/ (marca-estrela-6, anel-b), sem texto, sem cor de tema e sem os marcadores do veredito. -->
+<defs>
+<clipPath id="cv"><rect x="10" y="10" width="230" height="330" rx="11"/></clipPath>
+<pattern id="pt" width="40" height="40" patternUnits="userSpaceOnUse" x="5" y="-5">
+<svg x="3" y="3" width="13" height="13" viewBox="1 1 23.9 27.6" opacity=".22"><path d="M12.9 1L15.6 10.2L24.9 7.9L18.2 14.8L24.9 21.7L15.6 19.3L12.9 28.6L10.3 19.3L1 21.7L7.7 14.8L1 7.9L10.3 10.2L12.9 1" fill="#fff"/></svg>
+<svg x="23" y="23" width="13" height="13" viewBox="1 1 23.9 27.6" opacity=".22"><path d="M12.9 1L15.6 10.2L24.9 7.9L18.2 14.8L24.9 21.7L15.6 19.3L12.9 28.6L10.3 19.3L1 21.7L7.7 14.8L1 7.9L10.3 10.2L12.9 1" fill="#fff"/></svg>
+</pattern>
+</defs>
+<rect width="250" height="350" rx="18" fill="#fff"/>
+<g clip-path="url(#cv)">
+<rect x="10" y="10" width="230" height="330" fill="#0075c5"/>
+<rect x="10" y="10" width="230" height="330" fill="url(#pt)"/>
+<svg x="-40" y="-20" width="160" height="200" viewBox="0 0 340 630" overflow="visible"><path d="M337 531.4C283.7 561.2 185.5 609.6 96.2 618.5C46.2 623.5 -1.2 616.3 -39.3 591.7C-77.8 566.8 -108.4 524 -120.4 453.5C-122.7 440.1 -124.3 427.2 -125.3 414.8C-181.8 380.2 -236.3 317.6 -278.9 213.8C-312.4 132.1 -317.3 64.6 -304.5 9L-226.2 9C-226.6 10 -226.9 10.9 -227.2 11.9C-242.1 57.6 -238.2 114.3 -209.2 185.2C-183.4 248.2 -153.3 293.3 -120.9 323.7C-114.8 291.3 -103.8 263 -89.7 238.6C-41.6 155.5 44.6 117 117.6 119C176.3 120.5 226.5 147.8 249.8 195.1C272.5 241.3 253.6 309 200.3 363.6C143.2 422 50 465 -45.2 446.3C-37.3 487.1 -21.4 513.6 1.6 528.4C26 544.2 56.7 546.7 88.7 543.6C204 532.1 335.4 444.8 335.4 444.8L337 443.7L337 531.4M-50.4 367.2C25 392.3 101.2 357.2 146.5 310.9C162.4 294.6 174.6 276.9 180.7 259.5C184.7 248.3 186.6 237.4 182.2 228.4C166.1 195.7 122.5 188.2 80.1 198C17.4 212.6 -43.4 268.6 -50.4 367.2" fill="#fff" fill-rule="evenodd" fill-opacity="0.2"/></svg>
+<g transform="rotate(180 125 175)"><svg x="-40" y="-20" width="160" height="200" viewBox="0 0 340 630" overflow="visible"><path d="M337 531.4C283.7 561.2 185.5 609.6 96.2 618.5C46.2 623.5 -1.2 616.3 -39.3 591.7C-77.8 566.8 -108.4 524 -120.4 453.5C-122.7 440.1 -124.3 427.2 -125.3 414.8C-181.8 380.2 -236.3 317.6 -278.9 213.8C-312.4 132.1 -317.3 64.6 -304.5 9L-226.2 9C-226.6 10 -226.9 10.9 -227.2 11.9C-242.1 57.6 -238.2 114.3 -209.2 185.2C-183.4 248.2 -153.3 293.3 -120.9 323.7C-114.8 291.3 -103.8 263 -89.7 238.6C-41.6 155.5 44.6 117 117.6 119C176.3 120.5 226.5 147.8 249.8 195.1C272.5 241.3 253.6 309 200.3 363.6C143.2 422 50 465 -45.2 446.3C-37.3 487.1 -21.4 513.6 1.6 528.4C26 544.2 56.7 546.7 88.7 543.6C204 532.1 335.4 444.8 335.4 444.8L337 443.7L337 531.4M-50.4 367.2C25 392.3 101.2 357.2 146.5 310.9C162.4 294.6 174.6 276.9 180.7 259.5C184.7 248.3 186.6 237.4 182.2 228.4C166.1 195.7 122.5 188.2 80.1 198C17.4 212.6 -43.4 268.6 -50.4 367.2" fill="#fff" fill-rule="evenodd" fill-opacity="0.2"/></svg></g>
+</g>
+<rect x="18" y="18" width="214" height="314" rx="7" fill="none" stroke="#fcfaf1" stroke-width="2.5"/>
+<circle cx="125" cy="175" r="47" fill="#002036" stroke="#fcfaf1" stroke-width="4"/>
+<circle cx="125" cy="175" r="37" fill="none" stroke="#fde31f" stroke-width="3" stroke-dasharray="6 5"/>
+<svg x="103" y="150" width="44" height="50" viewBox="1 1 23.9 27.6"><path d="M12.9 1L15.6 10.2L24.9 7.9L18.2 14.8L24.9 21.7L15.6 19.3L12.9 28.6L10.3 19.3L1 21.7L7.7 14.8L1 7.9L10.3 10.2L12.9 1" fill="#fde31f"/></svg>
+</svg>

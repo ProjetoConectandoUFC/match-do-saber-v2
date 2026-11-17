@@ -17,7 +17,7 @@ import { PainelQuestoes } from './PainelQuestoes';
 import type { FiltrosQuestoes } from '../core/questoes';
 import { PainelDiagnostico } from './PainelDiagnostico';
 import { criarRepositorio, repositorioWeb, type EstadoBanco, type RepositorioNoticias } from './repositorio';
-import { BotaoSair, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
+import { BotaoSair, TelaAbertura, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
 import { perfilComoNoticia } from '../core/tutorial';
 import { PERFIS_TUTORIAL } from './perfisTutorial';
 import { useAjustes } from './useAjustes';
@@ -148,14 +148,16 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       tela = <TelaCalibracao progresso={estado.centradoMs / TEMPOS.calibracaoMs} modo={cfg.ajustes.modo} />;
       break;
     case 'abertura':
-      // v13.0.0 (AC-17.5): provisório até o fan (Fase 48); a tela só desenha o que o estado diz.
-      tela = <main className={`${s.tela} ${s.sobrio}`} aria-label="Abrindo as cartas" />;
+      // v13.0.0 (AC-17.5): o fan com todas as cartas abre e fecha; a tela só desenha o que o estado diz.
+      tela = <TelaAbertura cartas={cartasNoFan(estado)} restanteMs={estado.restanteMs} />;
       break;
     case 'card':
       tela = (
         <TelaCard
           key={estado.indice}
           noticia={estado.partida.cards[estado.indice]!}
+          cartasNoFan={cartasNoFan(estado)}
+          distribuindoMs={estado.distribuindoMs}
           restanteMs={estado.restanteMs}
           saibaMais={estado.saibaMais}
           ausente={estado.ausenteMs !== null}
@@ -176,6 +178,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
         <TelaCard
           key={estado.indice}
           noticia={noticia}
+          cartasNoFan={cartasNoFan(estado)}
           restanteMs={0}
           saibaMais={false}
           ausente={false}
@@ -204,6 +207,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
         <TelaCard
           key={`treino-${estado.passo}`}
           noticia={noticia}
+          cartasNoFan={cartasNoFan(estado)}
+          distribuindoMs={estado.tela === 'tutorial' ? estado.distribuindoMs : 0}
           restanteMs={0}
           saibaMais={false}
           ausente={false}

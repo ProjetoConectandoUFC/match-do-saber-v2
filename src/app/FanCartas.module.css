@@ -1,0 +1,23 @@
+/* Fan de cartas (v13.0.0, AC-17.3 a AC-17.7, FR-18; prévia docs/visual/previa-v13.html, seção 3).
+   O .fan é um ponto sem tamanho no pivô do leque, 40 abaixo da borda da tela e centrado sob a carta; cada carta (200 × 280)
+   gira em torno dele com a base a 110 do pivô. Fica atrás de tudo na tela (primeiro filho, z-index 0): a mesa com a carta e
+   os botões, as dicas, o placar e a barra de tempo vêm depois e ficam por cima (AC-17.3). Só `transform` anima (FanCartas.tsx,
+   Web Animations no compositor); nada aqui força layout por quadro. */
+.fan { position: absolute; left: 50%; top: calc(100% + 40 * var(--u)); width: 0; height: 0; z-index: 0; pointer-events: none; }
+.carta {
+  position: absolute;
+  left: calc(-100 * var(--u));
+  top: calc(-390 * var(--u));
+  width: calc(200 * var(--u));
+  height: calc(280 * var(--u));
+  transform-origin: 50% calc(390 * var(--u));
+  border-radius: calc(14.4 * var(--u));
+  /* Sombra chapada, sem desfoque, para a esquerda: cada carta se destaca da de trás. */
+  box-shadow: calc(-4 * var(--u)) calc(2 * var(--u)) 0 rgb(0 20 36 / 0.55);
+  backface-visibility: hidden;
+}
+.carta img { display: block; width: 100%; height: 100%; user-select: none; }
+
+/* Espera (AC-17.4): o mesmo fan a 75%, sob o desenho do gesto, à direita; não cobre o título, a chamada, o Iniciar nem o ☰. */
+.fanEspera { left: calc(50% + 292 * var(--u)); scale: 0.75; transform-origin: 0 0; }
+.fanEspera .carta { box-shadow: calc(-4 * var(--u)) calc(2 * var(--u)) 0 rgb(0 32 54 / 0.5); }
