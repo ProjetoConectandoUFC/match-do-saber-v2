@@ -15,8 +15,15 @@ const base = process.argv[2] ?? 'http://localhost:4194';
 const saida = process.env.CAPTURAS_DIR ?? join(aqui, 'capturas', 'v13-cartas');
 const banco = readFileSync(join(raiz, 'conteudo', 'noticias.csv'));
 
-/** Pausa todas as animações no progresso `fracao` (0 a 1) da duração de cada uma (a do estado na hora da foto). */
-const congelar = (page, fracao) => page.evaluate((f) => {
+/**
+ * Pausa todas as animações no progresso `fracao` (0 a 1) da duração de cada uma (a do estado na hora da foto). Antes,
+ * espera o React montar a tela nova: o relógio falso anda na hora, mas a renderização vem logo depois.
+ */
+const congelar = async (page, fracao) => {
+  await page.waitForTimeout(150);
+  await congelarJa(page, fracao);
+};
+const congelarJa = (page, fracao) => page.evaluate((f) => {
   for (const a of document.getAnimations()) {
     const d = Number(a.effect?.getTiming().duration) || 0;
     a.pause();
@@ -48,6 +55,8 @@ async function abrir(browser, viewport, { reduzir = false } = {}) {
   await page.goto(base);
   await page.getByText('Câmera desativada — jogue pelas setas (Enter para começar)').waitFor();
   await page.evaluate(() => document.fonts.ready);
+  // Relógio parado: o jogo só anda com runFor (sem isso, o tempo das fotos também passaria para o reducer).
+  await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 100);
   return page;
 }
 
