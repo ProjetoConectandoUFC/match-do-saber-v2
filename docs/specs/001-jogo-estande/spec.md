@@ -1,7 +1,7 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
-**Status:** Approved (v12.0.0 aprovada pelo responsável em 2026-11-12; v12.0.1 e v12.0.2 só corrigem coerência e layout; v12.1.0, robustez para o teste com público de 2026-11-18, escopo aprovado pelo responsável em 2026-11-16; v13.0.0: escopo e tempos confirmados pelo responsável em 2026-11-13; v13.1.0: decisões sobre a prévia v13, no mesmo dia). **Integração (2026-11-17):** a v13 (cartas e fan), escrita sobre a v12.0.2 numa branch de experimento, entra na `develop` por decisão do responsável (revoga a de 2026-11-16, "só na branch") para o teste A/B de 2026-11-18; vale sobre a v12.1.0, e tudo o que a v12.1.0 mudou continua valendo. A troca entre a interface clássica (v12.1) e as cartas (v13.1) fica para a v13.2.0.
-**Version:** 13.1.0
+**Status:** Approved (v13.2.0, troca de interface para o teste A/B, aprovada pelo responsável em 2026-11-17; v12.0.0 aprovada pelo responsável em 2026-11-12; v12.0.1 e v12.0.2 só corrigem coerência e layout; v12.1.0, robustez para o teste com público de 2026-11-18, escopo aprovado pelo responsável em 2026-11-16; v13.0.0: escopo e tempos confirmados pelo responsável em 2026-11-13; v13.1.0: decisões sobre a prévia v13, no mesmo dia). **Integração (2026-11-17):** a v13 (cartas e fan), escrita sobre a v12.0.2 numa branch de experimento, entra na `develop` por decisão do responsável (revoga a de 2026-11-16, "só na branch") para o teste A/B de 2026-11-18; vale sobre a v12.1.0, e tudo o que a v12.1.0 mudou continua valendo. A troca entre a interface clássica (v12.1) e as cartas (v13.1) fica para a v13.2.0.
+**Version:** 13.2.0
 **Created:** 2026-10-26
 **Last Updated:** 2026-11-17
 **Branch:** `001-jogo-estande`
@@ -41,6 +41,7 @@
 | 12.1.0 | 2026-11-16 | Robustez para o teste com público em ambiente não controlado (2026-11-18), a partir de uma revisão de defeitos. **Gestos:** o jogo acompanha o jogador da calibração e um passante maior no quadro não toma o controle (AC-1.5 reescrito); a próxima escolha é liberada com o tronco a menos de metade do limiar do centro, ou recentrando quando o jogador fica parado perto dele (AC-2.4 reescrito); uma escolha só conta se a permanência começou com o card na tela (AC-2.13 novo); a ausência só termina com presença contínua (AC-5.4 ajustado). **Telas:** a calibração volta à espera depois de 30 s sem completar, mesmo com gente fora do centro (AC-1.4 ajustado). **Padrão:** a volta automática do resumo passa a 60 s (AC-5.2, AC-9.26), para a foto não ficar exposta. **Reliability:** erro na detecção não congela o jogo, tela de erro se recupera, a câmera é reaberta, a tela e o notebook não dormem, o app de desktop avisa quando não consegue abrir. |
 | 13.0.0 | 2026-11-13 | Pedido do responsável (Levi), com as referências de um leque de baralho na mão e de cartas ilustradas. **O card vira carta de baralho:** retrato (5:7), frente só com a imagem grande numa janela com moldura e a manchete, ícone do tema nos cantos (AC-17.1, FR-4 e FR-15 reescritos); a descrição e o "saiba mais" vão para o verso, e o gesto de "saiba mais" vira a carta (AC-3.1 a AC-3.4 reescritos, AC-3.6 novo). **Fan de cartas:** sai a pilha parada atrás do card (AC-2.12 reescrito); entra um leque de versos na base da tela, que perde uma carta a cada notícia (AC-17.3), abre e fecha em loop na tela de espera (AC-17.4), abre inteiro na abertura da partida (AC-17.5, 1,5 s) e solta cada carta, que sobe e vira (AC-17.6, 0,9 s). Os dois tempos **somam** à partida (o cronômetro só corre com a carta pousada); FR-1 e AC-1.2 ganham o estado de abertura e a distribuição. Som de carta distribuída (AC-17.8, FR-11). O treino usa a carta e sai do fan (AC-15.2). Story 17 e FR-18 novos. O movimento da carta com o corpo (AC-2.10), os botões das laterais (AC-2.11), o feedback, o resumo e o painel Questões não mudam. |
 | 13.1.0 | 2026-11-13 | Decisões do responsável sobre a prévia v13 (`docs/visual/previa-v13.html`): a carta de treino mantém a frase do perfil na frente, porque não tem verso (AC-17.1); o fan abre sempre no mesmo ângulo, espaçando as cartas pela quantidade, para continuar visível até a última (AC-17.3); a carta distribuída é a da ponta direita do fan, que sobe em arco (AC-17.6); a letra do verso pode descer até 20 px, e o editor e o painel Questões **avisam**, sem bloquear, quando `saiba_mais` passa de 250 caracteres (AC-17.2, AC-7.13 novo); as notícias atuais não são reescritas (15 das 16 passam do limite). |
+| 13.2.0 | 2026-11-17 | Teste A/B com público em 2026-11-18, por decisão do responsável (Levi): as duas interfaces no mesmo app, com o mesmo sistema. **Interface do jogo** nos Ajustes: **Clássica** (padrão; a da v12.1.0: card com pilha, sem fan, sem abertura nem distribuição, "saiba mais" dentro do card) ou **Cartas** (a da v13.1.0: carta de baralho, verso, fan, abertura e distribuição); tecla **I** na espera alterna; a espera mostra a interface ativa (Story 18, FR-19, AC-18.1 a AC-18.7). Iguais nas duas: banco, sorteio, quantidade, tempos do card e do feedback, gestos, sensibilidade e robustez, feedback com carimbo, resumo, foto, QR e tutorial; nas Cartas a abertura e a distribuição **somam** ao tempo e nunca descontam. AC-2.13 nas Cartas vale a partir da carta pousada. O aviso de `saiba_mais` acima de 250 caracteres (AC-7.13) aparece nas duas. Sem registro de dados de partida (decisão do responsável: a comparação é por observação). As cartas deixam de ser experimento de branch: entram na develop atrás da troca. |
 
 ---
 
@@ -374,7 +375,22 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-17.7** Given o sistema pede menos movimento (`prefers-reduced-motion: reduce`) When há abertura, distribuição ou virada Then o fan não se mexe e a carta aparece já de frente no centro, mas os tempos de AC-17.5 e AC-17.6 continuam os mesmos (a lógica não depende da animação).
 - [ ] **AC-17.8** Given o som está ligado (FR-9) When uma carta começa a sair do fan (AC-17.6) Then toca um som curto de carta (um "fff" de papel), gerado no próprio jogo, no volume dos Ajustes; não toca na abertura nem quando o som está desligado.
 
-## Functional Requirements
+### Story 18: Trocar a interface do jogo para o teste A/B (adicionado v13.2.0)
+
+**As a** operador ou observador do teste com público
+**I want** trocar entre a interface Clássica e a de Cartas a qualquer momento entre partidas
+**So that** as sessões do teste comparem as duas interfaces com o mesmo jogo por baixo
+
+**Acceptance criteria:**
+
+- [ ] **AC-18.1** Given a tela de espera When o operador abre os Ajustes Then o primeiro item do painel é "Interface do jogo", com as opções **Clássica** (padrão) e **Cartas**, marcada a atual; a escolha fica guardada como os demais ajustes (AC-9.5) e "Restaurar padrão" volta para Clássica.
+- [ ] **AC-18.2** Given a tela de espera, sem menu nem painel aberto When o operador pressiona **I** Then a interface alterna entre Clássica e Cartas, fica guardada e a espera mostra a nova escolha na hora; fora da espera a tecla I não faz nada.
+- [ ] **AC-18.3** Given a tela de espera When ela aparece Then mostra, junto do resumo dos ajustes (AC-9.2), "Interface: Clássica" ou "Interface: Cartas", legível para o operador a 1 m; com Cartas, a espera tem o fan respirando (AC-17.4); com Clássica, não tem fan.
+- [ ] **AC-18.4** Given a interface Clássica When uma partida acontece Then o jogo se comporta exatamente como na v12.1.0: sem tela de abertura e sem distribuição (o card aparece e o cronômetro começa na hora), card com a pilha atrás (AC-2.12 da v11.0.0), descrição e dica de "saiba mais" no card, "saiba mais" trocando o conteúdo dentro do card, sem som de carta.
+- [ ] **AC-18.5** Given a interface Cartas When uma partida acontece Then vale a Story 17 e o FR-18 (v13.1.0): abertura do fan, distribuição, carta de duas faces e som da carta; o cronômetro do card só começa com a carta pousada, e as permanências dos gestos e AC-2.13 contam a partir da carta pousada.
+- [ ] **AC-18.6** Given qualquer das duas interfaces When a mesma configuração de Ajustes é usada Then são iguais: o banco e as notícias jogáveis, o sorteio e a quantidade, o tempo do card e o do feedback (a abertura e a distribuição das Cartas somam e não descontam), gestos, sensibilidade, tolerância e robustez (v12.1.0), feedback com fundo verde/vermelho e carimbo, resumo, foto, QR e tutorial (os mesmos perfis).
+- [ ] **AC-18.7** Given uma partida em andamento When alguém tenta trocar a interface Then nada muda até a partida terminar ou ser encerrada: a troca só vale na espera e para a próxima partida.
+
 
 ### FR-1: Fluxo de estados da partida
 
@@ -627,7 +643,18 @@ Referências do responsável: um leque de baralho aberto na mão (o fan) e carta
 - Mostrar o fan no feedback, no resumo ou na calibração.
 - Revelar no fan qualquer coisa da próxima notícia (tema, imagem ou veredito).
 
-## Non-Functional Requirements
+### FR-19: Interface do jogo (adicionado v13.2.0)
+
+**Must:**
+- Guardar a interface ("classica" | "cartas", padrão "classica") com os Ajustes (`src/core/ajustes.ts`), mostrar o item no topo do painel e na espera, e alternar pela tecla I só na espera (AC-18.1 a AC-18.3).
+- Passar a interface ao reducer pelo `Contexto`: com "classica", a partida vai direto ao primeiro treino ou card, sem estado `abertura` e com `distribuindoMs` = 0; com "cartas", vale a v13.1.0. Um único reducer, sem cópias de lógica por interface.
+- Manter as duas telas do card em componentes separados (Clássica = o card da v12.1.0, com a pilha; Cartas = a carta da v13.1.0 e o fan), escolhidos pela interface; feedback, resumo e painéis são os mesmos componentes.
+- Rodar os testes de reducer e os E2E de partida, tutorial, ajustes, feedback e resumo **nas duas interfaces** (parametrizados); a release só sai com as duas verdes.
+
+**Must not:**
+- Trocar a interface no meio de uma partida.
+- Guardar qualquer dado das partidas para comparar as interfaces (a comparação do teste A/B é por observação).
+
 
 ### Performance
 

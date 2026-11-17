@@ -1,0 +1,45 @@
+name: Release do app de desktop
+# Gera o executável Windows (Electron, offline, com o banco padrão) e publica como Release do GitHub
+# quando uma tag `v*` é enviada (ex.: `git tag v13.2.0 && git push origin v13.2.0`).
+# Não precisa de `gh` autenticado na máquina de quem envia a tag: usa o token do próprio workflow.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag da release (ex.: v13.2.0-teste)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      # package:win = build:desktop (assets + banco padrão conteudo/noticias.csv) + electron-packager.
+      - run: npm run package:win
+      - name: Compactar o app
+        shell: pwsh
+        run: |
+          $pasta = Get-ChildItem out -Directory | Select-Object -First 1
+          Compress-Archive -Path "$($pasta.FullName)\*" -DestinationPath "Match-do-Saber-$env:TAG-windows.zip"
+      - name: Publicar a release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $zip = "Match-do-Saber-$env:TAG-windows.zip"
+          $notas = "App de desktop do Match do Saber ($env:TAG). Baixe o .zip, extraia numa pasta e abra 'Match do Saber.exe'. Funciona sem internet. O banco de notícias fica em Documentos\Match do Saber\noticias.csv (criado na primeira abertura a partir do banco embutido)."
+          gh release view $env:TAG 2>$null
+          if ($LASTEXITCODE -eq 0) { gh release upload $env:TAG $zip --clobber } else { gh release create $env:TAG $zip --title "Match do Saber $env:TAG" --notes $notas --target $env:GITHUB_SHA }

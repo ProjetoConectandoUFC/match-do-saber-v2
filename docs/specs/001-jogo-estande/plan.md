@@ -5543,7 +5543,17 @@ Spec: AC-17.3 a AC-17.7, FR-18 (must not), AC-10.5, AC-2.11. Agentes: agente-vis
 
 Integração (2026-11-17): a branch `001-v13-cartas-baralho` (Fases 46 e 47 parcial, ponta `1da3664`) foi mesclada sobre a v12.1.0 na `001-v13-ab`, para o teste A/B de 2026-11-18. No reducer, as duas versões convivem (calibração com tempo máximo e presença contínua da v12.1.0; abertura, distribuição e sorteio na abertura da v13.0.0). AC-2.13 com AC-17.6: o laço da câmera zera as permanências também durante a abertura e a distribuição (`permanenciaConta`, `src/core/partida-integracao-v13.test.ts`). A troca entre as interfaces vem na v13.2.0.
 
-## Quickstart Validation
+## Phase 51 (added v13.2.0): Troca de interface para o teste A/B
+
+Spec: Story 18 (AC-18.1 a AC-18.7), FR-19; AC-2.12 (v11.0.0, Clássica), AC-2.13, AC-9.1, AC-9.2, AC-9.4. Agente: agente-mecanico, branch `001-v13-ab` (já com as cartas integradas sobre a v12.1.0), depois da integração das Fases 47 e 48 do agente-visual. TDD.
+
+- 51.1 `ajustes.ts`: item `interface` ("classica" | "cartas", padrão "classica"), primeiro do painel, chave nova no armazenamento, "Restaurar padrão"; tecla I na espera (`useAjustes`/`useJogo`), só com menu e painéis fechados.
+- 51.2 Reducer: `Contexto.interface`; com "classica", `comecar` vai direto ao treino/card (sem `abertura`) e `distribuindoMs` = 0 em todo card e treino; `permanenciaConta`, `cartasNoFan` e `distribuindo` coerentes nas duas. Testes de fronteira das duas interfaces (início, cronômetro, ausência, AC-2.13).
+- 51.3 Tela: recuperar da develop v12.1.0 o card clássico (com a pilha, descrição, dica e "saiba mais" dentro do card) como componente próprio; `App.tsx` escolhe Clássica ou Cartas pela interface; fan só nas Cartas; espera com "Interface: …" (AC-18.3).
+- 51.4 Som da carta só nas Cartas.
+- 51.5 Testes parametrizados: reducer, `Telas` e E2E de partida, tutorial, ajustes, feedback-v12, resumo e questões nas duas interfaces (ex.: projeto Playwright por interface, com a interface gravada no `localStorage` antes de abrir).
+- 51.6 Verificação: `npm test`, `npm run build`, E2E web nas duas interfaces, `e2e:desktop`; versão 13.2.0 no `package.json`; release pela tag `v13.2.0` (workflow `.github/workflows/release.yml`).
+
 
 ```bash
 npm install
@@ -5646,3 +5656,4 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 12.0.0 | 45 | Adicionada: lote 3 de política e verificação no hardware |
 | 12.0.2 | 42–44 | Correções da revisão de 2026-11-13: lista do resumo com metade das notícias em cada coluna e linhas mais baixas acima de 10 (AC-5.8; E2E `resumo-muitas.spec.ts` com 12 e 20); ↑/↓ no campo de busca do painel Questões ficam com o campo |
 | 12.1.0 | 50 | Adicionada: robustez para o teste com público (gestos, ausência, calibração, câmera, laço, repouso, desktop) |
+| 13.2.0 | 51 | Adicionada: troca de interface (Clássica × Cartas) para o teste A/B |
