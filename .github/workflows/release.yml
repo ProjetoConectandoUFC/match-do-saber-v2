@@ -25,7 +25,9 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - run: npm ci --foreground-scripts
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1' # o electron-packager baixa o próprio Electron; o binário do pacote npm não é usado aqui
       - run: npm test
       # package:win = build:desktop (assets + banco padrão conteudo/noticias.csv) + electron-packager.
       - run: npm run package:win
