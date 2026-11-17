@@ -2,7 +2,7 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { FAN, angulosFan } from '../core/fan';
-import { FanCartas } from './FanCartas';
+import { FanCartas, sincronizar } from './FanCartas';
 
 const cartas = (c: HTMLElement) => [...c.querySelectorAll<HTMLElement>('[data-fan-carta]')];
 const graus = (el: HTMLElement) => Number(/rotate\((-?[\d.e-]+)deg\)/.exec(el.style.transform)?.[1]);
@@ -41,5 +41,24 @@ describe('Fase 48.1: FanCartas (AC-17.3, FR-18)', () => {
     expect(container.querySelector('[data-fan]')).toHaveAttribute('data-fan-lugar', 'espera');
     const esperado = angulosFan(FAN.cartasEspera, FAN.esperaParado);
     cartas(container).forEach((c, i) => expect(graus(c)).toBeCloseTo(esperado[i]!, 2));
+  });
+});
+
+describe('Fase 48.4: a animação segue o estado do reducer', () => {
+  const anim = (currentTime: number) => ({ currentTime }) as unknown as Animation;
+  it('adianta a animação que ficou para trás do estado', () => {
+    const a = anim(100);
+    sincronizar([a], 0.5, 900);
+    expect(a.currentTime).toBe(450);
+  });
+  it('nunca volta: o estado anda a cada leitura da pose (~6–7 por segundo) e fica atrás do tempo real entre uma e outra', () => {
+    const a = anim(900); // já terminou no compositor; o estado ainda diz 0,5 porque o último quadro da pose demorou
+    sincronizar([a], 0.5, 900);
+    expect(a.currentTime).toBe(900);
+  });
+  it('diferenças pequenas não mexem (sem tremer)', () => {
+    const a = anim(400);
+    sincronizar([a], 0.5, 900);
+    expect(a.currentTime).toBe(400);
   });
 });

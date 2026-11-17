@@ -26,14 +26,16 @@ export function quadrosChave(transformar: (p: number) => string): Keyframe[] {
 }
 
 /**
- * Mantém uma animação presa ao progresso do estado (Fase 48.4): ela anda sozinha no compositor (fluida mesmo com a pose
- * travando o laço principal a ~6–7 fps) e só é corrigida quando se afasta do reducer por mais de ~1/4 de segundo.
+ * Mantém uma animação presa ao progresso do estado (Fase 48.4): ela anda sozinha no compositor, em tempo real (fluida
+ * mesmo com a pose travando o laço principal a ~6–7 fps), e só é adiantada quando fica para trás do reducer por mais de
+ * 100 ms. Nunca volta: o estado só anda a cada quadro da pose, então entre dois quadros ele fica atrás do tempo real (até
+ * ~0,5 s num quadro lento) e a animação, que é o tempo real, está certa.
  */
 export function sincronizar(animacoes: readonly Animation[], progresso: number, duracaoMs: number) {
   const alvo = progresso * duracaoMs;
   for (const a of animacoes) {
     const atual = Number(a.currentTime ?? 0);
-    if (Math.abs(atual - alvo) > 250) a.currentTime = alvo;
+    if (alvo - atual > 100) a.currentTime = alvo;
   }
 }
 
