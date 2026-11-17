@@ -24,6 +24,9 @@ function ImagemCardClassico({ noticia, treino }: { noticia: Noticia; treino?: Pa
  * das Cartas, para o `App` escolher um ou outro pela interface.
  */
 export function TelaCardClassico({ noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, treino, cardRef, onArrastar }: {
+  /** Só das Cartas (fan e distribuição, v13.0.0); a Clássica recebe e ignora, para o `App` passar as mesmas props. */
+  cartasNoFan?: number;
+  distribuindoMs?: number;
   /** Card de treino do tutorial (FR-16): sem barra de tempo, sem placar e sem "saiba mais" (AC-15.2, AC-15.6). */
   treino?: PassoTreino;
   noticia: Noticia;

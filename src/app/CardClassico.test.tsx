@@ -145,3 +145,12 @@ describe('AC-18.4: card de treino clássico (v12.1.0)', () => {
     expect(img.className).toMatch(/imagemPerfil/);
   });
 });
+
+describe('AC-18.4: a Clássica não tem fan', () => {
+  it('mesmo recebendo as props das Cartas (cartasNoFan, distribuindoMs), o card clássico não desenha fan nem voo', () => {
+    const { container } = card(noticia, { cartasNoFan: 9, distribuindoMs: 500 });
+    expect(container.querySelector('[data-fan]')).toBeNull();
+    expect(screen.getByRole('timer', { name: 'Tempo restante' })).toBeInTheDocument();
+    expect(container.querySelectorAll('[data-pilha-camada]')).toHaveLength(2);
+  });
+});
