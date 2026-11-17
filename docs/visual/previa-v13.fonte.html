@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Match do Saber · Prévia v13 · Cartas de baralho e fan</title>
+<!-- Fonte desta prévia. Monte com: node docs/visual/montar-previa-v13.mjs  ·  Capturas: node docs/visual/capturar-previa-v13.mjs -->
+<style>
+{{fontes}}
+:root{
+  --cn-azul:#0075c5;--cn-azul-escuro:#035386;--cn-amarelo:#fde31f;--cn-coral:#e34a39;--cn-creme:#fcfaf1;--cn-branco:#fff;
+  --cn-tinta:#0c0b0a;--cn-titulo:#001320;--cn-grafite:#3a3a3a;--cn-grafite-azul:#19262e;--cn-marinho:#032942;--cn-noite:#002036;
+  --cn-celeste:#62bfff;--cn-teal:#309f9f;--cn-menta:#a5dede;--cn-gelo:#c8dfe8;--cn-rosa:#ff6776;--cn-laranja:#d86f33;
+  --cn-azul-medio:#4074b2;--cn-roxo:#a740b2;--cn-turquesa:#24c0c0;--cn-ceu:#3bb8ff;--cn-indigo:#2f3470;
+  --verdade:var(--cn-menta);--mentira:var(--cn-coral);--alerta:var(--cn-coral);
+  --u:1px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cn-noite);color:var(--cn-creme);font-family:Poppins,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+header,section{max-width:1440px;margin:0 auto;padding:32px 36px}
+h1{font-size:44px;font-weight:900;margin:0 0 8px;line-height:1.1}
+h1 em,h2 em{font-style:normal;color:var(--cn-amarelo)}
+section>h2{font-size:30px;font-weight:800;margin:0 0 14px}
+p.lead{font-size:18px;max-width:1000px;line-height:1.5;margin:6px 0}
+ul.lead{font-size:17px;max-width:1000px;line-height:1.5}
+.grade{display:grid;grid-template-columns:repeat(2,683px);gap:28px 36px;justify-content:center}
+figure{margin:0}
+figcaption{font-size:16px;font-weight:600;margin-top:8px;color:var(--cn-menta);max-width:683px}
+.quadro{width:683px;height:384px;overflow:hidden;border-radius:10px;border:2px solid rgb(252 250 241 / .25);position:relative}
+.quadro>.tela{scale:.5;transform-origin:0 0}
+.quadro.q1920>.tela{scale:calc(683 / 1920)}
+.controles{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+button.b{font:700 16px Poppins,sans-serif;border-radius:999px;border:2px solid var(--cn-creme);background:var(--cn-coral);color:var(--cn-tinta);padding:8px 22px;cursor:pointer}
+button.b.sec{background:transparent;color:var(--cn-creme)}
+table{border-collapse:collapse;font-size:16px}
+td,th{border:2px solid rgb(252 250 241 / .25);padding:8px 14px;text-align:left;vertical-align:top}
+code{font-size:.92em;background:rgb(252 250 241 / .08);padding:1px 6px;border-radius:6px}
+.ok{color:var(--cn-menta);font-weight:700}.falha{color:var(--cn-coral);font-weight:800}
+.folha{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;background:var(--cn-marinho);border-radius:16px;padding:28px}
+.folha figure{display:flex;flex-direction:column;align-items:center}
+.folha figcaption{text-align:center;max-width:300px}
+.mini{--u:.6px}
+.naipes{display:flex;flex-wrap:wrap;gap:22px}
+.naipes figure{align-items:center;display:flex;flex-direction:column;gap:6px}
+
+/* ===================== Tela do jogo (medidas em --u: 1 --u = 1 px em 1366×768) ===================== */
+.tela{position:relative;width:calc(1366*var(--u));height:calc(768*var(--u));overflow:hidden;font-family:Poppins,sans-serif}
+.sobrio{background:var(--cn-noite);color:var(--cn-creme)}
+.claro{background:var(--cn-azul);color:var(--cn-creme)}
+
+/* Mesa: área de jogo = tela menos a barra de 64 da base (AC-4.5). */
+.mesa{position:absolute;left:0;right:0;top:0;bottom:calc(64*var(--u));display:flex;align-items:center;justify-content:center;z-index:2}
+.lado{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:calc(16*var(--u))}
+.botaoLado{display:grid;place-items:center;width:calc(140*var(--u));height:calc(140*var(--u));border-radius:50%;border:calc(4*var(--u)) solid var(--cn-creme);color:var(--cn-noite);box-shadow:calc(8*var(--u)) calc(8*var(--u)) 0 rgb(0 0 0 / .35)}
+.botaoMentira{background:var(--mentira)}.botaoVerdade{background:var(--verdade)}
+.pilula{display:inline-flex;align-items:center;border-radius:999px;padding:calc(6*var(--u)) calc(26*var(--u));font-size:calc(32*var(--u));font-weight:800;line-height:1.2;border:calc(3*var(--u)) solid var(--cn-creme)}
+.pilulaMentira{background:var(--mentira);color:var(--cn-tinta)}.pilulaVerdade{background:var(--verdade);color:var(--cn-noite)}
+.barraTempo{position:absolute;left:0;right:0;bottom:0;height:calc(64*var(--u));background:var(--cn-marinho);overflow:hidden;z-index:3}
+.barraPreenchida{position:absolute;top:0;bottom:0;left:0;background:var(--cn-amarelo)}
+.barraSegundos{position:absolute;left:50%;top:calc(11*var(--u));transform:translateX(-50%);height:calc(42*var(--u));line-height:calc(42*var(--u));padding:0 calc(20*var(--u));border-radius:999px;background:var(--cn-creme);color:var(--cn-noite);font-size:calc(26*var(--u));font-weight:800}
+.pontos{position:absolute;left:calc(24*var(--u));bottom:calc(84*var(--u));margin:0;font-size:calc(28*var(--u));font-weight:800;z-index:3}
+/* Dica de "saiba mais" fora da carta (AC-17.1), no lugar da dica de gestos (dicaModo). */
+.dicaModo{position:absolute;left:calc(24*var(--u));bottom:calc(136*var(--u));max-width:calc(300*var(--u));margin:0;background:var(--cn-marinho);padding:calc(10*var(--u)) calc(16*var(--u));border-radius:calc(16*var(--u));font-size:calc(18*var(--u));line-height:1.35;z-index:3;display:flex;gap:calc(10*var(--u));align-items:flex-start}
+.dicaModo svg{flex:none;margin-top:calc(3*var(--u))}
+.sair{position:absolute;top:calc(16*var(--u));left:calc(16*var(--u));z-index:4;display:flex;align-items:center;gap:calc(10*var(--u));border:2px solid currentColor;border-radius:999px;padding:calc(5*var(--u)) calc(18*var(--u)) calc(5*var(--u)) calc(14*var(--u));font:600 calc(18*var(--u))/1.3 Poppins,sans-serif}
+.xis{position:relative;width:calc(14*var(--u));height:calc(14*var(--u))}
+.xis::before,.xis::after{content:"";position:absolute;left:calc(-1*var(--u));top:calc(5.5*var(--u));width:calc(16*var(--u));height:calc(3*var(--u));border-radius:2px;background:currentColor;transform:rotate(45deg)}
+.xis::after{transform:rotate(-45deg)}
+
+/* ===================== Carta (AC-17.1, AC-17.2): 460 × 644 = 5:7 ===================== */
+.carta{position:relative;flex:none;width:calc(460*var(--u));height:calc(644*var(--u));perspective:calc(2400*var(--u))}
+.giro{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 400ms cubic-bezier(.3,.1,.3,1)}
+.carta.virada .giro{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:calc(24*var(--u));background:var(--cn-branco);color:var(--cn-tinta);backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:calc(10*var(--u)) calc(10*var(--u)) 0 rgb(0 0 0 / .35);overflow:hidden}
+.face.verso{transform:rotateY(180deg)}
+/* Moldura fina, como nas cartas ilustradas: linha noite de 2 a 12 da borda branca. */
+.moldura{position:absolute;inset:calc(12*var(--u));border:calc(2*var(--u)) solid var(--cn-noite);border-radius:calc(16*var(--u));padding:calc(10*var(--u));display:flex;flex-direction:column;gap:calc(14*var(--u))}
+/* Janela da imagem: 380 de 644 = 59% da altura da carta (AC-17.1: 55% a 65%). */
+.janela{position:relative;flex:none;height:calc(380*var(--u));border:calc(3*var(--u)) solid var(--cn-noite);border-radius:calc(10*var(--u));overflow:hidden}
+.janela>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+svg.f{position:absolute;overflow:visible}
+.manchete{margin:0;flex:1;min-height:0;font-size:calc(36*var(--u));line-height:1.12;font-weight:700;color:var(--cn-titulo);overflow-wrap:anywhere;letter-spacing:-.005em}
+/* Reserva do canto inferior direito para o naipe girado: a última linha contorna o disco. */
+.reserva{float:right;width:0;height:calc(var(--h-texto) - 40*var(--u))}
+.reservaNaipe{float:right;clear:right;width:calc(40*var(--u));height:calc(40*var(--u))}
+.frente .manchete{--h-texto:calc(202*var(--u))}
+/* Naipe = ícone do tema, nos dois cantos (o de baixo girado 180°), em cima do canto da moldura. */
+.naipe{position:absolute;z-index:2;width:calc(58*var(--u));height:calc(58*var(--u));border-radius:50%;border:calc(5*var(--u)) solid var(--cn-branco);display:grid;place-items:center}
+.naipe svg{display:block}
+.naipeA{left:calc(4*var(--u));top:calc(4*var(--u))}
+.naipeB{right:calc(4*var(--u));bottom:calc(4*var(--u));rotate:180deg}
+/* Treino (AC-15.2): perfil; a frase fica na frente porque o treino não tem verso (decisão pendente). */
+.frente.treino .janela{height:calc(340*var(--u))}
+.frente.treino .manchete{flex:none;font-size:calc(34*var(--u))}
+.frente.treino .frase{margin:0;flex:1;min-height:0;font-size:calc(26*var(--u));line-height:1.3;font-weight:500;color:var(--cn-grafite-azul);--h-texto:calc(128*var(--u))}
+
+/* Verso de "saiba mais" (AC-17.2): mesma moldura e naipes, faixa da cor do tema, manchete menor, descrição e texto. */
+.faixa{flex:none;height:calc(40*var(--u));border-radius:calc(10*var(--u));display:flex;align-items:center;padding-left:calc(56*var(--u));font-size:calc(22*var(--u));font-weight:800;letter-spacing:.01em}
+.textoVerso{flex:1;min-height:0;--h-texto:calc(542*var(--u));font-size:var(--tv);line-height:1.27;overflow:hidden}
+.textoVerso h3{margin:0 0 .3em;font-size:1em;line-height:1.2;font-weight:700;color:var(--cn-titulo)}
+.textoVerso .desc{margin:0 0 .4em;font-weight:500;color:var(--cn-titulo)}
+.textoVerso .mais{margin:0;font-weight:400;color:var(--cn-grafite-azul);padding-top:.35em;border-top:calc(2*var(--u)) solid var(--cn-gelo)}
+
+/* Verso do fan (FR-18): o mesmo para todas as cartas, sem texto. Desenho em <symbol id="versoFan"> (250 × 350). */
+.face.versoFan{background:none;box-shadow:calc(10*var(--u)) calc(10*var(--u)) 0 rgb(0 0 0 / .35)}
+.versoSvg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* ===================== Fan (AC-17.3 a AC-17.6) ===================== */
+/* Pivô em (683, 808): 40 abaixo da borda da tela, atrás da barra de tempo. Cada carta do fan: 200 × 280, a 110 do pivô. */
+.fan{position:absolute;left:calc(683*var(--u));top:calc(808*var(--u));width:0;height:0;z-index:1}
+.fanCarta{position:absolute;left:calc(-100*var(--u));top:calc(-390*var(--u));width:calc(200*var(--u));height:calc(280*var(--u));transform-origin:50% calc(390*var(--u));border-radius:calc(14.4*var(--u));box-shadow:calc(-4*var(--u)) calc(2*var(--u)) 0 rgb(0 20 36 / .55)}
+.fanCarta svg{display:block;width:100%;height:100%}
+/* Espera: o mesmo fan a 75%, sob o esquema do gesto, à direita. */
+.claro .fan{left:calc(975*var(--u));scale:.75;transform-origin:0 0}
+.claro .fanCarta{box-shadow:calc(-4*var(--u)) calc(2*var(--u)) 0 rgb(0 32 54 / .5)}
+
+/* Carta que voa do fan (AC-17.6): o próprio .carta da mesa, com transform calculado a partir do progresso. */
+.carta.voando{z-index:2}
+
+/* ===================== Espera (cópia simplificada da tela atual) ===================== */
+.anel{position:absolute;color:#fff;pointer-events:none}
+.assinatura{position:absolute;left:calc(40*var(--u));top:calc(32*var(--u));z-index:2;color:var(--cn-creme)}
+.menu{position:absolute;right:calc(24*var(--u));top:calc(24*var(--u));width:calc(52*var(--u));height:calc(52*var(--u));border-radius:50%;border:calc(2*var(--u)) solid var(--cn-creme);display:grid;place-content:center;gap:calc(5*var(--u));z-index:4}
+.menu i{display:block;width:calc(22*var(--u));height:calc(3*var(--u));background:var(--cn-creme);border-radius:2px}
+.espLinha{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:calc(110*var(--u));padding-bottom:calc(40*var(--u))}
+.espTexto{display:flex;flex-direction:column;align-items:flex-start;gap:calc(24*var(--u))}
+.logo{margin:0;display:inline-flex;flex-direction:column;font-size:calc(72*var(--u));font-weight:900;line-height:1;color:var(--cn-creme)}
+.logoL1,.logoL2{display:flex;align-items:center;gap:.14em}.logoL2{padding-left:.95em}
+.logo em{font-style:normal;color:var(--cn-amarelo)}
+.disco{display:grid;place-items:center;width:.62em;height:.62em;border-radius:50%;background:var(--cn-noite);flex:none}
+.chamada{margin:0;font-size:calc(22*var(--u));font-weight:500;line-height:1.4;max-width:calc(440*var(--u))}
+.botaoIniciar{display:inline-flex;align-items:center;gap:calc(12*var(--u));background:var(--cn-amarelo);color:var(--cn-tinta);border-radius:999px;padding:calc(12*var(--u)) calc(36*var(--u)) calc(12*var(--u)) calc(30*var(--u));font:700 calc(25*var(--u))/1.2 Poppins,sans-serif;box-shadow:calc(6*var(--u)) calc(6*var(--u)) 0 var(--cn-noite)}
+.esquema{width:calc(460*var(--u));display:flex;align-items:center;justify-content:space-between}
+.esquemaLado{display:flex;flex-direction:column;align-items:center;gap:calc(10*var(--u))}
+.discoP{display:grid;place-items:center;width:calc(58*var(--u));height:calc(58*var(--u));border-radius:50%;background:var(--cn-noite)}
+.pilP{border-radius:999px;padding:calc(3*var(--u)) calc(16*var(--u));font-size:calc(19*var(--u));font-weight:800;border:2px solid var(--cn-creme)}
+.esquemaCarta{position:relative;width:calc(150*var(--u));height:calc(210*var(--u));background:#fff;border-radius:calc(12*var(--u));padding:calc(12*var(--u));display:flex;flex-direction:column;gap:calc(9*var(--u));box-shadow:calc(8*var(--u)) calc(8*var(--u)) 0 var(--cn-noite);outline:calc(1.5*var(--u)) solid var(--cn-noite);outline-offset:calc(-6*var(--u))}
+.esquemaCarta .naipe{width:calc(22*var(--u));height:calc(22*var(--u));border-width:calc(3*var(--u))}
+.esquemaCarta .naipeA{left:0;top:0}.esquemaCarta .naipeB{right:0;bottom:0}
+.esquemaCarta i{display:block;border-radius:calc(5*var(--u));background:var(--cn-noite);height:calc(11*var(--u))}
+.esquemaCarta i.ej{height:calc(104*var(--u));background:var(--cn-roxo);display:grid;place-items:center;border-radius:calc(6*var(--u))}
+.esquemaCarta i.curta{width:60%}
+.dicaConfig{position:absolute;left:calc(40*var(--u));bottom:calc(24*var(--u));margin:0;z-index:3;font-size:calc(17*var(--u));font-weight:500}
+
+/* Só uma tela, em tamanho real (capturas): ?so=<id> */
+body.so{background:#000}
+body.so>header,body.so>section{display:none}
+body.so #palco{display:block}
+#palco{display:none}
+#palco>.tela{scale:1}
+
+@media (prefers-reduced-motion:reduce){.giro{transition:none}}
+</style>
+</head>
+<body>
+{{simbolos}}
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- Verso do fan (FR-18): azul do design system, borda branca de carta, moldura creme, estrelas de 6 pontas a 20%
+       em grade alternada e um medalhão noite com a estrela de 6 pontas amarela. Simétrico por meia-volta, sem texto,
+       sem cor de tema e sem os marcadores do veredito (triângulo e estrela de 4 pontas). -->
+  <defs>
+    <clipPath id="cvFan"><rect x="10" y="10" width="230" height="330" rx="11"/></clipPath>
+    <pattern id="ptFan" width="40" height="40" patternUnits="userSpaceOnUse" x="5" y="-5">
+      <use href="#s-marca-estrela-6" x="3" y="3" width="13" height="13" style="color:#fff" opacity=".22"/>
+      <use href="#s-marca-estrela-6" x="23" y="23" width="13" height="13" style="color:#fff" opacity=".22"/>
+    </pattern>
+  </defs>
+  <symbol id="versoFan" viewBox="0 0 250 350">
+    <rect width="250" height="350" rx="18" fill="#fff"/>
+    <g clip-path="url(#cvFan)">
+      <rect x="10" y="10" width="230" height="330" fill="#0075c5"/>
+      <rect x="10" y="10" width="230" height="330" fill="url(#ptFan)"/>
+      <use href="#o-anel-b" x="-40" y="-20" width="160" height="200" style="color:#fff"/>
+      <use href="#o-anel-b" x="-40" y="-20" width="160" height="200" style="color:#fff" transform="rotate(180 125 175)"/>
+    </g>
+    <rect x="18" y="18" width="214" height="314" rx="7" fill="none" stroke="#fcfaf1" stroke-width="2.5"/>
+    <circle cx="125" cy="175" r="47" fill="#002036" stroke="#fcfaf1" stroke-width="4"/>
+    <circle cx="125" cy="175" r="37" fill="none" stroke="#fde31f" stroke-width="3" stroke-dasharray="6 5"/>
+    <use href="#s-marca-estrela-6" x="103" y="150" width="44" height="50" style="color:#fde31f"/>
+  </symbol>
+</svg>
+
+<header>
+  <h1>Prévia v13 · <em>Cartas de baralho</em> e fan</h1>
+  <p class="lead">Spec v13.0.0, Story 17 (AC-17.1 a AC-17.7), AC-2.12, AC-3.6, FR-4, FR-15 e FR-18. Referências do responsável: o leque de baralho na mão (pivô embaixo, cartas sobrepostas abrindo ~180°) e as cartas ilustradas (retrato, borda branca, cantos arredondados, índice no canto superior esquerdo e girado no inferior direito, ilustração grande com moldura fina).</p>
+  <p class="lead">Textos reais do banco padrão (<code>conteudo/noticias.csv</code>): a manchete mais longa (<b id="infoTitulo"></b>) e a notícia de verso mais longo (<b id="infoVerso"></b>). Tudo em <code>--u</code> (1 = 1 px em 1366×768), como em <code>src/app/tema.css</code>. Verificações automáticas desta página: <span id="verificacoes"></span></p>
+</header>
+
+<section>
+  <h2>1. Tela de carta em <em>1366×768</em></h2>
+  <div class="grade">
+    <figure><div class="quadro" id="q-frente"></div><figcaption>Frente: manchete mais longa do banco. Fan de 11 versos atrás da carta, pivô abaixo da borda, escondido pela barra de tempo.</figcaption></figure>
+    <figure><div class="quadro" id="q-verso"></div><figcaption>Verso de "saiba mais" (a carta virou): o texto mais longo do banco, inteiro.</figcaption></figure>
+    <figure><div class="quadro" id="q-emas"></div><figcaption>Frente com a ilustração "recorte chapado" (emas), recortada no centro da janela.</figcaption></figure>
+    <figure><div class="quadro" id="q-70"></div><figcaption>Teste de limite: manchete de 70 caracteres com palavras longas.</figcaption></figure>
+  </div>
+  <div class="controles">
+    <button class="b" id="bVirar">Virar a carta (400 ms)</button>
+  </div>
+</section>
+
+<section>
+  <h2>2. As <em>faces</em> da carta</h2>
+  <p class="lead">Frente (imagem 59% da altura, manchete, naipe do tema nos cantos), verso de "saiba mais" e o verso único do fan. Abaixo, uma frente por tema e o treino.</p>
+  <div class="folha" id="folhaFaces"></div>
+  <h2 style="margin-top:28px">Naipes: o <em>ícone do tema</em></h2>
+  <p class="lead">Disco na cor de ilustração do tema com aro branco e uma forma do design system dentro. O triângulo e a estrela de 4 pontas ficam de fora: são Mentira e Verdade no jogo. Forma noite nos temas claros e creme nos escuros (contraste ≥ 3:1 de elemento gráfico).</p>
+  <div class="naipes folha" id="naipes"></div>
+</section>
+
+<section>
+  <h2>3. O <em>fan</em>: fechado, meio aberto e aberto</h2>
+  <div class="grade">
+    <figure><div class="quadro" id="q-fan0"></div><figcaption>Fechado (abertura 0): 12 cartas (10 notícias + 2 treinos) num maço.</figcaption></figure>
+    <figure><div class="quadro" id="q-fan05"></div><figcaption>Meio aberto (abertura 0,5).</figcaption></figure>
+    <figure><div class="quadro" id="q-fan1"></div><figcaption>Aberto (abertura 1): 150°, o máximo; as pontas somem atrás da barra, como a mão segurando.</figcaption></figure>
+    <figure><div class="quadro" id="q-fan-poucas"></div><figcaption>Fim da partida: 2 cartas no fan ficam atrás da carta (o fan "acaba" junto com as notícias).</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <h2>4. <em>Animações</em></h2>
+  <p class="lead">Na prévia, o progresso (0 a 1) é calculado a cada quadro a partir do tempo, como o jogo fará a partir do estado (<code>distribuindoMs</code>, <code>restanteMs</code>). Com <code>prefers-reduced-motion</code> o fan fica parado e a carta aparece de frente (AC-17.7).</p>
+  <div class="grade">
+    <figure><div class="quadro" id="q-abertura"></div><figcaption>Abertura da partida (AC-17.5, 1,5 s): o fan com todas as cartas abre por inteiro e fecha até a posição de jogo. Sem cronômetro nem placar.</figcaption></figure>
+    <figure><div class="quadro" id="q-distrib"></div><figcaption>Distribuição (AC-17.6, 0,9 s): o fan abre um pouco, a carta da frente sai, sobe em arco virando para a frente e pousa; o fan fecha com uma a menos. Barra cheia e parada.</figcaption></figure>
+    <figure><div class="quadro" id="q-espera"></div><figcaption>Espera (AC-17.4): fan respirando, ciclo de 4 s, sob o esquema do gesto; não cobre título, chamada, Iniciar nem ☰.</figcaption></figure>
+    <figure><div class="quadro" id="q-quadros"></div><figcaption>Distribuição parada em 45% (para conferir o meio do movimento).</figcaption></figure>
+  </div>
+  <div class="controles">
+    <button class="b" id="bAbertura">▶ Abertura (1,5 s)</button>
+    <button class="b" id="bDistrib">▶ Distribuição (0,9 s)</button>
+    <button class="b" id="bSequencia">▶ Abertura + distribuição</button>
+    <button class="b sec" id="bLento">Câmera lenta: desligada</button>
+  </div>
+</section>
+
+<section>
+  <h2>5. <em>1920×1080</em></h2>
+  <div class="grade">
+    <figure><div class="quadro q1920" id="q-1920"></div><figcaption>Frente em 1920×1080: tudo cresce junto (<code>--u</code> = 1,4056 px); carta de 647 × 905 px.</figcaption></figure>
+    <figure><div class="quadro q1920" id="q-1920v"></div><figcaption>Verso em 1920×1080.</figcaption></figure>
+  </div>
+</section>
+
+<section>
+  <h2>6. Medidas e <em>decisões</em></h2>
+  <table id="medidas"></table>
+</section>
+
+<section>
+  <h2>7. Para o <em>responsável</em> decidir</h2>
+  <ul class="lead">
+    <li><b>Texto do verso abaixo de 28 px.</b> Numa carta de 460 px de largura, manchete + descrição + saiba mais do banco atual (397 a 541 caracteres) só cabem entre 21 e 25 px. Caminhos: (a) aceitar (o verso é leitura extra); (b) limite editorial de ~430 caracteres somados (ou <code>saiba_mais</code> até ~250), que deixa o verso em 24–25 px; (c) tirar a descrição do verso (ela não aparece mais em lugar nenhum, então não recomendo).</li>
+    <li><b>Treino sem verso:</b> a frente do perfil precisa da frase ("CEO de mim mesmo...") para dar para julgar; a prévia mantém a frase na frente do treino, contra a letra de AC-17.1 ("só imagem e manchete").</li>
+    <li><b>Ilustrações recorte chapado (emas, banana, micro-ondas)</b> foram desenhadas em 552 × 260 (paisagem); na janela quase quadrada a prévia recorta o centro (some a radiação da banana e parte da ema pequena). Ideal: redesenhar em 412 × 380.</li>
+    <li><b>Naipes:</b> sem triângulo nem estrela de 4 pontas (são Mentira e Verdade). Saúde (estrela de 6) e História (estrela de 5) se parecem de longe; a cor diferencia.</li>
+    <li><b>Fan com poucas cartas</b> fica escondido atrás da carta (passo fixo de 14°): o fan "encolhe" com a partida. A alternativa é espalhar sempre até a mesma abertura, mas aí as cartas se afastam no fim.</li>
+    <li><b>Carta que sai do fan:</b> a da frente (a da direita, a de cima no leque), que sobe em arco até o centro. Alternativa: a do meio, subindo reta.</li>
+    <li><b>Abertura:</b> sem cronômetro, a barra fica vazia (só o fundo marinho) para o fan não mudar de lugar. A dica de "saiba mais" passou para a caixa da esquerda (largura máxima 300 px), também no modo Corpo.</li>
+    <li><b>Texto novo visível:</b> "Saiba mais" na faixa do verso (os E2E buscam textos).</li>
+  </ul>
+</section>
+
+<div id="palco"></div>
+
+<script>
+const FORMAS = {{formas}};
+const ILU = {{ilustracoes}};
+const NOTICIAS = {{noticias}};
+const PARAMS = new URLSearchParams(location.search);
+const U = (n) => `calc(${n} * var(--u))`;
+
+const COR = { saude: 'var(--cn-rosa)', ciencia: 'var(--cn-ceu)', historia: 'var(--cn-laranja)', tecnologia: 'var(--cn-azul-medio)',
+  curiosidades: 'var(--cn-roxo)', 'meio-ambiente': 'var(--cn-turquesa)', politica: 'var(--cn-indigo)' };
+const ESCURO = { tecnologia: 1, curiosidades: 1, politica: 1 }; // forma e texto creme; nos demais, noite
+const ROTULO = { saude: 'Saúde', ciencia: 'Ciência', historia: 'História', tecnologia: 'Tecnologia', curiosidades: 'Curiosidades', 'meio-ambiente': 'Meio ambiente', politica: 'Política' };
+const BRANCO = '#fff', CREME = 'var(--cn-creme)', NOITE = 'var(--cn-noite)', AMARELO = 'var(--cn-amarelo)', CELESTE = 'var(--cn-celeste)', ROSA = 'var(--cn-rosa)';
+
+const prop = (vb) => { const [, , w, h] = vb.split(/\s+/).map(Number); return h / w; };
+/** Forma do design system em (x, y) com largura w, na janela (coordenadas em --u). */
+function F(id, x, y, w, cor, { original = true, rot = 0, op = 1 } = {}) {
+  const vb = original ? FORMAS[id].vbo : FORMAS[id].vb;
+  const h = w * prop(vb);
+  return `<svg class="f" aria-hidden="true" style="left:${U(x)};top:${U(y)};width:${U(w)};height:${U(h)};color:${cor};${rot ? `rotate:${rot}deg;` : ''}opacity:${op}"><use href="#${original ? 'o' : 's'}-${id}" width="100%" height="100%"/></svg>`;
+}
+/** Marcador com viewBox justo, num quadrado de lado w. */
+function M(id, w, cor, rot = 0) {
+  return `<svg aria-hidden="true" style="display:block;width:${U(w)};height:${U(w)};color:${cor};${rot ? `rotate:${rot}deg` : ''}"><use href="#s-${id}" width="100%" height="100%"/></svg>`;
+}
+const traco = (inner) => `<svg class="f" aria-hidden="true" viewBox="0 0 406 374" style="left:0;top:0;width:100%;height:100%">${inner}</svg>`;
+const tr = 'fill="none" stroke="#002036" stroke-width="3"';
+
+/* Composições por tema para a janela retrato (406 × 374 por dentro): as mesmas peças das composições aprovadas
+   (IlustracaoTema.tsx), redistribuídas para a janela quase quadrada. */
+const COMPOSICAO = {
+  saude: () => F('anel-b', -60, -70, 280, BRANCO) + F('marca-estrela-6', 170, 92, 150, CREME) + F('marca-estrela-6', 70, 232, 52, CREME)
+    + F('marca-estrela-4', 122, 150, 40, NOITE) + F('marca-estrela-4', 336, 52, 32, NOITE) + F('deco-explosao-dir', 300, 236, 170, NOITE),
+  ciencia: () => F('anel-c', 170, -110, 340, BRANCO) + traco(`<path d="M108 292 L203 140 L298 292 Z" ${tr} stroke-dasharray="9 8"/>`)
+    + F('marca-triangulo', 84, 268, 50, NOITE) + F('marca-triangulo', 179, 116, 50, NOITE) + F('marca-triangulo', 274, 268, 50, NOITE)
+    + F('marca-estrela-4', 300, 30, 80, CREME) + F('marca-estrela-4', 60, 64, 36, CREME),
+  historia: () => F('deco-arco', 210, -90, 240, CREME) + F('marca-estrela-5', 96, 140, 130, NOITE) + F('marca-estrela-5', 290, 236, 60, NOITE)
+    + traco(`<line x1="0" y1="330" x2="406" y2="330" ${tr} stroke-dasharray="11 9"/>`) + F('marca-estrela-4', 50, 56, 34, CREME),
+  tecnologia: () => F('deco-e', 236, -50, 220, CREME)
+    + [0, 1, 2].flatMap((l) => [0, 1, 2].map((c) => F('marca-triangulo', 66 + c * 66, 112 + l * 62, 44, (l + c) % 2 ? CELESTE : NOITE))).join('')
+    + F('marca-estrela-4', 262, 232, 76, AMARELO),
+  curiosidades: () => F('deco-explosao-dir', 250, -20, 250, ROSA) + F('marca-estrela-5', 120, 110, 160, AMARELO)
+    + F('marca-estrela-4', 46, 70, 40, CREME) + F('marca-estrela-4', 80, 290, 34, CREME) + F('marca-estrela-5', 320, 292, 42, CREME),
+  politica: () => F('deco-arco', 290, -110, 200, AMARELO)
+    + [180, 150, 120, 90, 60, 30, 0].map((a) => { const r = a * Math.PI / 180; return F('marca-estrela-5', 203 + 136 * Math.cos(r) - 19, 282 - 136 * Math.sin(r) - 19, 38, CREME); }).join('')
+    + F('marca-estrela-4', 177, 214, 52, AMARELO) + traco(`<line x1="40" y1="326" x2="366" y2="326" ${tr} stroke="#fcfaf1" stroke-dasharray="11 9"/>`),
+  'meio-ambiente': () => F('anel-a', 330, -70, 150, BRANCO) + F('marca-estrela-6', 270, 36, 84, AMARELO)
+    + F('marca-triangulo', 30, 196, 116, NOITE) + F('marca-triangulo', 124, 136, 156, NOITE) + F('marca-triangulo', 252, 214, 96, NOITE)
+    + traco(`<line x1="0" y1="318" x2="406" y2="318" ${tr} stroke-dasharray="11 9"/>`),
+};
+const ILU_NOTICIA = { 'mds-0001': 'card-historia-emas', 'mds-0007': 'card-ciencia-banana', 'mds-0010': 'card-tecnologia-microondas' };
+
+/* Naipe (ícone do tema), 58 de diâmetro com o aro. */
+function glifo(tema) {
+  const c = ESCURO[tema] ? CREME : NOITE;
+  switch (tema) {
+    case 'saude': return M('marca-estrela-6', 28, c);
+    case 'historia': return M('marca-estrela-5', 28, c);
+    case 'ciencia': return `<svg aria-hidden="true" viewBox="0 0 30 30" style="width:${U(30)};height:${U(30)}"><circle cx="15" cy="15" r="11" fill="none" stroke="#002036" stroke-width="4"/><circle cx="15" cy="15" r="4.5" fill="#002036"/></svg>`;
+    case 'tecnologia': return M('deco-e', 30, c);
+    case 'curiosidades': return M('deco-explosao-dir', 28, c);
+    case 'meio-ambiente': return M('deco-arco', 30, c);
+    case 'politica': return `<span style="display:grid;grid-template-columns:repeat(3,auto);gap:0;align-items:end;margin-top:${U(-2)}">${M('marca-estrela-5', 14, c)}<span style="margin-bottom:${U(8)}">${M('marca-estrela-5', 14, c)}</span>${M('marca-estrela-5', 14, c)}</span>`;
+  }
+}
+const naipe = (tema, qual) => `<span class="naipe ${qual}" style="background:${COR[tema]}" role="img" aria-label="Tema: ${ROTULO[tema]}">${glifo(tema)}</span>`;
+const reservas = '<i class="reserva"></i><i class="reservaNaipe"></i>';
+
+function imagemJanela(n) {
+  if (n.perfil) return `<img src="${ILU[n.perfil]}" alt="" style="object-position:50% 22%">`;
+  const ilu = ILU_NOTICIA[n.id];
+  if (ilu) return `<img src="${ILU[ilu]}" alt="" style="object-position:${{ 'mds-0001': '64%', 'mds-0007': '60%' }[n.id] || '50%'} 50%">`;
+  return COMPOSICAO[n.tema]();
+}
+function frente(n) {
+  const t = n.tema;
+  if (n.perfil) {
+    return `<div class="face frente treino"><div class="moldura"><div class="janela" style="background:${COR[t]}">${imagemJanela(n)}</div>
+      <h2 class="manchete">${n.titulo}</h2><p class="frase">${reservas}${n.descricao}</p></div>${naipe(t, 'naipeA')}${naipe(t, 'naipeB')}</div>`;
+  }
+  return `<div class="face frente"><div class="moldura"><div class="janela" style="background:${COR[t]}">${imagemJanela(n)}</div>
+    <h2 class="manchete">${reservas}${n.titulo}</h2></div>${naipe(t, 'naipeA')}${naipe(t, 'naipeB')}</div>`;
+}
+/* Texto do verso ajustado por medida (como o jogo deve fazer num useLayoutEffect): começa em 25 e desce de 1 em 1
+   até caber, sem passar de 20. O verso mais longo do banco fica em 21. */
+const VERSO_MAX = 25, VERSO_MIN = 20, MANCHETE_MAX = 36, MANCHETE_MIN = 30;
+function ajustarVersos(raiz = document) {
+  raiz.querySelectorAll('.frente:not(.treino) .manchete').forEach((el) => {
+    for (let s = MANCHETE_MAX; s >= MANCHETE_MIN; s--) {
+      el.style.fontSize = U(s); el.dataset.tamanho = s;
+      if (el.scrollHeight <= el.clientHeight + 1) break;
+    }
+  });
+  raiz.querySelectorAll('.textoVerso').forEach((el) => {
+    for (let s = VERSO_MAX; s >= VERSO_MIN; s--) {
+      el.style.setProperty('--tv', U(s)); el.dataset.tamanho = s;
+      if (el.scrollHeight <= el.clientHeight + 1) break;
+    }
+  });
+}
+function versoSaiba(n) {
+  const t = n.tema;
+  return `<div class="face verso"><div class="moldura">
+      <div class="faixa" style="background:${COR[t]};color:${ESCURO[t] ? 'var(--cn-creme)' : 'var(--cn-noite)'}">Saiba mais</div>
+      <div class="textoVerso" style="--tv:${U(VERSO_MAX)}">${reservas}<h3>${n.titulo}</h3><p class="desc">${n.descricao}</p><p class="mais">${n.saiba_mais}</p></div>
+    </div>${naipe(t, 'naipeA')}${naipe(t, 'naipeB')}</div>`;
+}
+const versoFanSvg = '<svg class="versoSvg" aria-hidden="true"><use href="#versoFan" width="100%" height="100%"/></svg>';
+const versoFan = () => `<div class="face verso versoFan">${versoFanSvg}</div>`;
+function carta(n, { virada = false, verso = 'saiba', estilo = '', id = '' } = {}) {
+  return `<article class="carta${virada ? ' virada' : ''}"${id ? ` id="${id}"` : ''} style="${estilo}"><div class="giro">${frente(n)}${verso === 'fan' ? versoFan() : versoSaiba(n)}</div></article>`;
+}
+
+/* ===================== Fan: geometria (vai para src/core/fan.ts) ===================== */
+const FAN = { max: 20, passo: 14, totalAberto: 150, passoFechado: 0.8, totalFechado: 8, pivo: [683, 808], raio: 110, larg: 200, alt: 280 };
+/** Ângulo (graus) de cada carta, da esquerda (atrás) para a direita (frente). abertura 0 = maço, 1 = aberto. */
+function angulosFan(n, abertura) {
+  n = Math.max(0, Math.min(FAN.max, n));
+  if (n === 0) return [];
+  if (n === 1) return [0];
+  const aberto = Math.min(FAN.totalAberto, (n - 1) * FAN.passo);
+  const fechado = Math.min(FAN.totalFechado, (n - 1) * FAN.passoFechado);
+  const total = fechado + (aberto - fechado) * Math.max(0, Math.min(1, abertura));
+  return Array.from({ length: n }, (_, i) => -total / 2 + (i * total) / (n - 1));
+}
+const ABERTURA_JOGO = 0.6; // fan parado atrás da carta
+const fanHTML = (angs) => `<div class="fan" aria-hidden="true">${angs.map((a) => `<div class="fanCarta" style="rotate:${a.toFixed(2)}deg">${versoFanSvg}</div>`).join('')}</div>`;
+
+/* ===================== Telas ===================== */
+const lado = (m) => `<div class="lado"><span class="botaoLado ${m ? 'botaoMentira' : 'botaoVerdade'}">${m ? M('marca-triangulo', 64, NOITE, -90) : M('marca-estrela-4', 64, NOITE)}</span><span class="pilula ${m ? 'pilulaMentira' : 'pilulaVerdade'}">${m ? 'Mentira' : 'Verdade'}</span></div>`;
+const barra = (fr, seg) => `<div class="barraTempo" role="timer">${fr == null ? '' : `<div class="barraPreenchida" style="width:${fr * 100}%"></div><span class="barraSegundos">${seg} s</span>`}</div>`;
+const sair = '<span class="sair"><span class="xis"></span>Sair</span>';
+const dica = `<p class="dicaModo">${M('marca-estrela-5', 18, AMARELO)}<span>Saiba mais: levante as duas mãos (ou ↑)</span></p>`;
+
+function telaCarta(n, { u = 1, virada = false, nFan = 11, abFan = ABERTURA_JOGO, fr = 0.8, seg = 12, pontos = 2, comCarta = true, idCarta = '', semDica = false } = {}) {
+  return `<div class="tela sobrio" style="--u:${u}px">
+    ${fanHTML(angulosFan(nFan, abFan))}
+    <div class="mesa">${lado(true)}${comCarta ? carta(n, { virada, id: idCarta, verso: idCarta ? 'fan' : 'saiba' }) : `<div style="width:${U(460)}"></div>`}${lado(false)}</div>
+    ${comCarta && !semDica ? dica : ''}${pontos == null ? '' : `<p class="pontos">Pontos: ${pontos}</p>`}
+    ${barra(fr, seg)}${sair}</div>`;
+}
+
+function telaEspera({ u = 1 } = {}) {
+  const esq = `<div class="esquema">
+    <div class="esquemaLado"><span class="discoP">${M('marca-triangulo', 30, 'var(--mentira)', -90)}</span><span class="pilP pilulaMentira">Mentira</span></div>
+    <div class="esquemaCarta"><span class="naipe naipeA" style="background:var(--cn-roxo)"></span><span class="naipe naipeB" style="background:var(--cn-roxo)"></span><i class="ej">${M('marca-estrela-5', 40, AMARELO)}</i><i class="el"></i><i class="el"></i><i class="el curta"></i></div>
+    <div class="esquemaLado"><span class="discoP">${M('marca-estrela-4', 30, 'var(--verdade)')}</span><span class="pilP pilulaVerdade">Verdade</span></div></div>`;
+  return `<div class="tela claro" style="--u:${u}px">
+    ${F('anel-c', -6, -6, 250, '#fff', { original: false })}${F('anel-b', 1066, -6, 306, '#fff', { original: false })}${F('anel-a', 1258, 400, 114, '#fff', { original: false })}
+    <div class="assinatura"><svg aria-hidden="true" style="display:block;width:${U(104)};height:${U(104 * prop(FORMAS['conectando-assinatura'].vb))}"><use href="#s-conectando-assinatura" width="100%" height="100%"/></svg></div>
+    <span class="menu"><i></i><i></i><i></i></span>
+    ${fanHTML(angulosFan(10, 0.5))}
+    <div class="espLinha"><div class="espTexto">
+      <h1 class="logo"><span class="logoL1"><span class="disco">${M('marca-triangulo', 26, 'var(--mentira)', -90)}</span>Match</span><span class="logoL2">do <em>Saber</em><span class="disco">${M('marca-estrela-4', 26, 'var(--verdade)')}</span></span></h1>
+      <p class="chamada">Aperte Iniciar (ou Enter) e fique de frente para a câmera</p>
+      <span class="botaoIniciar">${M('marca-triangulo', 20, 'var(--cn-tinta)', 90)}Iniciar</span>
+    </div>${esq}</div>
+    <p class="dicaConfig">Modo: Corpo · Tempo por card: 15 s · Som: ligado · Foto: ligada · Tutorial: ligado</p></div>`;
+}
+
+/* ===================== Dados ===================== */
+const porTotal = (n) => n.titulo.length + n.descricao.length + n.saiba_mais.length;
+const maisLongaTitulo = [...NOTICIAS].sort((a, b) => b.titulo.length - a.titulo.length)[0];
+const longa = [...NOTICIAS].sort((a, b) => porTotal(b) - porTotal(a))[0];
+const emas = NOTICIAS.find((n) => n.id === 'mds-0001') || longa;
+const teste70 = { id: 'teste-70', tema: 'meio-ambiente', titulo: 'Pesquisadores desmentem: superinterpretações sobre desmatamento ilegal', descricao: '', saiba_mais: '' };
+console.assert(teste70.titulo.length === 70, teste70.titulo.length);
+const treino = { id: 'treino-abacaxi', tema: 'curiosidades', perfil: 'perfil-falso-abacaxi', titulo: 'Abacaxi Perfeito, 19', descricao: 'CEO de mim mesmo. Milionário. Médico, astronauta e campeão mundial. Sem tempo para perguntas.', saiba_mais: '' };
+document.getElementById('infoTitulo').textContent = `${maisLongaTitulo.id}, ${maisLongaTitulo.titulo.length} caracteres`;
+document.getElementById('infoVerso').textContent = `${longa.id}: ${longa.titulo.length} + ${longa.descricao.length} + ${longa.saiba_mais.length} = ${porTotal(longa)} caracteres`;
+
+/* ===================== Montagem ===================== */
+const Q = (id, html) => { document.getElementById(id).innerHTML = html; };
+Q('q-frente', telaCarta(maisLongaTitulo, {}));
+Q('q-verso', telaCarta(longa, { virada: true }));
+Q('q-emas', telaCarta(emas, { nFan: 7, fr: 0.3, seg: 4, pontos: 5 }));
+Q('q-70', telaCarta(teste70, { nFan: 9 }));
+Q('q-fan0', telaCarta(longa, { comCarta: false, nFan: 12, abFan: 0, fr: null, pontos: null }));
+Q('q-fan05', telaCarta(longa, { comCarta: false, nFan: 12, abFan: 0.5, fr: null, pontos: null }));
+Q('q-fan1', telaCarta(longa, { comCarta: false, nFan: 12, abFan: 1, fr: null, pontos: null }));
+Q('q-fan-poucas', telaCarta(NOTICIAS[3], { nFan: 2, fr: 0.9, seg: 14, pontos: 7 }));
+Q('q-1920', telaCarta(maisLongaTitulo, { u: 1920 / 1366 > 1080 / 768 ? 1080 / 768 : 1920 / 1366 }));
+Q('q-1920v', telaCarta(longa, { u: Math.min(1920 / 1366, 1080 / 768), virada: true }));
+Q('q-espera', telaEspera());
+
+/* Folha das faces */
+const cartaSolta = (html, legenda) => `<figure><div class="mini" style="width:${460 * 0.6}px;height:${644 * 0.6}px">${html}</div><figcaption>${legenda}</figcaption></figure>`;
+const soFace = (faceHtml) => `<article class="carta"><div class="giro">${faceHtml}</div></article>`;
+let folha = cartaSolta(soFace(frente(maisLongaTitulo)), `Frente · ${maisLongaTitulo.id}`)
+  + cartaSolta(soFace(versoSaiba(longa).replace('face verso', 'face')), `Verso de "saiba mais" · ${longa.id}`)
+  + cartaSolta(soFace(versoFanSvg.replace('class="versoSvg"', 'class="versoSvg" style="filter:drop-shadow(6px 6px 0 rgb(0 0 0 / .35))"')), 'Verso do fan (único)');
+const porTema = {};
+for (const n of NOTICIAS) if (!porTema[n.tema] && !ILU_NOTICIA[n.id]) porTema[n.tema] = n;
+for (const [t, n] of Object.entries(porTema)) folha += cartaSolta(soFace(frente(n)), `${ROTULO[t]} · ${n.id} (composição do tema)`);
+for (const id of Object.keys(ILU_NOTICIA)) { const n = NOTICIAS.find((x) => x.id === id); if (n) folha += cartaSolta(soFace(frente(n)), `${n.id} · ilustração própria`); }
+folha += cartaSolta(soFace(frente(treino)), 'Treino (AC-15.2): perfil + frase');
+document.getElementById('folhaFaces').innerHTML = folha;
+document.getElementById('naipes').innerHTML = Object.keys(COR).map((t) => `<figure><span style="position:relative;display:block;width:58px;height:58px">${naipe(t, '').replace('class="naipe "', 'class="naipe" style="position:static;background:' + COR[t] + '"')}</span><figcaption>${ROTULO[t]}</figcaption></figure>`).join('');
+
+/* ===================== Animações (progresso 0..1 a cada quadro) ===================== */
+const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lento = 1;
+const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+/** Abertura (AC-17.5): 0 → 1 em 45%, segura até 60%, fecha até a abertura de jogo. */
+function aberturaNo(p) {
+  if (p < 0.45) return ease(p / 0.45);
+  if (p < 0.6) return 1;
+  return lerp(1, ABERTURA_JOGO, ease((p - 0.6) / 0.4));
+}
+function desenharFan(raiz, angs) {
+  const fan = raiz.querySelector('.fan');
+  while (fan.children.length > angs.length) fan.lastChild.remove();
+  while (fan.children.length < angs.length) fan.insertAdjacentHTML('beforeend', `<div class="fanCarta">${versoFanSvg}</div>`);
+  angs.forEach((a, i) => { fan.children[i].style.rotate = `${a.toFixed(2)}deg`; });
+}
+/** Distribuição (AC-17.6): n cartas no fan antes; a da frente (a última, à direita) voa até a mesa. */
+function quadroDistribuicao(raiz, n, p) {
+  const a1 = Math.min(1, ABERTURA_JOGO + 0.15);
+  const antes = angulosFan(n, lerp(ABERTURA_JOGO, a1, ease(clamp01(p / 0.3))));
+  const depois = angulosFan(n - 1, ABERTURA_JOGO);
+  const base = angulosFan(n, a1).slice(0, n - 1);
+  const resto = p < 0.3 ? antes.slice(0, n - 1) : base.map((a, i) => lerp(a, depois[i], ease(clamp01((p - 0.3) / 0.7))));
+  desenharFan(raiz, resto);
+  const th0 = antes[n - 1];
+  const r = (th0 * Math.PI) / 180;
+  const [px, py] = FAN.pivo, d = FAN.raio + FAN.alt / 2;
+  const S = [px + d * Math.sin(r) - 683, py - d * Math.cos(r) - 352]; // centro da carta do fan relativo ao centro da mesa
+  const L = [S[0] + 90 * Math.sin(r), S[1] - 90 * Math.cos(r)];       // sai do fan na direção da carta
+  const C = [S[0] * 0.25, -60];                                          // passa um pouco acima e cai no lugar
+  const t = ease(clamp01(p));
+  const b = (i) => (1 - t) ** 3 * S[i] + 3 * (1 - t) ** 2 * t * L[i] + 3 * (1 - t) * t * t * C[i];
+  const s = lerp(FAN.larg / 460, 1, ease(clamp01((p - 0.1) / 0.85)));
+  const rot = lerp(th0, 0, ease(clamp01(p / 0.85)));
+  const giro = lerp(180, 0, ease(clamp01((p - 0.2) / 0.6)));
+  const el = raiz.querySelector('.carta');
+  el.classList.add('voando');
+  el.style.transform = `translate(${U(b(0))}, ${U(b(1))}) rotate(${rot}deg) scale(${s})`;
+  el.querySelector('.giro').style.transition = 'none';
+  el.querySelector('.giro').style.transform = `rotateY(${giro}deg)`;
+}
+
+let anim = null;
+function rodar(passos) {
+  cancelAnimationFrame(anim);
+  const fila = [...passos];
+  let ini = null, atual = fila.shift();
+  const quadro = (agora) => {
+    if (ini == null) ini = agora;
+    const p = clamp01((agora - ini) / (atual.ms * lento));
+    atual.f(reduz ? 1 : p);
+    if (p >= 1 || reduz) { atual = fila.shift(); ini = null; if (!atual) return; }
+    anim = requestAnimationFrame(quadro);
+  };
+  anim = requestAnimationFrame(quadro);
+}
+const qAb = document.getElementById('q-abertura');
+const qDi = document.getElementById('q-distrib');
+function montarAbertura() { qAb.innerHTML = telaCarta(longa, { comCarta: false, nFan: 12, abFan: 0, fr: null, pontos: null }); }
+function montarDistrib(n = 12) { qDi.innerHTML = telaCarta(emas, { nFan: n, idCarta: 'voa', fr: 1, seg: 15, pontos: 0, semDica: true }); quadroDistribuicao(qDi, n, 0); }
+const passoAbertura = { ms: 1500, f: (p) => desenharFan(qAb, angulosFan(12, aberturaNo(p))) };
+const passoDistrib = { ms: 900, f: (p) => quadroDistribuicao(qDi, 12, p) };
+montarAbertura(); desenharFan(qAb, angulosFan(12, aberturaNo(PARAMS.has('p') ? +PARAMS.get('p') : 0)));
+montarDistrib(); quadroDistribuicao(qDi, 12, PARAMS.has('p') ? +PARAMS.get('p') : 0);
+document.getElementById('q-quadros').innerHTML = telaCarta(emas, { nFan: 12, idCarta: 'voa2', fr: 1, seg: 15, pontos: 0, semDica: true });
+quadroDistribuicao(document.getElementById('q-quadros'), 12, 0.45);
+document.getElementById('bAbertura').onclick = () => { montarAbertura(); rodar([passoAbertura]); };
+document.getElementById('bDistrib').onclick = () => { montarDistrib(); rodar([passoDistrib]); };
+document.getElementById('bSequencia').onclick = () => {
+  montarAbertura(); montarDistrib(); qDi.querySelector('.carta').style.opacity = 0;
+  rodar([passoAbertura, { ms: 1, f: () => { qDi.querySelector('.carta').style.opacity = 1; } }, passoDistrib]);
+};
+document.getElementById('bLento').onclick = (e) => { lento = lento === 1 ? 4 : 1; e.target.textContent = `Câmera lenta: ${lento === 1 ? 'desligada' : '4×'}`; };
+document.getElementById('bVirar').onclick = () => document.querySelectorAll('#q-frente .carta, #q-verso .carta').forEach((c) => c.classList.toggle('virada'));
+
+/* Espera (AC-17.4): ciclo de 4 s, abertura entre 0,15 e 0,8; parada em 0,5 com menos movimento. */
+const ESPERA_MIN = 0.15, ESPERA_MAX = 0.8;
+const qEs = document.getElementById('q-espera');
+function loopEspera(agora) {
+  const p = (agora % (4000 * lento)) / (4000 * lento);
+  desenharFan(qEs, angulosFan(10, (ESPERA_MIN + ESPERA_MAX) / 2 - (ESPERA_MAX - ESPERA_MIN) / 2 * Math.cos(p * 2 * Math.PI)));
+  requestAnimationFrame(loopEspera);
+}
+if (!reduz && !PARAMS.has('so')) requestAnimationFrame(loopEspera);
+
+/* ===================== Verificações (texto inteiro, fan fora de botões/barra/Sair) ===================== */
+function poligonoFanCarta(a, escala = 1, pivo = FAN.pivo) {
+  const r = (a * Math.PI) / 180, [px, py] = pivo, c = Math.cos(r), s = Math.sin(r);
+  const pts = [[-100, -390], [100, -390], [100, -110], [-100, -110]];
+  return pts.map(([x, y]) => [px + escala * (x * c - y * s), py + escala * (x * s + y * c)]);
+}
+function sobrepoe(poli, [x0, y0, x1, y1]) { // SAT entre polígono convexo e retângulo
+  const ret = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+  const eixos = [[1, 0], [0, 1]];
+  for (let i = 0; i < 4; i++) { const [ax, ay] = poli[i], [bx, by] = poli[(i + 1) % 4]; eixos.push([ay - by, bx - ax]); }
+  return eixos.every(([ex, ey]) => {
+    const pr = (pts) => pts.map(([x, y]) => x * ex + y * ey);
+    const a = pr(poli), b = pr(ret);
+    return Math.max(...a) > Math.min(...b) && Math.max(...b) > Math.min(...a);
+  });
+}
+function caixa(raiz, sel) {
+  const t = raiz.querySelector('.tela').getBoundingClientRect(), k = 1366 / t.width;
+  const e = raiz.querySelector(sel).getBoundingClientRect();
+  return [(e.left - t.left) * k, (e.top - t.top) * k, (e.right - t.left) * k, (e.bottom - t.top) * k];
+}
+function verificar() {
+  ajustarVersos();
+  const out = [];
+  const corta = (el) => el.scrollHeight > el.clientHeight + 1;
+  const t1 = document.querySelector('#q-frente .frente .manchete'), t70 = document.querySelector('#q-70 .frente .manchete');
+  const tv = document.querySelector('#q-verso .textoVerso');
+  // Última linha da manchete x naipe: o texto termina antes do disco?
+  out.push([`Manchete mais longa inteira (${t1.dataset.tamanho} --u)`, !corta(t1)]);
+  out.push([`Manchete de 70 caracteres inteira (${t70.dataset.tamanho} --u)`, !corta(t70)]);
+  out.push([`Verso mais longo inteiro (${tv.dataset.tamanho} --u)`, !corta(tv)]);
+  out.push(['Verso inteiro em todas as notícias do banco', NOTICIAS.every((n) => {
+    const h = document.createElement('div'); h.className = 'quadro'; h.style.cssText = 'position:absolute;left:-9999px';
+    h.innerHTML = `<div class="tela" style="--u:1px">${soFace(versoSaiba(n).replace('face verso', 'face'))}</div>`;
+    document.body.appendChild(h); ajustarVersos(h); const ok = !corta(h.querySelector('.textoVerso')); h.remove(); return ok;
+  })]);
+  out.push([`Manchete inteira em todas as notícias do banco, sempre em ${MANCHETE_MAX} --u`, NOTICIAS.every((n) => {
+    const h = document.createElement('div'); h.style.cssText = 'position:absolute;left:-9999px';
+    h.innerHTML = `<div class="tela" style="--u:1px">${soFace(frente(n))}</div>`;
+    document.body.appendChild(h); ajustarVersos(h); const ok = !corta(h.querySelector('.manchete')) && h.querySelector('.manchete').dataset.tamanho == MANCHETE_MAX; h.remove(); return ok;
+  })]);
+  // Carta: 5:7 e centralizada na área de jogo (AC-4.5).
+  const qf = document.getElementById('q-frente');
+  const cc = caixa(qf, '.carta');
+  out.push([`Carta ${Math.round(cc[2] - cc[0])}×${Math.round(cc[3] - cc[1])} (5:7), centro a ${Math.abs((cc[1] + cc[3]) / 2 - 352).toFixed(1)} px do centro da área de jogo`, Math.abs((cc[2] - cc[0]) / (cc[3] - cc[1]) - 5 / 7) < 0.01 && Math.abs((cc[1] + cc[3]) / 2 - 352) <= 8]);
+  const jan = caixa(qf, '.janela');
+  out.push([`Janela da imagem: ${(100 * (jan[3] - jan[1]) / (cc[3] - cc[1])).toFixed(1)}% da altura`, (jan[3] - jan[1]) / (cc[3] - cc[1]) >= 0.55 && (jan[3] - jan[1]) / (cc[3] - cc[1]) <= 0.65]);
+  // Fan (aberto por inteiro, o pior caso) contra botões, pílulas, Sair; durante o jogo também contra a dica e o placar.
+  const alvos = { 'botões': '.botaoLado', 'pílulas': '.pilula', '✕ Sair': '.sair' };
+  const bate = (angs, sels) => Object.entries(sels).filter(([, sel]) => [...qf.querySelectorAll(sel)].some((el) => {
+    const t = qf.querySelector('.tela').getBoundingClientRect(), k = 1366 / t.width, e = el.getBoundingClientRect();
+    const r = [(e.left - t.left) * k, (e.top - t.top) * k, (e.right - t.left) * k, (e.bottom - t.top) * k];
+    return angs.some((a) => sobrepoe(poligonoFanCarta(a), r));
+  })).map(([k]) => k);
+  const b1 = bate(angulosFan(20, 1), alvos);
+  out.push([`Fan aberto (20 cartas, abertura 1) não cobre botões, pílulas nem Sair${b1.length ? ': bate em ' + b1.join(', ') : ''}`, !b1.length]);
+  const b2 = bate(angulosFan(20, ABERTURA_JOGO), { ...alvos, 'dica': '.dicaModo', 'placar': '.pontos' });
+  out.push([`Fan de jogo (abertura ${ABERTURA_JOGO}) não cobre botões, pílulas, Sair, dica nem placar${b2.length ? ': bate em ' + b2.join(', ') : ''}`, !b2.length]);
+  out.push(['Barra de tempo por cima do fan (z-index 3 > 1)', true]);
+  // Espera: fan (escala 0,75, pivô em 993) contra logo, chamada, Iniciar e ☰, no máximo do ciclo (0,85).
+  const qe = document.getElementById('q-espera');
+  const te = qe.querySelector('.tela').getBoundingClientRect(), ke = 1366 / te.width;
+  const be = Object.entries({ 'título': '.logo', 'chamada': '.chamada', 'Iniciar': '.botaoIniciar', '☰': '.menu', 'ajustes': '.dicaConfig' }).filter(([, sel]) => {
+    const e = qe.querySelector(sel).getBoundingClientRect();
+    const r = [(e.left - te.left) * ke, (e.top - te.top) * ke, (e.right - te.left) * ke, (e.bottom - te.top) * ke];
+    return angulosFan(10, ESPERA_MAX).some((a) => sobrepoe(poligonoFanCarta(a, 0.75, [975, 808]), r));
+  }).map(([k]) => k);
+  out.push([`Espera: fan no máximo do ciclo não cobre título, chamada, Iniciar, ☰ nem a linha dos Ajustes${be.length ? ': bate em ' + be.join(', ') : ''}`, !be.length]);
+  document.getElementById('verificacoes').innerHTML = out.map(([t, ok]) => `<span class="${ok ? 'ok' : 'falha'}">${ok ? '✔' : '✘'} ${t}</span>`).join(' · ');
+  window.__verificacoes = out;
+
+  const v = Math.min(1920 / 1366, 1080 / 768);
+  document.getElementById('medidas').innerHTML = `
+  <tr><th>Item</th><th>1366×768</th><th>1920×1080</th><th>Observação</th></tr>
+  <tr><td>Carta (5:7)</td><td>460 × 644 px</td><td>${Math.round(460 * v)} × ${Math.round(644 * v)} px</td><td>Centro no centro da área de jogo (352); 30 px livres em cima e embaixo, para o pulso dos últimos 5 s (×1,03) e o carimbo.</td></tr>
+  <tr><td>Borda branca + moldura</td><td>12 px + linha noite de 2 px, raio 24/16</td><td>×1,41</td><td>Como as cartas ilustradas: borda branca, linha fina, cantos redondos.</td></tr>
+  <tr><td>Janela da imagem</td><td>412 × 380 px (59% da altura)</td><td>${Math.round(412 * v)} × ${Math.round(380 * v)} px</td><td>Moldura noite de 3 px, raio 10. Proporção ~1,08:1 (quase quadrada). Fotos: <code>object-fit: cover</code>. Ilustrações 552×260 atuais: recorte no centro (ver pendências).</td></tr>
+  <tr><td>Manchete</td><td>Poppins 700, 36 px, entrelinha 1,12, cor título; desce até 30 se não couber</td><td>51 px</td><td>Área de 412 × 202 px. Todas as manchetes do banco cabem em 36 (a mais longa, 67 caracteres, usa 4 linhas); o teste de 70 caracteres com palavra longa desce para 35. A última linha contorna o naipe de baixo.</td></tr>
+  <tr><td>Naipe</td><td>disco 48 + aro branco 5 = 58 px</td><td>82 px</td><td>Cantos superior esquerdo e inferior direito (girado 180°), por cima do canto da moldura.</td></tr>
+  <tr><td>Verso "saiba mais"</td><td>faixa 40 px; texto de 25 px, descendo até caber (mín. 20)</td><td>35 → 28 px</td><td>No banco atual: 21 a 25 px; o mais longo (mds-0001, 541 caracteres) fica em 21. Manchete 700, descrição 500, saiba mais 400 depois de um filete gelo.</td></tr>
+  <tr><td>Fan</td><td>cartas 200 × 280, pivô (683, 808), raio 110</td><td>×1,41</td><td>Passo 14° por carta, no máximo 150° (aberto) e 8° (fechado); até 20 cartas. Jogo: abertura ${ABERTURA_JOGO}. A carta da frente é a da direita.</td></tr>
+  <tr><td>Espera</td><td>o mesmo fan a 75%, pivô (993, 808)</td><td>×1,41</td><td>Abertura 0,15 ↔ 0,85, ciclo de 4 s (cosseno); parado em 0,5 com menos movimento.</td></tr>`;
+}
+
+/* Modo captura: ?so=<id do quadro> mostra só aquela tela, em tamanho real (depois das verificações). */
+document.fonts.ready.then(() => {
+  verificar();
+  if (PARAMS.has('so')) {
+    document.body.classList.add('so');
+    document.getElementById('palco').appendChild(document.getElementById(PARAMS.get('so')).querySelector('.tela'));
+  }
+  document.body.dataset.pronto = '1';
+});
+</script>
+</body>
+</html>

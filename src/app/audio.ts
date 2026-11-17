@@ -2,7 +2,8 @@ import type { Som } from '../core/sons';
 
 interface Nota { freq: number; ate?: number; duracao: number; tipo: OscillatorType; volume: number; atraso?: number }
 
-const SONS: Record<Som, Nota[]> = {
+/** Sons de notas; a `carta` (ruído) é sintetizada à parte, em `tocarPapel`. */
+const SONS: Record<Exclude<Som, 'carta'>, Nota[]> = {
   deslizar: [{ freq: 900, ate: 300, duracao: 0.18, tipo: 'sine', volume: 0.15 }],
   acerto: [
     { freq: 660, duracao: 0.12, tipo: 'triangle', volume: 0.2 },
@@ -40,6 +41,35 @@ const SONS: Record<Som, Nota[]> = {
   ],
 };
 
+/**
+ * "Fff" de papel de uma carta saindo do fan (AC-17.8, v13.0.0): ruído branco curto num passa-faixa que sobe de 2,5 a
+ * 5 kHz, com ataque rápido e queda exponencial. Gerado no próprio jogo, sem arquivo de áudio.
+ */
+const PAPEL = { duracao: 0.14, volume: 0.22, de: 2500, ate: 5000, q: 0.9 };
+
+function tocarPapel(c: AudioContext, fator: number) {
+  const quadros = Math.max(1, Math.floor(c.sampleRate * PAPEL.duracao));
+  const buffer = c.createBuffer(1, quadros, c.sampleRate);
+  const dados = buffer.getChannelData(0);
+  for (let i = 0; i < quadros; i++) dados[i] = Math.random() * 2 - 1;
+  const inicio = c.currentTime;
+  const fonte = c.createBufferSource();
+  fonte.buffer = buffer;
+  const filtro = c.createBiquadFilter();
+  filtro.type = 'bandpass';
+  filtro.Q.value = PAPEL.q;
+  filtro.frequency.setValueAtTime(PAPEL.de, inicio);
+  filtro.frequency.exponentialRampToValueAtTime(PAPEL.ate, inicio + PAPEL.duracao);
+  const ganho = c.createGain();
+  ganho.gain.setValueAtTime(PAPEL.volume * fator, inicio);
+  ganho.gain.exponentialRampToValueAtTime(0.001, inicio + PAPEL.duracao);
+  fonte.connect(filtro);
+  filtro.connect(ganho);
+  ganho.connect(c.destination);
+  fonte.start(inicio);
+  fonte.stop(inicio + PAPEL.duracao);
+}
+
 /** `fator`: volume dos Ajustes (AC-9.29): 1 = Alto (como antes), 0,6 = Médio, 0,3 = Baixo. */
 export interface Tocador { tocar(som: Som, fator?: number): void; desbloquear(): void }
 
@@ -65,6 +95,15 @@ export function criarTocador(): Tocador {
     tocar(som, fator = 1) {
       const c = obter();
       if (!c) return;
+      if (som === 'carta') {
+        // O som é enfeite: um navegador sem algum nó de áudio não pode derrubar a partida (FR-11).
+        try {
+          tocarPapel(c, fator);
+        } catch {
+          /* sem som de carta */
+        }
+        return;
+      }
       for (const n of SONS[som]) {
         const inicio = c.currentTime + (n.atraso ?? 0);
         const osc = c.createOscillator();

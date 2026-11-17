@@ -1,15 +1,17 @@
-import { useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
+import { useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import { AJUSTES_PADRAO, resumoAjustes, type Ajustes } from '../core/ajustes';
 import { DICA_GESTOS, DICA_SAIBA_MAIS, type ModoJogo } from '../core/modos';
 import type { AncorasRosto } from '../core/ancorasRosto';
 import { FAIXAS, faixaDeAcertos, type Faixa } from '../core/faixas';
 import type { LinhaResumo } from '../core/fontesRodada';
+import { LETRA_MANCHETE, LETRA_VERSO, maiorTamanhoQueCabe } from '../core/carta';
 import { TEMPOS, mensagemResumo, type Resultado } from '../core/partida';
 import { feedbackTutorial, type IlustracaoPerfil } from '../core/tutorial';
 import { TECNICA_ROTULO, type Noticia, type Veredito } from '../core/types';
 import { FiltroFoto } from './FiltroFoto';
 import { Forma, type IdForma } from './Forma';
-import { IlustracaoTema, corDoTema } from './IlustracaoTema';
+import { IlustracaoTema, corDoTema, tintaDoTema } from './IlustracaoTema';
+import { Naipe } from './Naipe';
 import { ilustracaoDaNoticia, ilustracaoDoPerfil } from './ilustracoes';
 import { QrCode } from './QrCode';
 import type { StatusCamera } from './useJogo';
@@ -201,13 +203,87 @@ function Lado({ lado, escolhido }: { lado: 'mentira' | 'verdade'; escolhido: boo
 }
 
 /**
- * Imagem do card (FR-4): a da notícia; senão, a ilustração "recorte chapado" dela; senão, a do tema.
- * Treino (AC-15.7): o desenho do próprio perfil, maior; sem ele, a do tema.
+ * Imagem da carta (FR-4): a da notícia; senão, a ilustração "recorte chapado" dela; senão, a do tema (na versão retrato,
+ * v13.0.0). Treino (AC-15.7): o desenho do próprio perfil; sem ele, a do tema.
  */
 function ImagemCard({ noticia, treino }: { noticia: Noticia; treino?: PassoTreino }) {
   if (treino?.ilustracao) return <img className={s.imagemPerfil} src={ilustracaoDoPerfil(treino.ilustracao)} alt="" draggable={false} />;
   if (noticia.imagem) return <img src={src(noticia.imagem)} alt="" draggable={false} />;
-  return <IlustracaoTema tema={noticia.tema} imagem={ilustracaoDaNoticia(noticia.id)} />;
+  return <IlustracaoTema tema={noticia.tema} imagem={ilustracaoDaNoticia(noticia.id)} retrato />;
+}
+
+/**
+ * Letra que cabe (AC-17.1, AC-17.2): mede o texto na carta e desce o tamanho (em `--u`) até caber; escreve `--letra`.
+ * Mede de novo quando a fonte termina de carregar. Proporcional à tela, então vale em 1366×768 e em 1920×1080.
+ */
+function useLetraQueCabe<T extends HTMLElement>(faixa: { max: number; min: number }, chave: string) {
+  const ref = useRef<T>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ajustar = () => {
+      maiorTamanhoQueCabe(faixa.max, faixa.min, (t) => {
+        el.style.setProperty('--letra', String(t));
+        return el.scrollHeight <= el.clientHeight + 1;
+      });
+    };
+    ajustar();
+    let vivo = true;
+    void document.fonts?.ready.then(() => { if (vivo) ajustar(); });
+    return () => { vivo = false; };
+  }, [chave, faixa.max, faixa.min]);
+  return ref;
+}
+
+/** Reserva do canto inferior direito para o naipe girado: a última linha do texto contorna o disco. */
+const ReservaNaipe = () => (
+  <>
+    <i className={s.reserva} aria-hidden="true" />
+    <i className={s.reservaNaipe} aria-hidden="true" />
+  </>
+);
+
+function FrenteCarta({ noticia, treino, oculta }: { noticia: Noticia; treino?: PassoTreino; oculta: boolean }) {
+  const manchete = useLetraQueCabe<HTMLHeadingElement>(LETRA_MANCHETE, noticia.id + noticia.titulo);
+  const frase = useLetraQueCabe<HTMLParagraphElement>({ max: 26, min: 20 }, noticia.id + noticia.descricao);
+  return (
+    <div className={cx(s.face, s.faceFrente, treino && s.faceTreino)} data-face-carta="frente" aria-hidden={oculta || undefined}>
+      <div className={s.moldura}>
+        <div className={s.janela} data-janela><ImagemCard noticia={noticia} treino={treino} /></div>
+        {treino ? (
+          <>
+            {/* AC-17.1 (v13.1.0): o treino não tem verso, então a frase do perfil fica na frente, abaixo do nome. */}
+            <h2 className={s.manchete}>{noticia.titulo}</h2>
+            <p className={s.frase} ref={frase}><ReservaNaipe />{noticia.descricao}</p>
+          </>
+        ) : (
+          <h2 className={s.manchete} ref={manchete}><ReservaNaipe />{noticia.titulo}</h2>
+        )}
+      </div>
+      <Naipe tema={noticia.tema} posicao="superior" />
+      <Naipe tema={noticia.tema} posicao="inferior" />
+    </div>
+  );
+}
+
+/** Verso de "saiba mais" (AC-17.2): mesma moldura e naipes, faixa da cor do tema, manchete menor, descrição e texto. */
+function VersoCarta({ noticia, oculta }: { noticia: Noticia; oculta: boolean }) {
+  const texto = useLetraQueCabe<HTMLDivElement>(LETRA_VERSO, noticia.id + noticia.descricao + noticia.saibaMais);
+  return (
+    <div className={cx(s.face, s.faceVerso)} data-face-carta="verso" aria-hidden={oculta || undefined}>
+      <div className={s.moldura}>
+        <div className={s.faixaVerso} style={{ background: corDoTema(noticia.tema), color: tintaDoTema(noticia.tema) }}>Saiba mais</div>
+        <div className={s.textoVerso} ref={texto} data-texto-verso>
+          <ReservaNaipe />
+          <h3>{noticia.titulo}</h3>
+          <p className={s.descricaoVerso}>{noticia.descricao}</p>
+          <p className={s.saibaMaisVerso}>{noticia.saibaMais}</p>
+        </div>
+      </div>
+      <Naipe tema={noticia.tema} posicao="superior" />
+      <Naipe tema={noticia.tema} posicao="inferior" />
+    </div>
+  );
 }
 
 export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, treino, cardRef, onArrastar }: {
@@ -230,17 +306,21 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
   const inicioX = useRef<number | null>(null);
   const alerta = !saida && !treino && restanteMs <= 5000;
   const pulsando = alerta && !ausente; // AC-4.7: só "Volte para o centro" pausa o cronômetro (v5.0.0)
+  const verso = saibaMais && !treino; // AC-15.6: o treino nunca vira
   return (
     <main className={`${s.tela} ${s.sobrio}`}>
       <div className={s.mesa} data-mesa>
       <Lado lado="mentira" escolhido={saida === 'esquerda'} />
-      {/* Pilha de cards (AC-2.12, v11.0.0): duas camadas paradas atrás; a pilha tem o tamanho do card (AC-4.5). */}
-      <div className={s.pilha}>
-      <div className={`${s.camadaPilha} ${s.camadaPilha1}`} data-pilha-camada aria-hidden="true" />
-      <div className={`${s.camadaPilha} ${s.camadaPilha2}`} data-pilha-camada aria-hidden="true" />
+      {/*
+        Carta de baralho (v13.0.0, AC-17.1, AC-17.2, AC-3.6): o article recebe o movimento com o corpo (useInclinacaoCard),
+        a saída e o pulso; dentro, o giro vira as duas faces em ~400 ms (CSS, sem tempo no reducer). O carimbo fica fora
+        das faces, para não virar junto. Atrás da carta, a pilha parada saiu (AC-2.12); o fan entra na Fase 48.
+      */}
       <article
         ref={cardRef}
-        className={cx(s.card, saida && (saida === 'direita' ? s.saiDireita : s.saiEsquerda), pulsando && s.pulsando)}
+        data-carta
+        data-face={verso ? 'verso' : 'frente'}
+        className={cx(s.carta, verso && s.virada, saida && (saida === 'direita' ? s.saiDireita : s.saiEsquerda), pulsando && s.pulsando)}
         onPointerDown={(e) => { inicioX.current = e.clientX; }}
         onPointerUp={(e) => {
           if (inicioX.current === null) return;
@@ -250,30 +330,25 @@ export function TelaCard({ noticia, restanteMs, saibaMais, ausente, saida, ponto
           else if (dx < -100) onArrastar('esquerda');
         }}
       >
-        {saibaMais ? (
-          <>
-            <div className={s.faixaTema} style={{ background: corDoTema(noticia.tema) }} />
-            <div className={s.saibaMais}>
-              <h2>{noticia.titulo}</h2>
-              <p>{noticia.saibaMais}</p>
-            </div>
-          </>
-        ) : (
-          <>
-            <ImagemCard noticia={noticia} treino={treino} />
-            <h2>{noticia.titulo}</h2>
-            <p>{noticia.descricao}</p>
-            {!treino && <p className={s.dicaCard}><Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />{DICA_SAIBA_MAIS[modo]}</p>}
-          </>
-        )}
+        <div className={s.giro}>
+          <FrenteCarta noticia={noticia} treino={treino} oculta={verso} />
+          {!treino && <VersoCarta noticia={noticia} oculta={!verso} />}
+        </div>
         <RotuloLado lado="mentira" carimbado={saida === 'esquerda'} />
         <RotuloLado lado="verdade" carimbado={saida === 'direita'} />
       </article>
-      </div>
       <Lado lado="verdade" escolhido={saida === 'direita'} />
       </div>
-      {/* Fora do card, para não tirar espaço do texto da notícia (FR-4). */}
-      {modo !== 'corpo' && <p className={s.dicaModo}>{DICA_GESTOS[modo]}</p>}
+      {/* Fora da carta, para não tirar espaço da notícia (FR-4); a dica de "saiba mais" saiu da carta (AC-17.1). */}
+      <div className={s.dicas}>
+        {modo !== 'corpo' && <p className={s.dicaModo}>{DICA_GESTOS[modo]}</p>}
+        {!treino && !saida && (
+          <p className={s.dicaModo} data-dica-saiba-mais>
+            <Forma id="marca-estrela-5" largura={18} className={s.marcaDica} />
+            {DICA_SAIBA_MAIS[modo]}
+          </p>
+        )}
+      </div>
       {treino ? <MarcaTreino treino={treino} /> : <Placar pontos={pontos} />}
       {!saida && !treino && <BarraTempo restanteMs={restanteMs} totalMs={totalMs} alerta={alerta} />}
       {ausente && <div className={s.sobreposicao}>Volte para o centro</div>}

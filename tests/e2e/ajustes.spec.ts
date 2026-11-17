@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 // v12.0.0: o painel "Ajustes" (FR-9) substituiu o menu "Configurações" (até a v11.0.0).
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
@@ -24,6 +25,7 @@ async function jogarAteOResumo(page: Page, n: number) {
   await page.keyboard.press('Enter');
   for (let i = 0; i < n; i++) {
     await expect(page.locator('article')).toBeVisible();
+    await esperarCartaPousada(page);
     await page.keyboard.press(i % 2 ? 'ArrowLeft' : 'ArrowRight');
     await expect(page.locator('article')).toHaveCount(0);                                   // saiu para o feedback
   }
@@ -99,6 +101,7 @@ test('pelo mouse, via ☰ › Ajustes (AC-9.2, FR-14), e setas no modo Cabeça (
   await page.keyboard.press('Enter');
   await expect(page.getByText('Saiba mais: levante o queixo (ou ↑)')).toBeVisible();
   await expect(painel).toHaveCount(0);
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('article')).toHaveCount(0);                                     // escolheu: foi para o feedback
 });

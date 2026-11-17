@@ -22,23 +22,27 @@ const escolha = (resposta: Veredito): Evento => ({ tipo: 'escolha', resposta });
 const rodar = (s: Estado, eventos: Evento[], c = ctx()) => eventos.reduce((e, ev) => reduzir(e, ev, c), s);
 // v12.0.0 (AC-4.10, AC-9.25): o treino soma a saída do card e a carimbada, como a partida.
 const SAIDA_E_FEEDBACK = TEMPOS.feedbackMs + TEMPOS.carimboMs + TEMPOS.saidaMs;
+// v13.0.0: abertura do fan (AC-17.5) e distribuição de cada carta (AC-17.6).
+const ABRIR = tick(TEMPOS.aberturaFanMs);
+const POUSAR = tick(TEMPOS.distribuirMs);
+const PARTIDA = { cards: [], resultados: [], entrada: 'alternativa' as const };
 
 describe('tutorial: entrada (AC-15.1, AC-15.2)', () => {
   it('AC-15.1: desligado (sem perfis), a partida começa direto, como antes', () => {
-    expect(rodar(ESTADO_INICIAL, [enter, enter], ctx({ tutorial: [] })).tela).toBe('card');
-    expect(rodar(ESTADO_INICIAL, [enter], ctx({ tutorial: undefined, cameraAtiva: false })).tela).toBe('card');
+    expect(rodar(ESTADO_INICIAL, [enter, enter, ABRIR], ctx({ tutorial: [] })).tela).toBe('card');
+    expect(rodar(ESTADO_INICIAL, [enter, ABRIR], ctx({ tutorial: undefined, cameraAtiva: false })).tela).toBe('card');
   });
 
   it('AC-15.2: ligado, a calibração concluída leva ao treino 1 (entrada "corpo"), não ao card', () => {
-    const s = rodar(ESTADO_INICIAL, [enter, tick(16), tick(1000), tick(1000)]);
-    expect(s).toEqual({ tela: 'tutorial', passo: 0, entrada: 'corpo' });
+    const s = rodar(ESTADO_INICIAL, [enter, tick(16), tick(1000), tick(1000), ABRIR]);
+    expect(s).toMatchObject({ tela: 'tutorial', passo: 0, treinos: 4, partida: { entrada: 'corpo' } });
   });
 
   it('AC-15.2: Enter na calibração, Enter na espera sem câmera e Enter no resumo sem câmera também passam pelo treino', () => {
-    expect(rodar(ESTADO_INICIAL, [enter, enter])).toEqual({ tela: 'tutorial', passo: 0, entrada: 'alternativa' });
-    expect(rodar(ESTADO_INICIAL, [enter], ctx({ cameraAtiva: false }))).toEqual({ tela: 'tutorial', passo: 0, entrada: 'alternativa' });
-    const resumo: Estado = { tela: 'resumo', partida: { cards: [], resultados: [], entrada: 'alternativa' } };
-    expect(rodar(resumo, [enter], ctx({ cameraAtiva: false })).tela).toBe('tutorial');
+    expect(rodar(ESTADO_INICIAL, [enter, enter, ABRIR])).toMatchObject({ tela: 'tutorial', passo: 0, partida: { entrada: 'alternativa' } });
+    expect(rodar(ESTADO_INICIAL, [enter, ABRIR], ctx({ cameraAtiva: false }))).toMatchObject({ tela: 'tutorial', passo: 0, partida: { entrada: 'alternativa' } });
+    const resumo: Estado = { tela: 'resumo', partida: PARTIDA };
+    expect(rodar(resumo, [enter, ABRIR], ctx({ cameraAtiva: false })).tela).toBe('tutorial');
     expect(rodar(resumo, [enter]).tela).toBe('calibracao');
   });
 
@@ -48,9 +52,8 @@ describe('tutorial: entrada (AC-15.1, AC-15.2)', () => {
 });
 
 describe('calibrarAoSair (FR-2: centro medido na calibração)', () => {
-  it('calibra ao sair da calibração para o card ou, com o tutorial, para o treino; nunca do treino para o card', () => {
-    expect(calibrarAoSair('calibracao', 'card')).toBe(true);
-    expect(calibrarAoSair('calibracao', 'tutorial')).toBe(true);
+  it('calibra ao sair da calibração para a abertura (v13.0.0); nunca do treino para o card', () => {
+    expect(calibrarAoSair('calibracao', 'abertura')).toBe(true);
     expect(calibrarAoSair('tutorialFeedback', 'card')).toBe(false);
     expect(calibrarAoSair('calibracao', 'espera')).toBe(false);
     expect(calibrarAoSair('feedback', 'card')).toBe(false);
@@ -58,22 +61,26 @@ describe('calibrarAoSair (FR-2: centro medido na calibração)', () => {
 });
 
 describe('tutorial: card e feedback de treino (AC-15.3 a AC-15.6)', () => {
-  const treino = (passo = 0): Estado => ({ tela: 'tutorial', passo, entrada: 'alternativa' });
+  // Treino já pousado (a distribuição está em partida-abertura.test.ts); a partida já vem sorteada desde a abertura.
+  const sorteada = (entrada: 'corpo' | 'alternativa' = 'alternativa') => ({ cards: noticias, resultados: [], entrada });
+  const treino = (passo = 0, entrada: 'corpo' | 'alternativa' = 'alternativa'): Estado =>
+    ({ tela: 'tutorial', passo, treinos: 4, partida: sorteada(entrada), distribuindoMs: 0 });
 
   it('AC-15.3: a escolha vai para o feedback de treino, com a saída do card + 3 s', () => {
     expect(rodar(treino(), [escolha('verdadeira')])).toEqual({
-      tela: 'tutorialFeedback', passo: 0, entrada: 'alternativa', restanteMs: SAIDA_E_FEEDBACK, resposta: 'verdadeira', resultadoMs: TEMPOS.carimboMs + TEMPOS.feedbackMs,
+      tela: 'tutorialFeedback', passo: 0, treinos: 4, partida: sorteada(), restanteMs: SAIDA_E_FEEDBACK, resposta: 'verdadeira',
+      resultadoMs: TEMPOS.carimboMs + TEMPOS.feedbackMs,
     });
   });
 
   it('fronteira: 1 ms antes do fim o feedback continua; no fim vem o treino seguinte', () => {
     const fb = rodar(treino(), [escolha('falsa')]);
     expect(rodar(fb, [tick(SAIDA_E_FEEDBACK - 1)])).toMatchObject({ tela: 'tutorialFeedback', restanteMs: 1 });
-    expect(rodar(fb, [tick(SAIDA_E_FEEDBACK)])).toEqual({ tela: 'tutorial', passo: 1, entrada: 'alternativa' });
+    expect(rodar(fb, [tick(SAIDA_E_FEEDBACK)])).toEqual({ tela: 'tutorial', passo: 1, treinos: 4, partida: sorteada(), distribuindoMs: TEMPOS.distribuirMs });
   });
 
   it('AC-15.2: depois do 4º treino vem o 1º card da partida com o cronômetro cheio e o placar zerado', () => {
-    const s = rodar(treino(3), [escolha('verdadeira'), tick(SAIDA_E_FEEDBACK)], ctx({ tempoCardMs: 20000 }));
+    const s = rodar(treino(3), [escolha('verdadeira'), tick(SAIDA_E_FEEDBACK), POUSAR], ctx({ tempoCardMs: 20000 }));
     expect(s).toMatchObject({ tela: 'card', indice: 0, restanteMs: 20000, saibaMais: false, ausenteMs: null });
     if (s.tela !== 'card') throw new Error();
     expect(s.partida.resultados).toEqual([]);
@@ -83,14 +90,14 @@ describe('tutorial: card e feedback de treino (AC-15.3 a AC-15.6)', () => {
 
   it('a entrada do treino segue para a partida (corpo pausa por ausência; alternativa não)', () => {
     const fim = (entrada: 'corpo' | 'alternativa') =>
-      rodar({ tela: 'tutorial', passo: 3, entrada }, [escolha('falsa'), tick(SAIDA_E_FEEDBACK)]);
+      rodar(treino(3, entrada), [escolha('falsa'), tick(SAIDA_E_FEEDBACK)]);
     expect(fim('corpo')).toMatchObject({ tela: 'card', partida: { entrada: 'corpo' } });
     expect(fim('alternativa')).toMatchObject({ tela: 'card', partida: { entrada: 'alternativa' } });
   });
 
   it('AC-15.4: o treino inteiro, certo ou errado, não deixa resultado na partida', () => {
-    let s: Estado = rodar(ESTADO_INICIAL, [enter, enter]);
-    for (const r of ['verdadeira', 'verdadeira', 'verdadeira', 'verdadeira'] as const) s = rodar(s, [escolha(r), tick(SAIDA_E_FEEDBACK)]);
+    let s: Estado = rodar(ESTADO_INICIAL, [enter, enter, ABRIR]);
+    for (const r of ['verdadeira', 'verdadeira', 'verdadeira', 'verdadeira'] as const) s = rodar(s, [POUSAR, escolha(r), tick(SAIDA_E_FEEDBACK)]);
     expect(s).toMatchObject({ tela: 'card', indice: 0, partida: { resultados: [] } });
   });
 
@@ -104,7 +111,7 @@ describe('tutorial: card e feedback de treino (AC-15.3 a AC-15.6)', () => {
   it('AC-15.6: sem cronômetro, sem pausa por ausência e sem "saiba mais" no treino', () => {
     const t = treino(0);
     expect(rodar(t, [tick(60_000, centro), tick(60_000, ninguem), tick(60_000, null)], ctx())).toEqual(t);
-    expect(rodar({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, [tick(20_000, ninguem)])).toEqual({ tela: 'tutorial', passo: 0, entrada: 'corpo' });
+    expect(rodar(treino(0, 'corpo'), [tick(20_000, ninguem)])).toEqual(treino(0, 'corpo'));
     expect(rodar(t, [{ tipo: 'saibaMais' }])).toEqual(t);
   });
 

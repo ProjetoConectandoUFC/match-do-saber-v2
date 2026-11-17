@@ -5,7 +5,7 @@ import { avisoSemNoticias, contarConteudo } from '../core/contagem';
 import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
 import { enderecoFontes, linhasDoResumo } from '../core/fontesRodada';
 import { URL_PUBLICA } from './enderecoPublico';
-import { TEMPOS, cardSaindo, pontos, type Estado } from '../core/partida';
+import { TEMPOS, cardSaindo, cartasNoFan, distribuindo, pontos, type Estado } from '../core/partida';
 import { filtrarConteudo } from '../core/sorteio';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
@@ -147,6 +147,10 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     case 'calibracao':
       tela = <TelaCalibracao progresso={estado.centradoMs / TEMPOS.calibracaoMs} modo={cfg.ajustes.modo} />;
       break;
+    case 'abertura':
+      // v13.0.0 (AC-17.5): provisório até o fan (Fase 48); a tela só desenha o que o estado diz.
+      tela = <main className={`${s.tela} ${s.sobrio}`} aria-label="Abrindo as cartas" />;
+      break;
     case 'card':
       tela = (
         <TelaCard
@@ -231,7 +235,13 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   }
 
   return (
-    <div className={s.app}>
+    // `data-*`: o que o reducer diz da partida (AC-17.3, AC-17.6), para os E2E e para o fan (Fase 48).
+    <div
+      className={s.app}
+      data-tela={estado.tela}
+      data-distribuindo={distribuindo(estado) || undefined}
+      data-cartas-no-fan={cartasNoFan(estado)}
+    >
       {tela}
       {camera === 'indisponivel' && estado.tela !== 'espera' && (
         <p className={s.faixa}>Câmera indisponível — use as setas</p>

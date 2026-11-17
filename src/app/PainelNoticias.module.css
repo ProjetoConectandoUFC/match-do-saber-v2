@@ -34,5 +34,7 @@
 .campoLargo { grid-column: 1 / -1; }
 .campo [aria-invalid='true'] { outline: 2px solid #c0182f; }
 .campo .erroCampo { color: #a3122a; }
+/* AC-7.13 (v13.1.0): aviso que não bloqueia (saiba mais longo). */
+.campo .avisoCampo { color: #7a4b00; font-weight: 600; }
 .espaco { flex: 1; }
 .pilulas span { padding: 0.2rem 0.75rem; border-radius: var(--raio-pilula); background: var(--cn-gelo); color: var(--cn-noite); font-weight: 600; }

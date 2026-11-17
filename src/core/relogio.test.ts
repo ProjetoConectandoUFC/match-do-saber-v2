@@ -25,8 +25,10 @@ describe('relógio do jogo: dt do quadro segue o tempo real (FR-1, AC-4.4)', () 
   });
 
   it('10 s de relógio real a 154 ms por quadro consomem ~10 s do card (restam ~5 s de 15 s)', () => {
-    let s: Estado = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, ctx);
-    expect(s).toMatchObject({ tela: 'card', restanteMs: TEMPOS.cardMs });
+    // v13.0.0: a abertura do fan e a distribuição (AC-17.5, AC-17.6) somam tempo antes do cronômetro; aqui, a carta já pousada.
+    let s: Estado = [{ tipo: 'enter' } as const, { tipo: 'tick', dtMs: TEMPOS.aberturaFanMs, presenca: null } as const,
+      { tipo: 'tick', dtMs: TEMPOS.distribuirMs, presenca: null } as const].reduce<Estado>((e, ev) => reduzir(e, ev, ctx), ESTADO_INICIAL);
+    expect(s).toMatchObject({ tela: 'card', restanteMs: TEMPOS.cardMs, distribuindoMs: 0 });
     let anterior = 0;
     for (let agora = 154; agora <= 10_000; agora += 154) {
       s = reduzir(s, { tipo: 'tick', dtMs: dtDoQuadro(agora, anterior), presenca: null }, ctx);

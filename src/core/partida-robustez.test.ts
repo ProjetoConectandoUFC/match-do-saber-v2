@@ -14,7 +14,9 @@ const ninguem: Presenca = { presente: false, centralizado: false };
 const tick = (dtMs: number, presenca: Presenca | null = centro): Evento => ({ tipo: 'tick', dtMs, presenca });
 const rodar = (s: Estado, ev: Evento[], c = ctx()) => ev.reduce((e, x) => reduzir(e, x, c), s);
 const calibracao = () => rodar(ESTADO_INICIAL, [{ tipo: 'enter' }]);
-const emCardCalibrado = (c = ctx()) => rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(1000), tick(1000)], c);
+/** v13.0.0: a abertura do fan (AC-17.5) e a distribuição da carta (AC-17.6) vêm antes da carta pousada. */
+const POUSAR = [tick(TEMPOS.aberturaFanMs), tick(TEMPOS.distribuirMs)];
+const emCardCalibrado = (c = ctx()) => rodar(ESTADO_INICIAL, [{ tipo: 'enter' }, tick(1000), tick(1000), ...POUSAR], c);
 
 describe('AC-1.4 (v12.1.0): a calibração tem um tempo máximo', () => {
   it('TEMPOS.calibracaoMaxMs = 30 s', () => {
@@ -34,9 +36,9 @@ describe('AC-1.4 (v12.1.0): a calibração tem um tempo máximo', () => {
     expect(s).toEqual(ESTADO_INICIAL);
   });
 
-  it('completar antes de 30 s continua iniciando a partida', () => {
+  it('completar antes de 30 s continua iniciando a partida (v13.0.0: pela abertura do fan, AC-17.5)', () => {
     const s = rodar(calibracao(), [tick(27000, lado), tick(1000), tick(1000)]);
-    expect(s.tela).toBe('card');
+    expect(s.tela).toBe('abertura');
   });
 });
 

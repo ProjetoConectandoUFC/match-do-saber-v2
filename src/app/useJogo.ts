@@ -2,7 +2,7 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import { extrairPontos, type Registro } from '../core/diagnostico';
 import { AJUSTES_PADRAO, contextoDosAjustes, type Ajustes } from '../core/ajustes';
 import { configGestos, criarInterpretador, medirCabeca, medirMaos, type Gesto, type Pose } from '../core/gestos';
-import { ESTADO_INICIAL, calibrarAoSair, reduzir, type Contexto, type Estado, type Evento } from '../core/partida';
+import { ESTADO_INICIAL, calibrarAoSair, permanenciaConta, reduzir, type Contexto, type Estado, type Evento } from '../core/partida';
 import { dtDoQuadro } from '../core/relogio';
 import type { Noticia } from '../core/types';
 import { PERFIS_TUTORIAL } from './perfisTutorial';
@@ -48,6 +48,9 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
   // Só para o modo de diagnóstico (FR-12): o laço lê a tela e o modo atuais sem recriar o efeito.
   const diagRef = useRef({ registro, tela: estado.tela as string, modo: config.modo });
   diagRef.current = { registro, tela: estado.tela, modo: config.modo };
+  // AC-2.13 + AC-17.6: o laço lê o estado do último render para saber se a carta está pousada.
+  const estadoRef = useRef(estado);
+  estadoRef.current = estado;
   const rastreador = useRef<Rastreador | null>(null);
   const telaAnterior = useRef(estado.tela);
   // Lidos pela reabertura da câmera (NFR Reliability, v12.1.0) sem recriar o efeito.
@@ -189,9 +192,9 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
       if (poses) {
         const deteccaoMs = performance.now() - antesDeteccao;
         // AC-2.13 (v12.1.0): fora de um card ou treino, nenhuma permanência conta; ela só começa com o card na tela.
-        // A tela vem do último render: no quadro em que o tick troca para o card, ainda vale a anterior e zera.
-        const telaAtual = diagRef.current.tela;
-        if (telaAtual !== 'card' && telaAtual !== 'tutorial') interp.current.zerar();
+        // v13.0.0 (AC-17.6): também não durante a abertura do fan e a distribuição; começa com a carta pousada.
+        // O estado vem do último render: no quadro em que o tick pousa a carta, ainda vale o anterior e zera.
+        if (!permanenciaConta(estadoRef.current)) interp.current.zerar();
         // AC-1.5 (v12.1.0): o interpretador acompanha o jogador entre os quadros; um passante não toma o controle.
         const leitura = interp.current.lerPoses(poses, agora);
         const pose = leitura.pose;

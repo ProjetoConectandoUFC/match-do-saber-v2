@@ -19,23 +19,23 @@ describe('telas', () => {
     render(<TelaEspera semNoticias={false} camera="negada" />);
     expect(screen.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeInTheDocument();
   });
-  it('FR-4: card mostra imagem, título, descrição, cronômetro e dica do saiba mais', () => {
+  // v13.0.0 (AC-17.1): a descrição foi para o verso e a dica para fora da carta (TelasV13.test.tsx).
+  it('FR-4: carta mostra imagem, título, cronômetro e a dica do saiba mais (fora dela)', () => {
     const { container } = render(<TelaCard noticia={noticia} restanteMs={14200} saibaMais={false} ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(container.querySelector('img')).toHaveAttribute('src', expect.stringContaining('content/img/n1.webp'));
-    expect(screen.getByText('Título X')).toBeInTheDocument();
-    expect(screen.getByText('Descrição Y')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Título X' })).toBeInTheDocument();
     expect(screen.getByRole('timer', { name: 'Tempo restante' })).toHaveTextContent('15 s');
     expect(container.querySelector('article')).not.toHaveTextContent(/^\d+$/m);
-    expect(screen.getByText(/Saiba mais/)).toBeInTheDocument();
+    const dica = screen.getByText(/^Saiba mais:/);
+    expect(container.querySelector('article')).not.toContainElement(dica);
   });
   it('FR-4 (v9.0.0): card sem imagem mostra a ilustração do tema no lugar', () => {
     const { imagem: _sem, ...semImagem } = noticia;
     const { container } = render(<TelaCard noticia={{ ...semImagem, tema: 'meio-ambiente' }} restanteMs={14200} saibaMais={false} ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(container.querySelector('img')).toBeNull();
     const ilustracao = screen.getByRole('img', { name: 'Tema: Meio ambiente' });
-    expect(ilustracao).toHaveAttribute('data-tema', 'meio-ambiente');
-    expect(ilustracao).toHaveTextContent('Meio ambiente');
-    expect(screen.getByText('Título X')).toBeInTheDocument();
+    expect(ilustracao).toHaveAttribute('data-tema', 'meio-ambiente'); // v13.0.0: sem o chip; o naipe diz o tema
+    expect(screen.getByRole('heading', { level: 2, name: 'Título X' })).toBeInTheDocument();
   });
   it('AC-3.1: saiba mais aberto mostra o texto expandido', () => {
     render(<TelaCard noticia={noticia} restanteMs={1000} saibaMais ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);

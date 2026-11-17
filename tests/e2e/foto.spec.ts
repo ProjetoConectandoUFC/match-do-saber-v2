@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
 const FOTO = 'Sua foto na partida';
@@ -7,6 +8,7 @@ const FOTO = 'Sua foto na partida';
 async function escolher(page: Page, n: number) {
   for (let i = 0; i < n; i++) {
     await expect(page.locator('article')).toBeVisible();
+    await esperarCartaPousada(page); // v13.0.0: setas só valem com a carta pousada (AC-17.6)
     await page.keyboard.press(i % 2 === 0 ? 'ArrowRight' : 'ArrowLeft');
     await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   }

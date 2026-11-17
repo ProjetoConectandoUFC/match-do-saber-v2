@@ -1,5 +1,6 @@
 import { escreverCsv } from '../../src/core/csv';
 import { expect, test, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
 
@@ -18,6 +19,11 @@ async function abrir(page: Page) {
       resume() { return Promise.resolve(); }
       createOscillator() { return new Osc(); }
       createGain() { return new Ganho(); }
+      // v13.0.0 (AC-17.8): o "fff" da carta é ruído filtrado; conta como som tocado.
+      sampleRate = 48000;
+      createBuffer(_c: number, n: number) { const d = new Float32Array(n); return { getChannelData: () => d }; }
+      createBufferSource() { return Object.assign(new No(), { buffer: null, start() { w.__sons++; }, stop() {} }); }
+      createBiquadFilter() { return Object.assign(new No(), { type: '', Q: { value: 0 }, frequency: new Param() }); }
     }
     w.AudioContext = Ctx;
   });
@@ -35,6 +41,7 @@ test('AC-10.1/AC-10.3: Iniciar começa; Sair (clique) e Esc encerram sem resumo'
   await expect(page.locator('article')).toHaveCount(0);
 
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowRight');
   await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   await page.keyboard.press('Escape');
@@ -55,6 +62,7 @@ test('AC-10.2: sem notícias, Iniciar desativado', async ({ page }) => {
 test('AC-10.5: Sair não cobre o card', async ({ page }) => {
   await abrir(page);
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page);
   const [a, b] = [(await page.getByRole('button', { name: 'Sair da partida' }).boundingBox())!, (await page.locator('article').boundingBox())!];
   expect(a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y).toBe(true);
 });
@@ -64,6 +72,7 @@ for (const vp of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) 
     await page.setViewportSize(vp);
     await abrir(page);
     await page.keyboard.press('Enter');
+    await esperarCartaPousada(page);
     const box = (await page.locator('article').boundingBox())!;
     const barra = (await page.getByRole('timer', { name: 'Tempo restante' }).boundingBox())!;
     expect(barra.y + barra.height).toBeCloseTo(vp.height, 0);          // colada na base
@@ -75,6 +84,7 @@ for (const vp of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) 
 test('AC-11.1–11.3: som ligado toca na escolha e no resultado', async ({ page }) => {
   await abrir(page);
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowRight');
   await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   await expect.poll(() => sonsTocados(page)).toBeGreaterThanOrEqual(2);
@@ -88,6 +98,7 @@ test('AC-11.4: som desligado não toca nada', async ({ page }) => {
   await page.keyboard.press('Escape');
   await expect(page.getByText('Modo: Corpo · 10 notícias · 15 s por card · Som: desligado', { exact: true })).toBeVisible();
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowRight');
   await expect(page.getByText(/^(Acertou!|Errou)$/)).toBeVisible();
   await page.waitForTimeout(500);
