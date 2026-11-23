@@ -16,3 +16,4 @@
   - aceleração (GPU/CPU, renderizador) no ☰ › Diagnóstico.
 
   884/884, `tsc` e build ok; E2E não rodados. O conserto estrutural (detecção fora do laço de desenho) fica para spec.
+- O responsável aprovou #13, #14 e #15 (web na v13.2.0). A `develop` tinha sido apagada no GitHub depois do #15 e foi recriada no ponto da `main`. `001-performance-rapida` recebeu a `main` por merge (884/884) e foi para PR.

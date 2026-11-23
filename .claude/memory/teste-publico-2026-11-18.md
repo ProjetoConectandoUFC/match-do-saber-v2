@@ -76,7 +76,7 @@ metadata:
   Sugestão: começar por carimbo e resultado, depois o anel. Só `transform`/`opacity`, sem animar sombra, blur ou filtro. O responsável pode pedir uma prévia HTML separada, como `docs/visual/previa.html`, antes da spec.
 
 ## Performance: feito em 23/11 e o que falta
-- **Feito** na branch `001-performance-rapida` (commit `a90448d`; PR para a develop depois do #14):
+- **Feito** na branch `001-performance-rapida` (commit `a90448d`; PR para a develop):
   - `ignore-gpu-blocklist` no Electron (`electron/gpu.cjs`);
   - câmera em 640×360;
   - ☰ › Diagnóstico mostra "aceleração" (delegate GPU/CPU e renderizador WebGL, com ⚠ se é software).
@@ -91,10 +91,9 @@ metadata:
   - re-render do App a cada tick.
 - **Medir:** abrir `?diagnostico` numa máquina parecida (Ryzen com gráficos integrados) e olhar `aceleração` e `detecção ms`. No Electron, `chrome://gpu` diz se o WebGL é hardware.
 
-## PRs abertos em 23/11 (ordem de aprovação)
-1. #14 `001-v13-ab` → develop (v13.2.0).
-2. #13 lote 4 (rascunho).
-3. PR da `001-performance-rapida`.
-4. #15 develop → main (publica a web).
+## Git em 23/11
+- PRs #13 (lote 4 como rascunho), #14 (v13.2.0) e #15 (develop → main) foram aprovados pelo responsável em 23/11. **A web publicada está na v13.2.0.**
+- A `develop` sumiu do GitHub depois do #15. O `delete_branch_on_merge` está desligado, então foi apagada à mão. **Recriada em 23/11 no ponto da `main` (`6dff797`).** Se foi de propósito, avisar.
+- PR da `001-performance-rapida` → develop aberto, só com a performance rápida e esta memória.
 
 Relacionados: [[experimento-cartas]], expediente `expediente/2026-11-23-desktop-pj0nrku.md`.
