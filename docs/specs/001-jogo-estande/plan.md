@@ -7,7 +7,7 @@
 ## Global Constraints
 
 - Tempos: 15 s por card (v2.0.0: configurável de 10 a 30 s, padrão 15 s), 3 s de feedback, 2 s de calibração, 10 s de tolerância sem pessoa (o "saiba mais" fechava sozinho após 5 s de inatividade até a v4.0.0; removido na v5.0.0); o resumo fica na tela até Enter.
-- 10 cards por partida, 5 verdadeiros + 5 falsos, sem repetição; completa com o outro lado; com menos de 10 notícias, usa todas.
+- 10 cards por partida (v12.0.0: configurável de 5 a 20, padrão 10), 5 verdadeiros + 5 falsos, sem repetição; completa com o outro lado; com menos de 10 notícias, usa todas.
 - Pontuação: +1 por acerto; 0 por erro ou tempo esgotado.
 - Gestos: tronco para a **própria direita** = match (verdadeira); para a própria esquerda = descarte (falsa); dois punhos acima do nariz = saiba mais; ~300 ms / ~500 ms de permanência; retorno ao centro entre escolhas.
 - Entrada alternativa: → match, ← descarte, ↑ saiba mais, Enter iniciar; arrastar o card com mouse/toque.
@@ -5439,7 +5439,127 @@ Spec: AC-2.10b, AC-2.11, AC-2.12, AC-4.1 a AC-4.3, AC-4.9, AC-5.1, AC-5.8 a AC-5
 - 41.8 Resumo: opção B (polaroid 384, placar, mensagem, cartão do QR e lista em duas colunas), 1366×768 e 1920×1080; E2E de layout, da página das fontes e capturas reais em `docs/visual/capturas/v11-aplicado/`.
 - 41.9 Verificação no hardware (pendente): ler o QR a 50–80 cm da TV com dois celulares; conferir os filtros com fotos reais (de frente, de lado, de boné); conferir a vinheta no som do estande.
 
-## Quickstart Validation
+## Phase 42 (added v12.0.0): Feedback por resultado e carimbo do veredito
+
+Spec: AC-4.1 a AC-4.3, AC-4.9, AC-4.10, AC-9.25 (só a soma do carimbo); FR-4, FR-15. Agente: agente-visual (prévia em `docs/visual/` + aplicação na mesma branch `001-v12-feedback-carimbo`; o responsável aprova pelo PR). TDD nos testes de componente e E2E. Não mexe em `gestos.ts` nem na geometria do card.
+
+- 42.1 Teste vermelho: `Telas.test.tsx` — feedback de acerto tem a classe/estado de acerto (verde), erro e tempo esgotado de erro (vermelho); nenhum texto "match" no feedback; o carimbo VERDADE/MENTIRA aparece por cima do texto do resultado; "Acertou!"/"Errou"/"Tempo esgotado" sempre presentes.
+- 42.2 Tokens `--cn-acerto` e `--cn-erro` em `tema.css` (menta/coral se forem lidos como verde/vermelho; senão, derivados), com contraste conferido.
+- 42.3 Componente do carimbo reaproveitado do card (AC-2.10b) no centro do feedback, sobre o texto do resultado; animação de carimbada (~300 ms) desligada com `prefers-reduced-motion`.
+- 42.4 Reducer: `TEMPOS.carimboMs` somado ao tempo do feedback (teste de fronteira em `partida.test.ts`, regra "animação soma").
+- 42.5 Treino do tutorial no mesmo layout (AC-4.10).
+- 42.6 E2E de layout 1366×768 e 1920×1080 + capturas em `docs/visual/capturas/v12-feedback/`.
+
+Status (2026-11-12): concluída na branch 001-v12-integracao (commits `0a5ff76`, `ca84945`, `0baf4bc`, `d94b504`, `9e9e258`, `1ebea03`, `3a37fee`, `2a4828f` e `d1ea95a`, da `001-v12-feedback-carimbo`; integração em `5049ea4`, que trocou a soma fixa por `duracaoResultadoMs(ctx)` = carimbada + tempo configurado). 42.1 a 42.6 feitas, com testes. Pendências: decisões visuais do responsável (tokens `--cn-acerto`/`--cn-erro`, tamanhos, carimbo coral sobre o vermelho, se a ilustração de `politica` lembra a bandeira da UE) e a verificação no hardware a 2 m (45.2).
+
+## Phase 43 (added v12.0.0): Ajustes, visibilidade e tema `politica`
+
+Spec: AC-5.2, AC-5.4, AC-5.5, AC-6.1 a AC-6.4, AC-7.2, AC-7.3, AC-7.7, AC-7.12, AC-9.1, AC-9.2, AC-9.4, AC-9.17, AC-9.23 a AC-9.30; FR-1, FR-5, FR-6, FR-7, FR-9, FR-14. Agente: agente-mecanico, branch `001-v12-ajustes`. TDD (lógica pura primeiro).
+
+- 43.1 `src/core/ajustes.ts` (evolui `modos.ts`): itens, grupos, opções, padrões, leitura/gravação no armazenamento com compatibilidade das 5 chaves antigas, "Restaurar padrão".
+- 43.2 Sorteio parametrizado: `sortear(noticias, rng, { quantidade, temas, dificuldade })` com AC-6.1 a AC-6.4 para N qualquer (par e ímpar) e a ordem "Crescente".
+- 43.3 Reducer/contexto: tempo do feedback, tolerância sem pessoa e volta automática do resumo vindos dos ajustes (testes de fronteira).
+- 43.4 Gestos: multiplicador de sensibilidade aplicado aos limiares de distância de `CONFIG_GESTOS` (Normal = 1, sem mudar nenhum teste atual).
+- 43.5 Mídia: volume (30/60/100%) em `audio.ts`; QR das fontes desligável no resumo.
+- 43.6 Banco: coluna `visivel` (sim/nao/vazio) em `COLUNAS_BANCO`, validação, `jogaveis` exclui ocultas, "Alterar em massa" aceita `visivel`, página das fontes ignora ocultas; tema `politica` em `TEMAS` com ilustração de tema (pedir ao agente-visual se faltar).
+- 43.7 UI: painel "Ajustes" com grupos, rolagem, teclado (↑/↓ pelos grupos, ←/→, Espaço nos temas), contagem de jogáveis/ocultas, "Revisar questões" (abre o painel da Fase 44 quando existir; até lá, o item fica oculto) e resumo da espera (AC-9.2); ☰ › "Ajustes".
+- 43.8 E2E: ajustes guardados e reaplicados, partida com N=5 e N=12, tema filtrado, oculta fora da partida.
+
+Status (2026-11-12): concluída na branch 001-v12-integracao (commits `5cbb261`, `8a29fde`, `aefeef7`, `89e9c7f`, `ea42215`, `40d6e1e`, `08ec692`, `0e2a12b`, `bc03fac`, `898f19c` e `b8a1bec`, da `001-v12-ajustes`; o tempo do feedback chega a som, tela e inclinação em `ff27fc4`). 43.1 a 43.8 feitas, com testes; a ilustração provisória de `politica` (43.6) foi trocada pela definitiva da Fase 42 na integração (`5049ea4`). Pendências: sensibilidade Menor/Maior conferida no estande (45.2) e as decisões do agente listadas no log de 2026-11-12 (entrada das 11:20).
+
+## Phase 44 (added v12.0.0): Painel Questões
+
+Spec: Story 16 (AC-16.1 a AC-16.6), FR-17, FR-14, AC-9.31. Agente: agente-mecanico, branch `001-v12-painel-questoes` (sai da `001-v12-ajustes` depois da Fase 43). Referência: Prova ou Reprova (`develop`, `dist/editor-questoes.js`, `dist/menu-apresentador.js`). TDD.
+
+- 44.1 `src/core/questoes.ts` (puro): contagens, filtros, motivos de não jogável em linguagem simples (a partir da mesma validação e de `jogaveis`).
+- 44.2 UI `PainelQuestoes.tsx`: lista + questão aberta (como o card + gabarito, explicação, técnica, tema, dificuldade, status, revisor, visibilidade, fontes com links), filtros, ↑/↓, Esc/✕.
+- 44.3 Ações no desktop: ocultar/mostrar, aprovar (nome do revisor uma vez por sessão), voltar para rascunho, editar (editor de AC-7.2); gravação com backup; web só leitura.
+- 44.4 Electron: links abrem no navegador do sistema (`shell.openExternal` via preload, só http/https).
+- 44.5 ☰ › "Questões" e Ajustes › "Revisar questões" (filtro Rascunho).
+- 44.6 E2E (web, só leitura) e E2E desktop (ocultar e aprovar gravam com backup).
+
+Status (2026-11-12): concluída na branch 001-v12-integracao (commits `78edf7d`, `6002b56`, `f3f22be`, `77f649f`, `65caa77`, `1f1b47d`, `30c5ffa` e `5a45dd3`, da `001-v12-painel-questoes`, e `0d68baa`, que guarda o nome do revisor só depois de a gravação dar certo). 44.1 a 44.6 feitas, com testes. Pendências: acabamento visual do painel (CSS provisório) e marcador próprio de Questões no ☰ (`agente-visual`); decisões 1 a 5 do agente (log de 2026-11-12, entrada das 11:54).
+
+## Phase 45 (added v12.0.0): Lote 3 (política) e verificação
+
+Spec: AC-7.2 (tema `politica`), AC-7.12. Agentes: agente-noticias (lote em `docs/noticias/lotes/2026-11-12-lote-3.json`, branch `001-v12-lote-3-politica`), revisão humana; agente-gestor depois de cada fase.
+
+- 45.1 Revisão do lote 3 pelo responsável (página de revisão); só as aprovadas entram no `conteudo/noticias.csv`, depois da Fase 43.6 (tema `politica` válido).
+- 45.2 Verificação no hardware: cores do feedback a 2 m, leitura do carimbo sobre verde e vermelho, sensibilidade Menor/Maior no estande.
+
+## Phase 50 (added v12.1.0): Robustez para o teste com público (2026-11-18)
+
+Spec: AC-1.4, AC-1.5, AC-2.4, AC-2.13, AC-5.2, AC-5.4, AC-9.26, NFR Reliability (v12.1.0). Origem: revisão de defeitos de 2026-11-16 (três revisores, achados confirmados no código). Branch `001-v12-robustez` (sai da `001-v12-correcoes`, PR #10). Numerada 50 para não confundir com as Fases 46 a 49 do experimento das cartas, que vive só na branch `001-v13-cartas-baralho`. TDD.
+
+- 50.1 Gestos (`src/core/gestos.ts`): acompanhar o jogador (AC-1.5), área central = metade do limiar e recentro parado (AC-2.4), `zerar()` no `Interpretador` para AC-2.13. Testes com poses sintéticas: passante maior não escolhe; jogador volta torto e escolhe de novo; inclinação vinda do feedback não responde o card.
+- 50.2 Reducer (`src/core/partida.ts`): `TEMPOS.calibracaoMaxMs` = 30000 (AC-1.4); presença contínua de 500 ms para sair da ausência (AC-5.4); `ajustes.ts` com `voltaResumoS` padrão 60 (AC-5.2). Testes de fronteira.
+- 50.3 App (`src/app/useJogo.ts`, `src/main.tsx`): rAF reagendado no começo do quadro e try/catch na detecção (erro → rastreador fechado, câmera "indisponível"); `interp.zerar()` ao entrar num card; reabrir a câmera na espera (~5 s e `devicechange`), `NotAllowedError` separado; parar o stream se o modelo falhar e no `ended` fechar o rastreador; ErrorBoundary que recarrega; Wake Lock na web.
+- 50.4 Desktop (`electron/main.cjs`, `package.json`): `powerSaveBlocker('prevent-display-sleep')`; `listen` cai para porta 0 em qualquer erro; `whenReady` com `.catch` → caixa de erro e sair; `second-instance` sem janela sai; `npm run desktop` usa o banco padrão (`build:desktop`).
+- 50.5 Conteúdo: explicação da mds-0036 ("a segunda maior da história até então") — revisão humana.
+- 50.6 Verificação: `npm test`, `npm run build`, `npm run e2e`, `npm run e2e:desktop`; ensaio manual com duas pessoas no quadro e a webcam desconectada e reconectada.
+
+Status (2026-11-16): 50.1 a 50.5 feitas (agente-mecanico em duas frentes, integração e revisão pelo orquestrador). `npm test` 642/642, build ok, E2E web 62/62 e desktop 3/3. AC-2.13 ficou no laço do `useJogo`: fora de card/treino as permanências são zeradas a cada quadro. Pendentes: o ensaio manual de 50.6 no notebook do estande e a revisão humana da mds-0036. Limites conhecidos: pular a calibração com o quadro vazio deixa o centro anterior; quem entra depois longe dele fica travado até a próxima partida (Esc + nova partida resolve).
+
+## Phase 46 (added v13.0.0): Reducer — abertura do fan e distribuição das cartas
+
+Spec: AC-1.2, AC-17.5, AC-17.6, AC-17.7 (tempos independentes da animação), AC-17.8 (decisão do som), AC-3.1 a AC-3.4 (saiba mais só com a carta pousada); FR-1, FR-11, FR-18. Agente: agente-mecanico, branch `001-v13-cartas-baralho`. TDD com testes de fronteira (regra "animação soma").
+
+- 46.1 Teste vermelho em `partida.test.ts`: `TEMPOS.aberturaFanMs` = 1500 e `TEMPOS.distribuirMs` = 900; todo início de partida (calibração completa, Enter na espera sem câmera, Enter na calibração, Enter no resumo) passa por `{ tela: 'abertura' }` antes do tutorial ou do primeiro card; a abertura termina exatamente em 1500 ms, nem antes nem depois.
+- 46.2 Estado do card e do treino com `distribuindoMs` (começa em `distribuirMs`, vai a 0 com `tick`): o cronômetro (`restanteMs`) não corre enquanto `distribuindoMs > 0`; escolha, seta, arraste e "saiba mais" são ignorados; fronteira em 899/900 ms. A pausa "Volte para o centro" só conta com a carta pousada.
+- 46.3 A abertura sabe quantas cartas o fan tem: treinos + notícias da partida; seletor puro `cartasNoFan(estado)` (quantas ainda não saíram), usado pela tela.
+- 46.4 Esc/Sair na abertura e na distribuição voltam à espera (AC-10.3); Enter na abertura não pula nada (só Enter no treino pula o tutorial, AC-15.5).
+- 46.5 `sons.ts`: som `carta` na transição para um estado com distribuição começando (não na abertura), respeitando som e volume (teste puro); `audio.ts` sintetiza o "fff" de papel (ruído filtrado curto).
+- 46.6 `inclinacaoCard.ts` e `cardSaindo`: durante a distribuição a carta fica no centro (AC-2.10e).
+
+Status (2026-11-16): concluída (commit `382c120`; revisada). A partida passou a ser sorteada na abertura, antes do treino, para o fan saber o total; `calibrarAoSair` mede o centro na passagem calibração → abertura. `npm test` 620/620, `npm run build` e `npm run e2e` 60/60 verdes. A tela da abertura é provisória (vazia) até a Fase 48.
+
+## Phase 47 (added v13.0.0): Carta de baralho — prévia e aplicação
+
+Spec: AC-17.1, AC-17.2, AC-3.6, AC-2.12, AC-4.5, AC-4.7; FR-4, FR-15, FR-18 (verso único). Agente: agente-visual (prévia em `docs/visual/previa-v13.html`, com as referências do responsável: leque de baralho e cartas ilustradas com moldura e índices nos cantos), depois aplicação na mesma branch. O responsável aprova a prévia antes da aplicação.
+
+- 47.1 Prévia: frente (janela da imagem com moldura entre 55% e 65% da altura, manchete, ícone do tema nos cantos), verso de "saiba mais", verso do fan (padrão Conectando, sem texto), fan aberto e fechado, em 1366×768 e 1920×1080, com a manchete e o "saiba mais" mais longos do banco.
+- 47.2 Teste vermelho (`TelasV13.test.tsx`, jsdom): a frente não mostra a descrição nem a dica; tem a manchete, a imagem/ilustração e dois ícones de tema; com `saibaMais`, a carta tem o estado de verso com descrição e "saiba mais"; o treino nunca mostra o verso; a pilha (`data-pilha-camada`) não existe mais.
+- 47.3 `TelaCard` vira carta de duas faces (frente/verso com `transform: rotateY`, ~400 ms, sem tempo no reducer); a dica de "saiba mais" sai da carta para junto de `dicaModo`; o carimbo de saída (AC-2.12) e o pulso dos últimos 5 s (AC-4.7) valem na carta.
+- 47.4 CSS da carta em `App.module.css` com tokens de `tema.css`; `prefers-reduced-motion` troca a face sem girar.
+- 47.6 (v13.1.0) Aviso não bloqueante de `saiba_mais` acima de 250 caracteres no editor e no painel Questões (AC-7.13), em `src/core/banco.ts`/`questoes.ts` separado dos erros de validação; frase do perfil na frente da carta de treino (AC-17.1).
+- 47.5 E2E de layout: carta 5:7 (±2%), centralizada (AC-4.5), manchete e verso sem corte com os textos mais longos, em 1366×768 e 1920×1080; ajustar os E2E antigos que liam a descrição na frente.
+
+Status (2026-11-17): concluída. O WIP `1da3664` (carta de duas faces, naipes, letra que cabe, aviso de 250 caracteres e frase do perfil no treino) foi conferido item a item contra 47.1 a 47.6, com `npm test`, `npm run build` e o E2E inteiro verdes; a espera ganhou o desenho do gesto com uma carta (prévia v13). Capturas do jogo em `docs/visual/capturas/v13-cartas/2*-*.png` (`docs/visual/capturar-cartas-v13.mjs`).
+
+## Phase 48 (added v13.0.0): Fan na espera, na abertura e na distribuição
+
+Spec: AC-17.3 a AC-17.7, FR-18 (must not), AC-10.5, AC-2.11. Agentes: agente-visual (desenho e animação) e agente-mecanico (ligação com o estado). Depende das Fases 46 e 47.
+
+- 48.1 Componente `FanCartas` (props: quantidade, fase `parado` | `respirando` | `abrindo` | `distribuindo`, progresso 0–1 vindo do estado): leque com pivô abaixo da borda, no máximo 20 cartas desenhadas, ângulos calculados por função pura testável (`src/core/fan.ts`: ângulo de cada carta por quantidade e abertura).
+- 48.2 Teste vermelho de `fan.ts`: ângulos simétricos, abertura 0 = fechado, 1 = aberto; nunca mais de 20 cartas; o ângulo total não depende da quantidade (v13.1.0); a carta distribuída é a da ponta direita.
+- 48.3 Espera: fan respirando em loop (~4 s) sem cobrir título, chamada, "▶ Iniciar" e ☰; parado e meio aberto com `prefers-reduced-motion`.
+- 48.4 Abertura e distribuição: a carta sai do topo do fan e sobe virando até o centro; o progresso vem de `distribuindoMs`/`restanteMs` do estado (não de timers do CSS soltos), para a tela nunca discordar do reducer.
+- 48.5 Fan atrás da carta durante cartas e treino; fora do feedback, do resumo e da calibração; não cobre a barra de tempo, os botões redondos nem o "✕ Sair" (E2E com caixas delimitadoras).
+- 48.6 E2E: partida de 5 notícias com tutorial — o fan começa com 7 cartas e perde uma a cada carta; o cronômetro só começa depois da distribuição; Esc na abertura volta à espera.
+
+Status (2026-11-17): concluída (agente-visual). `src/core/fan.ts` (geometria pura, com teste) e `FanCartas` (verso único em `src/app/ilustracoes/verso-fan.svg`, feito com `marca-estrela-6` e `anel-b`). As animações (abertura, distribuição, respiração da espera) são Web Animations só de `transform`, amostradas das funções de `fan.ts`: rodam no compositor, fluidas mesmo com a pose travando o laço principal, e começam no progresso que o reducer diz (`restanteMs`/`distribuindoMs`); depois só são adiantadas se ficarem para trás do estado, nunca voltam. Nenhuma mudança em `src/core/partida.ts`. `TelaEspera` ganhou `cartas={false}` (espera da v12, sem fan) para o teste A/B. E2E em `tests/e2e/fan.spec.ts` (hit-test do navegador para "não cobre"). Pendente: 49.3 no hardware (leitura a 2 m, fluidez com a pose rodando); na espera, com a câmera ligada, a prévia da câmera (canto inferior direito, AC-2.6) fica por cima da ponta direita do fan.
+
+## Phase 49 (added v13.0.0): Verificação e telas
+
+- 49.1 `npm test`, `npm run build`, `npm run e2e`, `npm run e2e:desktop` verdes.
+- 49.2 Galeria de todas as telas atualizada (o artefato publicado em 2026-11-13) com abertura, distribuição, frente, verso e espera.
+- 49.3 Verificação no hardware a 2 m: leitura da manchete na carta retrato, fluidez do fan com a detecção de pose rodando (~6–7 fps de pose, a animação não pode travar), som da carta.
+
+Integração (2026-11-17): a branch `001-v13-cartas-baralho` (Fases 46 e 47 parcial, ponta `1da3664`) foi mesclada sobre a v12.1.0 na `001-v13-ab`, para o teste A/B de 2026-11-18. No reducer, as duas versões convivem (calibração com tempo máximo e presença contínua da v12.1.0; abertura, distribuição e sorteio na abertura da v13.0.0). AC-2.13 com AC-17.6: o laço da câmera zera as permanências também durante a abertura e a distribuição (`permanenciaConta`, `src/core/partida-integracao-v13.test.ts`). A troca entre as interfaces vem na v13.2.0.
+
+## Phase 51 (added v13.2.0): Troca de interface para o teste A/B
+
+Spec: Story 18 (AC-18.1 a AC-18.7), FR-19; AC-2.12 (v11.0.0, Clássica), AC-2.13, AC-9.1, AC-9.2, AC-9.4. Agente: agente-mecanico, branch `001-v13-ab` (já com as cartas integradas sobre a v12.1.0), depois da integração das Fases 47 e 48 do agente-visual. TDD.
+
+- 51.1 `ajustes.ts`: item `interface` ("classica" | "cartas", padrão "classica"), primeiro do painel, chave nova no armazenamento, "Restaurar padrão"; tecla I na espera (`useAjustes`/`useJogo`), só com menu e painéis fechados.
+- 51.2 Reducer: `Contexto.interface`; com "classica", `comecar` vai direto ao treino/card (sem `abertura`) e `distribuindoMs` = 0 em todo card e treino; `permanenciaConta`, `cartasNoFan` e `distribuindo` coerentes nas duas. Testes de fronteira das duas interfaces (início, cronômetro, ausência, AC-2.13).
+- 51.3 Tela: recuperar da develop v12.1.0 o card clássico (com a pilha, descrição, dica e "saiba mais" dentro do card) como componente próprio; `App.tsx` escolhe Clássica ou Cartas pela interface; fan só nas Cartas; espera com "Interface: …" (AC-18.3).
+- 51.4 Som da carta só nas Cartas.
+- 51.5 Testes parametrizados: reducer, `Telas` e E2E de partida, tutorial, ajustes, feedback-v12, resumo e questões nas duas interfaces (ex.: projeto Playwright por interface, com a interface gravada no `localStorage` antes de abrir).
+- 51.6 Verificação: `npm test`, `npm run build`, E2E web nas duas interfaces, `e2e:desktop`; versão 13.2.0 no `package.json`; release pela tag `v13.2.0` (workflow `.github/workflows/release.yml`).
+
+Status (2026-11-17, agente-mecanico, branch `001-v13-ab`): 51.1 a 51.6 feitas, com as Fases 47 e 48 do agente-visual mescladas. Reducer: `Contexto.interface` (sem valor = Clássica) e `Partida.interface` gravada no começo (AC-18.7); `interfaceDoEstado` escolhe a tela. Clássica: `src/app/CardClassico.tsx` + `CardClassico.module.css` (o card da v12.1.0); `App.tsx` troca `TelaCard` por `TelaCardClassico` e passa `cartas` à espera. Testes do reducer, do som, do card e os E2E rodam nas duas interfaces (projetos Playwright `classica` e `cartas`, com a interface no `localStorage` pelo `storageState`; `fan.spec.ts` só em `cartas`).
+
 
 ```bash
 npm install
@@ -5529,3 +5649,17 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 10.2.0 | 39 | Adicionada: âncoras do rosto, privacidade da foto, tutorial, E2E do relógio em série e modelo de dados |
 | 11.0.0 | 39.7 | Concluída pela Fase 41 (filtros desenhados com as âncoras) |
 | 11.0.0 | 41 | Adicionada: prévia v11 aplicada (tela final com lista e QR, filtros por faixa, pilha, botões redondos, carimbo, "Deu match!", som de fim de partida, recorte chapado) |
+| 12.0.0 | 36, 41.7 | Parcialmente invalidadas: o fundo do feedback deixa de seguir o veredito e os ícones e "Deu match!" saem do feedback (Fase 42) |
+| 12.0.0 | 33, 34, 38 | Parcialmente estendidas: coluna `visivel`, tema `politica`, sorteio com N, temas e dificuldade (Fase 43) |
+| 12.0.0 | 42 | Adicionada: feedback por resultado e carimbo do veredito |
+| 12.0.0 | 43 | Adicionada: Ajustes, visibilidade e tema `politica` |
+| 12.0.0 | 44 | Adicionada: painel Questões |
+| 13.0.0 | 41, 42.5 | Parcialmente invalidadas: a pilha de cards atrás do card sai (AC-2.12) e o card de treino vira carta (Fases 47 e 48) |
+| 13.0.0 | 46 | Adicionada: abertura do fan e distribuição no reducer, som da carta |
+| 13.0.0 | 47 | Adicionada: carta de baralho (frente, verso de saiba mais, virada) |
+| 13.0.0 | 48 | Adicionada: fan na espera, na abertura e na distribuição |
+| 13.0.0 | 49 | Adicionada: verificação e galeria de telas |
+| 12.0.0 | 45 | Adicionada: lote 3 de política e verificação no hardware |
+| 12.0.2 | 42–44 | Correções da revisão de 2026-11-13: lista do resumo com metade das notícias em cada coluna e linhas mais baixas acima de 10 (AC-5.8; E2E `resumo-muitas.spec.ts` com 12 e 20); ↑/↓ no campo de busca do painel Questões ficam com o campo |
+| 12.1.0 | 50 | Adicionada: robustez para o teste com público (gestos, ausência, calibração, câmera, laço, repouso, desktop) |
+| 13.2.0 | 51 | Adicionada: troca de interface (Clássica × Cartas) para o teste A/B |

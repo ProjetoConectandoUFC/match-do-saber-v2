@@ -1,7 +1,8 @@
 // Banco de teste dos E2E (v9.0.0): grava public/content/noticias.csv e as imagens.
 // 12 notícias aprovadas, 6 verdadeiras e 6 falsas alternadas (só as ímpares com imagem; as pares mostram
-// a ilustração do tema), com dificuldade fácil/médio/difícil em rodízio (v10.1.0), mais uma em rascunho
-// e uma inválida, que não entram nas partidas (AC-7.7, AC-8.4).
+// a ilustração do tema), com dificuldade fácil/médio/difícil em rodízio (v10.1.0) e os temas em rodízio
+// (v12.0.0: com politica, saude fica com teste-1 e teste-8), mais uma em rascunho, uma inválida e uma aprovada
+// mas oculta (v12.0.0, AC-7.12), que não entram nas partidas (AC-7.7, AC-8.4).
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import sharp from 'sharp';
 import { escreverCsv } from '../src/core/csv';
@@ -31,6 +32,7 @@ const noticia = (i: number, extra: Partial<NoticiaBanco> = {}): NoticiaBanco => 
   // v11.0.0 (AC-7.11): as ímpares sem título curto nem veículo, para o resumo usar o título cortado e o domínio.
   titulo_curto: i % 2 === 1 ? '' : `Teste ${i + 1}: manchete`,
   fonte_nome: i % 2 === 1 ? '' : 'Agência de Teste',
+  visivel: '', // v12.0.0 (AC-7.12): vazia = visível
   ...extra,
 });
 
@@ -44,7 +46,8 @@ for (const n of banco.filter((x) => x.imagem)) {
 banco.push(
   noticia(12, { id: 'rascunho-1', status: 'rascunho', revisado_por: '', dificuldade: '', titulo: 'Rascunho que não entra na partida' }),
   noticia(13, { id: 'invalida-1', tema: 'esporte', titulo: 'Linha inválida que não entra na partida' }),
+  noticia(14, { id: 'oculta-1', tema: 'saude', visivel: 'nao', titulo: 'Notícia oculta que não entra na partida', titulo_curto: 'Notícia oculta' }),
 );
 
 await writeFile(`${destino}/noticias.csv`, escreverCsv(banco));
-console.log(`Fixture: ${banco.length} linhas (12 aprovadas, 6 com imagem) em ${destino}/noticias.csv`);
+console.log(`Fixture: ${banco.length} linhas (12 aprovadas visíveis, 6 com imagem; 1 oculta) em ${destino}/noticias.csv`);

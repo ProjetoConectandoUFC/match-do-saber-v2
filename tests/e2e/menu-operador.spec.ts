@@ -10,12 +10,12 @@ async function abrirSemCamera(page: Page, url = '/') {
   await expect(page.getByText(CAMERA_OFF)).toBeVisible();
 }
 
-test('FR-14: ☰ abre Notícias, Configurações, Diagnóstico e Tela cheia; Esc e clique fora fecham', async ({ page }) => {
+test('FR-14: ☰ abre Questões (v12.0.0), Notícias, Ajustes, Diagnóstico e Tela cheia; Esc e clique fora fecham', async ({ page }) => {
   await abrirSemCamera(page);
   const botao = page.getByRole('button', { name: 'Menu' });
   const menu = page.getByRole('menu');
   await botao.click();
-  await expect(menu.getByRole('menuitem')).toHaveText([/Notícias/, /Configurações/, /Diagnóstico/, /Tela cheia/]);
+  await expect(menu.getByRole('menuitem')).toHaveText([/Questões/, /Notícias/, /Ajustes/, /Diagnóstico/, /Tela cheia/]);
 
   await page.keyboard.press('Enter');                                   // Enter com o menu aberto não inicia
   await page.keyboard.press('Escape');
@@ -25,8 +25,8 @@ test('FR-14: ☰ abre Notícias, Configurações, Diagnóstico e Tela cheia; Esc
   await botao.click();
   await page.mouse.click(300, 400);                                     // clique fora
   await expect(menu).toBeHidden();
-  await page.keyboard.press('m');                                       // M continua abrindo Configurações
-  await expect(page.getByRole('dialog', { name: 'Configurações' })).toBeVisible();
+  await page.keyboard.press('m');                                       // M continua abrindo os Ajustes (v12.0.0)
+  await expect(page.getByRole('dialog', { name: 'Ajustes' })).toBeVisible();
 });
 
 test('FR-14/AC-12.7 (v10.3.0): ☰ › Diagnóstico liga e desliga o painel de FR-12', async ({ page }) => {

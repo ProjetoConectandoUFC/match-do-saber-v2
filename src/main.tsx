@@ -10,12 +10,16 @@ import '@fontsource/poppins/latin-800.css';
 import '@fontsource/poppins/latin-900.css';
 import './app/tema.css';
 import { App } from './app/App';
+import { ErroGeral } from './app/ErroGeral';
 
 // No app de desktop (Electron) os arquivos já são locais: sem service worker, para não servir versão antiga.
 if (!(window as { matchDoSaber?: { desktop?: boolean } }).matchDoSaber?.desktop) registerSW({ immediate: true });
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    {/* Erro de tela: mensagem e recarga em ~5 s, nunca tela branca (NFR Reliability, v12.1.0). */}
+    <ErroGeral>
+      <App />
+    </ErroGeral>
   </StrictMode>,
 );

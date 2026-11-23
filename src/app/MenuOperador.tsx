@@ -2,12 +2,13 @@ import { useEffect, useRef } from 'react';
 import { Forma, type IdForma } from './Forma';
 import m from './MenuOperador.module.css';
 
-export type ItemMenu = 'noticias' | 'configuracoes' | 'diagnostico' | 'telaCheia';
+export type ItemMenu = 'questoes' | 'noticias' | 'ajustes' | 'diagnostico' | 'telaCheia';
 
 /** Cada item tem um marcador do design system no lugar de ícone (FR-15); a dica fica no title. */
 const ITENS: { id: ItemMenu; rotulo: string; dica: string; marca: IdForma }[] = [
+  { id: 'questoes', rotulo: 'Questões', dica: 'ler e revisar as questões, com gabarito e fontes', marca: 'marca-estrela-5' }, // v12.0.0 (FR-17)
   { id: 'noticias', rotulo: 'Notícias', dica: 'listar, editar e importar', marca: 'marca-triangulo' },
-  { id: 'configuracoes', rotulo: 'Configurações', dica: 'tecla M', marca: 'marca-estrela-4' },
+  { id: 'ajustes', rotulo: 'Ajustes', dica: 'tecla M', marca: 'marca-estrela-4' }, // v12.0.0: era "Configurações"
   { id: 'diagnostico', rotulo: 'Diagnóstico', dica: 'liga e desliga o painel de medição', marca: 'marca-estrela-5' },
   { id: 'telaCheia', rotulo: 'Tela cheia', dica: 'F11', marca: 'marca-estrela-6' },
 ];

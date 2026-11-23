@@ -7,7 +7,7 @@ import type { Estado } from '../core/partida';
 import { useInclinacaoCard } from './useInclinacaoCard';
 
 const partida = { cards: [], resultados: [], entrada: 'corpo' as const };
-const CARD: Estado = { tela: 'card', partida, indice: 0, restanteMs: 10000, saibaMais: false, ausenteMs: null };
+const CARD: Estado = { tela: 'card', partida, indice: 0, restanteMs: 10000, saibaMais: false, ausenteMs: null, distribuindoMs: 0 };
 const TAMANHO = { largura: 600, altura: 640 };
 const px = (v: number) => `${Math.round(v * 10) / 10}px`;
 const NO_LIMIAR = deslocamentoCard(1, TAMANHO);
@@ -80,7 +80,7 @@ describe('useInclinacaoCard (AC-2.10 v10.3.0)', () => {
   it('o card que sai parte da posição em que estava', () => {
     const { getByTestId, rerender } = render(<Card estado={CARD} />);
     avancar(150);
-    rerender(<Card estado={{ tela: 'feedback', partida, indice: 0, restanteMs: 3250, resposta: 'verdadeira' }} />);
+    rerender(<Card estado={{ tela: 'feedback', partida, indice: 0, restanteMs: 3250, resposta: 'verdadeira', resultadoMs: 3000 }} />);
     expect(getByTestId('saindo').style.getPropertyValue('rotate')).toBe('15deg');
   });
 
@@ -131,7 +131,7 @@ describe('botões redondos (AC-2.11, v11.0.0): a mesma fração dos rótulos, no
   it('durante a saída, o botão continua com a fração em que o card estava', () => {
     const { getByTestId, rerender } = render(<Mesa estado={CARD} valor={1} />);
     avancar(150);
-    rerender(<Mesa estado={{ tela: 'feedback', partida, indice: 0, restanteMs: 3250, resposta: 'verdadeira' }} valor={0} />);
+    rerender(<Mesa estado={{ tela: 'feedback', partida, indice: 0, restanteMs: 3250, resposta: 'verdadeira', resultadoMs: 3000 }} valor={0} />);
     avancar(5);
     expect(acende(getByTestId('b-verdade'))).toBe('1');
   });

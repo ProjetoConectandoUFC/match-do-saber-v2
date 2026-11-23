@@ -33,7 +33,7 @@ export function repositorioWeb(): RepositorioNoticias {
       const banco = parseCatalogo(await json.json()).noticias.map((x): NoticiaBanco => ({
         id: x.id, titulo: x.titulo, descricao: x.descricao, saiba_mais: x.saibaMais, veredito: x.veredito,
         explicacao: x.explicacao, tecnica: x.tecnica, tema: x.tema, fonte_url: x.fonteUrl, fontes_extras: '',
-        imagem: x.imagem ?? '', revisado_por: 'planilha', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '',
+        imagem: x.imagem ?? '', revisado_por: 'planilha', status: 'aprovada', dificuldade: '', titulo_curto: '', fonte_nome: '', visivel: '',
       }));
       return { banco, versao: null };
     },

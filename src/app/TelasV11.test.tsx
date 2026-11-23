@@ -30,16 +30,7 @@ describe('v11.0.0: card de app de namoro (FR-15)', () => {
     expect(botoes[1]!.querySelector('svg[data-forma="marca-estrela-4"]')).not.toBeNull();
   });
 
-  it('AC-2.12: pilha de duas camadas atrás do card, que não fazem parte dele', () => {
-    const { container } = render(card(noticia('n1')));
-    const art = container.querySelector('article')!;
-    const camadas = [...container.querySelectorAll('[data-pilha-camada]')];
-    expect(camadas).toHaveLength(2);
-    for (const c of camadas) {
-      expect(art.contains(c)).toBe(false);
-      expect(c.compareDocumentPosition(art) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy(); // pintadas antes
-    }
-  });
+  // AC-2.12 reescrito na v13.0.0: a pilha parada saiu (TelasV13.test.tsx); atrás da carta entra o fan (Fase 48).
 
   it.each([
     ['direita', 'verdade', 'mentira'],
@@ -67,7 +58,6 @@ describe('v11.0.0: card de app de namoro (FR-15)', () => {
     const { container } = render(card(noticia('mds-0007')));
     const ilu = screen.getByRole('img', { name: 'Tema: Ciência' });
     expect(ilu.querySelector('img')).toHaveAttribute('src', expect.stringContaining('card-ciencia-banana'));
-    expect(ilu).toHaveTextContent('Ciência');
     expect(container.querySelectorAll('article img')).toHaveLength(1);
   });
 
@@ -100,44 +90,7 @@ describe('v11.0.0: card de app de namoro (FR-15)', () => {
   });
 });
 
-describe('v11.0.0: feedback "Deu match!" com ícones do design system (AC-4.1 a AC-4.3, AC-4.9)', () => {
-  it.each([
-    ['acerto', 'Deu match!', 'Acertou!'],
-    ['erro', 'Não deu match', 'Errou'],
-  ] as const)('%s: ícone, frase do match e o selo como texto próprio', (resultado, match, selo) => {
-    const { container } = render(<TelaFeedback noticia={noticia('n1')} resultado={resultado} pontos={0} />);
-    expect(screen.getByText(match)).toBeInTheDocument();
-    expect(screen.getByText(selo).textContent).toBe(selo);
-    const icone = container.querySelector(`svg[data-icone="${resultado}"]`)!;
-    expect(icone).toHaveAttribute('aria-hidden', 'true');
-    const ordem = [screen.getByRole('heading', { name: 'É verdade' }), icone, screen.getByText(match), screen.getByText('Explicação')];
-    for (let i = 1; i < ordem.length; i++) {
-      expect(ordem[i - 1]!.compareDocumentPosition(ordem[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    }
-  });
-
-  it('tempo esgotado: ampulheta e "Tempo esgotado", sem frase de match', () => {
-    const { container } = render(<TelaFeedback noticia={noticia('n1')} resultado="tempo" pontos={0} />);
-    expect(container.querySelector('svg[data-icone="tempo"]')).not.toBeNull();
-    expect(screen.getByText('Tempo esgotado')).toBeInTheDocument();
-    expect(container.textContent).not.toMatch(/match/i);
-  });
-
-  it('sem emoji nem caracteres como ícone (FR-15)', () => {
-    const { container } = render(<TelaFeedback noticia={noticia('n1')} resultado="acerto" pontos={0} />);
-    expect(container.textContent).not.toMatch(/[✓✗✔✖❤🙌]|\p{Extended_Pictographic}/u);
-  });
-
-  it.each([
-    ['verdadeira', 'Deu match!', 'Acertou!', 'acerto'],
-    ['falsa', 'Não deu match', 'Quase!', 'erro'],
-  ] as const)('treino (AC-15.3): resposta %s para um perfil verdadeiro', (resposta, match, selo, icone) => {
-    const { container } = render(<TelaFeedbackTutorial noticia={noticia('treino-2')} resposta={resposta} modo="corpo" treino={{ passo: 1, total: 4 }} />);
-    expect(screen.getByText(match)).toBeInTheDocument();
-    expect(screen.getByText(selo)).toBeInTheDocument();
-    expect(container.querySelector(`svg[data-icone="${icone}"]`)).not.toBeNull();
-  });
-});
+// O feedback "Deu match!" com ícones (v11.0.0) saiu na v12.0.0: ver TelasV12.test.tsx.
 
 const p = (x: number, y: number): Ponto => ({ x, y, visibility: 1 });
 function pose(): Ponto[] {
@@ -158,6 +111,24 @@ describe('v11.0.0: resumo com lista, QR e filtro (AC-5.8, AC-5.9, AC-13.2, AC-13
   const linhas = linhasDoResumo(cards, ['acerto', 'erro', 'tempo']);
   const qr = 'https://exemplo.github.io/jogo/fontes.html#1.2.3';
 
+  it.each([
+    [5, 3, false],
+    [10, 5, false],
+    [12, 6, true],
+    [15, 8, true],
+    [20, 10, true],
+  ])('AC-5.8 (v12.0.2): com %i notícias, duas colunas de %i linhas; compacta acima de 10 (densa=%s)', (n, porColuna, densa) => {
+    const muitas = Array.from({ length: n }, (_, i) => noticia(`mds-${String(i + 1).padStart(4, '0')}`));
+    render(<TelaResumo pontos={0} total={n} linhas={linhasDoResumo(muitas, muitas.map(() => 'erro'))} />);
+    const grade = within(screen.getByRole('region', { name: 'Notícias da rodada' })).getByRole('list');
+    expect(grade.style.getPropertyValue('--linhas')).toBe(String(porColuna));
+    expect(grade.hasAttribute('data-densa')).toBe(densa);
+    const itens = within(grade).getAllByRole('listitem');
+    expect(itens).toHaveLength(n);
+    // a última de cada coluna fica sem o traço de baixo
+    const fins = itens.flatMap((li, i) => (li.hasAttribute('data-fim-coluna') ? [i + 1] : []));
+    expect(fins).toEqual([porColuna, n]);
+  });
   it('AC-5.8: "Notícias da rodada" com uma linha por notícia: resultado, título curto, veredito e fonte', () => {
     render(<TelaResumo pontos={1} total={3} linhas={linhas} enderecoQr={qr} />);
     const lista = screen.getByRole('region', { name: 'Notícias da rodada' });

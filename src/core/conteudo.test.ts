@@ -19,10 +19,15 @@ describe('banco padrão conteudo/noticias.csv', () => {
     expect(semCr(escreverCsv(banco))).toBe(semCr(texto));
   });
 
-  it('AC-7.7: as 10 notícias do lote 1 são válidas e jogáveis, 5 verdadeiras e 5 falsas', () => {
+  it('AC-7.7 (v12.0.0): lote 1 (10) + aprovadas do lote 3 (6) são válidas e jogáveis, 9 verdadeiras e 7 falsas', () => {
     expect(validarBanco(banco).invalidas).toEqual([]);
     const jogo = jogaveis(banco);
-    expect(jogo).toHaveLength(10);
-    expect(jogo.filter((n) => n.veredito === 'verdadeira')).toHaveLength(5);
+    expect(jogo).toHaveLength(16);
+    expect(jogo.filter((n) => n.veredito === 'verdadeira')).toHaveLength(9);
+    expect(jogo.filter((n) => n.tema === 'politica')).toHaveLength(6);
+  });
+
+  it('AC-7.10 (v12.0.0): todas as notícias do banco padrão têm dificuldade (a do lote 1 é a proposta de 2026-11-10)', () => {
+    expect(banco.filter((n) => !n.dificuldade).map((n) => n.id)).toEqual([]);
   });
 });

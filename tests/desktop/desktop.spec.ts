@@ -68,3 +68,60 @@ test('AC-7.6/FR-7: gravar pelo painel faz backup antes; AC-8.4: Ctrl+R relê o a
   await page.keyboard.press('Enter'); // pula a calibração (câmera falsa ligada)
   await expect(page.locator('article')).toContainText('Editada no Excel', { timeout: 10_000 });
 });
+
+test('AC-16.5/AC-7.6: no painel Questões, ocultar e aprovar gravam o arquivo com backup antes; AC-16.2: fonte abre fora', async () => {
+  const page = await app.firstWindow();
+  await expect(page.getByRole('button', { name: 'Iniciar', exact: true })).toBeEnabled({ timeout: 20_000 });
+  const original = readFileSync(arquivo(), 'utf8');
+
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('menuitem', { name: /Questões/ }).click();
+  const painel = page.getByRole('dialog', { name: 'Questões' });
+  await expect(painel).toContainText('15 no banco · 12 jogáveis · 1 oculta · 1 rascunho');
+  const aberta = painel.getByRole('region', { name: 'Questão aberta' });
+  await expect(aberta).toHaveAttribute('data-id', 'teste-1');
+
+  // AC-16.2: o link vai para o processo principal (shell.openExternal), não navega a janela do jogo.
+  const pedidos = await app.evaluate(({ shell }) => {
+    const g = globalThis as unknown as { links: string[] };
+    g.links = [];
+    shell.openExternal = async (url: string) => { g.links.push(url); };
+    return g.links.length;
+  });
+  expect(pedidos).toBe(0);
+  await aberta.getByRole('link', { name: 'https://exemplo.org/fonte' }).click();
+  await expect.poll(() => app.evaluate(() => (globalThis as unknown as { links: string[] }).links)).toEqual(['https://exemplo.org/fonte']);
+  expect(page.url()).toMatch(/^http:\/\/127\.0\.0\.1:\d+\/$/);
+  expect(app.windows()).toHaveLength(1);
+
+  // Ocultar.
+  await aberta.getByRole('button', { name: 'Ocultar' }).click();
+  await expect(painel.getByRole('status')).toHaveText('Questão oculta.');
+  await expect(painel).toContainText('15 no banco · 11 jogáveis · 2 ocultas');
+  const depoisDeOcultar = readFileSync(arquivo(), 'utf8');
+  expect(lerCsv(depoisDeOcultar).find((n) => n.id === 'teste-1')!.visivel).toBe('nao');
+
+  // Aprovar o rascunho: pede o nome (uma vez na sessão).
+  await painel.getByLabel('Status').selectOption('rascunho');
+  await expect(aberta).toHaveAttribute('data-id', 'rascunho-1');
+  await aberta.getByRole('button', { name: 'Aprovar' }).click();
+  const pedido = page.getByRole('dialog', { name: 'Quem revisou?' });
+  await pedido.getByLabel('Nome de quem revisou').fill('Revisora de Teste');
+  await pedido.getByRole('button', { name: 'Aprovar' }).click();
+  await expect(painel.getByRole('status')).toHaveText('Questão rascunho-1 aprovada.');
+  const aprovada = lerCsv(readFileSync(arquivo(), 'utf8')).find((n) => n.id === 'rascunho-1')!;
+  expect(aprovada).toMatchObject({ status: 'aprovada', revisado_por: 'Revisora de Teste' });
+
+  // Dois backups: o original e o arquivo depois de ocultar, cada um copiado antes da gravação seguinte.
+  const backups = readdirSync(join(dados, 'backups')).sort();
+  expect(backups).toHaveLength(2);
+  const conteudos = backups.map((b) => readFileSync(join(dados, 'backups', b), 'utf8'));
+  expect(conteudos).toContain(original);
+  expect(conteudos).toContain(depoisDeOcultar);
+
+  // O jogo usa o banco novo sem reabrir (AC-7.6): 11 depois de ocultar teste-1, mais o rascunho aprovado.
+  await page.keyboard.press('Escape');
+  await expect(painel).toBeHidden();
+  await page.keyboard.press('m');
+  await expect(page.getByRole('dialog', { name: 'Ajustes' })).toContainText('12 jogáveis de 15 no banco (2 ocultas)');
+});

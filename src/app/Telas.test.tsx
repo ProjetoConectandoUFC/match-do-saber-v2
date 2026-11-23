@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { AJUSTES_PADRAO } from '../core/ajustes';
 import type { Noticia } from '../core/types';
-import { BarraTempo, BotaoSair, MenuConfiguracoes, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
+import { BarraTempo, BotaoSair, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
 
 const noticia: Noticia = {
   id: 'n1', titulo: 'Título X', descricao: 'Descrição Y', saibaMais: 'Mais Z', imagem: 'content/img/n1.webp', tema: 'saude',
@@ -18,23 +19,23 @@ describe('telas', () => {
     render(<TelaEspera semNoticias={false} camera="negada" />);
     expect(screen.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeInTheDocument();
   });
-  it('FR-4: card mostra imagem, título, descrição, cronômetro e dica do saiba mais', () => {
+  // v13.0.0 (AC-17.1): a descrição foi para o verso e a dica para fora da carta (TelasV13.test.tsx).
+  it('FR-4: carta mostra imagem, título, cronômetro e a dica do saiba mais (fora dela)', () => {
     const { container } = render(<TelaCard noticia={noticia} restanteMs={14200} saibaMais={false} ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(container.querySelector('img')).toHaveAttribute('src', expect.stringContaining('content/img/n1.webp'));
-    expect(screen.getByText('Título X')).toBeInTheDocument();
-    expect(screen.getByText('Descrição Y')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Título X' })).toBeInTheDocument();
     expect(screen.getByRole('timer', { name: 'Tempo restante' })).toHaveTextContent('15 s');
     expect(container.querySelector('article')).not.toHaveTextContent(/^\d+$/m);
-    expect(screen.getByText(/Saiba mais/)).toBeInTheDocument();
+    const dica = screen.getByText(/^Saiba mais:/);
+    expect(container.querySelector('article')).not.toContainElement(dica);
   });
   it('FR-4 (v9.0.0): card sem imagem mostra a ilustração do tema no lugar', () => {
     const { imagem: _sem, ...semImagem } = noticia;
     const { container } = render(<TelaCard noticia={{ ...semImagem, tema: 'meio-ambiente' }} restanteMs={14200} saibaMais={false} ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(container.querySelector('img')).toBeNull();
     const ilustracao = screen.getByRole('img', { name: 'Tema: Meio ambiente' });
-    expect(ilustracao).toHaveAttribute('data-tema', 'meio-ambiente');
-    expect(ilustracao).toHaveTextContent('Meio ambiente');
-    expect(screen.getByText('Título X')).toBeInTheDocument();
+    expect(ilustracao).toHaveAttribute('data-tema', 'meio-ambiente'); // v13.0.0: sem o chip; o naipe diz o tema
+    expect(screen.getByRole('heading', { level: 2, name: 'Título X' })).toBeInTheDocument();
   });
   it('AC-3.1: saiba mais aberto mostra o texto expandido', () => {
     render(<TelaCard noticia={noticia} restanteMs={1000} saibaMais ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
@@ -55,30 +56,7 @@ describe('telas', () => {
     const { container } = render(<TelaCard noticia={noticia} restanteMs={1000} saibaMais={false} ausente={false} pontos={0} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(container.querySelector('article')!.className).not.toMatch(/sai(Direita|Esquerda)/);
   });
-  it.each([
-    ['acerto', 'Acertou!'],
-    ['erro', 'Errou'],
-    ['tempo', 'Tempo esgotado'],
-  ] as const)('AC-4.x/AC-4.9 (v10.0.0, v11.0.0): feedback %s mostra veredito, selo, explicação e técnica, nessa ordem', (resultado, selo) => {
-    const { container } = render(<TelaFeedback noticia={noticia} resultado={resultado} pontos={0} />);
-    const veredito = screen.getByRole('heading', { name: 'É mentira' });
-    const elSelo = screen.getByText(selo);
-    const ordem = [veredito, elSelo, screen.getByText('Explicação W'), screen.getByText('Verificar a imagem')];
-    for (let i = 1; i < ordem.length; i++) {
-      expect(ordem[i - 1]!.compareDocumentPosition(ordem[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    }
-    expect(elSelo.querySelector('svg')).toBeNull();                       // AC-4.9 (v11.0.0): o ícone fica ao lado, não dentro do texto do selo
-    expect(elSelo.textContent).toBe(selo);
-    expect(container.querySelector('main')).toHaveAttribute('data-veredito', 'mentira');
-    expect(container.querySelector('main')).toHaveAttribute('data-resultado', resultado);
-    expect(container.textContent).not.toMatch(/falsa|verdadeira/i);
-  });
-  it('AC-4.1 (v10.0.0): notícia verdadeira mostra "É verdade" e o fundo de verdade', () => {
-    const { container } = render(<TelaFeedback noticia={{ ...noticia, veredito: 'verdadeira' }} resultado="acerto" pontos={1} />);
-    expect(screen.getByRole('heading', { name: 'É verdade' })).toBeInTheDocument();
-    expect(container.querySelector('main')).toHaveAttribute('data-veredito', 'verdade');
-    expect(container.querySelector('main')!.className).toMatch(/fbVerdade/);
-  });
+  // AC-4.1 a AC-4.3 e AC-4.9 (v12.0.0): feedback por resultado e carimbo em TelasV12.test.tsx.
   it('AC-4.1: card mostra o placar parcial', () => {
     render(<TelaCard noticia={noticia} restanteMs={1000} saibaMais={false} ausente={false} pontos={3} cardRef={{ current: null }} onArrastar={() => {}} />);
     expect(screen.getByText('Pontos: 3')).toBeInTheDocument();
@@ -165,39 +143,44 @@ describe('v10.0.0: espera com a identidade Conectando (FR-15)', () => {
 describe('v2.0.0: configurações, iniciar e sair', () => {
   it('AC-9.2/AC-10.1 (v9.0.0): espera mostra o resumo, Iniciar e o menu ☰ no lugar do ⚙', () => {
     const iniciar = vi.fn();
-    render(<TelaEspera semNoticias={false} camera="ativa" config={{ modo: 'mao', tempoCardS: 20, som: false, foto: false, tutorial: true }} menu={<button type="button">Menu</button>} onIniciar={iniciar} />);
-    expect(screen.getByText('Modo: Mão · Tempo por card: 20 s · Som: desligado · Foto: desligada · Tutorial: ligado')).toBeInTheDocument();
+    render(<TelaEspera semNoticias={false} camera="ativa" config={{ ...AJUSTES_PADRAO, modo: 'mao', tempoCardS: 20, som: false, noticiasPorPartida: 8 }} menu={<button type="button">Menu</button>} onIniciar={iniciar} />);
+    // v12.0.0: resumo de AC-9.2
+    expect(screen.getByText('Modo: Mão · 8 notícias · 20 s por card · Som: desligado')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Configurações' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Menu' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar' }));
     expect(iniciar).toHaveBeenCalledOnce();
   });
+  it.each([
+    ['classica', 'Interface: Clássica'],
+    ['cartas', 'Interface: Cartas'],
+  ] as const)('AC-18.3 (v13.2.0): a espera mostra a interface ativa (%s), à parte do resumo', (iface, texto) => {
+    const { container } = render(<TelaEspera semNoticias={false} camera="ativa" config={{ ...AJUSTES_PADRAO, interface: iface }} />);
+    expect(screen.getByText(texto)).toHaveAttribute('data-interface', iface);
+    expect(container.querySelectorAll('[data-interface]')).toHaveLength(1);
+    expect(screen.getByText('Modo: Corpo · 10 notícias · 15 s por card · Som: ligado')).toBeInTheDocument();
+  });
   it('AC-10.2: sem notícias, Iniciar fica desativado', () => {
     render(<TelaEspera semNoticias camera="ativa" />);
     expect(screen.getByRole('button', { name: 'Iniciar' })).toBeDisabled();
+    expect(screen.getByText('Nenhuma notícia publicada')).toBeInTheDocument();
   });
-  it('AC-9.1: menu mostra os cinco itens (v10.2.0: Tutorial) com os valores atuais marcados', () => {
-    const definir = vi.fn();
-    render(<MenuConfiguracoes config={{ modo: 'corpo', tempoCardS: 15, som: true, foto: true, tutorial: false }} itemDestacado={0} onDefinir={definir} onFechar={() => {}} />);
-    expect(screen.getByRole('dialog', { name: 'Configurações' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Modo de jogo' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Tempo por card' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Som' })).toBeInTheDocument();
-    expect(screen.getByRole('group', { name: 'Foto no resumo' })).toBeInTheDocument();
-    const tutorial = within(screen.getByRole('group', { name: 'Tutorial' }));
-    expect(tutorial.getByRole('button', { name: '◉ Desligado' })).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.click(tutorial.getByRole('button', { name: '○ Ligado' }));
-    expect(definir).toHaveBeenLastCalledWith({ modo: 'corpo', tempoCardS: 15, som: true, foto: true, tutorial: true });
-    expect(screen.getByRole('button', { name: '◉ Corpo' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '◉ 15 s' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '◉ Ligado' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '◉ Ligada' })).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.click(screen.getByRole('button', { name: '○ 25 s' }));
-    expect(definir).toHaveBeenCalledWith({ modo: 'corpo', tempoCardS: 25, som: true, foto: true, tutorial: false });
-    // AC-9.3/AC-9.18: o X no topo do painel fecha (desenhado, sem o caractere "✕", FR-15)
-    const fechar = screen.getByRole('button', { name: 'Fechar' });
-    expect(fechar.textContent).toBe('');
+  it('AC-6.4 (v12.0.0): com notícias fora dos filtros, a espera manda revisar Ajustes › Conteúdo', () => {
+    render(<TelaEspera semNoticias avisoSemNoticias="Nenhuma notícia para os ajustes atuais: revise Ajustes › Conteúdo" camera="ativa" />);
+    expect(screen.getByText('Nenhuma notícia para os ajustes atuais: revise Ajustes › Conteúdo')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Iniciar' })).toBeDisabled();
   });
+  it('AC-9.2 (v12.0.0): ajuste fora do padrão além do resumo aparece como "Ajustes personalizados"', () => {
+    render(<TelaEspera semNoticias={false} camera="ativa" config={{ ...AJUSTES_PADRAO, volume: 'baixo' }} />);
+    expect(screen.getByText('Modo: Corpo · 10 notícias · 15 s por card · Som: ligado · Ajustes personalizados')).toBeInTheDocument();
+  });
+  it('AC-9.29 (v12.0.0): com o QR das fontes desligado, o resumo fica sem o cartão do QR e mantém a lista', () => {
+    const linhas = [{ id: 'mds-0001', titulo: 'Curto', veredito: 'verdadeira' as const, acertou: true, rotuloFonte: 'Fonte:' as const, fonte: 'exemplo.org' }];
+    const { container } = render(<TelaResumo pontos={1} total={1} linhas={linhas} />);
+    expect(container.querySelector('[data-cartao-qr]')).toBeNull();
+    expect(screen.getByText('Curto')).toBeInTheDocument();
+  });
+  // AC-9.1 (v12.0.0): o painel "Ajustes" substituiu o menu "Configurações"; os testes estão em PainelAjustes.test.tsx.
   it('AC-10.5: botão Sair tem nome acessível "Sair da partida"', () => {
     const sair = vi.fn();
     render(<BotaoSair onSair={sair} />);
@@ -296,9 +279,9 @@ describe('v10.2.0: telas do tutorial (Story 15, FR-16)', () => {
     expect(screen.queryByText(/Saiba mais/)).toBeNull();
     expect(container.querySelector('article img')).toBeNull(); // sem desenho próprio (AC-15.7): ilustração do tema
   });
-  it('AC-15.3: feedback de treino ensina o gesto, com o veredito, a explicação e a técnica', () => {
+  it('AC-15.3: feedback de treino ensina o gesto, com o carimbo do veredito, a explicação e a técnica', () => {
     const { container } = render(<TelaFeedbackTutorial noticia={treino} resposta="verdadeira" modo="corpo" treino={{ passo: 0, total: 4 }} />);
-    expect(screen.getByText('É mentira')).toBeInTheDocument();
+    expect(container.querySelector('[data-carimbo="mentira"]')).not.toBeNull(); // v12.0.0: o veredito é o carimbo (AC-4.10)
     expect(screen.getByText('Quase!')).toBeInTheDocument();
     expect(screen.getByText('Você foi para a direita com o corpo: escolheu Verdade.')).toBeInTheDocument();
     expect(screen.getByText('Era Mentira: corpo para a esquerda.')).toBeInTheDocument();

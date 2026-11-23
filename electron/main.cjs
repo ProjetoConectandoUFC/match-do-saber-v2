@@ -2,11 +2,13 @@
 // Modelo: electron/main.cjs do Prova ou Reprova. Serve o jogo compilado (dist/, com o modelo de
 // detecção em dist/mediapipe) e as rotas /api num servidor HTTP local (127.0.0.1), sem internet.
 
-const { app, BrowserWindow, Menu, session, shell } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, Menu, powerSaveBlocker, session, shell } = require('electron');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { criarBancoLocal } = require('./banco-local.cjs');
+const { linkExterno } = require('./links.cjs');
+const { escutar } = require('./servidor.cjs');
 
 // Porta fixa para manter as configurações do jogo (localStorage é por origem); se ocupada, usa outra.
 const PORTA_PREFERIDA = 37425;
@@ -15,6 +17,8 @@ const BANCO_EMBUTIDO = path.join(DIST, 'content', 'noticias.csv');
 
 let banco;
 let win;
+const INICIO = Date.now();
+let iniciando = true; // até a janela existir
 
 // ---------- Servidor HTTP local ----------
 const MIME = {
@@ -85,30 +89,40 @@ function tratar(req, res) {
   fs.createReadStream(arquivo).pipe(res);
 }
 
-function iniciarServidor() {
-  return new Promise((ok, falha) => {
-    const servidor = http.createServer(tratar);
-    servidor.once('error', (e) => {
-      if (e.code !== 'EADDRINUSE') return falha(e);
-      const outro = http.createServer(tratar);
-      outro.listen(0, '127.0.0.1', () => ok(outro.address().port));
-    });
-    servidor.listen(PORTA_PREFERIDA, '127.0.0.1', () => ok(PORTA_PREFERIDA));
-  });
-}
+// Qualquer erro na porta preferida (ocupada, reservada pelo sistema) cai para outra (NFR Reliability, v12.1.0).
+const iniciarServidor = () => escutar(() => http.createServer(tratar), PORTA_PREFERIDA, '127.0.0.1');
 
 // ---------- Janela ----------
 // Sons tocam sem exigir um clique antes (FR-11).
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
 // Uma instância só.
-if (!app.requestSingleInstanceLock()) app.quit();
+const unica = app.requestSingleInstanceLock();
+if (!unica) app.quit();
 
+// Abriram o app de novo: traz a janela para a frente. Se esta instância está sem janela (travou ao iniciar),
+// fecha, para não segurar a trava de instância única; o próximo clique abre normalmente (NFR Reliability,
+// v12.1.0). Nos primeiros 15 s ela pode estar só iniciando (ex.: duplo clique no atalho): espera.
 app.on('second-instance', () => {
-  if (win) { if (win.isMinimized()) win.restore(); win.focus(); }
+  if (win && !win.isDestroyed()) {
+    if (win.isMinimized()) win.restore();
+    win.focus();
+  } else if (!iniciando || Date.now() - INICIO > 15000) {
+    app.quit();
+  }
 });
 
-app.whenReady().then(async () => {
+function falhaAoIniciar(e) {
+  console.error('[match-do-saber] não foi possível iniciar', e);
+  dialog.showErrorBox('Match do Saber não conseguiu abrir',
+    `O jogo não pôde iniciar e vai fechar. Abra de novo; se repetir, reinicie o computador.\n\nDetalhe: ${e && e.message ? e.message : e}`);
+  app.quit();
+}
+
+if (unica) app.whenReady().then(async () => {
+  // Tela e notebook não entram em repouso com o jogo aberto (NFR Reliability, v12.1.0).
+  powerSaveBlocker.start('prevent-display-sleep');
+
   banco = criarBancoLocal({
     // MATCH_DO_SABER_DADOS: outra pasta, só para testes (não mexe nos Documentos do operador).
     pasta: process.env.MATCH_DO_SABER_DADOS || path.join(app.getPath('documents'), 'Match do Saber'),
@@ -123,6 +137,13 @@ app.whenReady().then(async () => {
   });
   session.defaultSession.setPermissionCheckHandler((wc, permissao, origem) =>
     origemDoJogo(`${origem}/`) && (permissao === 'media' || permissao === 'fullscreen'));
+
+  // Painel Questões (AC-16.2): o preload pede para abrir uma fonte no navegador do sistema.
+  ipcMain.handle('abrir-link', async (_evento, url) => {
+    if (!linkExterno(url)) return false;
+    await shell.openExternal(url);
+    return true;
+  });
 
   const porta = await iniciarServidor();
   Menu.setApplicationMenu(null); // sem barra de menus (AC-8.2)
@@ -141,10 +162,16 @@ app.whenReady().then(async () => {
   win.show();
   atualizarTitulo();
 
-  // Links externos (fontes das notícias) abrem no navegador do sistema, se houver internet.
+  // Links externos (fontes das notícias) abrem no navegador do sistema, se houver internet; nunca na
+  // janela do jogo (AC-16.2, FR-17). Só http e https.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:\/\//i.test(url)) shell.openExternal(url);
+    if (linkExterno(url)) shell.openExternal(url);
     return { action: 'deny' };
+  });
+  win.webContents.on('will-navigate', (evento, url) => {
+    if (url.startsWith(`http://127.0.0.1:${porta}/`)) return; // o próprio jogo (ex.: recarregar)
+    evento.preventDefault();
+    if (linkExterno(url)) shell.openExternal(url);
   });
 
   // F11 tela cheia; Ctrl+R recarrega (relê o banco, AC-8.4); Ctrl+Shift+O abre a pasta do banco; Ctrl+Shift+I ferramentas.
@@ -159,6 +186,7 @@ app.whenReady().then(async () => {
   });
 
   win.loadURL(`http://127.0.0.1:${porta}/`);
-});
+  iniciando = false;
+}).catch(falhaAoIniciar); // sem janela, o processo não fica vivo segurando a instância única (v12.1.0)
 
 app.on('window-all-closed', () => app.quit());

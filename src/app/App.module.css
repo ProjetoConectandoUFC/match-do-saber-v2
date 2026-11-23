@@ -40,6 +40,8 @@
 .esquemaCard i.curta { width: 60%; }
 .esquemaIlu { height: calc(76 * var(--u)); border-radius: calc(8 * var(--u)); display: grid; place-items: center; flex: none; background: var(--cn-roxo); color: var(--cn-amarelo); }
 .dicaConfig { position: absolute; left: calc(40 * var(--u)); bottom: calc(24 * var(--u)); margin: 0; z-index: 1; font-size: calc(17 * var(--u)); font-weight: 500; color: var(--cn-creme); }
+/* AC-18.3 (v13.2.0): interface ativa, acima do resumo, maior para o operador ler a 1 m. */
+.dicaInterface { position: absolute; left: calc(40 * var(--u)); bottom: calc(52 * var(--u)); margin: 0; z-index: 1; font-size: calc(22 * var(--u)); font-weight: 800; color: var(--cn-creme); }
 
 /* Calibração (tema Sóbrio) */
 .calibracao { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(28 * var(--u)); text-align: center; padding: calc(32 * var(--u)); }
@@ -59,35 +61,63 @@
 .botaoLado[data-escolhido] { --acende: 1 !important; }
 .botaoMentira { background: var(--mentira); }
 .botaoVerdade { background: var(--verdade); }
-/* Pilha de cards (AC-2.12): duas camadas paradas atrás do card, no lugar da sombra chapada; a pilha tem o tamanho do card. */
-.pilha { position: relative; flex: none; }
-.camadaPilha { position: absolute; inset: 0; border-radius: calc(24 * var(--u)); border: 2px solid rgb(252 250 241 / 0.25); pointer-events: none; }
-.camadaPilha1 { background: var(--cn-marinho); transform: translate(calc(14 * var(--u)), calc(10 * var(--u))) rotate(4deg); }
-.camadaPilha2 { background: var(--cn-grafite-azul); transform: translate(calc(-8 * var(--u)), calc(6 * var(--u))) rotate(-2.5deg); }
-/* Carimbo (AC-2.10b, AC-2.12): o rótulo do lado; opacidade = fração (useInclinacaoCard); inteiro na saída.
-   Coral sobre creme 3,8:1 e teal sobre creme 3,0:1, em texto de 40 px bold (regra de 3:1 para ≥ 24 px bold). */
-.carimbo { position: absolute; top: calc(30 * var(--u)); z-index: 3; padding: calc(2 * var(--u)) calc(16 * var(--u)); border: calc(6 * var(--u)) solid currentColor; border-radius: calc(14 * var(--u)); background: rgb(252 250 241 / 0.92); font: 900 calc(40 * var(--u)) / 1.1 var(--fonte); letter-spacing: 0.04em; text-transform: uppercase; pointer-events: none; }
-.carimboMentira { left: calc(24 * var(--u)); color: var(--cn-coral); rotate: -12deg; }
-.carimboVerdade { right: calc(24 * var(--u)); color: var(--cn-teal); rotate: 12deg; }
+/* Carimbo (AC-2.10b, AC-2.12, AC-4.9; v12.0.0): o mesmo no card e no feedback. Cheio, com o marcador do veredito num disco
+   noite: VERDADE menta com texto noite (11,2:1) e MENTIRA coral com texto tinta (5,0:1); contorno grosso da cor do texto. */
+.carimbo { display: inline-flex; align-items: center; gap: 0.25em; padding: 0.06em 0.4em 0.06em 0.16em; border: calc(6 * var(--u)) solid currentColor; border-radius: calc(14 * var(--u)); font: 900 calc(40 * var(--u)) / 1.1 var(--fonte); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
+.carimboVerdade { background: var(--verdade); color: var(--cn-noite); }
+.carimboMentira { background: var(--mentira); color: var(--cn-tinta); }
+.carimboDisco { display: grid; place-items: center; width: 1.2em; height: 1.2em; border-radius: 50%; background: var(--cn-noite); flex: none; }
+.carimboVerdade .carimboDisco { color: var(--verdade); }
+.carimboMentira .carimboDisco { color: var(--mentira); }
+.carimboDisco svg { width: 0.72em !important; height: 0.72em !important; }
+/* No card: no alto, do lado da escolha; a opacidade = fração (useInclinacaoCard); inteiro na saída. */
+.carimboCard { position: absolute; top: calc(30 * var(--u)); z-index: 3; }
+.carimboCard.carimboMentira { left: calc(24 * var(--u)); rotate: -12deg; }
+.carimboCard.carimboVerdade { right: calc(24 * var(--u)); rotate: 12deg; }
 .carimbado { opacity: 1 !important; animation: carimbar 160ms ease-out; }
 @keyframes carimbar { from { scale: 1.4; } to { scale: 1; } }
 .pilula { display: inline-flex; align-items: center; border-radius: var(--raio-pilula); padding: calc(6 * var(--u)) calc(26 * var(--u)); font-size: calc(32 * var(--u)); font-weight: 800; line-height: 1.2; border: calc(3 * var(--u)) solid var(--cn-creme); }
 .pilulaMentira { background: var(--mentira); color: var(--cn-tinta); }
 .pilulaVerdade { background: var(--verdade); color: var(--cn-noite); }
-.card { position: relative; flex: none; width: calc(600 * var(--u)); max-height: calc(642 * var(--u)); box-sizing: border-box; background: var(--cn-creme); color: var(--cn-tinta); border-radius: calc(24 * var(--u)); padding: calc(22 * var(--u)) calc(24 * var(--u)) calc(24 * var(--u)); display: flex; flex-direction: column; gap: calc(12 * var(--u)); overflow: hidden; touch-action: none; user-select: none; }
-.card img { width: 100%; height: calc(156 * var(--u)); flex: none; object-fit: cover; border-radius: calc(16 * var(--u)); }
-/* Treino (AC-15.7, v11.0.0): o perfil ocupa mais altura; o card de treino não tem a dica nem texto longo. */
-.card img.imagemPerfil { height: calc(300 * var(--u)); object-position: 50% 30%; }
-/* Ilustração "recorte chapado" (552 × 260): o card mostra a faixa central de 552 × 156. */
-.card img.ilustracaoRecorte { display: block; border-radius: 0; }
-.card h2 { margin: 0; font-size: calc(32 * var(--u)); line-height: 1.15; font-weight: 700; color: var(--cn-titulo); overflow-wrap: anywhere; }
-.card p { margin: 0; font-size: calc(28 * var(--u)); line-height: 1.32; font-weight: 400; overflow-wrap: anywhere; }
-.card p.dicaCard { display: flex; align-items: center; gap: calc(8 * var(--u)); font-size: calc(20 * var(--u)); line-height: 1.3; font-weight: 500; color: var(--cn-grafite); }
-.marcaDica { color: var(--cn-azul); }
+/* ===== Carta de baralho (v13.0.0, AC-17.1, AC-17.2, AC-3.6; prévia docs/visual/previa-v13.html): 460 × 644 = 5:7. =====
+   O article (.carta) recebe o movimento com o corpo, a saída e o pulso; o .giro vira as duas faces (400 ms, só CSS).
+   A face escondida troca de visibilidade na metade da virada (200 ms): leitores, testes e cliques veem só a de cima. */
+.carta { position: relative; flex: none; width: calc(460 * var(--u)); height: calc(644 * var(--u)); border-radius: calc(24 * var(--u)); perspective: calc(2400 * var(--u)); touch-action: none; user-select: none; }
+.giro { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 400ms cubic-bezier(0.3, 0.1, 0.3, 1); }
+.virada .giro { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; box-sizing: border-box; border-radius: calc(24 * var(--u)); background: var(--cn-branco); color: var(--cn-tinta); overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: calc(10 * var(--u)) calc(10 * var(--u)) 0 rgb(0 0 0 / 0.35); transition: visibility 0s 200ms; }
+.faceVerso { transform: rotateY(180deg); visibility: hidden; }
+.virada .faceVerso { visibility: visible; }
+.virada .faceFrente { visibility: hidden; }
+/* Borda branca de 12 e moldura fina noite, como nas cartas ilustradas. */
+.moldura { position: absolute; inset: calc(12 * var(--u)); border: calc(2 * var(--u)) solid var(--cn-noite); border-radius: calc(16 * var(--u)); padding: calc(10 * var(--u)); display: flex; flex-direction: column; gap: calc(14 * var(--u)); }
+/* Janela da imagem: 380 de 644 = 59% da altura da carta (AC-17.1: 55% a 65%). */
+.janela { position: relative; flex: none; height: calc(380 * var(--u)); box-sizing: border-box; border: calc(3 * var(--u)) solid var(--cn-noite); border-radius: calc(10 * var(--u)); overflow: hidden; }
+.janela > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.janela > img.imagemPerfil { object-position: 50% 22%; }
+.ilustracaoCarta { position: absolute; inset: 0; overflow: hidden; }
+.ilustracaoCarta img.ilustracaoRecorte { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Manchete (AC-17.1): 36 por padrão; useLetraQueCabe desce --letra até 30 se não couber. */
+.manchete { margin: 0; flex: 1; min-height: 0; overflow: hidden; font-size: calc(var(--letra, 36) * var(--u)); line-height: 1.12; font-weight: 700; color: var(--cn-titulo); overflow-wrap: anywhere; letter-spacing: -0.005em; }
+/* A última linha contorna o naipe de baixo (dois floats: um vazio até 40 do fim e o lugar do disco). */
+.reserva { float: right; width: 0; height: calc(100% - 40 * var(--u)); }
+.reservaNaipe { float: right; clear: right; width: calc(40 * var(--u)); height: calc(40 * var(--u)); }
+/* Treino (AC-17.1, v13.1.0): nome e, abaixo, a frase do perfil. */
+.faceTreino .janela { height: calc(330 * var(--u)); }
+.faceTreino .manchete { flex: none; font-size: calc(34 * var(--u)); }
+.frase { margin: 0; flex: 1; min-height: 0; overflow: hidden; font-size: calc(var(--letra, 26) * var(--u)); line-height: 1.3; font-weight: 500; color: var(--cn-grafite-azul); overflow-wrap: anywhere; }
+/* Verso de "saiba mais" (AC-17.2): texto de 25 até 20 (useLetraQueCabe). */
+.faixaVerso { flex: none; height: calc(40 * var(--u)); border-radius: calc(10 * var(--u)); display: flex; align-items: center; padding-left: calc(56 * var(--u)); font-size: calc(22 * var(--u)); font-weight: 800; letter-spacing: 0.01em; }
+.textoVerso { flex: 1; min-height: 0; overflow: hidden; font-size: calc(var(--letra, 25) * var(--u)); line-height: 1.27; overflow-wrap: anywhere; }
+.textoVerso h3 { margin: 0 0 0.3em; font-size: 1em; line-height: 1.2; font-weight: 700; color: var(--cn-titulo); }
+.descricaoVerso { margin: 0 0 0.4em; font-weight: 500; color: var(--cn-titulo); }
+.saibaMaisVerso { margin: 0; font-weight: 400; color: var(--cn-grafite-azul); padding-top: 0.35em; border-top: calc(2 * var(--u)) solid var(--cn-gelo); }
+/* Naipe (AC-17.1): disco de 48 + aro branco de 5, por cima do canto da moldura; o de baixo girado 180°. */
+.naipe { position: absolute; z-index: 2; left: calc(4 * var(--u)); top: calc(4 * var(--u)); width: calc(58 * var(--u)); height: calc(58 * var(--u)); box-sizing: border-box; border-radius: 50%; border: calc(5 * var(--u)) solid var(--cn-branco); display: grid; place-items: center; }
+.naipeInferior { left: auto; top: auto; right: calc(4 * var(--u)); bottom: calc(4 * var(--u)); rotate: 180deg; }
+.naipePlenario { display: flex; align-items: flex-end; margin-top: calc(-2 * var(--u)); }
 .ilustracaoTema { position: relative; flex: none; width: 100%; height: calc(156 * var(--u)); overflow: hidden; border-radius: calc(16 * var(--u)); }
 .chipTema { position: absolute; left: calc(14 * var(--u)); top: calc(14 * var(--u)); background: var(--cn-creme); color: var(--cn-noite); font-size: calc(20 * var(--u)); font-weight: 700; line-height: 1.4; padding: calc(3 * var(--u)) calc(16 * var(--u)); border-radius: var(--raio-pilula); }
-.saibaMais { display: flex; flex-direction: column; gap: calc(12 * var(--u)); min-height: 0; overflow-y: auto; }
-.faixaTema { flex: none; height: calc(16 * var(--u)); margin: calc(-22 * var(--u)) calc(-24 * var(--u)) calc(4 * var(--u)); }
 .saiDireita, .saiEsquerda { pointer-events: none; }
 .saiDireita { animation: saiDireita 250ms ease-in forwards; }
 .saiEsquerda { animation: saiEsquerda 250ms ease-in forwards; }
@@ -104,8 +134,10 @@
 .barraAlerta .barraPreenchida { background: var(--alerta); }
 .barraSegundos { position: absolute; left: 50%; top: calc(11 * var(--u)); transform: translateX(-50%); height: calc(42 * var(--u)); line-height: calc(42 * var(--u)); padding: 0 calc(20 * var(--u)); border-radius: var(--raio-pilula); background: var(--cn-creme); color: var(--cn-noite); font-size: calc(26 * var(--u)); font-weight: 800; }
 .pontos { position: absolute; left: calc(24 * var(--u)); bottom: calc(84 * var(--u)); margin: 0; font-size: calc(28 * var(--u)); font-weight: 800; }
-/* Na coluna da esquerda, acima do placar: não cobre o card (FR-4). */
-.dicaModo { position: absolute; left: calc(24 * var(--u)); bottom: calc(136 * var(--u)); max-width: calc(330 * var(--u)); box-sizing: border-box; margin: 0; background: var(--cn-marinho); padding: calc(10 * var(--u)) calc(16 * var(--u)); border-radius: calc(16 * var(--u)); font-size: calc(18 * var(--u)); line-height: 1.35; text-align: left; }
+/* Na coluna da esquerda, acima do placar: não cobrem a carta (FR-4). v13.0.0: a dica de "saiba mais" saiu da carta para cá (AC-17.1). */
+.dicas { position: absolute; left: calc(24 * var(--u)); bottom: calc(136 * var(--u)); z-index: 3; max-width: calc(330 * var(--u)); display: flex; flex-direction: column; gap: calc(10 * var(--u)); }
+.dicaModo { display: flex; align-items: flex-start; gap: calc(8 * var(--u)); box-sizing: border-box; margin: 0; background: var(--cn-marinho); padding: calc(10 * var(--u)) calc(16 * var(--u)); border-radius: calc(16 * var(--u)); font-size: calc(18 * var(--u)); line-height: 1.35; text-align: left; }
+.marcaDica { color: var(--cn-amarelo); margin-top: calc(3 * var(--u)); }
 .sobreposicao { position: absolute; inset: 0; z-index: 5; background: rgb(0 32 54 / 0.9); color: var(--cn-creme); display: grid; place-items: center; font-size: calc(48 * var(--u)); font-weight: 800; }
 .sair { position: absolute; top: calc(16 * var(--u)); left: calc(16 * var(--u)); z-index: 4; display: flex; align-items: center; gap: calc(10 * var(--u)); border: 2px solid currentColor; border-radius: var(--raio-pilula); padding: calc(5 * var(--u)) calc(18 * var(--u)) calc(5 * var(--u)) calc(14 * var(--u)); background: transparent; color: inherit; font: 600 calc(18 * var(--u)) / 1.3 var(--fonte); cursor: pointer; }
 .sair:focus-visible { outline: 3px solid var(--cn-amarelo); outline-offset: 3px; }
@@ -114,25 +146,25 @@
 .xis::after { transform: rotate(-45deg); }
 .faixa { position: absolute; top: 0; left: 0; right: 0; z-index: 4; margin: 0; background: var(--cn-amarelo); color: var(--cn-tinta); text-align: center; padding: calc(8 * var(--u)); font-size: calc(18 * var(--u)); font-weight: 700; }
 
-/* Feedback (AC-4.1 a AC-4.3, AC-4.9): fundo na cor do veredito; texto noite sobre menta (11,2:1) e tinta sobre coral (5,0:1). */
-.fbVerdade { background: var(--verdade); color: var(--cn-noite); }
-.fbMentira { background: var(--mentira); color: var(--cn-tinta); }
+/* Feedback (AC-4.1 a AC-4.3, AC-4.9, v12.0.0): o fundo diz o resultado. Acerto: verde com texto noite (6,8:1).
+   Erro e tempo esgotado: vermelho com texto creme (4,9:1). O veredito fica só no carimbo. */
+.fbAcerto { background: var(--acerto); color: var(--cn-noite); }
+.fbErro { background: var(--erro); color: var(--cn-creme); }
 /* "Sair" fica fora da tela (App); acompanha a cor do texto do feedback. */
-.app:has(> .fbVerdade) { color: var(--cn-noite); }
-.app:has(> .fbMentira) { color: var(--cn-tinta); }
+.app:has(> .fbAcerto) { color: var(--cn-noite); }
+.app:has(> .fbErro) { color: var(--cn-creme); }
 .feedback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(22 * var(--u)); text-align: center; padding: 0 calc(200 * var(--u)); }
-.veredito { margin: 0; display: inline-flex; align-items: center; gap: calc(12 * var(--u)); font-size: calc(30 * var(--u)); font-weight: 800; line-height: 1.2; }
-/* Ícone + selo numa linha (AC-4.9, v11.0.0); o ícone pulsa uma vez ao aparecer. */
-.linhaSelo { display: flex; align-items: center; justify-content: center; gap: calc(20 * var(--u)); }
-.iconeFeedback { display: block; flex: none; animation: aparecerIcone 420ms ease-out; }
-@keyframes aparecerIcone { 0% { scale: 0.6; } 60% { scale: 1.12; } 100% { scale: 1; } }
-.selo { margin: 0; display: inline-flex; align-items: baseline; gap: calc(16 * var(--u)); font-size: calc(44 * var(--u)); font-weight: 900; line-height: 1; padding: calc(14 * var(--u)) calc(36 * var(--u)); border-radius: var(--raio-pilula); white-space: nowrap; }
-.seloAcerto { background: var(--cn-noite); color: var(--cn-amarelo); }
-.seloAcerto .seloMatch + .seloResultado { color: var(--cn-creme); }
-.seloErro { background: var(--cn-creme); color: var(--cn-tinta); border: calc(3 * var(--u)) solid var(--cn-tinta); }
-.seloMatch + .seloResultado { font-size: calc(34 * var(--u)); font-weight: 800; }
+/* Núcleo: o texto do resultado vem antes no DOM (leitura) e o carimbo, depois, fica por cima (column-reverse), cobrindo só o
+   alto do texto. */
+.nucleo { display: flex; flex-direction: column-reverse; align-items: center; }
+.textoResultado { margin: 0; font-size: calc(100 * var(--u)); font-weight: 900; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
+.carimboFeedback { position: relative; z-index: 1; font-size: calc(52 * var(--u)); margin-bottom: calc(-2 * var(--u)); box-shadow: calc(8 * var(--u)) calc(8 * var(--u)) 0 var(--cn-noite); animation: carimbada var(--carimbo-ms) cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+.carimboFeedback.carimboVerdade { rotate: 7deg; }
+.carimboFeedback.carimboMentira { rotate: -7deg; }
+/* Carimbada (AC-4.9): cai de maior para o tamanho final; os 300 ms somam ao tempo do feedback (TEMPOS.carimboMs). */
+@keyframes carimbada { from { scale: 2.4; opacity: 0; translate: 0 calc(-30 * var(--u)); } 60% { opacity: 1; } to { scale: 1; opacity: 1; translate: 0 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .iconeFeedback, .carimbado { animation: none; }
+  .carimboFeedback, .carimbado { animation: none; }
 }
 .explicacao { margin: 0; font-size: calc(30 * var(--u)); line-height: 1.4; font-weight: 500; max-width: calc(860 * var(--u)); }
 .tecnica { margin: 0; border: calc(3 * var(--u)) solid currentColor; border-radius: var(--raio-pilula); padding: calc(4 * var(--u)) calc(24 * var(--u)); font-size: calc(26 * var(--u)); font-weight: 600; }
@@ -156,9 +188,18 @@
 .listaTopo h2 { margin: 0; font-size: calc(22 * var(--u)); font-weight: 800; color: var(--cn-titulo); }
 .legenda { display: flex; align-items: center; gap: calc(14 * var(--u)); font-size: calc(15 * var(--u)); font-weight: 600; color: var(--cn-grafite); }
 .legenda > span { display: inline-flex; align-items: center; gap: calc(6 * var(--u)); }
-.gradeRodada { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(5, auto); column-gap: calc(24 * var(--u)); }
+/* v12.0.2 (AC-5.8): metade das notícias em cada coluna (`--linhas`, escrita pela lista); eram 5 linhas fixas. */
+.gradeRodada { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(var(--linhas, 5), auto); column-gap: calc(24 * var(--u)); }
 .linhaRodada { display: flex; align-items: center; gap: calc(12 * var(--u)); height: calc(60 * var(--u)); min-width: 0; border-bottom: 1.5px dashed rgb(56 46 0 / 0.35); }
-.linhaRodada:nth-child(5n) { border-bottom: 0; }
+.linhaRodada[data-fim-coluna] { border-bottom: 0; }
+/* Mais de 10 notícias (até 20, AC-9.23): linhas mais baixas para as 10 por coluna caberem em 1366×768. */
+.gradeRodada[data-densa] .linhaRodada { height: calc(37 * var(--u)); gap: calc(8 * var(--u)); }
+.gradeRodada[data-densa] .resultado { width: calc(24 * var(--u)); height: calc(24 * var(--u)); }
+.gradeRodada[data-densa] .resultado svg { width: calc(13 * var(--u)) !important; height: calc(13 * var(--u)) !important; }
+.gradeRodada[data-densa] .resultado .xis { scale: 0.7; }
+.gradeRodada[data-densa] .textoRodada b { font-size: calc(15 * var(--u)); line-height: 1.2; }
+.gradeRodada[data-densa] .textoRodada small { font-size: calc(11.5 * var(--u)); line-height: 1.25; }
+.gradeRodada[data-densa] .veiculo { font-size: calc(10 * var(--u)); padding: 0 calc(6 * var(--u)); line-height: 1.4; }
 .resultado { display: grid; place-items: center; width: calc(34 * var(--u)); height: calc(34 * var(--u)); box-sizing: border-box; border-radius: 50%; flex: none; font-style: normal; color: var(--cn-noite); }
 .resultadoOk { background: var(--cn-amarelo); border: 2px solid var(--cn-noite); }
 .resultadoNao { background: var(--cn-creme); border: 3px solid var(--cn-noite); }
@@ -213,3 +254,22 @@
 .diagnostico { position: absolute; top: calc(72 * var(--u)); left: calc(16 * var(--u)); z-index: 8; max-width: calc(300 * var(--u)); box-sizing: border-box; padding: calc(10 * var(--u)) calc(12 * var(--u)); border-radius: calc(12 * var(--u)); border: 2px solid var(--cn-menta); background: rgb(0 32 54 / 0.92); color: var(--cn-menta); font: calc(13 * var(--u)) / 1.35 ui-monospace, Menlo, monospace; }
 .diagnostico p { margin: 0; white-space: normal; overflow-wrap: anywhere; }
 .diagnostico button { margin-top: calc(8 * var(--u)); font: 600 calc(13 * var(--u)) / 1.3 var(--fonte); padding: calc(4 * var(--u)) calc(12 * var(--u)); border-radius: var(--raio-pilula); border: 2px solid var(--cn-menta); background: transparent; color: var(--cn-menta); cursor: pointer; }
+
+/* ===== Distribuição e abertura (v13.0.0, AC-17.5, AC-17.6; Fase 48). O fan está em FanCartas.module.css. ===== */
+/* O .voo leva a carta do fan até a mesa (Web Animations, só transform); o article dentro continua com o movimento do corpo. */
+.voo { position: relative; flex: none; }
+/* Lugar da carta na abertura: as laterais ficam onde estarão com a carta (AC-4.5). */
+.lugarCarta { flex: none; width: calc(460 * var(--u)); height: calc(644 * var(--u)); }
+/* Face de baixo enquanto a carta sai do fan: o verso único do fan (FR-18), com os cantos do desenho (18 de 250). */
+.faceFan { transform: rotateY(180deg); background: none; border-radius: calc(33 * var(--u)); }
+.faceFan img { display: block; width: 100%; height: 100%; }
+/* Espera com cartas (v13.0.0, prévia v13): o conteúdo sobe um pouco para o fan caber embaixo; o desenho do gesto mostra
+   uma carta (branca, moldura noite, naipe roxo nos cantos), não o card da v12. */
+.espLinhaCartas { padding-bottom: calc(40 * var(--u)); box-sizing: border-box; }
+.esquemaCarta { position: relative; width: calc(150 * var(--u)); height: calc(210 * var(--u)); box-sizing: border-box; background: var(--cn-branco); border-radius: calc(12 * var(--u)); padding: calc(12 * var(--u)); display: flex; flex-direction: column; gap: calc(9 * var(--u)); box-shadow: calc(8 * var(--u)) calc(8 * var(--u)) 0 var(--cn-noite); outline: calc(1.5 * var(--u)) solid var(--cn-noite); outline-offset: calc(-6 * var(--u)); }
+.esquemaCarta i { display: block; flex: none; height: calc(11 * var(--u)); border-radius: calc(5 * var(--u)); background: var(--cn-noite); }
+.esquemaCarta i.curta { width: 60%; }
+.esquemaCarta .esquemaIlu { height: calc(104 * var(--u)); border-radius: calc(6 * var(--u)); }
+.esquemaNaipe { position: absolute; width: calc(22 * var(--u)); height: calc(22 * var(--u)); box-sizing: border-box; border-radius: 50%; border: calc(3 * var(--u)) solid var(--cn-branco); background: var(--cn-roxo); }
+.esquemaNaipeA { left: 0; top: 0; }
+.esquemaNaipeB { right: 0; bottom: 0; }

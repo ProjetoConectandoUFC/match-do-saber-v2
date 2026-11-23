@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Problemas } from '../core/banco';
+import { avisosNoticia } from '../core/carta';
 import {
   DIFICULDADES, DIFICULDADE_ROTULO, STATUS, TECNICAS, TECNICA_ROTULO, TEMAS, TEMA_ROTULO, VEREDITOS,
   type ColunaBanco, type NoticiaBanco,
@@ -41,6 +42,7 @@ export function EditorNoticia({ inicial, nova, problemas, salvando, onSalvar, on
 }) {
   const [n, setN] = useState(inicial);
   const titulo = nova ? 'Nova notícia' : 'Editar notícia';
+  const avisos = avisosNoticia(n); // AC-7.13 (v13.1.0): avisa enquanto digita, sem bloquear o Salvar
   return (
     <div className={p.camada} role="dialog" aria-modal="true" aria-label={titulo} data-editor={nova ? 'nova' : 'editar'}>
       <form
@@ -78,10 +80,30 @@ export function EditorNoticia({ inicial, nova, problemas, salvando, onSalvar, on
                 ) : (
                   <input type="text" {...comum} />
                 )}
-                {erro ? <small id={`${id}-erro`} className={p.erroCampo}>{erro}</small> : c.dica && <small>{c.dica}</small>}
+                {erro
+                  ? <small id={`${id}-erro`} className={p.erroCampo}>{erro}</small>
+                  : avisos[c.coluna]
+                    ? <small className={p.avisoCampo} data-aviso-campo={c.coluna}>{avisos[c.coluna]}</small>
+                    : c.dica && <small>{c.dica}</small>}
               </div>
             );
           })}
+          {/* AC-7.12 (v12.0.0): interruptor de visibilidade; desligado grava `nao`, ligado grava vazio (= visível). */}
+          <div className={p.campo} data-campo="visivel" data-erro={problemas.visivel ? 'sim' : undefined}>
+            <label htmlFor="ed-visivel">
+              <input
+                id="ed-visivel"
+                type="checkbox"
+                checked={n.visivel !== 'nao'}
+                aria-invalid={problemas.visivel ? 'true' : 'false'}
+                onChange={(e) => setN({ ...n, visivel: e.target.checked ? '' : 'nao' })}
+              />
+              Visível no jogo
+            </label>
+            {problemas.visivel
+              ? <small className={p.erroCampo}>{problemas.visivel}</small>
+              : <small>desligada, a notícia fica no banco, mas fora das partidas</small>}
+          </div>
         </div>
         <footer className={p.rodape}>
           {onApagar && <button type="button" data-acao="apagar" onClick={onApagar} disabled={salvando}>Apagar</button>}

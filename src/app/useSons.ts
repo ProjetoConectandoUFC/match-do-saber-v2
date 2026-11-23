@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react';
 import type { Estado } from '../core/partida';
-import { sonsDaTransicao } from '../core/sons';
+import { sonsATocar } from '../core/sons';
 import { criarTocador } from './audio';
 
-/** Toca os sons de FR-11 a cada transição de estado, se `ligado`. */
-export function useSons(estado: Estado, ligado: boolean) {
+/** Toca os sons de FR-11 a cada transição de estado, se `ligado`, no volume dos Ajustes (`fator`, AC-9.29). */
+export function useSons(estado: Estado, ligado: boolean, fator = 1) {
   const tocador = useMemo(criarTocador, []);
   const anterior = useRef(estado);
 
@@ -19,8 +19,8 @@ export function useSons(estado: Estado, ligado: boolean) {
   }, [tocador]);
 
   useEffect(() => {
-    const sons = sonsDaTransicao(anterior.current, estado);
+    const sons = sonsATocar(anterior.current, estado, ligado);
     anterior.current = estado;
-    if (ligado) for (const som of sons) tocador.tocar(som);
-  }, [estado, ligado, tocador]);
+    for (const som of sons) tocador.tocar(som, fator);
+  }, [estado, ligado, fator, tocador]);
 }

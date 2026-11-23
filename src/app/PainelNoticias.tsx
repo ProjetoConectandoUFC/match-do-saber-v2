@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  alterarEmMassa, apagarNoticias, descreverProblemas, gravarNoticia, jogaveis, novaNoticia, prepararImportacao,
+  alterarEmMassa, apagarNoticias, descreverProblemas, gravarNoticia, jogaveis, novaNoticia, oculta, prepararImportacao,
   validarBanco, type CampoEmMassa, type LinhaImportada, type Problemas,
 } from '../core/banco';
 import { decodificar, escreverCsv, lerCsv } from '../core/csv';
@@ -18,6 +18,9 @@ const OPCOES_MASSA: Record<CampoEmMassa, { rotulo: string; valores: readonly str
   status: { rotulo: 'Status', valores: STATUS, rotulos: { rascunho: 'Rascunho', aprovada: 'Aprovada' } },
   tema: { rotulo: 'Tema', valores: TEMAS, rotulos: TEMA_ROTULO },
   tecnica: { rotulo: 'Técnica', valores: TECNICAS, rotulos: TECNICA_ROTULO },
+  // AC-7.4 (v12.0.1) e AC-7.12: dificuldade e visibilidade também em massa.
+  dificuldade: { rotulo: 'Dificuldade', valores: DIFICULDADES, rotulos: DIFICULDADE_ROTULO },
+  visivel: { rotulo: 'Visibilidade', valores: ['sim', 'nao'], rotulos: { sim: 'Visível', nao: 'Oculta' } },
 };
 
 const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
@@ -333,7 +336,9 @@ export function PainelNoticias({ repo, estado, onBancoAlterado = () => {}, onFec
             </thead>
             <tbody>
               {visiveis.map(({ n, indice, motivo }) => {
-                const situacao = motivo ? 'invalida' : n.status === 'aprovada' ? 'no-jogo' : 'fora';
+                // AC-7.12: a oculta continua válida, mas fora do jogo, com a marca "Oculta".
+                const situacao = motivo ? 'invalida' : oculta(n) ? 'oculta' : n.status === 'aprovada' ? 'no-jogo' : 'fora';
+                const textoSituacao = { invalida: `inválida: ${motivo}`, oculta: 'Oculta (fora do jogo)', 'no-jogo': 'no jogo', fora: 'fora do jogo' }[situacao];
                 return (
                   <tr key={indice} data-id={n.id} data-situacao={situacao}>
                     <td><input type="checkbox" aria-label={`Selecionar ${n.id}`} checked={sel.has(n.id)} onChange={(e) => alternar(n.id, e.target.checked)} /></td>
@@ -342,7 +347,7 @@ export function PainelNoticias({ repo, estado, onBancoAlterado = () => {}, onFec
                     <td>{n.veredito}</td>
                     <td>{n.tema}</td>
                     <td>{n.status}</td>
-                    <td>{motivo ? `inválida: ${motivo}` : n.status === 'aprovada' ? 'no jogo' : 'fora do jogo'}</td>
+                    <td>{textoSituacao}</td>
                     <td><button type="button" data-acao="editar" onClick={() => abrirEditor(n)}>Editar</button></td>
                   </tr>
                 );
