@@ -11,3 +11,4 @@
 - [Status do MVP e Fase 7](mvp-status-fase7.md) — histórico até a v8.2.0 e verificações de hardware pendentes
 - [Expediente 2026-11-16 (desktop-pj0nrku)](expediente/2026-11-16-desktop-pj0nrku.md) — experimento das cartas pausado; revisão de defeitos para o teste de 18/11; PR #11 (robustez v12.1.0, inclui o #10); lote 4 na branch 001-lote-4-noticias
 - [Expediente 2026-11-17 (desktop-qiudrmk)](expediente/2026-11-17-desktop-qiudrmk.md) — teste A/B de 18/11: spec v13.2.0 (Story 18, FR-19), cartas integradas sobre a v12.1.0, Fases 47/48/51 na `001-v13-ab`, releases v12.1.0 (plano B) e v13.2.0; conferência do gestor e lista para o notebook
+- [Expediente 2026-11-23 (desktop-pj0nrku)](expediente/2026-11-23-desktop-pj0nrku.md) — branches sincronizadas com a v13.2.0, antigas apagadas; PRs #14 (v13.2 → develop), #13 (lote 4) e #15 (develop → main); aguardando a análise do teste A/B
