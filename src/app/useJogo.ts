@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from 'react';
-import { extrairPontos, type Registro } from '../core/diagnostico';
+import { extrairPontos, type Aceleracao, type Registro } from '../core/diagnostico';
 import { AJUSTES_PADRAO, contextoDosAjustes, type Ajustes } from '../core/ajustes';
 import { configGestos, criarInterpretador, medirCabeca, medirMaos, type Gesto, type Pose } from '../core/gestos';
 import { ESTADO_INICIAL, calibrarAoSair, permanenciaConta, reduzir, type Contexto, type Estado, type Evento } from '../core/partida';
@@ -31,6 +31,7 @@ const EVENTO_DA_TECLA: Record<string, Evento | undefined> = {
 /** `noticias`: as jogáveis dentro dos filtros de conteúdo dos Ajustes (AC-9.27, AC-6.4). */
 export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, pausado = false, registro?: Registro) {
   const [camera, setCamera] = useState<StatusCamera>('carregando');
+  const [aceleracao, setAceleracao] = useState<Aceleracao | null>(null);
   const ctx = useRef<Contexto>({ noticias, rng: Math.random, cameraAtiva: false });
   // Tempos, tolerância, volta do resumo e sorteio vêm dos Ajustes (FR-1, FR-9, v12.0.0).
   ctx.current = {
@@ -132,6 +133,7 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
         if (cancelado()) return r.fechar();
         meu = r;
         rastreador.current = r;
+        setAceleracao(r.aceleracao ?? null);
         bloqueio = null;
         s.getVideoTracks()[0]?.addEventListener('ended', () => {
           if (cancelado() || stream !== s) return;
@@ -236,5 +238,5 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
     return () => window.removeEventListener('keydown', tecla);
   }, []);
 
-  return { estado, despachar, camera, videoRef, inclinacaoRef, poseRef };
+  return { estado, despachar, camera, videoRef, inclinacaoRef, poseRef, aceleracao };
 }

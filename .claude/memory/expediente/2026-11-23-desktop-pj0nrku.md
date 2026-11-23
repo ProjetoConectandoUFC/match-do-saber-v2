@@ -9,3 +9,11 @@
   - **#14** `001-v13-ab` → develop: v13.2.0 (troca de interface Clássica × Cartas, cartas, fan, workflow de release).
   - **#13** `001-lote-4-banco` → develop: lote 4 como rascunho. Aprovar depois do #14, para o diff ficar só no CSV.
   - **#15** develop → main: publica a web (hoje v11). Por último; acompanha a develop sozinho.
+- Análise do teste de 18/11 com o responsável (resumo e decisões em `../teste-publico-2026-11-18.md`): só Cartas, monitor, app desktop a 15 fps; próximos rumos são movimento pelos quadris, gestos de braço, barra de tempo no feedback e interface mais "juicy".
+- Performance rápida na branch `001-performance-rapida`:
+  - `ignore-gpu-blocklist` no Electron;
+  - câmera em 640×360;
+  - aceleração (GPU/CPU, renderizador) no ☰ › Diagnóstico.
+
+  884/884, `tsc` e build ok; E2E não rodados. O conserto estrutural (detecção fora do laço de desenho) fica para spec.
+- O responsável aprovou #13, #14 e #15 (web na v13.2.0). A `develop` tinha sido apagada no GitHub depois do #15 e foi recriada no ponto da `main`. `001-performance-rapida` recebeu a `main` por merge (884/884) e foi para PR.
