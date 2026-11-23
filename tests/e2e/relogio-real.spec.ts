@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 // Câmera falsa do Chromium + modelo de pose real: a detecção deixa os quadros lentos (> 100 ms).
 test.use({
@@ -16,6 +17,7 @@ test('FR-1/AC-4.4: o relógio do card segue o tempo real mesmo com a detecção 
   await page.keyboard.press('Enter'); // abre a calibração
   await page.keyboard.press('Enter'); // pula a calibração
   await expect(page.locator('article')).toBeVisible();
+  await esperarCartaPousada(page); // v13.0.0: o cronômetro só corre com a carta pousada (AC-17.6)
 
   const barra = page.getByRole('timer', { name: 'Tempo restante' });
   const segundos = async () => Number.parseInt((await barra.innerText()).replace(/\D/g, ''), 10);

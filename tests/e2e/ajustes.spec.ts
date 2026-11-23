@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 // v12.0.0: o painel "Ajustes" (FR-9) substituiu o menu "Configurações" (até a v11.0.0).
 const CAMERA_OFF = 'Câmera desativada — jogue pelas setas (Enter para começar)';
@@ -24,6 +25,7 @@ async function jogarAteOResumo(page: Page, n: number) {
   await page.keyboard.press('Enter');
   for (let i = 0; i < n; i++) {
     await expect(page.locator('article')).toBeVisible();
+    await esperarCartaPousada(page);
     await page.keyboard.press(i % 2 ? 'ArrowLeft' : 'ArrowRight');
     await expect(page.locator('article')).toHaveCount(0);                                   // saiu para o feedback
   }
@@ -38,13 +40,13 @@ test('painel pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (
 
   await page.keyboard.press('m');
   await expect(painel).toBeVisible();                                                       // AC-9.1
-  await expect(painel.getByRole('heading', { level: 3 })).toHaveText(['Partida', 'Conteúdo', 'Detecção', 'Mídia', 'Questões']);
+  await expect(painel.getByRole('heading', { level: 3 })).toHaveText(['Interface', 'Partida', 'Conteúdo', 'Detecção', 'Mídia', 'Questões']); // AC-18.1
   await expect(painel.getByText(/^12 jogáveis de 15 no banco \(1 oculta\)$/)).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(painel).toBeHidden();                                                        // AC-9.3
 
   await page.keyboard.press('m');
-  await page.keyboard.press('ArrowDown');                                                   // Tempo por card
+  for (let i = 0; i < 2; i++) await page.keyboard.press('ArrowDown');                       // (v13.2.0: Interface primeiro) Tempo por card
   await page.keyboard.press('ArrowRight');                                                  // 15 → 20 s
   for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowDown');                       // … Modo de jogo
   await page.keyboard.press('ArrowRight');                                                  // Corpo → Mão
@@ -54,7 +56,7 @@ test('painel pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (
   await expect(resumo(page, 'Modo: Mão · 10 notícias · 20 s por card · Som: ligado')).toBeVisible();   // AC-9.2
 
   await page.keyboard.press('m');
-  await page.keyboard.press('ArrowDown');
+  for (let i = 0; i < 2; i++) await page.keyboard.press('ArrowDown');                       // Tempo por card
   for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowLeft');                       // 20 → 15 → 10, e fica (AC-9.17)
   await page.keyboard.press('m');                                                           // M também fecha
   await expect(resumo(page, 'Modo: Mão · 10 notícias · 10 s por card · Som: ligado')).toBeVisible();
@@ -99,6 +101,7 @@ test('pelo mouse, via ☰ › Ajustes (AC-9.2, FR-14), e setas no modo Cabeça (
   await page.keyboard.press('Enter');
   await expect(page.getByText('Saiba mais: levante o queixo (ou ↑)')).toBeVisible();
   await expect(painel).toHaveCount(0);
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowRight');
   await expect(page.locator('article')).toHaveCount(0);                                     // escolheu: foi para o feedback
 });
@@ -183,7 +186,7 @@ test('AC-9.30: "Restaurar padrão" com confirmação volta tudo ao padrão', asy
   await abrirSemCamera(page, { 'match-do-saber:modo': 'mao', 'match-do-saber:volume': 'baixo', 'match-do-saber:noticiasPorPartida': '8' });
   await expect(resumo(page, 'Modo: Mão · 8 notícias · 15 s por card · Som: ligado · Ajustes personalizados')).toBeVisible();
   await page.keyboard.press('m');
-  await page.keyboard.press('ArrowUp');                                                     // de Notícias por partida, em volta, até Restaurar padrão
+  await page.keyboard.press('ArrowUp');                                                     // do 1º item (Interface do jogo), em volta, até Restaurar padrão
   await page.keyboard.press(' ');
   await expect(page.getByRole('alertdialog', { name: 'Restaurar padrão' })).toBeVisible();
   await page.keyboard.press(' ');

@@ -1,5 +1,6 @@
 import { mkdirSync } from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 // v12.0.0: feedback por resultado (verde/vermelho) e carimbo do veredito por cima do texto (AC-4.1 a AC-4.3, AC-4.9,
 // AC-4.10), sem câmera (setas). CAPTURAS_V12=1 grava as capturas em docs/visual/capturas/v12-feedback/.
@@ -73,6 +74,7 @@ for (const vp of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) 
     const vistos = new Set<string>();
     for (let i = 0; i < 6 && vistos.size < 4; i++) {
       await expect(page.locator('article')).toBeVisible();
+      await esperarCartaPousada(page);
       await expect(page.getByRole('timer', { name: 'Tempo restante' })).toBeVisible();
       await page.keyboard.press(i % 2 === 0 ? 'ArrowRight' : 'ArrowLeft');
       await expect(page.getByRole('heading', { level: 2, name: RESULTADO })).toBeVisible();
@@ -91,7 +93,7 @@ test('AC-4.3/AC-4.9: tempo esgotado fica vermelho, com o texto e o carimbo', asy
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await abrir(page);
   await page.keyboard.press('Enter');
-  await expect(page.getByText('Tempo esgotado')).toBeVisible({ timeout: 17_000 });
+  await expect(page.getByText('Tempo esgotado')).toBeVisible({ timeout: 20_000 }); // v13.0.0: + abertura e distribuição
   const { resultado, veredito } = await conferirFeedback(page);
   expect(resultado).toBe('tempo');
   await capturar(page, `tempo-${veredito}`);
@@ -101,6 +103,7 @@ test('AC-4.9: a carimbada anima (300 ms) e, com prefers-reduced-motion, aparece 
   await abrir(page);
   await page.keyboard.press('Enter');
   await expect(page.locator('article')).toBeVisible();
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowRight');
   const carimbo = page.locator('[data-carimbo]');
   await expect(carimbo).toBeVisible();
@@ -116,11 +119,13 @@ test('AC-4.10: o feedback do treino usa o mesmo layout (verde ao acertar, vermel
   await abrir(page, true);
   await page.keyboard.press('Enter');
   await expect(page.getByText('Treino 1 de 2')).toBeVisible();
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowLeft'); // Abacaxi Perfeito é mentira
   await expect(page.getByRole('heading', { level: 2, name: 'Acertou!' })).toBeVisible();
   expect((await conferirFeedback(page)).resultado).toBe('treino-acerto');
   await capturar(page, 'treino-acerto-mentira');
   await expect(page.getByText('Treino 2 de 2')).toBeVisible({ timeout: 6000 });
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowLeft'); // Seu Caju é verdade
   await expect(page.getByRole('heading', { level: 2, name: 'Quase!' })).toBeVisible();
   expect((await conferirFeedback(page)).resultado).toBe('treino-erro');

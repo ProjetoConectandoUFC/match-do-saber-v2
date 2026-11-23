@@ -121,7 +121,19 @@ describe('criarInclinacaoCard: interpolação entre as leituras da câmera (AC-2
 
 describe('situacaoDoCard (AC-2.10)', () => {
   const partida = { cards: [], resultados: [], entrada: 'corpo' as const };
-  const card = (extra = {}) => ({ tela: 'card' as const, partida, indice: 0, restanteMs: 5000, saibaMais: false, ausenteMs: null, ...extra });
+  const card = (extra = {}) => ({
+    tela: 'card' as const, partida, indice: 0, restanteMs: 5000, saibaMais: false, ausenteMs: null, distribuindoMs: 0, ...extra,
+  });
+  const treino = (extra = {}) => ({ tela: 'tutorial' as const, passo: 0, treinos: 2, partida, distribuindoMs: 0, ...extra });
+
+  it('AC-17.6/AC-2.10e (v13.0.0): durante a distribuição a carta (notícia ou treino) fica no centro; pousada, segue a leitura', () => {
+    expect(situacaoDoCard(card({ distribuindoMs: TEMPOS.distribuirMs }), false)).toBe('centro');
+    expect(situacaoDoCard(card({ distribuindoMs: 1 }), false)).toBe('centro');
+    expect(situacaoDoCard(card({ distribuindoMs: 0 }), false)).toBe('jogando');
+    expect(situacaoDoCard(treino({ distribuindoMs: 1 }), false)).toBe('centro');
+    expect(situacaoDoCard(treino(), false)).toBe('jogando');
+    expect(situacaoDoCard({ tela: 'abertura', partida, treinos: 0, restanteMs: 700 }, false)).toBe('centro');
+  });
 
   it('card na tela segue a leitura, inclusive com o "saiba mais" aberto', () => {
     expect(situacaoDoCard(card(), false)).toBe('jogando');
@@ -150,10 +162,10 @@ describe('situacaoDoCard (AC-2.10)', () => {
   });
 
   it('v10.2.0: o card de treino segue a leitura e sai da mesma forma; o feedback de treino volta ao centro', () => {
-    expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, false)).toBe('jogando');
-    expect(situacaoDoCard({ tela: 'tutorial', passo: 0, entrada: 'corpo' }, true)).toBe('centro');
+    expect(situacaoDoCard(treino(), false)).toBe('jogando');
+    expect(situacaoDoCard(treino(), true)).toBe('centro');
     const fb = (restanteMs: number, resultadoMs: number = RESULTADO_PADRAO) =>
-      ({ tela: 'tutorialFeedback' as const, passo: 0, entrada: 'corpo' as const, restanteMs, resposta: 'falsa' as const, resultadoMs });
+      ({ tela: 'tutorialFeedback' as const, passo: 0, treinos: 2, partida, restanteMs, resposta: 'falsa' as const, resultadoMs });
     expect(situacaoDoCard(fb(RESULTADO_PADRAO + 1), false)).toBe('saindo');
     expect(situacaoDoCard(fb(RESULTADO_PADRAO), false)).toBe('centro');
     const oito = duracaoResultadoMs({ tempoFeedbackMs: 8000 });

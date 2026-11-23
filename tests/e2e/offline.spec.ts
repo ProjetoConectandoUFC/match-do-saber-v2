@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 test('AC-8.5 (web): depois de uma visita online, abre e joga offline, com banco e imagens em cache', async ({ page, context }) => {
   await page.addInitScript(() => {
@@ -42,6 +43,7 @@ test('NFR Security: nenhuma requisição sai do próprio site durante a partida'
   await page.goto('/');
   await expect(page.getByText('Câmera desativada — jogue pelas setas (Enter para começar)')).toBeVisible(); // jogo carregado
   await page.keyboard.press('Enter');
+  await esperarCartaPousada(page);
   await page.keyboard.press('ArrowRight');
   await page.waitForTimeout(3500);
   expect(externas).toEqual([]);

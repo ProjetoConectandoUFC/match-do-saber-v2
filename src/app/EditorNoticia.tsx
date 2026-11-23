@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Problemas } from '../core/banco';
+import { avisosNoticia } from '../core/carta';
 import {
   DIFICULDADES, DIFICULDADE_ROTULO, STATUS, TECNICAS, TECNICA_ROTULO, TEMAS, TEMA_ROTULO, VEREDITOS,
   type ColunaBanco, type NoticiaBanco,
@@ -41,6 +42,7 @@ export function EditorNoticia({ inicial, nova, problemas, salvando, onSalvar, on
 }) {
   const [n, setN] = useState(inicial);
   const titulo = nova ? 'Nova notícia' : 'Editar notícia';
+  const avisos = avisosNoticia(n); // AC-7.13 (v13.1.0): avisa enquanto digita, sem bloquear o Salvar
   return (
     <div className={p.camada} role="dialog" aria-modal="true" aria-label={titulo} data-editor={nova ? 'nova' : 'editar'}>
       <form
@@ -78,7 +80,11 @@ export function EditorNoticia({ inicial, nova, problemas, salvando, onSalvar, on
                 ) : (
                   <input type="text" {...comum} />
                 )}
-                {erro ? <small id={`${id}-erro`} className={p.erroCampo}>{erro}</small> : c.dica && <small>{c.dica}</small>}
+                {erro
+                  ? <small id={`${id}-erro`} className={p.erroCampo}>{erro}</small>
+                  : avisos[c.coluna]
+                    ? <small className={p.avisoCampo} data-aviso-campo={c.coluna}>{avisos[c.coluna]}</small>
+                    : c.dica && <small>{c.dica}</small>}
               </div>
             );
           })}

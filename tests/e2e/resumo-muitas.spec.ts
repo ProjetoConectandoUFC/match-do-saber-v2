@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { validarBanco } from '../../src/core/banco';
 import { escreverCsv, lerCsv } from '../../src/core/csv';
+import { esperarCartaPousada } from './carta';
 
 // AC-5.8 (v12.0.2): com "Notícias por partida" acima de 10 (até 20, AC-9.23), a lista do resumo continua em duas
 // colunas, com todas as notícias inteiras, sem sobrepor e sem sair da tela em 1366×768. Até a v12.0.1 a grade tinha
@@ -28,7 +29,8 @@ for (const total of [12, 20]) {
     await page.getByRole('button', { name: 'Iniciar', exact: true }).waitFor();
     await page.keyboard.press('Enter');
     for (let i = 0; i < total; i++) {
-      await expect(page.locator('article')).toBeVisible({ timeout: 15_000 });
+      // v13.0.0 (AC-17.5, AC-17.6): a seta só vale com a carta pousada (depois da abertura do fan e da distribuição).
+      await esperarCartaPousada(page, 15_000);
       await page.keyboard.press(i % 2 ? 'ArrowLeft' : 'ArrowRight');
       await expect(page.getByRole('heading', { name: /^(Acertou!|Errou)$/ })).toBeVisible();
     }

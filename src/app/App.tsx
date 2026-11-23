@@ -5,7 +5,7 @@ import { avisoSemNoticias, contarConteudo } from '../core/contagem';
 import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
 import { enderecoFontes, linhasDoResumo } from '../core/fontesRodada';
 import { URL_PUBLICA } from './enderecoPublico';
-import { TEMPOS, cardSaindo, pontos, type Estado } from '../core/partida';
+import { TEMPOS, cardSaindo, cartasNoFan, distribuindo, interfaceDoEstado, pontos, type Estado } from '../core/partida';
 import { filtrarConteudo } from '../core/sorteio';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
@@ -17,7 +17,8 @@ import { PainelQuestoes } from './PainelQuestoes';
 import type { FiltrosQuestoes } from '../core/questoes';
 import { PainelDiagnostico } from './PainelDiagnostico';
 import { criarRepositorio, repositorioWeb, type EstadoBanco, type RepositorioNoticias } from './repositorio';
-import { BotaoSair, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
+import { TelaCardClassico } from './CardClassico';
+import { BotaoSair, TelaAbertura, TelaCalibracao, TelaCard, TelaEspera, TelaFeedback, TelaFeedbackTutorial, TelaResumo } from './Telas';
 import { perfilComoNoticia } from '../core/tutorial';
 import { PERFIS_TUTORIAL } from './perfisTutorial';
 import { useAjustes } from './useAjustes';
@@ -122,6 +123,11 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   // AC-2.10: o card acompanha levemente a inclinação, direto no DOM (sem re-renderizar a cada leitura).
   useInclinacaoCard({ inclinacaoRef, estado, pausado, cardRef, cardSaindoRef });
 
+  // v13.2.0 (FR-19, AC-18.4, AC-18.5): Clássica (card da v12.1.0) ou Cartas (carta e fan); dentro da partida, a
+  // interface com que ela começou (AC-18.7). Feedback, resumo e painéis são os mesmos nas duas.
+  const interfaceAtiva = interfaceDoEstado(estado, cfg.ajustes.interface);
+  const Card: typeof TelaCard = interfaceAtiva === 'cartas' ? TelaCard : TelaCardClassico;
+
   let tela;
   switch (estado.tela) {
     case 'espera':
@@ -131,6 +137,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           avisoSemNoticias={avisoSemNoticias(contagem) ?? undefined}
           camera={camera}
           config={cfg.ajustes}
+          cartas={cfg.ajustes.interface === 'cartas'} // AC-18.3: fan respirando só nas Cartas
           menu={(
             <MenuOperador
               aberto={operador === 'menu'}
@@ -147,11 +154,17 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     case 'calibracao':
       tela = <TelaCalibracao progresso={estado.centradoMs / TEMPOS.calibracaoMs} modo={cfg.ajustes.modo} />;
       break;
+    case 'abertura':
+      // v13.0.0 (AC-17.5): o fan com todas as cartas abre e fecha; a tela só desenha o que o estado diz.
+      tela = <TelaAbertura cartas={cartasNoFan(estado)} restanteMs={estado.restanteMs} />;
+      break;
     case 'card':
       tela = (
-        <TelaCard
+        <Card
           key={estado.indice}
           noticia={estado.partida.cards[estado.indice]!}
+          cartasNoFan={cartasNoFan(estado)}
+          distribuindoMs={estado.distribuindoMs}
           restanteMs={estado.restanteMs}
           saibaMais={estado.saibaMais}
           ausente={estado.ausenteMs !== null}
@@ -169,9 +182,10 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       // configurado), com a duração gravada no estado (AC-4.9, AC-9.25).
       const saindo = cardSaindo(estado);
       tela = saindo ? (
-        <TelaCard
+        <Card
           key={estado.indice}
           noticia={noticia}
+          cartasNoFan={cartasNoFan(estado)}
           restanteMs={0}
           saibaMais={false}
           ausente={false}
@@ -197,9 +211,11 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       tela = estado.tela === 'tutorialFeedback' && !saindo ? (
         <TelaFeedbackTutorial noticia={noticia} resposta={estado.resposta} modo={cfg.ajustes.modo} treino={treino} />
       ) : (
-        <TelaCard
+        <Card
           key={`treino-${estado.passo}`}
           noticia={noticia}
+          cartasNoFan={cartasNoFan(estado)}
+          distribuindoMs={estado.tela === 'tutorial' ? estado.distribuindoMs : 0}
           restanteMs={0}
           saibaMais={false}
           ausente={false}
@@ -231,7 +247,14 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   }
 
   return (
-    <div className={s.app}>
+    // `data-*`: o que o reducer diz da partida (AC-17.3, AC-17.6), para os E2E e para o fan (Fase 48).
+    <div
+      className={s.app}
+      data-tela={estado.tela}
+      data-interface-jogo={interfaceAtiva}
+      data-distribuindo={distribuindo(estado) || undefined}
+      data-cartas-no-fan={cartasNoFan(estado)}
+    >
       {tela}
       {camera === 'indisponivel' && estado.tela !== 'espera' && (
         <p className={s.faixa}>Câmera indisponível — use as setas</p>
