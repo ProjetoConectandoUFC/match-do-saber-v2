@@ -34,6 +34,15 @@ describe('PainelDiagnostico', () => {
     render(<PainelDiagnostico registro={r} onBaixar={() => {}} />);
     expect(screen.getByRole('complementary', { name: 'Diagnóstico' })).toHaveTextContent('detecção: sem câmera');
   });
+  it('mostra onde a detecção roda (GPU ou CPU) e destaca a emulação por software (performance, 23/11)', () => {
+    const { rerender } = render(<PainelDiagnostico registro={criarRegistro()} onBaixar={() => {}} aceleracao={{ software: false, texto: 'GPU · AMD Radeon' }} />);
+    const painel = () => screen.getByRole('complementary', { name: 'Diagnóstico' });
+    expect(painel()).toHaveTextContent('aceleração: GPU · AMD Radeon');
+    rerender(<PainelDiagnostico registro={criarRegistro()} onBaixar={() => {}} aceleracao={{ software: true, texto: 'CPU (a GPU falhou)' }} />);
+    expect(painel()).toHaveTextContent('aceleração: ⚠ CPU (a GPU falhou)');
+    rerender(<PainelDiagnostico registro={criarRegistro()} onBaixar={() => {}} />);
+    expect(painel()).toHaveTextContent('aceleração: —');
+  });
   it('AC-12.4: o botão chama onBaixar', () => {
     const baixar = vi.fn();
     render(<PainelDiagnostico registro={criarRegistro()} onBaixar={baixar} />);

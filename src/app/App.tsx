@@ -97,7 +97,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     (new URLSearchParams(window.location.search).has('diagnostico') ? criarRegistro() : undefined));
   // Com o menu ☰, um painel dele ou os Ajustes abertos, câmera e teclas não chegam ao jogo (FR-14).
   const pausado = cfg.aberto || operador !== 'fechado';
-  const { estado, despachar, camera, videoRef, poseRef, inclinacaoRef } = useJogo(noticias, cfg.ajustes, pausado, diagnostico);
+  const { estado, despachar, camera, videoRef, poseRef, inclinacaoRef, aceleracao } = useJogo(noticias, cfg.ajustes, pausado, diagnostico);
   const fecharOperador = useCallback(() => setOperador('fechado'), []);
   const escolherNoMenu = useCallback((item: ItemMenu) => {
     if (item === 'ajustes') {
@@ -287,7 +287,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           onRevisar={cfg.revisar}
         />
       )}
-      {diagnostico && <PainelDiagnostico registro={diagnostico} onBaixar={() => baixarJson(diagnostico.exportar())} />}
+      {diagnostico && <PainelDiagnostico registro={diagnostico} aceleracao={aceleracao} onBaixar={() => baixarJson(diagnostico.exportar())} />}
       {/* A prévia da câmera não aparece no resumo (AC-2.6, v10.0.0); o vídeo continua ligado para a foto. */}
       <CameraPreview videoRef={videoRef} poseRef={poseRef} visivel={camera === 'ativa' && estado.tela !== 'resumo'} />
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { PontoMedido, Registro } from '../core/diagnostico';
+import type { Aceleracao, PontoMedido, Registro } from '../core/diagnostico';
 import { MODO_ROTULO } from '../core/modos';
 import s from './App.module.css';
 
@@ -8,7 +8,8 @@ const linhaPunho = (rotulo: string, p: PontoMedido | undefined, acima: boolean |
   p ? `${rotulo}: y=${n2(p.y)} conf ${n2(p.conf)}${acima ? ' · acima do ombro' : ''}` : `${rotulo}: —`;
 
 /** Painel do modo de diagnóstico (FR-12, AC-12.3); atualiza a cada 500 ms. */
-export function PainelDiagnostico({ registro, onBaixar }: { registro: Registro; onBaixar: () => void }) {
+/** `aceleracao`: onde a detecção roda (performance, 23/11); ⚠ quando está na CPU. */
+export function PainelDiagnostico({ registro, onBaixar, aceleracao }: { registro: Registro; onBaixar: () => void; aceleracao?: Aceleracao | null }) {
   const [agora, setAgora] = useState(() => performance.now());
   useEffect(() => {
     const id = setInterval(() => setAgora(performance.now()), 500);
@@ -23,6 +24,7 @@ export function PainelDiagnostico({ registro, onBaixar }: { registro: Registro; 
     <aside className={s.diagnostico} aria-label="Diagnóstico">
       <p>{`quadros/s: ${r.fps}`}</p>
       <p>{`detecção: ${det}`}</p>
+      <p>{`aceleração: ${aceleracao ? `${aceleracao.software ? '⚠ ' : ''}${aceleracao.texto}` : '—'}`}</p>
       <p>{`pessoas: ${a?.pessoas ?? 0} · modo: ${a ? MODO_ROTULO[a.modo] : '—'} · tela: ${a?.tela ?? '—'}`}</p>
       <p>{linhaPunho('punho D', a?.pontos.punhoD, a?.medidas.maos?.direita)}</p>
       <p>{linhaPunho('punho E', a?.pontos.punhoE, a?.medidas.maos?.esquerda)}</p>

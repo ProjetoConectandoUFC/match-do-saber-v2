@@ -31,6 +31,19 @@ export function extrairPontos(pose: Pose | null): Amostra['pontos'] {
   return out;
 }
 
+/** Onde a detecção de pose roda (performance, 23/11): `software` quando está na CPU, direto ou por WebGL emulado. */
+export interface Aceleracao { software: boolean; texto: string }
+
+const RENDERIZADOR_SOFTWARE = /swiftshader|llvmpipe|softpipe|basic render|software/i;
+
+/** `delegate`: o que o MediaPipe conseguiu criar; `renderizador`: o WebGL da página (UNMASKED_RENDERER), se conhecido. */
+export function descreverAceleracao(delegate: 'GPU' | 'CPU', renderizador: string | null): Aceleracao {
+  if (delegate === 'CPU') return { software: true, texto: 'CPU (a GPU falhou)' };
+  if (!renderizador) return { software: false, texto: 'GPU · renderizador desconhecido' };
+  if (RENDERIZADOR_SOFTWARE.test(renderizador)) return { software: true, texto: `GPU emulada na CPU · ${renderizador}` };
+  return { software: false, texto: `GPU · ${renderizador}` };
+}
+
 export interface Resumo {
   fps: number;
   deteccaoMediaMs: number | null;

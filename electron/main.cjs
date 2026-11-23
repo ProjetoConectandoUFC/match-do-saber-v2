@@ -9,6 +9,7 @@ const path = require('path');
 const { criarBancoLocal } = require('./banco-local.cjs');
 const { linkExterno } = require('./links.cjs');
 const { escutar } = require('./servidor.cjs');
+const { aplicarSwitchesGpu } = require('./gpu.cjs');
 
 // Porta fixa para manter as configurações do jogo (localStorage é por origem); se ocupada, usa outra.
 const PORTA_PREFERIDA = 37425;
@@ -95,6 +96,8 @@ const iniciarServidor = () => escutar(() => http.createServer(tratar), PORTA_PRE
 // ---------- Janela ----------
 // Sons tocam sem exigir um clique antes (FR-11).
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+// Driver de vídeo integrado na lista de bloqueio do Chromium deixaria a detecção emulada na CPU (performance, 23/11).
+aplicarSwitchesGpu(app.commandLine);
 
 // Uma instância só.
 const unica = app.requestSingleInstanceLock();

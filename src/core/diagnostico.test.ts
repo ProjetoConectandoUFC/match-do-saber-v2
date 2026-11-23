@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { alternarDiagnostico, criarRegistro, extrairPontos, type Amostra } from './diagnostico';
+import { alternarDiagnostico, criarRegistro, descreverAceleracao, extrairPontos, type Amostra } from './diagnostico';
 import type { Pose } from './gestos';
 
 const amostra = (t: number, over: Partial<Amostra> = {}): Amostra => ({
@@ -72,5 +72,26 @@ describe('alternarDiagnostico (AC-12.7, v10.3.0)', () => {
     const de_novo = alternarDiagnostico(undefined)!;
     expect(de_novo).not.toBe(r);
     expect(de_novo.exportar().amostras).toEqual([]);
+  });
+});
+
+// Performance (23/11): saber se a detecção está na GPU ou emulada na CPU (WebGL por software).
+describe('descreverAceleracao', () => {
+  it('GPU com renderizador de hardware', () => {
+    expect(descreverAceleracao('GPU', 'ANGLE (AMD, AMD Radeon(TM) Graphics Direct3D11 vs_5_0 ps_5_0)'))
+      .toEqual({ software: false, texto: 'GPU · ANGLE (AMD, AMD Radeon(TM) Graphics Direct3D11 vs_5_0 ps_5_0)' });
+  });
+  it('GPU com WebGL emulado (SwiftShader, llvmpipe, Microsoft Basic Render) conta como software', () => {
+    for (const r of ['ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)', 'llvmpipe (LLVM 15.0.7, 256 bits)', 'ANGLE (Microsoft, Microsoft Basic Render Driver Direct3D11)']) {
+      const a = descreverAceleracao('GPU', r);
+      expect(a.software).toBe(true);
+      expect(a.texto).toContain('emulada na CPU');
+    }
+  });
+  it('delegate CPU é software, com ou sem renderizador', () => {
+    expect(descreverAceleracao('CPU', null)).toEqual({ software: true, texto: 'CPU (a GPU falhou)' });
+  });
+  it('sem renderizador conhecido', () => {
+    expect(descreverAceleracao('GPU', null)).toEqual({ software: false, texto: 'GPU · renderizador desconhecido' });
   });
 });

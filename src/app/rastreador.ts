@@ -1,7 +1,27 @@
 import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision';
+import { descreverAceleracao, type Aceleracao } from '../core/diagnostico';
 import type { Pose } from '../core/gestos';
 
-export interface Rastreador { detectar(video: HTMLVideoElement, tMs: number): Pose[]; fechar(): void }
+export interface Rastreador {
+  detectar(video: HTMLVideoElement, tMs: number): Pose[];
+  fechar(): void;
+  /** Onde a detecção roda, para o ☰ › Diagnóstico (performance, 23/11). */
+  aceleracao?: Aceleracao;
+}
+
+/** O renderizador WebGL da página (ex.: "ANGLE (AMD, ...)" ou "SwiftShader"); null se o navegador não informa. */
+function renderizadorWebgl(): string | null {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl2') ?? document.createElement('canvas').getContext('webgl');
+    if (!gl) return null;
+    const info = gl.getExtension('WEBGL_debug_renderer_info');
+    const r = gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER);
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return typeof r === 'string' && r ? r : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function criarRastreador(): Promise<Rastreador> {
   const base = import.meta.env.BASE_URL;
@@ -12,10 +32,16 @@ export async function criarRastreador(): Promise<Rastreador> {
       runningMode: 'VIDEO',
       numPoses: 3,
     });
-  const landmarker = await criar('GPU').catch(() => criar('CPU'));
+  let delegate: 'GPU' | 'CPU' = 'GPU';
+  const landmarker = await criar('GPU').catch(() => {
+    delegate = 'CPU';
+    return criar('CPU');
+  });
+  const aceleracao = descreverAceleracao(delegate, renderizadorWebgl());
   let ultimo = -1;
   let fechado = false;
   return {
+    aceleracao,
     detectar(video, tMs) {
       const t = Math.max(tMs, ultimo + 1);
       ultimo = t;
@@ -32,7 +58,9 @@ export async function criarRastreador(): Promise<Rastreador> {
 
 export async function abrirCamera(video: HTMLVideoElement, sinal?: AbortSignal): Promise<MediaStream> {
   const stream = await navigator.mediaDevices.getUserMedia({
-    video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+    // 640×360 (performance, 23/11): o modelo reduz a imagem por dentro; 1280×720 só pesava o envio de cada quadro
+    // à GPU. 16:9 mantém o enquadramento da prévia e da foto do resumo.
+    video: { width: { ideal: 640 }, height: { ideal: 360 }, facingMode: 'user' },
     audio: false,
   });
   const parar = () => stream.getTracks().forEach((t) => t.stop());
