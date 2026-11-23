@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  PAINEL_INICIAL, itensDoPainel, lerAjustes, salvarAjustes, teclaNoPainel, type Ajustes, type Armazenamento, type PainelAjustes,
+  PAINEL_INICIAL, alternarInterface, itensDoPainel, lerAjustes, salvarAjustes, teclaNoPainel, type Ajustes, type Armazenamento, type PainelAjustes,
 } from '../core/ajustes';
 
 function armazenamentoDoNavegador(): Armazenamento | null {
@@ -43,6 +43,8 @@ export function useAjustes(podeAbrir: () => boolean, { revisarQuestoes = false, 
     const tecla = (e: KeyboardEvent) => {
       if (!aberto) {
         if ((e.key === 'm' || e.key === 'M') && podeAbrir()) { e.preventDefault(); abrir(); }
+        // AC-18.2 (v13.2.0): I alterna a interface só na espera, sem menu nem painel aberto; fora dela, nada (AC-18.7).
+        if ((e.key === 'i' || e.key === 'I') && podeAbrir()) { e.preventDefault(); definir(alternarInterface(ajustes)); }
         return;
       }
       // Clique num botão do painel com Espaço/Enter: o teclado do painel decide, não o botão em foco.

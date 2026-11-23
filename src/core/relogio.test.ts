@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ESTADO_INICIAL, TEMPOS, reduzir, type Contexto, type Estado } from './partida';
+import { ESTADO_INICIAL, INTERFACES_JOGO, TEMPOS, reduzir, type Contexto, type Estado, type Evento } from './partida';
 import type { Noticia } from './types';
 import { DT_MAX_MS, dtDoQuadro } from './relogio';
 
@@ -24,12 +24,17 @@ describe('relógio do jogo: dt do quadro segue o tempo real (FR-1, AC-4.4)', () 
     expect(dtDoQuadro(1000, 1016)).toBe(0);
   });
 
-  it('10 s de relógio real a 154 ms por quadro consomem ~10 s do card (restam ~5 s de 15 s)', () => {
-    let s: Estado = reduzir(ESTADO_INICIAL, { tipo: 'enter' }, ctx);
-    expect(s).toMatchObject({ tela: 'card', restanteMs: TEMPOS.cardMs });
+  it.each(INTERFACES_JOGO)('10 s de relógio real a 154 ms por quadro consomem ~10 s do card (restam ~5 s de 15 s), interface %s', (iface) => {
+    // Cartas (v13.0.0): a abertura do fan e a distribuição (AC-17.5, AC-17.6) somam tempo antes do cronômetro; aqui, a carta já pousada.
+    const c: Contexto = { ...ctx, interface: iface };
+    const pousar: Evento[] = iface === 'cartas'
+      ? [{ tipo: 'tick', dtMs: TEMPOS.aberturaFanMs, presenca: null }, { tipo: 'tick', dtMs: TEMPOS.distribuirMs, presenca: null }]
+      : [];
+    let s: Estado = [{ tipo: 'enter' } as const, ...pousar].reduce<Estado>((e, ev) => reduzir(e, ev, c), ESTADO_INICIAL);
+    expect(s).toMatchObject({ tela: 'card', restanteMs: TEMPOS.cardMs, distribuindoMs: 0 });
     let anterior = 0;
     for (let agora = 154; agora <= 10_000; agora += 154) {
-      s = reduzir(s, { tipo: 'tick', dtMs: dtDoQuadro(agora, anterior), presenca: null }, ctx);
+      s = reduzir(s, { tipo: 'tick', dtMs: dtDoQuadro(agora, anterior), presenca: null }, c);
       anterior = agora;
     }
     if (s.tela !== 'card') throw new Error(`esperava card, veio ${s.tela}`);

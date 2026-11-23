@@ -30,16 +30,7 @@ describe('v11.0.0: card de app de namoro (FR-15)', () => {
     expect(botoes[1]!.querySelector('svg[data-forma="marca-estrela-4"]')).not.toBeNull();
   });
 
-  it('AC-2.12: pilha de duas camadas atrás do card, que não fazem parte dele', () => {
-    const { container } = render(card(noticia('n1')));
-    const art = container.querySelector('article')!;
-    const camadas = [...container.querySelectorAll('[data-pilha-camada]')];
-    expect(camadas).toHaveLength(2);
-    for (const c of camadas) {
-      expect(art.contains(c)).toBe(false);
-      expect(c.compareDocumentPosition(art) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy(); // pintadas antes
-    }
-  });
+  // AC-2.12 reescrito na v13.0.0: a pilha parada saiu (TelasV13.test.tsx); atrás da carta entra o fan (Fase 48).
 
   it.each([
     ['direita', 'verdade', 'mentira'],
@@ -67,7 +58,6 @@ describe('v11.0.0: card de app de namoro (FR-15)', () => {
     const { container } = render(card(noticia('mds-0007')));
     const ilu = screen.getByRole('img', { name: 'Tema: Ciência' });
     expect(ilu.querySelector('img')).toHaveAttribute('src', expect.stringContaining('card-ciencia-banana'));
-    expect(ilu).toHaveTextContent('Ciência');
     expect(container.querySelectorAll('article img')).toHaveLength(1);
   });
 

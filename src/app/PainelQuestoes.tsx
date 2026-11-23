@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import type { Problemas } from '../core/banco';
+import { avisosNoticia } from '../core/carta';
 import {
   FILTROS_VAZIOS, alterarVisibilidade, analisarQuestoes, aprovarQuestao, contarQuestoes, filtrarQuestoes, fontesDaQuestao,
   gravarQuestao, questaoVizinha, voltarParaRascunho, type ContagemQuestoes, type FiltrosQuestoes, type Questao,
@@ -325,6 +326,8 @@ export function PainelQuestoes({
                 <div className={q.card} role="group" aria-label="Saiba mais">
                   <h4>Saiba mais</h4>
                   <p>{n.saiba_mais}</p>
+                  {/* AC-7.13 (v13.1.0): só avisa; a questão continua com a mesma situação. */}
+                  {avisosNoticia(n).saiba_mais && <p className={q.avisoSaibaMais} data-aviso-campo="saiba_mais">{avisosNoticia(n).saiba_mais}</p>}
                 </div>
               </div>
 

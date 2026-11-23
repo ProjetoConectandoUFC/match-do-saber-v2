@@ -21,7 +21,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
       noticiasPorPartida: 10, tempoCardS: 15, feedbackS: 3, voltaResumoS: 60,
       temas: [...TEMAS], dificuldade: 'misturada',
       modo: 'corpo', sensibilidade: 'normal', toleranciaS: 10,
-      som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false,
+      som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false, interface: 'classica',
     });
     expect(lerAjustes(memoria())).toEqual(AJUSTES_PADRAO);
     expect(lerAjustes(null)).toEqual(AJUSTES_PADRAO);
@@ -37,12 +37,14 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
     expect(OPCOES.sensibilidade).toEqual(['menor', 'normal', 'maior']);      // AC-9.28
     expect(OPCOES.toleranciaS).toEqual([5, 10, 20]);
     expect(OPCOES.volume).toEqual(['baixo', 'medio', 'alto']);               // AC-9.29
+    expect(OPCOES.interface).toEqual(['classica', 'cartas']);                // AC-18.1
     expect(MULTIPLICADOR_SENSIBILIDADE).toEqual({ menor: 1.25, normal: 1, maior: 0.8 });
     expect(FATOR_VOLUME).toEqual({ baixo: 0.3, medio: 0.6, alto: 1 });
   });
 
   it('AC-9.1: itens agrupados, na ordem do painel, com "Restaurar padrão" no fim', () => {
     expect(ITENS_AJUSTES.map((i) => [i.grupo, i.id])).toEqual([
+      ['interface', 'interface'], // AC-18.1 (v13.2.0): o primeiro item do painel
       ['partida', 'noticiasPorPartida'], ['partida', 'tempoCardS'], ['partida', 'feedbackS'], ['partida', 'voltaResumoS'],
       ['conteudo', 'temas'], ['conteudo', 'dificuldade'],
       ['deteccao', 'modo'], ['deteccao', 'sensibilidade'], ['deteccao', 'toleranciaS'],
@@ -51,6 +53,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
       [null, 'restaurar'],
     ]);
     expect(ITENS_AJUSTES.map((i) => i.rotulo)).toEqual([
+      'Interface do jogo',
       'Notícias por partida', 'Tempo por card', 'Tempo do feedback', 'Volta automática do resumo',
       'Temas', 'Dificuldade', 'Modo de jogo', 'Sensibilidade do gesto', 'Tolerância sem pessoa',
       'Som', 'Volume', 'Foto no resumo', 'QR das fontes', 'Tutorial', 'Revisar questões', 'Restaurar padrão',
@@ -73,6 +76,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
     const aj: Ajustes = {
       noticiasPorPartida: 5, tempoCardS: 60, feedbackS: 8, voltaResumoS: 60, temas: ['saude', 'politica'], dificuldade: 'crescente',
       modo: 'mao', sensibilidade: 'maior', toleranciaS: 20, som: false, volume: 'baixo', foto: false, qrFontes: false, tutorial: true,
+      interface: 'cartas',
     };
     salvarAjustes(a, aj);
     expect(lerAjustes(a)).toEqual(aj);
@@ -115,7 +119,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
     salvarAjustes(a, AJUSTES_PADRAO);
     expect(Object.keys(a.dados).every((k) => k.startsWith('match-do-saber:'))).toBe(true);
     expect(Object.keys(a.dados).sort()).toEqual([
-      'match-do-saber:dificuldade', 'match-do-saber:foto', 'match-do-saber:modo', 'match-do-saber:noticiasPorPartida',
+      'match-do-saber:dificuldade', 'match-do-saber:foto', 'match-do-saber:interface', 'match-do-saber:modo', 'match-do-saber:noticiasPorPartida',
       'match-do-saber:qrFontes', 'match-do-saber:sensibilidade', 'match-do-saber:som', 'match-do-saber:temasDesligados',
       'match-do-saber:tempoCard', 'match-do-saber:tempoFeedback', 'match-do-saber:tolerancia', 'match-do-saber:tutorial',
       'match-do-saber:voltaResumo', 'match-do-saber:volume',
@@ -230,14 +234,14 @@ describe('teclado do painel Ajustes (AC-9.2, AC-9.3, AC-9.30)', () => {
 describe('contextoDosAjustes (FR-1, FR-9): o que a partida recebe dos Ajustes', () => {
   it('padrão: 15 s por card, 3 s de feedback, 10 s de tolerância, resumo volta em 60 s (v12.1.0), 10 notícias', () => {
     expect(contextoDosAjustes(AJUSTES_PADRAO)).toEqual({
-      tempoCardMs: 15000, tempoFeedbackMs: 3000, toleranciaMs: 10000, voltaResumoMs: 60000, ignorarAusencia: false,
+      tempoCardMs: 15000, tempoFeedbackMs: 3000, toleranciaMs: 10000, voltaResumoMs: 60000, ignorarAusencia: false, interface: 'classica',
       sorteio: { quantidade: 10, temas: [...TEMAS], dificuldade: 'misturada' },
     });
   });
   it('valores escolhidos; nos modos Mão e Cabeça a ausência é ignorada (AC-9.21)', () => {
     const c = contextoDosAjustes({ ...AJUSTES_PADRAO, modo: 'cabeca', tempoCardS: 45, feedbackS: 8, toleranciaS: 20, voltaResumoS: 60, noticiasPorPartida: 5, temas: ['politica'], dificuldade: 'crescente' });
     expect(c).toEqual({
-      tempoCardMs: 45000, tempoFeedbackMs: 8000, toleranciaMs: 20000, voltaResumoMs: 60000, ignorarAusencia: true,
+      tempoCardMs: 45000, tempoFeedbackMs: 8000, toleranciaMs: 20000, voltaResumoMs: 60000, ignorarAusencia: true, interface: 'classica',
       sorteio: { quantidade: 5, temas: ['politica'], dificuldade: 'crescente' },
     });
   });

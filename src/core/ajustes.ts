@@ -1,4 +1,5 @@
 import { MODOS, MODO_PADRAO, MODO_ROTULO, type ModoJogo } from './modos';
+import { INTERFACES_JOGO, type InterfaceJogo } from './partida';
 import { TEMAS, type Tema } from './types';
 
 /**
@@ -28,6 +29,8 @@ export interface Ajustes {
   foto: boolean;
   qrFontes: boolean;
   tutorial: boolean;
+  /** v13.2.0 (AC-18.1, FR-19): Clássica (a da v12.1.0) ou Cartas (a da v13.1.0), para o teste A/B. */
+  interface: InterfaceJogo;
 }
 
 /** AC-9.4. `voltaResumoS` 60 desde a v12.1.0 (AC-5.2, AC-9.26): a foto não fica exposta sem operador; valor salvo continua valendo. */
@@ -36,6 +39,7 @@ export const AJUSTES_PADRAO: Ajustes = {
   temas: [...TEMAS], dificuldade: 'misturada',
   modo: MODO_PADRAO, sensibilidade: 'normal', toleranciaS: 10,
   som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false,
+  interface: 'classica',
 };
 
 /** AC-9.28: multiplicador dos limiares dos gestos (Menor exige gesto maior). Normal = limiares atuais. */
@@ -46,10 +50,10 @@ export const FATOR_VOLUME: Record<Volume, number> = { baixo: 0.3, medio: 0.6, al
 /** Itens com uma lista de valores (←/→). */
 export type ItemValor = Exclude<keyof Ajustes, 'temas'>;
 export type ItemAjuste = ItemValor | 'temas' | 'revisar' | 'restaurar';
-export type GrupoAjuste = 'partida' | 'conteudo' | 'deteccao' | 'midia' | 'questoes';
+export type GrupoAjuste = 'interface' | 'partida' | 'conteudo' | 'deteccao' | 'midia' | 'questoes';
 
 export const GRUPO_ROTULO: Record<GrupoAjuste, string> = {
-  partida: 'Partida', conteudo: 'Conteúdo', deteccao: 'Detecção', midia: 'Mídia', questoes: 'Questões',
+  interface: 'Interface', partida: 'Partida', conteudo: 'Conteúdo', deteccao: 'Detecção', midia: 'Mídia', questoes: 'Questões',
 };
 
 export const OPCOES: { [K in ItemValor]: readonly Ajustes[K][] } = {
@@ -66,12 +70,14 @@ export const OPCOES: { [K in ItemValor]: readonly Ajustes[K][] } = {
   foto: [true, false],
   qrFontes: [true, false],
   tutorial: [true, false],
+  interface: INTERFACES_JOGO,
 };
 
 export interface ItemPainel { id: ItemAjuste; grupo: GrupoAjuste | null; rotulo: string }
 
-/** AC-9.1: ordem do painel. */
+/** AC-9.1: ordem do painel; AC-18.1 (v13.2.0): a interface do jogo é o primeiro item. */
 export const ITENS_AJUSTES: readonly ItemPainel[] = [
+  { id: 'interface', grupo: 'interface', rotulo: 'Interface do jogo' },
   { id: 'noticiasPorPartida', grupo: 'partida', rotulo: 'Notícias por partida' },
   { id: 'tempoCardS', grupo: 'partida', rotulo: 'Tempo por card' },
   { id: 'feedbackS', grupo: 'partida', rotulo: 'Tempo do feedback' },
@@ -121,6 +127,7 @@ const CHAVE = {
   toleranciaS: 'match-do-saber:tolerancia',
   volume: 'match-do-saber:volume',
   qrFontes: 'match-do-saber:qrFontes',
+  interface: 'match-do-saber:interface',
 } as const satisfies Record<keyof Ajustes, string>;
 
 /** Liga/desliga como texto: "ligado"/"desligado" (foto: "ligada"/"desligada", como na v8.0.0). */
@@ -190,6 +197,7 @@ const ROTULO_DIFICULDADE: Record<FiltroDificuldade, string> = {
   misturada: 'Misturada', facil: 'Só fácil', medio: 'Só médio', dificil: 'Só difícil', crescente: 'Crescente',
 };
 const ROTULO_SENSIBILIDADE: Record<Sensibilidade, string> = { menor: 'Menor', normal: 'Normal', maior: 'Maior' };
+const ROTULO_INTERFACE: Record<InterfaceJogo, string> = { classica: 'Clássica', cartas: 'Cartas' };
 const ROTULO_VOLUME: Record<Volume, string> = { baixo: 'Baixo', medio: 'Médio', alto: 'Alto' };
 
 export function rotuloValor<K extends ItemValor>(item: K, valor: Ajustes[K]): string {
@@ -201,12 +209,14 @@ export function rotuloValor<K extends ItemValor>(item: K, valor: Ajustes[K]): st
     case 'modo': return MODO_ROTULO[valor as ModoJogo];
     case 'sensibilidade': return ROTULO_SENSIBILIDADE[valor as Sensibilidade];
     case 'volume': return ROTULO_VOLUME[valor as Volume];
+    case 'interface': return ROTULO_INTERFACE[valor as InterfaceJogo];
     case 'foto': return valor ? 'Ligada' : 'Desligada';
     default: return valor ? 'Ligado' : 'Desligado';
   }
 }
 
-const NO_RESUMO = new Set<keyof Ajustes>(['modo', 'noticiasPorPartida', 'tempoCardS', 'som']);
+// A interface aparece numa linha própria da espera (AC-18.3), então também não conta como "personalizado".
+const NO_RESUMO = new Set<keyof Ajustes>(['modo', 'noticiasPorPartida', 'tempoCardS', 'som', 'interface']);
 
 /** AC-9.2: algum ajuste além dos que o resumo mostra está fora do padrão. */
 export function ajustesPersonalizados(aj: Ajustes): boolean {
@@ -219,6 +229,13 @@ export function resumoAjustes(aj: Ajustes): string {
   const base = `Modo: ${MODO_ROTULO[aj.modo]} · ${aj.noticiasPorPartida} notícias · ${aj.tempoCardS} s por card · Som: ${aj.som ? 'ligado' : 'desligado'}`;
   return ajustesPersonalizados(aj) ? `${base} · Ajustes personalizados` : base;
 }
+
+/** AC-18.3: a interface ativa, na espera, junto do resumo. */
+export const rotuloInterface = (aj: Ajustes) => `Interface: ${ROTULO_INTERFACE[aj.interface]}`;
+
+/** AC-18.2: a tecla I na espera alterna Clássica ↔ Cartas. */
+export const alternarInterface = (aj: Ajustes): Ajustes =>
+  ({ ...aj, interface: aj.interface === 'classica' ? 'cartas' : 'classica' });
 
 // ---------- Teclado do painel ----------
 
@@ -277,6 +294,8 @@ export interface ContextoAjustes {
   voltaResumoMs: number;
   /** AC-9.21: nos modos Mão e Cabeça a ausência não pausa nem encerra a partida. */
   ignorarAusencia: boolean;
+  /** FR-19 (v13.2.0): a interface só muda o fluxo pela abertura e pela distribuição (Cartas). */
+  interface: InterfaceJogo;
   sorteio: { quantidade: number; temas: Tema[]; dificuldade: FiltroDificuldade };
 }
 
@@ -287,6 +306,7 @@ export function contextoDosAjustes(aj: Ajustes): ContextoAjustes {
     toleranciaMs: aj.toleranciaS * 1000,
     voltaResumoMs: aj.voltaResumoS * 1000,
     ignorarAusencia: aj.modo !== 'corpo',
+    interface: aj.interface,
     sorteio: { quantidade: aj.noticiasPorPartida, temas: aj.temas, dificuldade: aj.dificuldade },
   };
 }

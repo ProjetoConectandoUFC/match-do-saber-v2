@@ -7,7 +7,7 @@ import { DICA_GESTOS } from '../core/modos';
 import { TEMAS, TEMA_ROTULO } from '../core/types';
 import s from './App.module.css';
 
-const GRUPOS: readonly GrupoAjuste[] = ['partida', 'conteudo', 'deteccao', 'midia', 'questoes'];
+const GRUPOS: readonly GrupoAjuste[] = ['interface', 'partida', 'conteudo', 'deteccao', 'midia', 'questoes'];
 
 /**
  * Painel "Ajustes" (FR-9, v12.0.0; até a v11.0.0, "Configurações"): painel lateral à direita com rolagem própria
