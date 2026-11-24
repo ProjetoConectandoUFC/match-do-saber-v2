@@ -26,7 +26,7 @@ const enter: Evento = { tipo: 'enter' };
 const sair: Evento = { tipo: 'sair' };
 const escolha = (resposta: Veredito): Evento => ({ tipo: 'escolha', resposta });
 const rodar = (s: Estado, eventos: Evento[], c = ctx()) => eventos.reduce((e, ev) => reduzir(e, ev, c), s);
-const resumo: Estado = { tela: 'resumo', partida: { cards: [], resultados: [], entrada: 'alternativa' } };
+const resumo: Estado = { tela: 'resumo', partida: { cards: [], resultados: [], entrada: 'alternativa' }, maiorSequencia: 0 };
 
 describe('AC-17.5: abertura do fan em todo início de partida', () => {
   it('FR-18: os tempos novos ficam em TEMPOS', () => {

@@ -630,11 +630,13 @@ function ListaRodada({ linhas }: { linhas: readonly LinhaResumo[] }) {
 /**
  * Resumo (AC-5.1, opção B da prévia v11): polaroid de 384 (AC-13.2), placar, mensagem da faixa (AC-5.7), o cartão do
  * QR das fontes (AC-5.9) e a lista da rodada (AC-5.8). `foto`: quadro da câmera do meio da partida (FR-13), com as
- * âncoras do rosto (AC-13.6); sem ela, o resumo fica sem polaroid (AC-13.3).
+ * âncoras do rosto (AC-13.6); sem ela, o resumo fica sem polaroid (AC-13.3). `maiorSequencia` (v13.4.0, AC-19.6): a
+ * maior sequência de acertos, em qualquer intensidade dos efeitos (AC-19.8); por enquanto só o texto, sem acabamento.
  */
-function TelaResumoBase({ pontos, total, foto, ancoras, linhas = [], enderecoQr }: {
+function TelaResumoBase({ pontos, total, maiorSequencia, foto, ancoras, linhas = [], enderecoQr }: {
   pontos: number;
   total: number;
+  maiorSequencia?: number;
   foto?: string | null;
   ancoras?: AncorasRosto | null;
   linhas?: readonly LinhaResumo[];
@@ -652,6 +654,9 @@ function TelaResumoBase({ pontos, total, foto, ancoras, linhas = [], enderecoQr 
               <h1>Fim de <em>jogo!</em></h1>
               <p className={s.placar}>{`${pontos} de ${total}`}</p>
               <p className={s.mensagemResumo} data-mensagem-resumo>{mensagemResumo(pontos, total)}</p>
+              {maiorSequencia !== undefined && (
+                <p data-maior-sequencia={maiorSequencia}>{`Maior sequência: ${maiorSequencia}`}</p>
+              )}
             </div>
             {enderecoQr && (
               <div className={s.cartaoQr} data-cartao-qr>

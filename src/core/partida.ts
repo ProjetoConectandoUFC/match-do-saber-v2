@@ -52,9 +52,11 @@ export type Estado =
   | EstadoCard
   // `resposta` guarda o lado escolhido (para a animação de saída); null quando o tempo esgotou.
   // `resultadoMs` (v12.0.0): quanto dura o resultado, carimbada + tempo configurado (AC-4.9, AC-9.25), gravado ao entrar; enquanto `restanteMs` for maior, o card está saindo.
-  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null; resultadoMs: number }
+  // `sequencia` (v13.4.0, AC-19.5): acertos seguidos até este card, inclusive (0 no erro e no tempo esgotado); não muda os pontos.
+  | { tela: 'feedback'; partida: Partida; indice: number; restanteMs: number; resposta: Veredito | null; resultadoMs: number; sequencia: number }
   // `decorridoMs`: só com a volta automática ligada (AC-5.2, AC-9.26, v12.0.0).
-  | { tela: 'resumo'; partida: Partida; decorridoMs?: number }
+  // `maiorSequencia` (v13.4.0, AC-19.6): a maior sequência de acertos da partida, só na memória, como o resto do resumo.
+  | { tela: 'resumo'; partida: Partida; maiorSequencia: number; decorridoMs?: number }
   // v10.2.0 (FR-16): treino antes da partida; `passo` indexa `Contexto.tutorial`. Sem cronômetro (AC-15.6).
   // v13.0.0: a partida (com a entrada) já está sorteada desde a abertura; `treinos` é o total de treinos dela.
   | { tela: 'tutorial'; passo: number; treinos: number; partida: Partida; distribuindoMs: number }
@@ -155,15 +157,17 @@ function primeiraCarta(partida: Partida, treinos: number, ctx: Contexto): Estado
 const distribuir = (distribuindoMs: number, dtMs: number) => Math.max(0, distribuindoMs - dtMs);
 
 function registrar(e: EstadoCard, r: Resultado, resposta: Veredito | null, ctx: Contexto): Estado {
+  const resultados = [...e.partida.resultados, r];
   return {
     tela: 'feedback',
-    partida: { ...e.partida, resultados: [...e.partida.resultados, r] },
+    partida: { ...e.partida, resultados },
     indice: e.indice,
     // Escolha: o card sai antes (saidaMs); o resultado tem a carimbada e ainda fica o tempo configurado inteiro
     // (AC-4.1/AC-4.2/AC-4.9, AC-9.25).
     restanteMs: resposta === null ? duracaoResultadoMs(ctx) : duracaoResultadoMs(ctx) + TEMPOS.saidaMs,
     resposta,
     resultadoMs: duracaoResultadoMs(ctx),
+    sequencia: sequenciaAtual(resultados),
   };
 }
 
@@ -237,7 +241,7 @@ export function reduzir(estado: Estado, evento: Evento, ctx: Contexto): Estado {
       const proximo = estado.indice + 1;
       return proximo < estado.partida.cards.length
         ? card(estado.partida, proximo, ctx)
-        : { tela: 'resumo', partida: estado.partida };
+        : { tela: 'resumo', partida: estado.partida, maiorSequencia: maiorSequencia(estado.partida.resultados) };
     }
     case 'resumo': {
       // AC-5.2/AC-9.26: com a volta automática ligada, o resumo fecha sozinho depois do tempo escolhido.
@@ -326,6 +330,36 @@ export function cartasNoFan(estado: Estado): number {
     default:
       return 0;
   }
+}
+
+/**
+ * AC-19.5 (v13.4.0): acertos seguidos no fim dos resultados (erro e tempo esgotado zeram). Só os cards da partida entram
+ * em `resultados`; o treino do tutorial (FR-16) nunca conta. Não muda a pontuação (FR-5: +1 por acerto).
+ */
+export function sequenciaAtual(resultados: readonly Resultado[]): number {
+  let n = 0;
+  for (let i = resultados.length - 1; i >= 0 && resultados[i] === 'acerto'; i--) n++;
+  return n;
+}
+
+/** AC-19.6 (v13.4.0): a maior sequência de acertos da partida, para o resumo. */
+export function maiorSequencia(resultados: readonly Resultado[]): number {
+  let maior = 0;
+  let atual = 0;
+  for (const r of resultados) {
+    atual = r === 'acerto' ? atual + 1 : 0;
+    maior = Math.max(maior, atual);
+  }
+  return maior;
+}
+
+/**
+ * AC-19.2 (v13.4.0): o carimbo está batendo, nos primeiros `TEMPOS.carimboMs` do resultado (depois da saída do card, numa
+ * escolha; na hora, no tempo esgotado). É o momento do hit-stop, da tremida, do respingo e do baque; o relógio do jogo
+ * não para (a carimbada já soma ao feedback, AC-4.9). Só no feedback da partida.
+ */
+export function carimbando(estado: Estado): boolean {
+  return estado.tela === 'feedback' && !cardSaindo(estado) && estado.restanteMs > estado.resultadoMs - TEMPOS.carimboMs;
 }
 
 export function pontos(p: Partida): number {

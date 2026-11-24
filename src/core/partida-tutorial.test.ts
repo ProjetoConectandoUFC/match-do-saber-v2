@@ -44,7 +44,7 @@ describe.each(INTERFACES_JOGO)('interface %s', (iface) => {
     it('AC-15.2: Enter na calibração, Enter na espera sem câmera e Enter no resumo sem câmera também passam pelo treino', () => {
       expect(rodar(ESTADO_INICIAL, [enter, enter, ...ABRIR])).toMatchObject({ tela: 'tutorial', passo: 0, partida: { entrada: 'alternativa' } });
       expect(rodar(ESTADO_INICIAL, [enter, ...ABRIR], ctx({ cameraAtiva: false }))).toMatchObject({ tela: 'tutorial', passo: 0, partida: { entrada: 'alternativa' } });
-      const resumo: Estado = { tela: 'resumo', partida: PARTIDA };
+      const resumo: Estado = { tela: 'resumo', partida: PARTIDA, maiorSequencia: 0 };
       expect(rodar(resumo, [enter, ...ABRIR], ctx({ cameraAtiva: false })).tela).toBe('tutorial');
       expect(rodar(resumo, [enter]).tela).toBe('calibracao');
     });

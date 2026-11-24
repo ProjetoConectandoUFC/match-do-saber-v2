@@ -5,7 +5,7 @@ import { avisoSemNoticias, contarConteudo } from '../core/contagem';
 import { alternarDiagnostico, criarRegistro } from '../core/diagnostico';
 import { enderecoFontes, linhasDoResumo } from '../core/fontesRodada';
 import { URL_PUBLICA } from './enderecoPublico';
-import { TEMPOS, cardSaindo, cartasNoFan, distribuindo, interfaceDoEstado, pontos, type Estado } from '../core/partida';
+import { TEMPOS, carimbando, cardSaindo, cartasNoFan, distribuindo, interfaceDoEstado, pontos, type Estado } from '../core/partida';
 import { filtrarConteudo } from '../core/sorteio';
 import { baixarJson } from './baixar';
 import { CameraPreview } from './CameraPreview';
@@ -244,6 +244,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
         <TelaResumo
           pontos={pontos(estado.partida)}
           total={cards.length}
+          maiorSequencia={estado.maiorSequencia} // AC-19.6
           foto={foto?.imagem}
           ancoras={foto?.ancoras}
           linhas={linhasResumo}
@@ -262,6 +263,10 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       className={s.app}
       data-tela={estado.tela}
       data-juice={juice}
+      // v13.4.0 (Story 19): ganchos do feedback para os efeitos: a sequência (AC-19.5) e o carimbo batendo (AC-19.2,
+      // `carimbando`); o resultado já está em `main[data-resultado]`. Só no feedback da partida (o treino não conta).
+      data-sequencia={estado.tela === 'feedback' ? estado.sequencia : undefined}
+      data-carimbando={carimbando(estado) || undefined}
       data-interface-jogo={interfaceAtiva}
       data-distribuindo={distribuindo(estado) || undefined}
       data-cartas-no-fan={cartasNoFan(estado)}

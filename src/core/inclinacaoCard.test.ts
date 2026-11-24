@@ -148,7 +148,7 @@ describe('situacaoDoCard (AC-2.10)', () => {
   it('saída do card escolhido mantém a posição; o resultado do feedback e o tempo esgotado voltam ao centro', () => {
     // v12.0.0: o resultado (carimbada + tempo configurado) vem gravado no estado em `resultadoMs` (AC-4.9, AC-9.25).
     const fb = (restanteMs: number, resposta: 'verdadeira' | 'falsa' | null, resultadoMs: number = RESULTADO_PADRAO) =>
-      ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, resposta, resultadoMs });
+      ({ tela: 'feedback' as const, partida, indice: 0, restanteMs, resposta, resultadoMs, sequencia: 0 });
     expect(situacaoDoCard(fb(RESULTADO_PADRAO + TEMPOS.saidaMs, 'verdadeira'), false)).toBe('saindo');
     expect(situacaoDoCard(fb(RESULTADO_PADRAO + 1, 'verdadeira'), false)).toBe('saindo'); // a carimbada é do resultado
     expect(situacaoDoCard(fb(RESULTADO_PADRAO, 'falsa'), false)).toBe('centro');
@@ -177,6 +177,6 @@ describe('situacaoDoCard (AC-2.10)', () => {
   it('outras telas ficam no centro', () => {
     expect(situacaoDoCard({ tela: 'espera' }, false)).toBe('centro');
     expect(situacaoDoCard({ tela: 'calibracao', centradoMs: 0, ausenteMs: 0 }, false)).toBe('centro');
-    expect(situacaoDoCard({ tela: 'resumo', partida }, false)).toBe('centro');
+    expect(situacaoDoCard({ tela: 'resumo', partida, maiorSequencia: 0 }, false)).toBe('centro');
   });
 });
