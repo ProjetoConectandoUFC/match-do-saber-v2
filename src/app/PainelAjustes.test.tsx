@@ -44,7 +44,7 @@ describe('painel Ajustes (AC-9.1, AC-9.2, AC-9.18, AC-9.27, AC-9.30)', () => {
     }
     const marcado = (grupo: string) => within(screen.getByRole('group', { name: grupo }))
       .getAllByRole('button').filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.textContent);
-    expect(marcado('Interface do jogo')).toEqual(['◉ Clássica']); // AC-18.1
+    expect(marcado('Interface do jogo')).toEqual(['◉ Cartas']); // AC-18.1 (v13.4.0: padrão Cartas)
     expect(marcado('Notícias por partida')).toEqual(['◉ 10']);
     expect(marcado('Tempo por card')).toEqual(['◉ 15 s']);
     expect(marcado('Tempo do feedback')).toEqual(['◉ 3 s']);
@@ -58,14 +58,14 @@ describe('painel Ajustes (AC-9.1, AC-9.2, AC-9.18, AC-9.27, AC-9.30)', () => {
     expect(screen.getByRole('button', { name: 'Fechar' }).textContent).toBe('');
   });
 
-  it('AC-18.1 (v13.2.0): "Interface do jogo" é o primeiro item, Clássica ou Cartas, e o clique troca', () => {
-    const { onDefinir } = montar({ ajustes: { ...AJUSTES_PADRAO, interface: 'cartas' } });
+  it('AC-18.1 (v13.4.0): "Interface do jogo" é o primeiro item, Cartas e depois Clássica, e o clique troca', () => {
+    const { onDefinir } = montar({ ajustes: { ...AJUSTES_PADRAO, interface: 'classica' } });
     const grupos = screen.getAllByRole('group');
     expect(grupos[0]).toHaveAccessibleName('Interface do jogo');
     const botoes = within(grupos[0]!).getAllByRole('button');
-    expect(botoes.map((b) => [b.textContent, b.getAttribute('aria-pressed')])).toEqual([['○ Clássica', 'false'], ['◉ Cartas', 'true']]);
+    expect(botoes.map((b) => [b.textContent, b.getAttribute('aria-pressed')])).toEqual([['○ Cartas', 'false'], ['◉ Clássica', 'true']]);
     fireEvent.click(botoes[0]!);
-    expect(onDefinir).toHaveBeenLastCalledWith({ ...AJUSTES_PADRAO, interface: 'classica' });
+    expect(onDefinir).toHaveBeenLastCalledWith({ ...AJUSTES_PADRAO, interface: 'cartas' });
   });
 
   it('AC-9.2: clicar num valor muda o ajuste', () => {

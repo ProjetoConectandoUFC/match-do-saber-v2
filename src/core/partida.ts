@@ -67,8 +67,11 @@ export type Evento =
   | { tipo: 'enter' }
   | { tipo: 'sair' };
 
-/** v13.2.0 (FR-19): Clássica (v12.1.0: sem abertura nem distribuição) ou Cartas (v13.1.0). */
-export const INTERFACES_JOGO = ['classica', 'cartas'] as const;
+/**
+ * v13.2.0 (FR-19): Cartas (v13.1.0) ou Clássica (v12.1.0: sem abertura nem distribuição). v13.4.0 (AC-18.1): Cartas
+ * primeiro (padrão dos Ajustes); a Clássica fica por último, só como reserva.
+ */
+export const INTERFACES_JOGO = ['cartas', 'classica'] as const;
 export type InterfaceJogo = (typeof INTERFACES_JOGO)[number];
 
 /** `tempoCardMs`: tempo por card configurado (FR-9); sem valor, vale `TEMPOS.cardMs`. */
@@ -89,7 +92,10 @@ export interface Contexto {
   voltaResumoMs?: number;
   /** v12.0.0 (AC-9.23, AC-9.27): notícias por partida, temas e dificuldade. */
   sorteio?: OpcoesSorteio;
-  /** v13.2.0 (FR-19, AC-18.4, AC-18.5): sem valor, Clássica (o padrão dos Ajustes). */
+  /**
+   * v13.2.0 (FR-19, AC-18.4, AC-18.5): sem valor, Clássica. Só partidas montadas à mão nos testes chegam sem valor: o jogo
+   * sempre passa a dos Ajustes (`contextoDosAjustes`), cujo padrão é Cartas desde a v13.4.0 (AC-18.1).
+   */
   interface?: InterfaceJogo;
 }
 

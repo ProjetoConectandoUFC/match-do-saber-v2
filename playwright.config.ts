@@ -6,30 +6,20 @@ const origem = `http://localhost:${porta}`;
 
 // Testes que medem tempo real com a detecção de pose rodando: só valem sozinhos na máquina.
 // Rodam num projeto próprio, depois de todos os outros, sem relaxar o critério de FR-1.
-// Para rodar só eles: `npx playwright test --project=em-serie-classica --project=em-serie-cartas --no-deps`.
+// Para rodar só eles: `npx playwright test --project=em-serie --no-deps`.
 const EM_SERIE = /(relogio-real|cadencia)\.spec\.ts/;
-// Só existem na interface Cartas (Story 17, FR-18): o fan.
-const SO_CARTAS = /fan\.spec\.ts/;
 
 /**
- * v13.2.0 (FR-19, Fase 51.5): a mesma suíte nas duas interfaces. A interface vai gravada no `localStorage` antes de abrir
- * (a mesma chave dos Ajustes, AC-18.1); `metadata.interface` diz aos testes em qual projeto estão (`tests/e2e/carta.ts`).
+ * v13.4.0 (AC-18.1, Fase 53.2): os E2E rodam só na interface Cartas, a padrão. A Clássica continua no app como reserva
+ * e nos testes unitários (`describe.each` em `INTERFACES_JOGO`), mas sai dos E2E (decisão do responsável, 2026-11-24).
+ * Nenhum `localStorage` é gravado antes de abrir: os testes veem o padrão de verdade.
  */
-const naInterface = (iface: 'classica' | 'cartas') => ({
-  metadata: { interface: iface },
-  use: {
-    storageState: { cookies: [], origins: [{ origin: origem, localStorage: [{ name: 'match-do-saber:interface', value: iface }] }] },
-  },
-});
-
 export default defineConfig({
   testDir: 'tests/e2e',
   use: { baseURL: origem, viewport: { width: 1366, height: 768 } },
   webServer: { command: `npx vite preview --port ${porta} --strictPort`, url: origem, reuseExistingServer: true },
   projects: [
-    { name: 'classica', testIgnore: [EM_SERIE, SO_CARTAS], ...naInterface('classica') },
-    { name: 'cartas', testIgnore: EM_SERIE, ...naInterface('cartas') },
-    { name: 'em-serie-classica', testMatch: EM_SERIE, dependencies: ['classica', 'cartas'], ...naInterface('classica') },
-    { name: 'em-serie-cartas', testMatch: EM_SERIE, dependencies: ['em-serie-classica'], ...naInterface('cartas') },
+    { name: 'cartas', testIgnore: EM_SERIE },
+    { name: 'em-serie', testMatch: EM_SERIE, dependencies: ['cartas'] },
   ],
 });

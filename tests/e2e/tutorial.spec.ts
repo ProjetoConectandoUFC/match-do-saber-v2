@@ -30,7 +30,7 @@ test('AC-15.2 a AC-15.5: com o tutorial ligado, os treinos do arquivo (2 na v11.
   // Treino 1: Abacaxi Perfeito (mentira, v11.0.0), com o desenho do perfil, sem barra de tempo e sem placar.
   await expect(page.getByText('Treino 1 de 2')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Abacaxi Perfeito, 19' })).toBeVisible();
-  // v13.2.0: seletor que vale nas duas interfaces (na Clássica não há janela; nas Cartas, o fan também tem imagem).
+  // Só a imagem da carta em jogo (o fan também tem imagem).
   await expect(page.locator('article img[src*="perfil-falso-abacaxi"]')).toHaveCount(1);
   await expect(page.getByRole('timer')).toHaveCount(0);
   await expect(page.getByText(/^Pontos:/)).toHaveCount(0);

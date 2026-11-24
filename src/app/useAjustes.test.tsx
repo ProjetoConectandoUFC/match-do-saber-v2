@@ -10,20 +10,20 @@ describe('AC-18.2: tecla I na espera', () => {
   beforeEach(() => window.localStorage.clear());
   afterEach(() => window.localStorage.clear());
 
-  it('I e i alternam Clássica ↔ Cartas e a escolha fica guardada (AC-9.5)', () => {
+  it('I e i alternam Cartas ↔ Clássica e a escolha fica guardada (AC-9.5)', () => {
     const { result } = renderHook(() => useAjustes(() => true));
-    expect(result.current.ajustes.interface).toBe('classica');
-    tecla('i');
     expect(result.current.ajustes.interface).toBe('cartas');
-    expect(window.localStorage.getItem('match-do-saber:interface')).toBe('cartas');
-    tecla('I');
+    tecla('i');
     expect(result.current.ajustes.interface).toBe('classica');
+    expect(window.localStorage.getItem('match-do-saber:interface')).toBe('classica');
+    tecla('I');
+    expect(result.current.ajustes.interface).toBe('cartas');
   });
 
   it('fora da espera, ou com menu/painel aberto, a tecla I não faz nada (AC-18.7)', () => {
     const { result } = renderHook(() => useAjustes(() => false));
     tecla('i');
-    expect(result.current.ajustes.interface).toBe('classica');
+    expect(result.current.ajustes.interface).toBe('cartas');
     expect(window.localStorage.getItem('match-do-saber:interface')).toBeNull();
   });
 
@@ -31,6 +31,6 @@ describe('AC-18.2: tecla I na espera', () => {
     const { result } = renderHook(() => useAjustes(() => true));
     act(() => result.current.abrir());
     tecla('i');
-    expect(result.current.ajustes.interface).toBe('classica');
+    expect(result.current.ajustes.interface).toBe('cartas');
   });
 });

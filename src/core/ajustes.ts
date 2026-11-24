@@ -29,7 +29,7 @@ export interface Ajustes {
   foto: boolean;
   qrFontes: boolean;
   tutorial: boolean;
-  /** v13.2.0 (AC-18.1, FR-19): Clássica (a da v12.1.0) ou Cartas (a da v13.1.0), para o teste A/B. */
+  /** v13.2.0 (AC-18.1, FR-19): Cartas (a da v13.1.0; padrão desde a v13.4.0) ou Clássica (a da v12.1.0, só reserva). */
   interface: InterfaceJogo;
 }
 
@@ -39,7 +39,7 @@ export const AJUSTES_PADRAO: Ajustes = {
   temas: [...TEMAS], dificuldade: 'misturada',
   modo: MODO_PADRAO, sensibilidade: 'normal', toleranciaS: 10,
   som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false,
-  interface: 'classica',
+  interface: 'cartas',
 };
 
 /** AC-9.28: multiplicador dos limiares dos gestos (Menor exige gesto maior). Normal = limiares atuais. */
@@ -233,7 +233,7 @@ export function resumoAjustes(aj: Ajustes): string {
 /** AC-18.3: a interface ativa, na espera, junto do resumo. */
 export const rotuloInterface = (aj: Ajustes) => `Interface: ${ROTULO_INTERFACE[aj.interface]}`;
 
-/** AC-18.2: a tecla I na espera alterna Clássica ↔ Cartas. */
+/** AC-18.2: a tecla I na espera alterna Cartas ↔ Clássica. */
 export const alternarInterface = (aj: Ajustes): Ajustes =>
   ({ ...aj, interface: aj.interface === 'classica' ? 'cartas' : 'classica' });
 
