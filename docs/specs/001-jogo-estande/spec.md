@@ -1,9 +1,9 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
-**Status:** Approved (v13.2.0, troca de interface para o teste A/B, aprovada pelo responsável em 2026-11-17; v12.0.0 aprovada pelo responsável em 2026-11-12; v12.0.1 e v12.0.2 só corrigem coerência e layout; v12.1.0, robustez para o teste com público de 2026-11-18, escopo aprovado pelo responsável em 2026-11-16; v13.0.0: escopo e tempos confirmados pelo responsável em 2026-11-13; v13.1.0: decisões sobre a prévia v13, no mesmo dia). **Integração (2026-11-17):** a v13 (cartas e fan), escrita sobre a v12.0.2 numa branch de experimento, entra na `develop` por decisão do responsável (revoga a de 2026-11-16, "só na branch") para o teste A/B de 2026-11-18; vale sobre a v12.1.0, e tudo o que a v12.1.0 mudou continua valendo. A troca entre a interface clássica (v12.1) e as cartas (v13.1) fica para a v13.2.0.
-**Version:** 13.2.0
+**Status:** Approved (v13.3.0, performance, escopo pedido pelo responsável em 2026-11-24 ("faça todas as alterações de performance"); v13.2.0, troca de interface para o teste A/B, aprovada pelo responsável em 2026-11-17; v12.0.0 aprovada pelo responsável em 2026-11-12; v12.0.1 e v12.0.2 só corrigem coerência e layout; v12.1.0, robustez para o teste com público de 2026-11-18, escopo aprovado pelo responsável em 2026-11-16; v13.0.0: escopo e tempos confirmados pelo responsável em 2026-11-13; v13.1.0: decisões sobre a prévia v13, no mesmo dia). **Integração (2026-11-17):** a v13 (cartas e fan), escrita sobre a v12.0.2 numa branch de experimento, entra na `develop` por decisão do responsável (revoga a de 2026-11-16, "só na branch") para o teste A/B de 2026-11-18; vale sobre a v12.1.0, e tudo o que a v12.1.0 mudou continua valendo. A troca entre a interface clássica (v12.1) e as cartas (v13.1) fica para a v13.2.0.
+**Version:** 13.3.0
 **Created:** 2026-10-26
-**Last Updated:** 2026-11-17
+**Last Updated:** 2026-11-24
 **Branch:** `001-jogo-estande`
 **Origem:** [prd.md](prd.md) · ADRs: [frontend-stack](../../adr/001-frontend-stack.md), [motion-input](../../adr/001-motion-input.md), [content-pipeline](../../adr/001-content-pipeline.md)
 
@@ -42,6 +42,7 @@
 | 13.0.0 | 2026-11-13 | Pedido do responsável (Levi), com as referências de um leque de baralho na mão e de cartas ilustradas. **O card vira carta de baralho:** retrato (5:7), frente só com a imagem grande numa janela com moldura e a manchete, ícone do tema nos cantos (AC-17.1, FR-4 e FR-15 reescritos); a descrição e o "saiba mais" vão para o verso, e o gesto de "saiba mais" vira a carta (AC-3.1 a AC-3.4 reescritos, AC-3.6 novo). **Fan de cartas:** sai a pilha parada atrás do card (AC-2.12 reescrito); entra um leque de versos na base da tela, que perde uma carta a cada notícia (AC-17.3), abre e fecha em loop na tela de espera (AC-17.4), abre inteiro na abertura da partida (AC-17.5, 1,5 s) e solta cada carta, que sobe e vira (AC-17.6, 0,9 s). Os dois tempos **somam** à partida (o cronômetro só corre com a carta pousada); FR-1 e AC-1.2 ganham o estado de abertura e a distribuição. Som de carta distribuída (AC-17.8, FR-11). O treino usa a carta e sai do fan (AC-15.2). Story 17 e FR-18 novos. O movimento da carta com o corpo (AC-2.10), os botões das laterais (AC-2.11), o feedback, o resumo e o painel Questões não mudam. |
 | 13.1.0 | 2026-11-13 | Decisões do responsável sobre a prévia v13 (`docs/visual/previa-v13.html`): a carta de treino mantém a frase do perfil na frente, porque não tem verso (AC-17.1); o fan abre sempre no mesmo ângulo, espaçando as cartas pela quantidade, para continuar visível até a última (AC-17.3); a carta distribuída é a da ponta direita do fan, que sobe em arco (AC-17.6); a letra do verso pode descer até 20 px, e o editor e o painel Questões **avisam**, sem bloquear, quando `saiba_mais` passa de 250 caracteres (AC-17.2, AC-7.13 novo); as notícias atuais não são reescritas (15 das 16 passam do limite). |
 | 13.2.0 | 2026-11-17 | Teste A/B com público em 2026-11-18, por decisão do responsável (Levi): as duas interfaces no mesmo app, com o mesmo sistema. **Interface do jogo** nos Ajustes: **Clássica** (padrão; a da v12.1.0: card com pilha, sem fan, sem abertura nem distribuição, "saiba mais" dentro do card) ou **Cartas** (a da v13.1.0: carta de baralho, verso, fan, abertura e distribuição); tecla **I** na espera alterna; a espera mostra a interface ativa (Story 18, FR-19, AC-18.1 a AC-18.7). Iguais nas duas: banco, sorteio, quantidade, tempos do card e do feedback, gestos, sensibilidade e robustez, feedback com carimbo, resumo, foto, QR e tutorial; nas Cartas a abertura e a distribuição **somam** ao tempo e nunca descontam. AC-2.13 nas Cartas vale a partir da carta pousada. O aviso de `saiba_mais` acima de 250 caracteres (AC-7.13) aparece nas duas. Sem registro de dados de partida (decisão do responsável: a comparação é por observação). As cartas deixam de ser experimento de branch: entram na develop atrás da troca. |
+| 13.3.0 | 2026-11-24 | Performance, depois do teste com público de 2026-11-18 (app desktop num notebook Ryzen sem placa de vídeo dedicada, cravado em 15 fps: a detecção de pose roda síncrona dentro do laço de desenho e tudo anda no ritmo dela). **A tela deixa de andar no ritmo da detecção** (NFR Performance reescrito, FR-20 novo, Fase 52): a detecção roda fora do laço de desenho (num Web Worker quando o ambiente permitir; senão, num ritmo próprio que nunca bloqueia dois quadros seguidos), entrega a leitura mais recente, e o laço de desenho avança relógio, animações e reducer a cada quadro da tela. Incorpora a performance rápida de 2026-11-23 (PR #16: GPU fora da lista de bloqueio no Electron, câmera em 640×360, aceleração no Diagnóstico). Menos trabalho por quadro: o React não redesenha a árvore inteira a cada tick. O Diagnóstico separa quadros da tela e detecções por segundo. Nenhuma regra de jogo, tempo, gesto ou interface muda. |
 
 ---
 
@@ -656,10 +657,29 @@ Referências do responsável: um leque de baralho aberto na mão (o fan) e carta
 - Guardar qualquer dado das partidas para comparar as interfaces (a comparação do teste A/B é por observação).
 
 
+### FR-20: Detecção fora do laço de desenho (adicionado v13.3.0)
+
+**Must:**
+- Rodar a detecção de pose fora do `requestAnimationFrame` da tela: num Web Worker (MediaPipe no worker, quadros da câmera enviados como `ImageBitmap`/`VideoFrame` transferíveis) quando o ambiente permitir (Electron e navegadores atuais); se o worker não puder ser criado ou falhar, cair para a detecção na thread principal num ritmo próprio, no máximo uma leitura por vez, sem bloquear dois quadros de tela seguidos.
+- Entregar ao laço de desenho só a leitura mais recente (poses + instante da captura); uma leitura atrasada nunca é aplicada depois de uma mais nova.
+- Avançar o relógio e o reducer (`tick` com `dtDoQuadro`) a cada quadro da tela; presença e gestos vêm da última leitura, interpretados uma vez por leitura nova (permanências medidas pelo instante da captura, não pelo quadro da tela).
+- Manter a privacidade: os quadros da câmera só vão da thread principal ao worker, na memória; nada é gravado nem enviado (mesma regra da v1.0.0).
+- Reduzir o trabalho por quadro do React: componentes pesados que não dependem do tempo (fan parado, painéis, ilustrações, resumo) não re-renderizam a cada tick.
+- Mostrar no Diagnóstico, separados: quadros da tela por segundo, leituras de pose por segundo, ms por leitura, onde a detecção roda (worker ou thread principal), delegate (GPU/CPU) e renderizador WebGL.
+- Recuperar-se como na v12.1.0: erro no worker (ou contexto WebGL perdido) fecha o rastreador, marca a câmera como indisponível e reabre na espera.
+
+**Must not:**
+- Mudar regra de jogo, tempo, limiar de gesto, interface ou o que é guardado.
+- Deixar a detecção ou o worker rodando com o painel de Ajustes/menu aberto além do que já roda hoje (a câmera continua aberta; os gestos continuam ignorados, FR-14).
+
+## Non-Functional Requirements
+
 ### Performance
 
 - O gesto é confirmado em até 1 s depois de o jogador atingir a posição (já contando o tempo de permanência), num notebook comum com webcam de 720p, em qualquer modo de jogo.
 - A prévia da câmera e a barra de tempo atualizam a pelo menos 15 quadros por segundo nesse notebook.
+- (v13.3.0) A tela (carta, fan, barra de tempo, carimbo e animações) não anda no ritmo da detecção de pose: com uma detecção que leva 60 ms por leitura, a tela mantém intervalo mediano entre quadros de no máximo 20 ms (≈ 50 fps ou mais) e nenhum intervalo acima de 100 ms causado pela detecção, num notebook com gráficos integrados. A detecção mira 12 a 30 leituras por segundo, conforme a máquina; os gestos (permanências de ~300 ms e ~500 ms) continuam confirmados em até 1 s.
+- (v13.3.0) O Electron usa a GPU mesmo quando o Chromium a põe na lista de bloqueio, e a câmera abre em 640×360 (suficiente para a pose a 1,5–2 m).
 - Com o conteúdo já em cache, o jogo vai do clique no ícone à tela de espera em até 5 s.
 - A transição de um card para o próximo (depois do feedback) leva menos de 300 ms, sem imagem carregando visivelmente.
 

@@ -5561,6 +5561,21 @@ Spec: Story 18 (AC-18.1 a AC-18.7), FR-19; AC-2.12 (v11.0.0, Clássica), AC-2.13
 Status (2026-11-17, agente-mecanico, branch `001-v13-ab`): 51.1 a 51.6 feitas, com as Fases 47 e 48 do agente-visual mescladas. Reducer: `Contexto.interface` (sem valor = Clássica) e `Partida.interface` gravada no começo (AC-18.7); `interfaceDoEstado` escolhe a tela. Clássica: `src/app/CardClassico.tsx` + `CardClassico.module.css` (o card da v12.1.0); `App.tsx` troca `TelaCard` por `TelaCardClassico` e passa `cartas` à espera. Testes do reducer, do som, do card e os E2E rodam nas duas interfaces (projetos Playwright `classica` e `cartas`, com a interface no `localStorage` pelo `storageState`; `fan.spec.ts` só em `cartas`).
 
 
+## Phase 52 (added v13.3.0): Performance — tela fora do ritmo da detecção
+
+Spec: NFR Performance (v13.3.0), FR-20, AC-2.x/AC-9.x de gestos (sem regressão), AC-12.x (Diagnóstico), NFR Reliability (v12.1.0). Agente: agente-mecanico, branch `001-v13-3-performance` (a partir da `001-performance-rapida`, PR #16). TDD; medir antes e depois.
+
+- 52.1 Linha de base: com `?diagnostico` e uma detecção falsa lenta (60 ms síncronos), medir o intervalo entre quadros da tela hoje (E2E com um rastreador falso injetável); registrar os números no relatório.
+- 52.2 Contrato puro: `src/core/leituraPose.ts` (ou similar) — fila de uma leitura (a mais recente vence, descarta atrasada), instante de captura, e o interpretador de gestos alimentado por leitura nova com o tempo da captura; testes de fronteira das permanências com leituras a 12, 15 e 30 Hz e quadros de tela a 60 Hz (o gesto confirma no mesmo tempo que hoje).
+- 52.3 Worker: `src/app/poseWorker.ts` com o MediaPipe (modelo e WASM servidos pelo próprio app, mesma CSP; ver `vite.config.ts` e o Electron), mensagens tipadas, transferência de `ImageBitmap`/`VideoFrame`, delegate GPU com queda para CPU; reserva na thread principal com ritmo próprio. Conferir que funciona no build web (PWA, precache) e no Electron (`e2e:desktop`).
+- 52.4 `useJogo.ts`: laço de desenho só com tick + aplicação da última leitura; detecção no seu ritmo; recuperação de erro como na v12.1.0.
+- 52.5 React: medir com o Profiler o custo por tick; memoizar o que não depende do tempo (fan parado, painéis, ilustrações, resumo) e tirar do estado de topo o que só a tela de jogo usa, se necessário.
+- 52.6 Diagnóstico: quadros da tela/s, leituras/s, ms por leitura, worker ou thread principal, delegate e renderizador.
+- 52.7 `numPoses`: medir o custo de 3 × 2 × 1 no Diagnóstico; só mudar se o ganho for grande e o rastreamento do jogador central (AC-1.5) continuar coberto pelos testes; senão, manter 3 e registrar os números.
+- 52.8 Verificação: `npm test`, `npm run build`, E2E web nas duas interfaces, `e2e:desktop`, e o E2E novo de cadência (detecção falsa de 60 ms → mediana ≤ 20 ms entre quadros da tela, nenhum quadro > 100 ms por causa da detecção). Versão 13.3.0.
+
+## Quickstart Validation
+
 ```bash
 npm install
 npm run fixture          # 12 notícias de teste em public/content
@@ -5663,3 +5678,4 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 12.0.2 | 42–44 | Correções da revisão de 2026-11-13: lista do resumo com metade das notícias em cada coluna e linhas mais baixas acima de 10 (AC-5.8; E2E `resumo-muitas.spec.ts` com 12 e 20); ↑/↓ no campo de busca do painel Questões ficam com o campo |
 | 12.1.0 | 50 | Adicionada: robustez para o teste com público (gestos, ausência, calibração, câmera, laço, repouso, desktop) |
 | 13.2.0 | 51 | Adicionada: troca de interface (Clássica × Cartas) para o teste A/B |
+| 13.3.0 | 52 | Adicionada: performance — detecção fora do laço de desenho (worker), menos re-render e Diagnóstico separado |
