@@ -1,3 +1,4 @@
+import { escreverCsv, lerCsv } from '../../src/core/csv';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { esperarCartaPousada } from './carta';
 
@@ -74,6 +75,39 @@ test('NFR Performance (v13.3.0): com detecção de 60 ms, a tela fica a ≥ 50 f
     expect(e.medianaMs).toBeLessThanOrEqual(20);
     expect(e.acimaDe100).toBe(0);
   }
+});
+
+/**
+ * AC-19.9 (v13.4.0, Fase 54.7): com a intensidade Alta, uma partida com acertos seguidos e erros mantém a cadência da
+ * v13.3.0, medida do 1º card ao fim do último feedback (carimbadas, resultados e distribuições). Todas as notícias
+ * verdadeiras, para → acertar e ← errar. Por enquanto os efeitos visuais ainda não existem (Fases 54.3 a 54.5): este
+ * teste garante que nada piorou e passa a valer para eles quando chegarem.
+ */
+test('AC-19.9: intensidade Alta, acertos seguidos e erros, detecção de 60 ms: mediana ≤ 20 ms e nenhum quadro > 100 ms', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.route('**/content/noticias.csv', async (route) => {
+    const r = await route.fetch();
+    await route.fulfill({ body: escreverCsv(lerCsv(await r.text()).map((n) => ({ ...n, veredito: 'verdadeira' }))) });
+  });
+  await page.addInitScript(() => {
+    localStorage.setItem('match-do-saber:efeitos', 'alta');
+    localStorage.setItem('match-do-saber:noticiasPorPartida', '5');
+  });
+  const painel = await abrirComDeteccao(page, { ms: 60 });
+  await expect(page.locator('[data-juice="alta"]')).toHaveCount(1);
+  await irParaCarta(page);
+  const medicao = medirQuadros(page, 22_000);
+  const raiz = page.locator('[data-tela]').first();
+  for (const [tecla, sequencia] of [['ArrowRight', 1], ['ArrowRight', 2], ['ArrowRight', 3], ['ArrowLeft', 0], ['ArrowRight', 1]] as const) {
+    await esperarCartaPousada(page);
+    await page.keyboard.press(tecla);
+    await expect(raiz).toHaveAttribute('data-sequencia', String(sequencia), { timeout: 5000 });
+  }
+  const partida = estatisticas(await medicao);
+  console.log(`cadência (Alta, detecção falsa 60 ms, partida de 5 com sequência e erro): ${JSON.stringify(partida)}`);
+  console.log(`painel: ${await linhasPainel(painel)}`);
+  expect(partida.medianaMs).toBeLessThanOrEqual(20);
+  expect(partida.acimaDe100).toBe(0);
 });
 
 test('FR-20: na reserva (detecção na thread principal), nunca dois quadros seguidos travados pela detecção', async ({ page }) => {
