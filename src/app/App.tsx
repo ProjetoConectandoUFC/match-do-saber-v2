@@ -201,11 +201,17 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           modo={cfg.ajustes.modo}
           totalMs={cfg.ajustes.tempoCardS * 1000}
           saida={estado.resposta === 'verdadeira' ? 'direita' : 'esquerda'}
+          resultado={estado.partida.resultados[estado.indice]} // AC-19.2/AC-19.4: hit-stop e amassada na saída
           cardRef={cardSaindoRef}
           onArrastar={() => {}}
         />
       ) : (
-        <TelaFeedback noticia={noticia} resultado={estado.partida.resultados[estado.indice]!} pontos={pontos(estado.partida)} />
+        <TelaFeedback
+          noticia={noticia}
+          resultado={estado.partida.resultados[estado.indice]!}
+          pontos={pontos(estado.partida)}
+          sequencia={estado.sequencia} // AC-19.5
+        />
       );
       break;
     }
@@ -231,6 +237,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           modo={cfg.ajustes.modo}
           treino={treino}
           saida={estado.tela === 'tutorialFeedback' ? (estado.resposta === 'verdadeira' ? 'direita' : 'esquerda') : undefined}
+          resultado={estado.tela === 'tutorialFeedback' ? (estado.resposta === noticia.veredito ? 'acerto' : 'erro') : undefined}
           cardRef={saindo ? cardSaindoRef : cardRef}
           onArrastar={saindo ? () => {} : (lado) => despachar({ tipo: 'escolha', resposta: lado === 'direita' ? 'verdadeira' : 'falsa' })}
         />

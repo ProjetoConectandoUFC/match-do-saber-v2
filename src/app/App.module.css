@@ -163,8 +163,28 @@
 .carimboFeedback.carimboMentira { rotate: -7deg; }
 /* Carimbada (AC-4.9): cai de maior para o tamanho final; os 300 ms somam ao tempo do feedback (TEMPOS.carimboMs). */
 @keyframes carimbada { from { scale: 2.4; opacity: 0; translate: 0 calc(-30 * var(--u)); } 60% { opacity: 1; } to { scale: 1; opacity: 1; translate: 0 0; } }
+/* ===== Juice, etapa 1 (v13.4.0, Story 19, FR-21). Desligada não usa nada daqui (AC-19.8). =====
+   Carimbo (AC-19.2): a queda acelera e chega ao papel a 45% da carimbada (IMPACTO_MS, quadrosJuice.ts), em vez de assentar
+   no fim; dali a mola (afunda, hit-stop, passa do tamanho e assenta) é das Web Animations, no `transform`. */
+.carimboFeedback.carimboJuice { animation-name: carimbadaQueda; animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45); }
+@keyframes carimbadaQueda {
+  0% { scale: 2.4; opacity: 0; translate: 0 calc(-40 * var(--u)); }
+  18% { opacity: 1; }
+  45%, 100% { scale: 1; opacity: 1; translate: 0 0; }
+}
+/* O núcleo isola as camadas: o confete fica atrás do texto do resultado; a explicação e a técnica, por cima (AC-19.7). */
+.nucleoJuice { position: relative; isolation: isolate; }
+.textoLer { position: relative; z-index: 1; }
+.pontosPop { transform-origin: 0 60%; }
+/* A tela treme (transform no main): por trás dela, a mesma cor do resultado, sem frestas escuras nas bordas. */
+.app:has(> .fbAcerto) { background: var(--acerto); }
+.app:has(> .fbErro) { background: var(--erro); }
+/* Carta saindo com hit-stop (AC-19.2, AC-19.4): o voo é das Web Animations; o carimbo do alto da carta bate no tempo
+   do hit-stop (--hit-stop), enquanto a carta está parada. */
+.carta[data-juice-saida] { animation: none; }
+.carta[data-juice-saida] .carimbado { animation-duration: var(--hit-stop, 160ms); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
 @media (prefers-reduced-motion: reduce) {
-  .carimboFeedback, .carimbado { animation: none; }
+  .carimboFeedback, .carimbado, .carimboFeedback.carimboJuice, .carta[data-juice-saida] .carimbado { animation: none; }
 }
 .explicacao { margin: 0; font-size: calc(30 * var(--u)); line-height: 1.4; font-weight: 500; max-width: calc(860 * var(--u)); }
 .tecnica { margin: 0; border: calc(3 * var(--u)) solid currentColor; border-radius: var(--raio-pilula); padding: calc(4 * var(--u)) calc(24 * var(--u)); font-size: calc(26 * var(--u)); font-weight: 600; }
@@ -180,6 +200,9 @@
 .resumoTexto h1 em { font-style: normal; color: var(--cn-amarelo); }
 .placar { font-size: calc(92 * var(--u)); font-weight: 900; line-height: 1; color: var(--cn-amarelo); }
 .mensagemResumo { font-size: calc(28 * var(--u)); font-weight: 600; line-height: 1.3; max-width: calc(600 * var(--u)); }
+/* Maior sequência (v13.4.0, AC-19.6): a estrela de 4 pontas do selo "Sequência ×N" do feedback, num disco noite. */
+.resumoTexto > .maiorSequencia { display: inline-flex; align-items: center; gap: calc(10 * var(--u)); margin-top: calc(4 * var(--u)); font-size: calc(24 * var(--u)); font-weight: 800; line-height: 1.2; }
+.maiorSequenciaDisco { display: grid; place-items: center; width: calc(34 * var(--u)); height: calc(34 * var(--u)); border-radius: 50%; background: var(--cn-noite); color: var(--cn-amarelo); flex: none; }
 .cartaoQr { flex: none; width: calc(216 * var(--u)); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: calc(8 * var(--u)); background: var(--cn-creme); color: var(--cn-noite); border-radius: calc(20 * var(--u)); padding: calc(14 * var(--u)) calc(16 * var(--u)) calc(12 * var(--u)); box-shadow: calc(10 * var(--u)) calc(10 * var(--u)) 0 var(--cn-noite); text-align: center; }
 .cartaoQr p { margin: 0; font-size: calc(17 * var(--u)); font-weight: 800; line-height: 1.2; }
 /* Lista da rodada (AC-5.8): letra menor de propósito, para ler de perto ou na foto do celular. */

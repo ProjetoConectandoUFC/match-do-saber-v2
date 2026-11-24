@@ -80,8 +80,9 @@ test('NFR Performance (v13.3.0): com detecção de 60 ms, a tela fica a ≥ 50 f
 /**
  * AC-19.9 (v13.4.0, Fase 54.7): com a intensidade Alta, uma partida com acertos seguidos e erros mantém a cadência da
  * v13.3.0, medida do 1º card ao fim do último feedback (carimbadas, resultados e distribuições). Todas as notícias
- * verdadeiras, para → acertar e ← errar. Por enquanto os efeitos visuais ainda não existem (Fases 54.3 a 54.5): este
- * teste garante que nada piorou e passa a valer para eles quando chegarem.
+ * verdadeiras, para → acertar e ← errar. Vale com os efeitos das Fases 54.3 a 54.5 (hit-stop e
+ * amassada na saída da carta, mola, respingo e tremida no carimbo, cascata, confete, pops e "Sequência ×N"), todos em
+ * Web Animations no compositor.
  */
 test('AC-19.9: intensidade Alta, acertos seguidos e erros, detecção de 60 ms: mediana ≤ 20 ms e nenhum quadro > 100 ms', async ({ page }) => {
   test.setTimeout(120_000);

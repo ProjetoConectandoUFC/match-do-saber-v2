@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { TelaResumo } from './Telas';
 
-// v13.4.0 (Story 19): a parte mecânica que aparece na tela; o acabamento visual é do Agente Visual (Fase 54.3 a 54.5).
+// v13.4.0 (Story 19): a parte mecânica que aparece na tela; os efeitos e o acabamento estão em TelasJuiceEfeitos.test.tsx.
 describe('AC-19.6: "Maior sequência: N" no resumo', () => {
   it('mostra a maior sequência da partida, junto do placar', () => {
     render(<TelaResumo pontos={7} total={10} maiorSequencia={4} />);

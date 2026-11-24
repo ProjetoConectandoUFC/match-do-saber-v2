@@ -1,4 +1,4 @@
-import { memo, useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode, type Ref, type RefObject } from 'react';
 import { AJUSTES_PADRAO, resumoAjustes, rotuloInterface, type Ajustes } from '../core/ajustes';
 import { DICA_GESTOS, DICA_SAIBA_MAIS, type ModoJogo } from '../core/modos';
 import type { AncorasRosto } from '../core/ancorasRosto';
@@ -16,6 +16,11 @@ import { Naipe } from './Naipe';
 import { FanCartas, VERSO_FAN, podeAnimar, quadrosChave, sincronizar } from './FanCartas';
 import { ilustracaoDaNoticia, ilustracaoDoPerfil } from './ilustracoes';
 import { QrCode } from './QrCode';
+import { Confete, Respingo, SeloSequencia, escalaTela, estilosEfeitos, suportaAnimacao, useEfeito } from './EfeitosJuice';
+import {
+  efeitoCarimbo, efeitoEntradaTexto, efeitoLetra, efeitoNao, efeitoPop, efeitoSaida, efeitoTremida, liberacaoMs, type Efeito,
+} from './quadrosJuice';
+import { useJuice, type Juice } from './juice';
 import type { StatusCamera } from './useJogo';
 import s from './App.module.css';
 
@@ -24,8 +29,11 @@ const TEXTO_RESULTADO: Record<Resultado, string> = { acerto: 'Acertou!', erro: '
 const cx = (...c: (string | false | undefined)[]) => c.filter(Boolean).join(' ');
 const src = (caminho: string) => (/^(https?:|data:)/.test(caminho) ? caminho : `${import.meta.env.BASE_URL}${caminho}`);
 
-function Placar({ pontos }: { pontos: number }) {
-  return <p className={s.pontos}>{`Pontos: ${pontos}`}</p>;
+/** `pop` (v13.4.0, AC-19.3, AC-19.5): o "pop" de escala do placar quando o acerto soma o ponto. */
+function Placar({ pontos, pop = null }: { pontos: number; pop?: Efeito | null }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  useEfeito(ref, () => pop, []);
+  return <p ref={ref} className={cx(s.pontos, pop ? s.pontosPop : undefined)} data-pontos>{`Pontos: ${pontos}`}</p>;
 }
 
 /** Passo do tutorial (FR-16): no lugar do placar, que o treino não tem (AC-15.4). */
@@ -193,19 +201,23 @@ export function BarraTempo({ restanteMs, totalMs, alerta }: { restanteMs: number
  * Carimbo VERDADE/MENTIRA (AC-2.10b, AC-4.9; v12.0.0: o mesmo no card e no feedback): cheio, menta com a estrela ou coral
  * com o triângulo, o marcador num disco noite; a caixa alta vem do CSS.
  */
-function Carimbo({ lado, className, style, ...dados }: {
+function Carimbo({ lado, className, style, refEl, children, ...dados }: {
   lado: 'mentira' | 'verdade';
   className?: string;
   style?: CSSProperties;
+  /** v13.4.0: o carimbo do feedback recebe a mola do golpe (AC-19.2) e, dentro, o respingo (`children`). */
+  refEl?: Ref<HTMLSpanElement>;
+  children?: ReactNode;
   'data-rotulo-lado'?: string;
   'data-carimbo'?: string;
   'aria-hidden'?: 'true';
 }) {
   const verdade = lado === 'verdade';
   return (
-    <span {...dados} className={cx(s.carimbo, verdade ? s.carimboVerdade : s.carimboMentira, className)} style={style}>
+    <span {...dados} ref={refEl} className={cx(s.carimbo, verdade ? s.carimboVerdade : s.carimboMentira, className)} style={style}>
       <span className={s.carimboDisco} aria-hidden="true">{verdade ? <MarcaVerdade largura={20} /> : <MarcaMentira largura={20} />}</span>
       {verdade ? 'Verdade' : 'Mentira'}
+      {children}
     </span>
   );
 }
@@ -391,8 +403,10 @@ function useVooDaCarta(voo: RefObject<HTMLDivElement>, giro: RefObject<HTMLDivEl
 
 export function TelaCard({
   noticia, restanteMs, saibaMais, ausente, saida, pontos, modo = 'corpo', totalMs = 15000, treino, cardRef, onArrastar,
-  cartasNoFan, distribuindoMs = 0,
+  cartasNoFan, distribuindoMs = 0, resultado,
 }: {
+  /** v13.4.0 (AC-19.2, AC-19.4): o resultado da escolha, na saída: a carta para no golpe e, no erro, amassa antes de voar. */
+  resultado?: Resultado;
   /** v13.0.0 (AC-17.3): cartas ainda no fan, do estado (`cartasNoFan`); sem valor, a tela não tem fan. */
   cartasNoFan?: number;
   /** v13.0.0 (AC-17.6): > 0 enquanto a carta sai do fan (`distribuindoMs` do estado). */
@@ -421,6 +435,18 @@ export function TelaCard({
   const voo = useRef<HTMLDivElement>(null);
   const giro = useRef<HTMLDivElement>(null);
   useVooDaCarta(voo, giro, (cartasNoFan ?? 0) + 1, distribuindoMs);
+  // v13.4.0 (AC-19.2, AC-19.4): com os efeitos, a saída é das Web Animations (hit-stop, amassada e voo, nos mesmos 250 ms);
+  // sem eles, a animação de CSS de antes (AC-19.8).
+  const { parametros } = useJuice();
+  const saidaJuice = !!saida && parametros.hitStopMs > 0 && suportaAnimacao();
+  const amassa = resultado === 'erro' || resultado === 'tempo';
+  useLayoutEffect(() => {
+    const el = cardRef.current;
+    if (!saidaJuice || !saida || !el) return undefined;
+    const e = efeitoSaida(parametros, saida, amassa);
+    const a = e ? el.animate(e.quadros, e.opcoes) : null;
+    return () => a?.cancel();
+  }, [saidaJuice, saida, amassa]);
   return (
     <main className={`${s.tela} ${s.sobrio}`}>
       {/* AC-17.3: o fan fica atrás de tudo (primeiro na tela); a carta, os botões, as dicas e a barra vêm por cima. */}
@@ -445,6 +471,8 @@ export function TelaCard({
         data-carta
         data-face={verso ? 'verso' : 'frente'}
         data-distribuindo={distribuindo || undefined}
+        data-juice-saida={saidaJuice || undefined}
+        style={saidaJuice ? ({ '--hit-stop': `${parametros.hitStopMs}ms` } as CSSProperties) : undefined}
         className={cx(s.carta, verso && s.virada, saida && (saida === 'direita' ? s.saiDireita : s.saiEsquerda), pulsando && s.pulsando)}
         onPointerDown={(e) => { inicioX.current = e.clientX; }}
         onPointerUp={(e) => {
@@ -487,38 +515,97 @@ export function TelaCard({
  * Núcleo do feedback (AC-4.9, v12.0.0): o texto do resultado, grande, e o carimbo do veredito carimbado por cima dele,
  * cobrindo só o alto do texto; os dois no centro da tela. A carimbada dura `TEMPOS.carimboMs`, somada ao feedback.
  */
-function NucleoFeedback({ texto, verdade }: { texto: string; verdade: boolean }) {
+/** AC-19.3: uma letra de "Acertou!" na cascata, com o próprio overshoot. */
+function Letra({ letra, i, parametros }: { letra: string; i: number; parametros: Juice['parametros'] }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEfeito(ref, () => efeitoLetra(parametros, i), []);
+  return <span ref={ref} className={estilosEfeitos.letra} data-letra aria-hidden="true">{letra === ' ' ? ' ' : letra}</span>;
+}
+
+/**
+ * Núcleo do feedback (AC-4.9, v12.0.0): o texto do resultado, grande, e o carimbo do veredito carimbado por cima dele,
+ * cobrindo só o alto do texto; os dois no centro da tela. A carimbada dura `TEMPOS.carimboMs`, somada ao feedback.
+ *
+ * v13.4.0 (Story 19), com os efeitos ligados (`juice` acima de Desligada): a queda do carimbo fica mais rápida e ele
+ * afunda, para no hit-stop e volta numa mola (AC-19.2), soltando o respingo; no acerto, as letras entram em cascata e o
+ * confete sai do centro, atrás do texto (AC-19.3); no erro e no tempo esgotado, o núcleo diz "não" (AC-19.4).
+ */
+function NucleoFeedback({ texto, verdade, acerto = false, juice }: { texto: string; verdade: boolean; acerto?: boolean; juice?: Juice }) {
+  const ativo = !!juice && juice.intensidade !== 'desligada';
+  const p = juice?.parametros;
+  const nucleo = useRef<HTMLDivElement>(null);
+  const carimbo = useRef<HTMLSpanElement>(null);
+  useEfeito(carimbo, () => (ativo && p ? efeitoCarimbo(p) : null), [ativo]);
+  useEfeito(nucleo, () => (ativo && p && !acerto ? efeitoNao(p, escalaTela()) : null), [ativo]);
+  const cascata = ativo && acerto && !!p?.cascata;
   return (
-    <div className={s.nucleo} data-nucleo-feedback>
-      <h2 className={s.textoResultado}>{texto}</h2>
+    <div ref={nucleo} className={cx(s.nucleo, ativo && s.nucleoJuice)} data-nucleo-feedback data-juice-nucleo={ativo || undefined}>
+      {cascata ? (
+        <h2 className={s.textoResultado} aria-label={texto}>
+          {[...texto].map((l, i) => <Letra key={i} letra={l} i={i} parametros={p!} />)}
+        </h2>
+      ) : (
+        <h2 className={s.textoResultado}>{texto}</h2>
+      )}
       <Carimbo
         lado={verdade ? 'verdade' : 'mentira'}
         data-carimbo={verdade ? 'verdade' : 'mentira'}
-        className={s.carimboFeedback}
+        className={cx(s.carimboFeedback, ativo && s.carimboJuice)}
         style={{ '--carimbo-ms': `${TEMPOS.carimboMs}ms` } as CSSProperties}
-      />
+        refEl={carimbo}
+      >
+        {ativo && p && <Respingo parametros={p} />}
+      </Carimbo>
+      {ativo && acerto && p && <Confete parametros={p} />}
     </div>
   );
+}
+
+/** AC-19.7: texto de ler do feedback; com tremida, entra depois dela (sem overshoot) e fica parado, por cima do confete. */
+function TextoLer({ className, juice, ordem, children }: { className?: string; juice: Juice; ordem: number; children: ReactNode }) {
+  const ativo = juice.intensidade !== 'desligada';
+  const ref = useRef<HTMLParagraphElement>(null);
+  useEfeito(ref, () => (ativo ? efeitoEntradaTexto(juice.parametros, escalaTela(), ordem) : null), [ativo]);
+  return <p ref={ref} className={cx(className, ativo && s.textoLer)} data-texto-ler={ativo || undefined}>{children}</p>;
+}
+
+/** AC-19.2: a tela treme na liberação do golpe, com decaimento; só a partir de Média. */
+function useTremida(juice: Juice) {
+  const ref = useRef<HTMLElement>(null);
+  const ativo = juice.intensidade !== 'desligada';
+  useEfeito(ref, () => (ativo ? efeitoTremida(juice.parametros, escalaTela()) : null), [ativo]);
+  return ref;
 }
 
 /**
  * Feedback (AC-4.1 a AC-4.3, AC-4.9, v12.0.0): o fundo da tela inteira diz o resultado (verde = acertou; vermelho = errou
  * ou tempo esgotado); no centro, o texto do resultado com o carimbo do veredito por cima; depois a explicação e a técnica.
+ * `sequencia` (v13.4.0, AC-19.5): acertos seguidos até aqui, do reducer; faz os efeitos crescerem e, a partir de 2, mostra
+ * "Sequência ×N". Não muda os pontos.
  */
-function TelaFeedbackBase({ noticia, resultado, pontos }: { noticia: Noticia; resultado: Resultado; pontos: number }) {
+function TelaFeedbackBase({ noticia, resultado, pontos, sequencia = 0 }: { noticia: Noticia; resultado: Resultado; pontos: number; sequencia?: number }) {
   const verdade = noticia.veredito === 'verdadeira';
+  const acerto = resultado === 'acerto';
+  const juice = useJuice(acerto ? sequencia : 0);
+  const ativo = juice.intensidade !== 'desligada';
+  const tela = useTremida(juice);
+  const liberacao = liberacaoMs(juice.parametros);
   return (
     <main
-      className={cx(s.tela, resultado === 'acerto' ? s.fbAcerto : s.fbErro)}
+      ref={tela}
+      className={cx(s.tela, acerto ? s.fbAcerto : s.fbErro)}
       data-veredito={verdade ? 'verdade' : 'mentira'}
       data-resultado={resultado}
     >
+      {acerto && juice.mostrarSequencia && (
+        <SeloSequencia sequencia={sequencia} efeito={efeitoPop(juice.parametros.popEscala, liberacao + 60, true)} />
+      )}
       <div className={s.feedback}>
-        <NucleoFeedback texto={TEXTO_RESULTADO[resultado]} verdade={verdade} />
-        <p className={s.explicacao}>{noticia.explicacao}</p>
-        <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
+        <NucleoFeedback texto={TEXTO_RESULTADO[resultado]} verdade={verdade} acerto={acerto} juice={juice} />
+        <TextoLer className={s.explicacao} juice={juice} ordem={0}>{noticia.explicacao}</TextoLer>
+        <TextoLer className={s.tecnica} juice={juice} ordem={1}>{TECNICA_ROTULO[noticia.tecnica]}</TextoLer>
       </div>
-      <Placar pontos={pontos} />
+      <Placar pontos={pontos} pop={ativo && acerto ? efeitoPop(juice.parametros.popEscala, liberacao) : null} />
     </main>
   );
 }
@@ -538,18 +625,22 @@ export function TelaFeedbackTutorial({ noticia, resposta, modo, treino }: {
 }) {
   const verdade = noticia.veredito === 'verdadeira';
   const t = feedbackTutorial(modo, resposta, noticia.veredito);
+  // v13.4.0: os mesmos efeitos do resultado (AC-19.2 a AC-19.4); o treino não conta na sequência (AC-19.5).
+  const juice = useJuice(0);
+  const tela = useTremida(juice);
   return (
     <main
+      ref={tela}
       className={cx(s.tela, t.acertou ? s.fbAcerto : s.fbErro)}
       data-veredito={verdade ? 'verdade' : 'mentira'}
       data-resultado={t.acertou ? 'treino-acerto' : 'treino-erro'}
     >
       <div className={s.feedback}>
-        <NucleoFeedback texto={t.selo} verdade={verdade} />
-        <p className={s.explicacao}>{t.escolha}</p>
-        <p className={s.explicacao}>{t.certo}</p>
-        <p className={s.explicacao}>{noticia.explicacao}</p>
-        <p className={s.tecnica}>{TECNICA_ROTULO[noticia.tecnica]}</p>
+        <NucleoFeedback texto={t.selo} verdade={verdade} acerto={t.acertou} juice={juice} />
+        <TextoLer className={s.explicacao} juice={juice} ordem={0}>{t.escolha}</TextoLer>
+        <TextoLer className={s.explicacao} juice={juice} ordem={1}>{t.certo}</TextoLer>
+        <TextoLer className={s.explicacao} juice={juice} ordem={2}>{noticia.explicacao}</TextoLer>
+        <TextoLer className={s.tecnica} juice={juice} ordem={3}>{TECNICA_ROTULO[noticia.tecnica]}</TextoLer>
       </div>
       <MarcaTreino treino={treino} />
     </main>
@@ -631,7 +722,8 @@ function ListaRodada({ linhas }: { linhas: readonly LinhaResumo[] }) {
  * Resumo (AC-5.1, opção B da prévia v11): polaroid de 384 (AC-13.2), placar, mensagem da faixa (AC-5.7), o cartão do
  * QR das fontes (AC-5.9) e a lista da rodada (AC-5.8). `foto`: quadro da câmera do meio da partida (FR-13), com as
  * âncoras do rosto (AC-13.6); sem ela, o resumo fica sem polaroid (AC-13.3). `maiorSequencia` (v13.4.0, AC-19.6): a
- * maior sequência de acertos, em qualquer intensidade dos efeitos (AC-19.8); por enquanto só o texto, sem acabamento.
+ * maior sequência de acertos, em qualquer intensidade dos efeitos (AC-19.8), na linha do placar, com a estrela do selo
+ * "Sequência ×N" do feedback; parada, como o resto do resumo.
  */
 function TelaResumoBase({ pontos, total, maiorSequencia, foto, ancoras, linhas = [], enderecoQr }: {
   pontos: number;
@@ -655,7 +747,10 @@ function TelaResumoBase({ pontos, total, maiorSequencia, foto, ancoras, linhas =
               <p className={s.placar}>{`${pontos} de ${total}`}</p>
               <p className={s.mensagemResumo} data-mensagem-resumo>{mensagemResumo(pontos, total)}</p>
               {maiorSequencia !== undefined && (
-                <p data-maior-sequencia={maiorSequencia}>{`Maior sequência: ${maiorSequencia}`}</p>
+                <p className={s.maiorSequencia} data-maior-sequencia={maiorSequencia}>
+                  <span className={s.maiorSequenciaDisco} aria-hidden="true"><Forma id="marca-estrela-4" largura={18} /></span>
+                  {`Maior sequência: ${maiorSequencia}`}
+                </p>
               )}
             </div>
             {enderecoQr && (

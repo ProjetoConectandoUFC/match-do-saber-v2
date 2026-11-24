@@ -1,0 +1,38 @@
+/* Juice, etapa 1 (v13.4.0, Story 19, FR-21): peças dos efeitos. Só `transform` e `opacity` animam (Web Animations, em
+   EfeitosJuice.tsx/quadrosJuice.ts); nada aqui anima sombra, blur ou filtro. Sem Web Animations, tudo fica no estado final. */
+
+/* Confete (AC-19.3): um ponto sem tamanho no centro do núcleo do resultado, atrás do texto (z-index -1 no núcleo isolado);
+   a explicação e a técnica ficam por cima (AC-19.7). */
+.confete { position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: -1; pointer-events: none; }
+.particula { position: absolute; display: block; opacity: 0; }
+.fita { width: calc(10 * var(--u)); height: calc(24 * var(--u)); margin: calc(-12 * var(--u)) 0 0 calc(-5 * var(--u)); border-radius: calc(2 * var(--u)); }
+.bolinha { width: calc(14 * var(--u)); height: calc(14 * var(--u)); margin: calc(-7 * var(--u)) 0 0 calc(-7 * var(--u)); border-radius: 50%; }
+/* Estrela de 4 pontas e triângulo: os marcadores do design system, recortados (o recorte não anima). */
+.estrela { width: calc(24 * var(--u)); height: calc(24 * var(--u)); margin: calc(-12 * var(--u)) 0 0 calc(-12 * var(--u)); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); }
+.triangulo { width: calc(18 * var(--u)); height: calc(16 * var(--u)); margin: calc(-8 * var(--u)) 0 0 calc(-9 * var(--u)); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.amarelo { background: var(--cn-amarelo); }
+.creme { background: var(--cn-creme); }
+.noite { background: var(--cn-noite); }
+
+/* Respingo (AC-19.2): dentro do carimbo, num ponto no centro dele; as gotas herdam o fundo (menta ou coral) e levam o
+   contorno da tinta (noite ou tinta), para aparecer também sobre o vermelho do erro. */
+.respingo { position: absolute; left: 50%; top: 50%; width: 0; height: 0; background: inherit; pointer-events: none; }
+.gota { --t: 10; position: absolute; display: block; box-sizing: border-box; width: calc(var(--t) * var(--u)); height: calc(var(--t) * var(--u)); margin: calc(var(--t) * var(--u) / -2) 0 0 calc(var(--t) * var(--u) / -2); border-radius: 50%; background: inherit; border: calc(2.5 * var(--u)) solid currentColor; opacity: 0; }
+.alongada { width: calc(var(--t) * 1.7 * var(--u)); margin-left: calc(var(--t) * 1.7 * var(--u) / -2); }
+
+/* Letras de "Acertou!" em cascata (AC-19.3): cada uma é um bloco que pode crescer e girar sem mexer nas outras. */
+.letra { display: inline-block; transform-origin: 50% 80%; }
+
+/* Sequência ×N (AC-19.5): selo amarelo no alto, centrado, acima do resultado; cresce 5% por nível até o teto. */
+.sequencia {
+  --nivel: 0;
+  position: absolute; z-index: 2; top: calc(66 * var(--u)); left: 50%;
+  translate: -50% 0; scale: calc(1 + 0.06 * var(--nivel)); transform-origin: 50% 50%;
+  display: inline-flex; align-items: center; gap: calc(10 * var(--u)); margin: 0;
+  padding: calc(5 * var(--u)) calc(24 * var(--u)) calc(5 * var(--u)) calc(7 * var(--u));
+  border-radius: var(--raio-pilula); border: 2px solid var(--cn-noite);
+  background: var(--cn-amarelo); color: var(--cn-noite);
+  box-shadow: calc(6 * var(--u)) calc(6 * var(--u)) 0 var(--cn-noite);
+  font-size: calc(30 * var(--u)); font-weight: 900; line-height: 1.2; white-space: nowrap;
+}
+.sequenciaDisco { display: grid; place-items: center; width: calc(40 * var(--u)); height: calc(40 * var(--u)); border-radius: 50%; background: var(--cn-noite); color: var(--cn-amarelo); flex: none; }

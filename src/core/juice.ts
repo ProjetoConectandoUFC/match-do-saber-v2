@@ -54,6 +54,8 @@ export interface ParametrosJuice {
  * FR-21: a tabela. Limites da spec: hit-stop ~80 ms em Média (AC-19.2); tremida Baixa 0, Média ≤ 6 px, Alta ≤ 12 px,
  * ≤ 300 ms (AC-19.2); nenhum confete em Baixa e tudo some em ≤ 1,2 s (AC-19.1, AC-19.3); "não" ≤ 400 ms (AC-19.4);
  * Desligada = a tela da v13.3.0 (AC-19.8). Os demais números são o ponto de partida para o teste no jogo.
+ * Ajuste à vista (Fase 54.4, capturas em docs/visual/capturas/v13-juice/): confete Média 28 → 36 partículas e alcance
+ * 260 → 300 px, Alta 56 → 64 e 380 → 400 px, para o confete ler na TV a ~2 m (cada partícula some antes de 1,2 s).
  */
 export const JUICE: Record<Intensidade, ParametrosJuice> = {
   desligada: {
@@ -70,13 +72,13 @@ export const JUICE: Record<Intensidade, ParametrosJuice> = {
   },
   media: {
     hitStopMs: 80, carimboOvershoot: 1.18, tremidaPx: 6, tremidaMs: 250, respingoGotas: 10, baque: true,
-    cascata: true, cascataPassoMs: 40, confetes: 28, confeteAlcancePx: 260, confeteMs: 1000, popEscala: 1.18,
+    cascata: true, cascataPassoMs: 40, confetes: 36, confeteAlcancePx: 300, confeteMs: 1000, popEscala: 1.18,
     naoPx: 10, naoMs: 350, amassarEscala: 0.95, amassarGraus: 3,
     sequenciaVisivel: true, semitonsPorNivel: 1,
   },
   alta: {
     hitStopMs: 110, carimboOvershoot: 1.3, tremidaPx: 12, tremidaMs: 300, respingoGotas: 16, baque: true,
-    cascata: true, cascataPassoMs: 45, confetes: 56, confeteAlcancePx: 380, confeteMs: 1200, popEscala: 1.3,
+    cascata: true, cascataPassoMs: 45, confetes: 64, confeteAlcancePx: 400, confeteMs: 1200, popEscala: 1.3,
     naoPx: 16, naoMs: 400, amassarEscala: 0.92, amassarGraus: 5,
     sequenciaVisivel: true, semitonsPorNivel: 1,
   },
