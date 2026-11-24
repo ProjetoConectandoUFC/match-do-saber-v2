@@ -1,5 +1,6 @@
 import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision';
 import { descreverAceleracao, type Aceleracao } from '../core/diagnostico';
+import { esperaOcupada, lerDeteccaoFalsa, poseFalsa } from '../core/deteccaoFalsa';
 import type { Pose } from '../core/gestos';
 
 export interface Rastreador {
@@ -24,6 +25,15 @@ function renderizadorWebgl(): string | null {
 }
 
 export async function criarRastreador(): Promise<Rastreador> {
+  // Fase 52.1 (v13.3.0): só nos E2E de cadência, uma detecção falsa de duração conhecida.
+  const falsa = lerDeteccaoFalsa(globalThis);
+  if (falsa) {
+    return {
+      aceleracao: { software: false, texto: `detecção falsa (${falsa.ms} ms)` },
+      detectar() { esperaOcupada(falsa.ms); return [poseFalsa()]; },
+      fechar() {},
+    };
+  }
   const base = import.meta.env.BASE_URL;
   const vision = await FilesetResolver.forVisionTasks(`${base}mediapipe/wasm`);
   const criar = (delegate: 'GPU' | 'CPU') =>

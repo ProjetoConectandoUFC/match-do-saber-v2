@@ -7,7 +7,7 @@ const origem = `http://localhost:${porta}`;
 // Testes que medem tempo real com a detecção de pose rodando: só valem sozinhos na máquina.
 // Rodam num projeto próprio, depois de todos os outros, sem relaxar o critério de FR-1.
 // Para rodar só eles: `npx playwright test --project=em-serie-classica --project=em-serie-cartas --no-deps`.
-const EM_SERIE = /relogio-real\.spec\.ts/;
+const EM_SERIE = /(relogio-real|cadencia)\.spec\.ts/;
 // Só existem na interface Cartas (Story 17, FR-18): o fan.
 const SO_CARTAS = /fan\.spec\.ts/;
 

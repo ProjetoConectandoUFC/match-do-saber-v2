@@ -1,0 +1,76 @@
+import { expect, test, type Page } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
+
+// FR-20 / NFR Performance (v13.3.0, Fase 52): a tela não anda no ritmo da detecção de pose.
+// Câmera falsa do Chromium; a detecção é a falsa e lenta (60 ms síncronos), injetada antes de a página abrir.
+test.use({
+  launchOptions: { args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] },
+  permissions: ['camera'],
+});
+
+/** Intervalos entre quadros da tela (rAF) durante `ms`. */
+async function medirQuadros(page: Page, ms: number): Promise<number[]> {
+  return page.evaluate((duracao) => new Promise<number[]>((ok) => {
+    const intervalos: number[] = [];
+    let anterior = 0;
+    const inicio = performance.now();
+    const quadro = (agora: number) => {
+      if (anterior) intervalos.push(agora - anterior);
+      anterior = agora;
+      if (agora - inicio < duracao) requestAnimationFrame(quadro);
+      else ok(intervalos);
+    };
+    requestAnimationFrame(quadro);
+  }), ms);
+}
+
+function estatisticas(intervalos: number[]) {
+  const ord = [...intervalos].sort((a, b) => a - b);
+  const q = (f: number) => ord[Math.min(ord.length - 1, Math.floor(f * ord.length))]!;
+  return {
+    quadros: intervalos.length,
+    medianaMs: Number(q(0.5).toFixed(1)),
+    p95Ms: Number(q(0.95).toFixed(1)),
+    maxMs: Number(ord.at(-1)!.toFixed(1)),
+    acimaDe100: intervalos.filter((i) => i > 100).length,
+  };
+}
+
+async function abrirComDeteccao(page: Page, deteccao: { ms: number; onde?: string } | null) {
+  if (deteccao) await page.addInitScript((d) => { (window as unknown as { __mdsDeteccaoFalsa: unknown }).__mdsDeteccaoFalsa = d; }, deteccao);
+  await page.goto('/?diagnostico');
+  await expect(page.locator('video').first()).toBeVisible({ timeout: 30_000 });
+  const painel = page.getByRole('complementary', { name: 'Diagnóstico' });
+  // A detecção já está rodando quando o painel mostra o tempo dela.
+  await expect(painel).toContainText(/detecção: \d+ ms/, { timeout: 30_000 });
+  return painel;
+}
+
+async function irParaCarta(page: Page) {
+  await page.keyboard.press('Enter'); // abre a calibração
+  await page.keyboard.press('Enter'); // pula a calibração
+  await esperarCartaPousada(page);
+}
+
+test('NFR Performance (v13.3.0): com detecção de 60 ms, a tela fica a ≥ 50 fps (mediana ≤ 20 ms, nenhum > 100 ms)', async ({ page }) => {
+  test.setTimeout(90_000);
+  const painel = await abrirComDeteccao(page, { ms: 60 });
+  const espera = estatisticas(await medirQuadros(page, 3000));
+  await irParaCarta(page);
+  const carta = estatisticas(await medirQuadros(page, 4000));
+  console.log(`cadência (detecção falsa 60 ms) espera: ${JSON.stringify(espera)} carta: ${JSON.stringify(carta)}`);
+  console.log(`painel: ${(await painel.innerText()).split('\n').slice(0, 4).join(' | ')}`);
+  for (const e of [espera, carta]) {
+    expect(e.medianaMs).toBeLessThanOrEqual(20);
+    expect(e.acimaDe100).toBe(0);
+  }
+});
+
+test('medição (sem critério): cadência com o modelo de pose real nesta máquina', async ({ page }) => {
+  test.setTimeout(90_000);
+  const painel = await abrirComDeteccao(page, null);
+  await page.waitForTimeout(3000); // a primeira detecção do modelo real é lenta
+  const espera = estatisticas(await medirQuadros(page, 3000));
+  console.log(`cadência (modelo real) espera: ${JSON.stringify(espera)}`);
+  console.log(`painel: ${(await painel.innerText()).split('\n').slice(0, 4).join(' | ')}`);
+});
