@@ -1,7 +1,7 @@
 # Feature 001: Match do Saber — jogo de estande (MVP)
 
-**Status:** Approved (v13.3.0, performance, escopo pedido pelo responsável em 2026-11-24 ("faça todas as alterações de performance"); v13.2.0, troca de interface para o teste A/B, aprovada pelo responsável em 2026-11-17; v12.0.0 aprovada pelo responsável em 2026-11-12; v12.0.1 e v12.0.2 só corrigem coerência e layout; v12.1.0, robustez para o teste com público de 2026-11-18, escopo aprovado pelo responsável em 2026-11-16; v13.0.0: escopo e tempos confirmados pelo responsável em 2026-11-13; v13.1.0: decisões sobre a prévia v13, no mesmo dia). **Integração (2026-11-17):** a v13 (cartas e fan), escrita sobre a v12.0.2 numa branch de experimento, entra na `develop` por decisão do responsável (revoga a de 2026-11-16, "só na branch") para o teste A/B de 2026-11-18; vale sobre a v12.1.0, e tudo o que a v12.1.0 mudou continua valendo. A troca entre a interface clássica (v12.1) e as cartas (v13.1) fica para a v13.2.0.
-**Version:** 13.3.0
+**Status:** Approved (v13.4.0, juice etapa 1 e Cartas como padrão, decisões do responsável em 2026-11-24; v13.3.0, performance, escopo pedido pelo responsável em 2026-11-24 ("faça todas as alterações de performance"); v13.2.0, troca de interface para o teste A/B, aprovada pelo responsável em 2026-11-17; v12.0.0 aprovada pelo responsável em 2026-11-12; v12.0.1 e v12.0.2 só corrigem coerência e layout; v12.1.0, robustez para o teste com público de 2026-11-18, escopo aprovado pelo responsável em 2026-11-16; v13.0.0: escopo e tempos confirmados pelo responsável em 2026-11-13; v13.1.0: decisões sobre a prévia v13, no mesmo dia). **Integração (2026-11-17):** a v13 (cartas e fan), escrita sobre a v12.0.2 numa branch de experimento, entra na `develop` por decisão do responsável (revoga a de 2026-11-16, "só na branch") para o teste A/B de 2026-11-18; vale sobre a v12.1.0, e tudo o que a v12.1.0 mudou continua valendo. A troca entre a interface clássica (v12.1) e as cartas (v13.1) fica para a v13.2.0.
+**Version:** 13.4.0
 **Created:** 2026-10-26
 **Last Updated:** 2026-11-24
 **Branch:** `001-jogo-estande`
@@ -43,6 +43,7 @@
 | 13.1.0 | 2026-11-13 | Decisões do responsável sobre a prévia v13 (`docs/visual/previa-v13.html`): a carta de treino mantém a frase do perfil na frente, porque não tem verso (AC-17.1); o fan abre sempre no mesmo ângulo, espaçando as cartas pela quantidade, para continuar visível até a última (AC-17.3); a carta distribuída é a da ponta direita do fan, que sobe em arco (AC-17.6); a letra do verso pode descer até 20 px, e o editor e o painel Questões **avisam**, sem bloquear, quando `saiba_mais` passa de 250 caracteres (AC-17.2, AC-7.13 novo); as notícias atuais não são reescritas (15 das 16 passam do limite). |
 | 13.2.0 | 2026-11-17 | Teste A/B com público em 2026-11-18, por decisão do responsável (Levi): as duas interfaces no mesmo app, com o mesmo sistema. **Interface do jogo** nos Ajustes: **Clássica** (padrão; a da v12.1.0: card com pilha, sem fan, sem abertura nem distribuição, "saiba mais" dentro do card) ou **Cartas** (a da v13.1.0: carta de baralho, verso, fan, abertura e distribuição); tecla **I** na espera alterna; a espera mostra a interface ativa (Story 18, FR-19, AC-18.1 a AC-18.7). Iguais nas duas: banco, sorteio, quantidade, tempos do card e do feedback, gestos, sensibilidade e robustez, feedback com carimbo, resumo, foto, QR e tutorial; nas Cartas a abertura e a distribuição **somam** ao tempo e nunca descontam. AC-2.13 nas Cartas vale a partir da carta pousada. O aviso de `saiba_mais` acima de 250 caracteres (AC-7.13) aparece nas duas. Sem registro de dados de partida (decisão do responsável: a comparação é por observação). As cartas deixam de ser experimento de branch: entram na develop atrás da troca. |
 | 13.3.0 | 2026-11-24 | Performance, depois do teste com público de 2026-11-18 (app desktop num notebook Ryzen sem placa de vídeo dedicada, cravado em 15 fps: a detecção de pose roda síncrona dentro do laço de desenho e tudo anda no ritmo dela). **A tela deixa de andar no ritmo da detecção** (NFR Performance reescrito, FR-20 novo, Fase 52): a detecção roda fora do laço de desenho (num Web Worker quando o ambiente permitir; senão, num ritmo próprio que nunca bloqueia dois quadros seguidos), entrega a leitura mais recente, e o laço de desenho avança relógio, animações e reducer a cada quadro da tela. Incorpora a performance rápida de 2026-11-23 (PR #16: GPU fora da lista de bloqueio no Electron, câmera em 640×360, aceleração no Diagnóstico). Menos trabalho por quadro: o React não redesenha a árvore inteira a cada tick. O Diagnóstico separa quadros da tela e detecções por segundo. Nenhuma regra de jogo, tempo, gesto ou interface muda. |
+| 13.4.0 | 2026-11-24 | Decisões do responsável (Levi) depois do teste de 18/11, que só usou as Cartas. **Cartas como padrão** (AC-18.1 reescrito): a Clássica fica no app, escondida no fim do painel (pesa ~4,6 KB no build, medido em 2026-11-24), e sai dos E2E (os testes unitários continuam nas duas). **Juice, etapa 1** (Story 19, FR-21, AC-19.1 a AC-19.9), referência: a "satisfação" do Balatro (cada ação mexe a interface: overshoot, tremida, mudança de tamanho e rotação, movimento fluido de mola): ajuste **"Intensidade dos efeitos"** (Desligada, Baixa, **Média** padrão, Alta; com "reduzir movimento" do sistema, no máximo Baixa); **carimbo** com hit-stop, overshoot, tremida de tela, respingo e baque; **acerto** com letras em cascata, confete e "pop" no placar; **erro** com tremida de "não" e a carta amassando; **sequência** de acertos com efeitos e tom crescentes e "Maior sequência" no resumo, sem mudar a pontuação. Legibilidade e desempenho são limites: o texto a ler fica parado, nada pisca mais de 3 vezes por segundo, só `transform`/`opacity`, e a cadência da tela da v13.3.0 vale com a intensidade Alta. Próximas etapas (fora desta versão): carta que segue o corpo com mola e inclinação pela velocidade, anel de permanência, fan que "percebe" quem chega, resumo em cascata. |
 
 ---
 
@@ -384,7 +385,7 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 
 **Acceptance criteria:**
 
-- [ ] **AC-18.1** Given a tela de espera When o operador abre os Ajustes Then o primeiro item do painel é "Interface do jogo", com as opções **Clássica** (padrão) e **Cartas**, marcada a atual; a escolha fica guardada como os demais ajustes (AC-9.5) e "Restaurar padrão" volta para Clássica.
+- [ ] **AC-18.1** Given a tela de espera When o operador abre os Ajustes Then o primeiro item do painel é "Interface do jogo", com as opções **Cartas** (padrão desde a v13.4.0) e **Clássica**, marcada a atual; a escolha fica guardada como os demais ajustes (AC-9.5) e "Restaurar padrão" volta para Cartas. (v13.4.0: a Clássica fica no fim da lista de opções, mantida só como reserva; até a v13.3.0 o padrão era Clássica.)
 - [ ] **AC-18.2** Given a tela de espera, sem menu nem painel aberto When o operador pressiona **I** Then a interface alterna entre Clássica e Cartas, fica guardada e a espera mostra a nova escolha na hora; fora da espera a tecla I não faz nada.
 - [ ] **AC-18.3** Given a tela de espera When ela aparece Then mostra, junto do resumo dos ajustes (AC-9.2), "Interface: Clássica" ou "Interface: Cartas", legível para o operador a 1 m; com Cartas, a espera tem o fan respirando (AC-17.4); com Clássica, não tem fan.
 - [ ] **AC-18.4** Given a interface Clássica When uma partida acontece Then o jogo se comporta exatamente como na v12.1.0: sem tela de abertura e sem distribuição (o card aparece e o cronômetro começa na hora), card com a pilha atrás (AC-2.12 da v11.0.0), descrição e dica de "saiba mais" no card, "saiba mais" trocando o conteúdo dentro do card, sem som de carta.
@@ -392,6 +393,26 @@ Estudantes do ensino médio e jovens adultos recebem o tempo todo notícias com 
 - [ ] **AC-18.6** Given qualquer das duas interfaces When a mesma configuração de Ajustes é usada Then são iguais: o banco e as notícias jogáveis, o sorteio e a quantidade, o tempo do card e o do feedback (a abertura e a distribuição das Cartas somam e não descontam), gestos, sensibilidade, tolerância e robustez (v12.1.0), feedback com fundo verde/vermelho e carimbo, resumo, foto, QR e tutorial (os mesmos perfis).
 - [ ] **AC-18.7** Given uma partida em andamento When alguém tenta trocar a interface Then nada muda até a partida terminar ou ser encerrada: a troca só vale na espera e para a próxima partida.
 
+
+### Story 19: Sentir cada ação — juice, etapa 1 (adicionado v13.4.0)
+
+**As a** jogador
+**I want** que a interface reaja viva e satisfatória a cada escolha e a cada resultado
+**So that** um jogo analítico também seja gostoso de jogar e de assistir no estande
+
+**Acceptance criteria:**
+
+- [ ] **AC-19.1** Given o painel Ajustes When o operador muda "Intensidade dos efeitos" (Desligada, Baixa, Média, Alta; padrão **Média**; logo abaixo de "Interface do jogo") Then os efeitos de AC-19.2 a AC-19.5 passam a usar essa escala na hora; a escolha fica guardada; "Restaurar padrão" volta para Média; com `prefers-reduced-motion` do sistema, a intensidade efetiva é no máximo Baixa (sem tremida de tela e sem confete), qualquer que seja a escolha.
+- [ ] **AC-19.2** Given a carimbada do feedback (AC-4.9) When o carimbo bate Then, com intensidade acima de Desligada: a carta e o fan congelam por um instante (hit-stop, ~80 ms em Média), o carimbo cai com overshoot (passa do tamanho final e volta, como uma mola), a tela treme e a tremida decai (amplitude por intensidade: Baixa 0, Média até 6 px, Alta até 12 px; duração ≤ 300 ms), um respingo de tinta na cor do carimbo sai em volta, e soa um baque. O hit-stop é só visual: o relógio do jogo não para, e a duração total da carimbada continua somando ao tempo do feedback (regra "animação soma").
+- [ ] **AC-19.3** Given um acerto When o feedback aparece Then as letras de "Acertou!" entram em cascata, cada uma com overshoot; um confete na cor de acerto sai do centro (quantidade e alcance por intensidade; nenhum confete em Baixa; tudo some em ≤ 1,2 s); o placar dá um "pop" de escala ao somar o ponto.
+- [ ] **AC-19.4** Given um erro ou tempo esgotado When o feedback aparece Then a carta treme na horizontal como um "não" (amortecida, ≤ 400 ms) e "amassa" de leve (escala e inclinação) antes de sair; "Errou"/"Tempo esgotado" entram sem cascata alegre; nada pisca.
+- [ ] **AC-19.5** Given acertos seguidos na partida When o jogador acerta de novo Then a sequência sobe (acerto +1; erro ou tempo esgotado zera); a partir de 2 aparece "Sequência ×N" com um pop; o confete, o pop do placar e a tremida crescem com N até um teto em N = 5; o som de acerto sobe um semitom por nível até o teto. A sequência **não** muda a pontuação (FR-5: +1 por acerto). O treino do tutorial não conta.
+- [ ] **AC-19.6** Given o resumo da partida When ele aparece Then mostra também "Maior sequência: N" (só na memória, apagado com a partida, como o resto do resumo).
+- [ ] **AC-19.7** Given qualquer intensidade When o jogador precisa ler (manchete da carta, verso, explicação e técnica do feedback, lista do resumo) Then esse texto fica parado depois de entrar: nenhum efeito contínuo, tremida ou confete passa por cima dele de forma a impedir a leitura, e nada na tela pisca mais de 3 vezes por segundo.
+- [ ] **AC-19.8** Given a intensidade Desligada When a partida acontece Then a tela é a da v13.3.0 (carimbada básica de AC-4.9, cores do feedback), sem hit-stop, tremida, respingo, confete, cascata, pop nem sequência na tela; o resumo ainda mostra a maior sequência.
+- [ ] **AC-19.9** Given a intensidade Alta e a detecção falsa de 60 ms do E2E de cadência (v13.3.0) When uma partida com acertos seguidos e erros acontece Then a tela mantém a mediana de no máximo 20 ms entre quadros e nenhum quadro acima de 100 ms causado pelos efeitos.
+
+## Functional Requirements
 
 ### FR-1: Fluxo de estados da partida
 
@@ -671,6 +692,21 @@ Referências do responsável: um leque de baralho aberto na mão (o fan) e carta
 **Must not:**
 - Mudar regra de jogo, tempo, limiar de gesto, interface ou o que é guardado.
 - Deixar a detecção ou o worker rodando com o painel de Ajustes/menu aberto além do que já roda hoje (a câmera continua aberta; os gestos continuam ignorados, FR-14).
+
+### FR-21: Juice — efeitos de reação (adicionado v13.4.0)
+
+**Must:**
+- Guardar "Intensidade dos efeitos" com os Ajustes (`desligada` | `baixa` | `media` | `alta`, padrão `media`) e aplicar o teto de `prefers-reduced-motion` (AC-19.1).
+- Centralizar os parâmetros de cada efeito por intensidade numa tabela pura em `src/core/` (ex.: `juice.ts`: duração do hit-stop, amplitude e decaimento da tremida, quantidade de confete, escala do pop, teto da sequência, semitons), testável sem React.
+- Animar só `transform` e `opacity` (Web Animations ou CSS), com molas/overshoot por curvas (`cubic-bezier` com overshoot ou `linear()` de mola), e partículas num único elemento/camada, sem animar sombra, blur ou filtro.
+- Calcular a sequência no reducer a partir dos resultados da partida (lógica pura), sem mudar a pontuação.
+- Valer nas duas interfaces (a Clássica recebe os mesmos efeitos de feedback, sem prioridade de acabamento).
+
+**Must not:**
+- Parar ou alongar o relógio do jogo por causa de um efeito visual (o hit-stop é só da tela).
+- Mexer no texto que o jogador está lendo (AC-19.7) nem piscar mais de 3 vezes por segundo.
+- Guardar a sequência ou qualquer dado de partida além do resumo em memória.
+
 
 ## Non-Functional Requirements
 

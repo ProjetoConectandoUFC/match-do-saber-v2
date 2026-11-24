@@ -5574,6 +5574,27 @@ Spec: NFR Performance (v13.3.0), FR-20, AC-2.x/AC-9.x de gestos (sem regressão)
 - 52.7 `numPoses`: medir o custo de 3 × 2 × 1 no Diagnóstico; só mudar se o ganho for grande e o rastreamento do jogador central (AC-1.5) continuar coberto pelos testes; senão, manter 3 e registrar os números.
 - 52.8 Verificação: `npm test`, `npm run build`, E2E web nas duas interfaces, `e2e:desktop`, e o E2E novo de cadência (detecção falsa de 60 ms → mediana ≤ 20 ms entre quadros da tela, nenhum quadro > 100 ms por causa da detecção). Versão 13.3.0.
 
+## Phase 53 (added v13.4.0): Cartas como padrão e Clássica fora do E2E
+
+Spec: AC-18.1 (v13.4.0), FR-19. Agente: agente-mecanico.
+
+- 53.1 `ajustes.ts`: padrão da interface = Cartas; Clássica por último na lista; "Restaurar padrão" → Cartas; teste.
+- 53.2 `playwright.config.ts`: só o projeto `cartas` (e o `relogio-real` em série nas Cartas); E2E que eram só da Clássica saem; os testes unitários seguem nas duas interfaces (`describe.each`).
+- 53.3 E2E de AC-18.x ajustado: a espera abre em "Interface: Cartas"; a tecla I ainda alterna.
+
+## Phase 54 (added v13.4.0): Juice, etapa 1 — carimbo, resultado, sequência e intensidade
+
+Spec: Story 19 (AC-19.1 a AC-19.9), FR-21, AC-4.9, AC-5.x (resumo), FR-5, FR-11. Agentes: agente-mecanico (54.1, 54.2, 54.7) e agente-visual (54.3 a 54.6), na mesma branch, um depois do outro. Depende da Fase 52 (tela fora do ritmo da detecção). Teste direto no jogo (sem prévia HTML, decisão do responsável).
+
+- 54.1 `src/core/juice.ts` (puro): tabela de parâmetros por intensidade e teto de `prefers-reduced-motion`; Ajuste "Intensidade dos efeitos" (`ajustes.ts`, painel, Restaurar padrão).
+- 54.2 Reducer: sequência (acertos seguidos, zera em erro/tempo, treino não conta) e maior sequência no resumo, sem mudar pontos; testes de fronteira; a carimbada continua somando.
+- 54.3 Carimbo: hit-stop visual, overshoot de mola, tremida de tela com decaimento (camada de topo com `transform`), respingo de tinta.
+- 54.4 Acerto: cascata das letras, confete (camada única de partículas), pop do placar; "Sequência ×N".
+- 54.5 Erro e tempo esgotado: tremida de "não" e carta que amassa.
+- 54.6 Sons: baque do carimbo e acerto com tom crescente pela sequência (`audio.ts`, respeitando som e volume).
+- 54.7 Testes: componentes (efeitos presentes/ausentes por intensidade e com `prefers-reduced-motion`), E2E de feedback com sequência, E2E de cadência com intensidade Alta (AC-19.9), capturas em `docs/visual/capturas/v13-juice/`.
+
+
 ## Quickstart Validation
 
 ```bash
@@ -5679,3 +5700,5 @@ npm run dev              # abre http://localhost:5173, permitir câmera
 | 12.1.0 | 50 | Adicionada: robustez para o teste com público (gestos, ausência, calibração, câmera, laço, repouso, desktop) |
 | 13.2.0 | 51 | Adicionada: troca de interface (Clássica × Cartas) para o teste A/B |
 | 13.3.0 | 52 | Adicionada: performance — detecção fora do laço de desenho (worker), menos re-render e Diagnóstico separado |
+| 13.4.0 | 53 | Adicionada: Cartas como padrão e Clássica fora do E2E |
+| 13.4.0 | 54 | Adicionada: juice etapa 1 (carimbo, resultado, sequência, intensidade) |
