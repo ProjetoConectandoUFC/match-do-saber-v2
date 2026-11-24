@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { esperarCartaPousada } from './carta';
 
 // AC-2.6/AC-4.5 (v10.0.0): a prévia da câmera é uma camada sobreposta no canto inferior direito;
 // o card continua centralizado na área de jogo como se ela não existisse.
@@ -39,6 +40,9 @@ for (const vp of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) 
     await page.keyboard.press('Enter');                               // pula a calibração (AC-1.8)
     const card = page.locator('article');
     await expect(card).toBeVisible();
+    // Cartas (AC-17.6): mede com a carta já pousada. Com a detecção fora do laço de desenho (FR-20, v13.3.0), a carta
+    // está de fato voando do fan quando aparece; antes, a detecção síncrona travava a tela e escondia esta corrida.
+    await esperarCartaPousada(page);
 
     const p = (await previa.boundingBox())!;
     expect(p.x + p.width).toBeGreaterThan(vp.width * 0.95);            // canto inferior direito
