@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import type { Aceleracao, PontoMedido, Registro } from '../core/diagnostico';
 import { MODO_ROTULO } from '../core/modos';
 import s from './App.module.css';
@@ -16,7 +16,7 @@ function textoAceleracao(a: Aceleracao): string {
 
 /** Painel do modo de diagnóstico (FR-12, AC-12.3); atualiza a cada 500 ms. */
 /** `aceleracao`: onde a detecção roda (performance, 23/11); ⚠ quando está na CPU. */
-export function PainelDiagnostico({ registro, onBaixar, aceleracao }: { registro: Registro; onBaixar: () => void; aceleracao?: Aceleracao | null }) {
+function PainelDiagnosticoBase({ registro, onBaixar, aceleracao }: { registro: Registro; onBaixar: () => void; aceleracao?: Aceleracao | null }) {
   const [agora, setAgora] = useState(() => performance.now());
   useEffect(() => {
     const id = setInterval(() => setAgora(performance.now()), 500);
@@ -44,3 +44,6 @@ export function PainelDiagnostico({ registro, onBaixar, aceleracao }: { registro
     </aside>
   );
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+export const PainelDiagnostico = memo(PainelDiagnosticoBase);

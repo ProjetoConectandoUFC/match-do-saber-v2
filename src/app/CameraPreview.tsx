@@ -1,10 +1,10 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { memo, useEffect, useRef, type RefObject } from 'react';
 import type { Pose } from '../core/gestos';
 import s from './App.module.css';
 
 const OSSOS: [number, number][] = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24]];
 
-export function CameraPreview({ videoRef, poseRef, visivel }: {
+function CameraPreviewBase({ videoRef, poseRef, visivel }: {
   videoRef: RefObject<HTMLVideoElement>;
   poseRef: RefObject<Pose | null>;
   visivel: boolean;
@@ -44,3 +44,6 @@ export function CameraPreview({ videoRef, poseRef, visivel }: {
     </div>
   );
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+export const CameraPreview = memo(CameraPreviewBase);

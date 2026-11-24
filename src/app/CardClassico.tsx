@@ -1,4 +1,4 @@
-import { useRef, type RefObject } from 'react';
+import { memo, useRef, type RefObject } from 'react';
 import { DICA_GESTOS, DICA_SAIBA_MAIS, type ModoJogo } from '../core/modos';
 import type { Noticia } from '../core/types';
 import { Forma } from './Forma';
@@ -12,11 +12,14 @@ import c from './CardClassico.module.css';
  * Imagem do card clássico (FR-4): a da notícia; senão, a ilustração "recorte chapado" dela; senão, a do tema (com o chip
  * do nome). Treino (AC-15.7): o desenho do próprio perfil, maior; sem ele, a do tema.
  */
-function ImagemCardClassico({ noticia, treino }: { noticia: Noticia; treino?: PassoTreino }) {
+function ImagemCardClassicoBase({ noticia, treino }: { noticia: Noticia; treino?: PassoTreino }) {
   if (treino?.ilustracao) return <img className={c.imagemPerfil} src={ilustracaoDoPerfil(treino.ilustracao)} alt="" draggable={false} />;
   if (noticia.imagem) return <img src={src(noticia.imagem)} alt="" draggable={false} />;
   return <IlustracaoTema tema={noticia.tema} imagem={ilustracaoDaNoticia(noticia.id)} />;
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+const ImagemCardClassico = memo(ImagemCardClassicoBase);
 
 /**
  * Interface Clássica (v13.2.0, AC-18.4, FR-19): o card da v12.1.0, com a pilha atrás (AC-2.12 da v11.0.0), a descrição e

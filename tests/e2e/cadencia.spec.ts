@@ -94,3 +94,26 @@ test('medição (sem critério): cadência com o modelo de pose real nesta máqu
   console.log(`cadência (modelo real) espera: ${JSON.stringify(espera)}`);
   console.log(`painel: ${await linhasPainel(painel)}`);
 });
+
+test('medição (sem critério, Fase 52.5): trabalho da thread principal por quadro na carta e no feedback', async ({ page }) => {
+  test.setTimeout(90_000);
+  await abrirComDeteccao(page, { ms: 60 });
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Performance.enable');
+  const metricas = async () => Object.fromEntries(
+    ((await cdp.send('Performance.getMetrics')).metrics as { name: string; value: number }[]).map((m) => [m.name, m.value]),
+  );
+  const medir = async (rotulo: string, ms: number) => {
+    const a = await metricas();
+    const quadros = (await medirQuadros(page, ms)).length;
+    const b = await metricas();
+    const porQuadro = (k: string) => Number((((b[k]! - a[k]!) * 1000) / quadros).toFixed(2));
+    console.log(`trabalho por quadro (${rotulo}, ${quadros} quadros): script ${porQuadro('ScriptDuration')} ms · estilo ${porQuadro('RecalcStyleDuration')} ms · layout ${porQuadro('LayoutDuration')} ms · tarefas ${porQuadro('TaskDuration')} ms`);
+  };
+  await medir('espera', 3000);
+  await irParaCarta(page);
+  await medir('carta', 3000);
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(800); // saída da carta e carimbada
+  await medir('feedback', 2000);
+});

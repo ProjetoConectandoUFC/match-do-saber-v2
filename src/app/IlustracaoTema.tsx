@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { ReactNode } from 'react';
 import { TEMA_ROTULO, type Tema } from '../core/types';
 import { Forma, type IdForma } from './Forma';
@@ -203,7 +204,7 @@ export const tintaDoTema = (tema: Tema) => (ESCUROS.includes(tema) ? 'var(--cn-c
  * `imagem`: ilustração "recorte chapado" própria da notícia (v11.0.0, `./ilustracoes.ts`), 552 × 260, recortada na
  * faixa central de 552 × 156; sem ela, a composição de formas do tema.
  */
-export function IlustracaoTema({ tema, imagem, retrato }: { tema: Tema; imagem?: string; retrato?: boolean }) {
+function IlustracaoTemaBase({ tema, imagem, retrato }: { tema: Tema; imagem?: string; retrato?: boolean }) {
   // `retrato` (v13.0.0, AC-17.1): janela da carta, sem o chip com o nome (o naipe nos cantos faz esse papel).
   return (
     <div className={retrato ? s.ilustracaoCarta : s.ilustracaoTema} data-tema={tema} role="img" aria-label={`Tema: ${TEMA_ROTULO[tema]}`} style={{ background: COR[tema] }}>
@@ -212,3 +213,6 @@ export function IlustracaoTema({ tema, imagem, retrato }: { tema: Tema; imagem?:
     </div>
   );
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+export const IlustracaoTema = memo(IlustracaoTemaBase);

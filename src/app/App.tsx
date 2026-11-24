@@ -113,6 +113,11 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     }
   }, [cfg.abrir]);
   telaRef.current = estado.tela;
+  // FR-20 (v13.3.0): callbacks e listas estáveis, para os componentes memorizados não re-renderizarem a cada tick.
+  const sair = useCallback(() => despachar({ tipo: 'sair' }), [despachar]);
+  const baixarDiagnostico = useCallback(() => { if (diagnostico) baixarJson(diagnostico.exportar()); }, [diagnostico]);
+  const partidaResumo = estado.tela === 'resumo' ? estado.partida : null;
+  const linhasResumo = useMemo(() => (partidaResumo ? linhasDoResumo(partidaResumo.cards, partidaResumo.resultados) : []), [partidaResumo]);
   useSons(estado, cfg.ajustes.som, FATOR_VOLUME[cfg.ajustes.volume]); // AC-9.29
   // Foto do resumo (FR-13): só com a câmera ativa; fica só neste estado React, com as âncoras do rosto
   // calculadas pela pose do mesmo quadro (AC-13.6), que posicionam o filtro da faixa no resumo (AC-13.8, v11.0.0).
@@ -231,14 +236,14 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
     }
     case 'resumo': {
       // v11.0.0: filtro da faixa sobre a foto (AC-13.8), lista da rodada (AC-5.8) e QR só com os ids (AC-5.9).
-      const { cards, resultados } = estado.partida;
+      const { cards } = estado.partida;
       tela = (
         <TelaResumo
           pontos={pontos(estado.partida)}
           total={cards.length}
           foto={foto?.imagem}
           ancoras={foto?.ancoras}
-          linhas={linhasDoResumo(cards, resultados)}
+          linhas={linhasResumo}
           enderecoQr={cfg.ajustes.qrFontes ? enderecoFontes(URL_PUBLICA, cards.map((c) => c.id)) : undefined} // AC-9.29
         />
       );
@@ -259,7 +264,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       {camera === 'indisponivel' && estado.tela !== 'espera' && (
         <p className={s.faixa}>Câmera indisponível — use as setas</p>
       )}
-      {estado.tela !== 'espera' && <BotaoSair onSair={() => despachar({ tipo: 'sair' })} />}
+      {estado.tela !== 'espera' && <BotaoSair onSair={sair} />}
       {operador === 'noticias' && (
         <PainelNoticias repo={repo} estado={estadoBanco} onBancoAlterado={onBancoAlterado} onFechar={fecharOperador} />
       )}
@@ -287,7 +292,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
           onRevisar={cfg.revisar}
         />
       )}
-      {diagnostico && <PainelDiagnostico registro={diagnostico} aceleracao={aceleracao} onBaixar={() => baixarJson(diagnostico.exportar())} />}
+      {diagnostico && <PainelDiagnostico registro={diagnostico} aceleracao={aceleracao} onBaixar={baixarDiagnostico} />}
       {/* A prévia da câmera não aparece no resumo (AC-2.6, v10.0.0); o vídeo continua ligado para a foto. */}
       <CameraPreview videoRef={videoRef} poseRef={poseRef} visivel={camera === 'ativa' && estado.tela !== 'resumo'} />
     </div>

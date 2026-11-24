@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef } from 'react';
 import {
   FAN, aberturaNaAbertura, aberturaNaEspera, angulosFan, angulosNaDistribuicao, cartasDesenhadas,
 } from '../core/fan';
@@ -51,7 +51,7 @@ const rodar = (graus: number) => `rotate(${graus.toFixed(2)}deg)`;
  * fan (na distribuição, as que sobram depois da que está saindo). `progresso` (0 a 1) vem do estado do reducer na
  * abertura e na distribuição; a espera respira em loop de ~4 s. Só `transform` anima, e no compositor.
  */
-export function FanCartas({ quantidade, fase, progresso = 0, lugar = 'mesa' }: {
+function FanCartasBase({ quantidade, fase, progresso = 0, lugar = 'mesa' }: {
   quantidade: number;
   fase: FaseFan;
   progresso?: number;
@@ -100,3 +100,6 @@ export function FanCartas({ quantidade, fase, progresso = 0, lugar = 'mesa' }: {
     </div>
   );
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+export const FanCartas = memo(FanCartasBase);

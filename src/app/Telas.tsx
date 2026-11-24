@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import { AJUSTES_PADRAO, resumoAjustes, rotuloInterface, type Ajustes } from '../core/ajustes';
 import { DICA_GESTOS, DICA_SAIBA_MAIS, type ModoJogo } from '../core/modos';
 import type { AncorasRosto } from '../core/ancorasRosto';
@@ -167,7 +167,7 @@ export function TelaAbertura({ cartas, restanteMs }: { cartas: number; restanteM
   );
 }
 
-export function BotaoSair({ onSair }: { onSair: () => void }) {
+function BotaoSairBase({ onSair }: { onSair: () => void }) {
   return (
     <button type="button" className={s.sair} aria-label="Sair da partida" onClick={(e) => { e.currentTarget.blur(); onSair(); }}>
       <span className={s.xis} aria-hidden="true" />Sair
@@ -176,6 +176,9 @@ export function BotaoSair({ onSair }: { onSair: () => void }) {
 }
 
 /** Tempo restante do card, na base da tela (AC-4.6); coral nos últimos 5 s (AC-4.7). A barra do card saiu na v10.0.0 (AC-4.8). */
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+export const BotaoSair = memo(BotaoSairBase);
+
 export function BarraTempo({ restanteMs, totalMs, alerta }: { restanteMs: number; totalMs: number; alerta: boolean }) {
   const fracao = Math.max(0, Math.min(1, restanteMs / totalMs));
   return (
@@ -282,7 +285,7 @@ const ReservaNaipe = () => (
   </>
 );
 
-function FrenteCarta({ noticia, treino, oculta }: { noticia: Noticia; treino?: PassoTreino; oculta: boolean }) {
+function FrenteCartaBase({ noticia, treino, oculta }: { noticia: Noticia; treino?: PassoTreino; oculta: boolean }) {
   const manchete = useLetraQueCabe<HTMLHeadingElement>(LETRA_MANCHETE, noticia.id + noticia.titulo);
   const frase = useLetraQueCabe<HTMLParagraphElement>({ max: 26, min: 20 }, noticia.id + noticia.descricao);
   return (
@@ -305,8 +308,11 @@ function FrenteCarta({ noticia, treino, oculta }: { noticia: Noticia; treino?: P
   );
 }
 
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+const FrenteCarta = memo(FrenteCartaBase);
+
 /** Verso de "saiba mais" (AC-17.2): mesma moldura e naipes, faixa da cor do tema, manchete menor, descrição e texto. */
-function VersoCarta({ noticia, oculta }: { noticia: Noticia; oculta: boolean }) {
+function VersoCartaBase({ noticia, oculta }: { noticia: Noticia; oculta: boolean }) {
   const texto = useLetraQueCabe<HTMLDivElement>(LETRA_VERSO, noticia.id + noticia.descricao + noticia.saibaMais);
   return (
     <div className={cx(s.face, s.faceVerso)} data-face-carta="verso" aria-hidden={oculta || undefined}>
@@ -324,6 +330,9 @@ function VersoCarta({ noticia, oculta }: { noticia: Noticia; oculta: boolean }) 
     </div>
   );
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+const VersoCarta = memo(VersoCartaBase);
 
 /** Face de baixo da carta enquanto ela sai do fan (AC-17.6, FR-18): o verso único do fan, que não diz nada da notícia. */
 function FaceFan() {
@@ -496,7 +505,7 @@ function NucleoFeedback({ texto, verdade }: { texto: string; verdade: boolean })
  * Feedback (AC-4.1 a AC-4.3, AC-4.9, v12.0.0): o fundo da tela inteira diz o resultado (verde = acertou; vermelho = errou
  * ou tempo esgotado); no centro, o texto do resultado com o carimbo do veredito por cima; depois a explicação e a técnica.
  */
-export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia; resultado: Resultado; pontos: number }) {
+function TelaFeedbackBase({ noticia, resultado, pontos }: { noticia: Noticia; resultado: Resultado; pontos: number }) {
   const verdade = noticia.veredito === 'verdadeira';
   return (
     <main
@@ -513,6 +522,9 @@ export function TelaFeedback({ noticia, resultado, pontos }: { noticia: Noticia;
     </main>
   );
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+export const TelaFeedback = memo(TelaFeedbackBase);
 
 /**
  * Feedback do treino (AC-15.3, FR-16; AC-4.10, v12.0.0): o mesmo layout do feedback, com o selo do treino
@@ -620,7 +632,7 @@ function ListaRodada({ linhas }: { linhas: readonly LinhaResumo[] }) {
  * QR das fontes (AC-5.9) e a lista da rodada (AC-5.8). `foto`: quadro da câmera do meio da partida (FR-13), com as
  * âncoras do rosto (AC-13.6); sem ela, o resumo fica sem polaroid (AC-13.3).
  */
-export function TelaResumo({ pontos, total, foto, ancoras, linhas = [], enderecoQr }: {
+function TelaResumoBase({ pontos, total, foto, ancoras, linhas = [], enderecoQr }: {
   pontos: number;
   total: number;
   foto?: string | null;
@@ -655,6 +667,9 @@ export function TelaResumo({ pontos, total, foto, ancoras, linhas = [], endereco
     </main>
   );
 }
+
+// FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
+export const TelaResumo = memo(TelaResumoBase);
 
 // v13.2.0 (FR-19): peças comuns, usadas também pelo card da interface Clássica (CardClassico.tsx).
 export { Lado, MarcaTreino, Placar, RotuloLado, cx, src };
