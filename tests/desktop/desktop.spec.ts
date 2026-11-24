@@ -125,3 +125,16 @@ test('AC-16.5/AC-7.6: no painel Questões, ocultar e aprovar gravam o arquivo co
   await page.keyboard.press('m');
   await expect(page.getByRole('dialog', { name: 'Ajustes' })).toContainText('12 jogáveis de 15 no banco (2 ocultas)');
 });
+
+test('FR-20 (v13.3.0): no app de desktop a detecção roda no Web Worker com o modelo real', async () => {
+  test.setTimeout(90_000);
+  const page = await app.firstWindow();
+  await expect(page.getByRole('button', { name: 'Iniciar', exact: true })).toBeEnabled({ timeout: 20_000 });
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('menuitem', { name: /Diagnóstico/ }).click();
+  const painel = page.getByRole('complementary', { name: 'Diagnóstico' });
+  await expect(painel).toContainText(/aceleração: (⚠ )?worker · /, { timeout: 60_000 });
+  await expect(painel).toContainText(/detecção: \d+ ms/, { timeout: 60_000 });
+  await page.waitForTimeout(3000); // o registro começa quando o painel liga: espera um segundo inteiro de amostras
+  console.log(`painel (desktop): ${(await painel.innerText()).split(/\n+/).slice(0, 3).join(' | ')}`);
+});
