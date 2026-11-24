@@ -46,7 +46,7 @@ test('painel pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (
   await expect(painel).toBeHidden();                                                        // AC-9.3
 
   await page.keyboard.press('m');
-  for (let i = 0; i < 2; i++) await page.keyboard.press('ArrowDown');                       // (v13.2.0: Interface primeiro) Tempo por card
+  for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowDown');                       // (v13.2.0: Interface; v13.4.0: Efeitos) Tempo por card
   await page.keyboard.press('ArrowRight');                                                  // 15 → 20 s
   for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowDown');                       // … Modo de jogo
   await page.keyboard.press('ArrowRight');                                                  // Corpo → Mão
@@ -56,7 +56,7 @@ test('painel pelo teclado: abrir, mudar, fechar, lembrar e bloquear na partida (
   await expect(resumo(page, 'Modo: Mão · 10 notícias · 20 s por card · Som: ligado')).toBeVisible();   // AC-9.2
 
   await page.keyboard.press('m');
-  for (let i = 0; i < 2; i++) await page.keyboard.press('ArrowDown');                       // Tempo por card
+  for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowDown');                       // Tempo por card
   for (let i = 0; i < 3; i++) await page.keyboard.press('ArrowLeft');                       // 20 → 15 → 10, e fica (AC-9.17)
   await page.keyboard.press('m');                                                           // M também fecha
   await expect(resumo(page, 'Modo: Mão · 10 notícias · 10 s por card · Som: ligado')).toBeVisible();

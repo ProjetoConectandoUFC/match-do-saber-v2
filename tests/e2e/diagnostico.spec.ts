@@ -30,7 +30,7 @@ test('AC-12.2/AC-12.4/AC-12.5: com ?diagnostico, painel no canto sem cobrir o ca
   await expect(painel).toContainText(/quadros\/s: [1-9]/);
 
   await page.keyboard.press('m');
-  for (let i = 0; i < 7; i++) await page.keyboard.press('ArrowDown');                     // Ajustes (v13.2.0: Interface primeiro): … Modo de jogo
+  for (let i = 0; i < 8; i++) await page.keyboard.press('ArrowDown');                     // Ajustes (v13.2.0: Interface; v13.4.0: Efeitos): … Modo de jogo
   await page.keyboard.press('ArrowRight');                                                // modo → Mão (dica mais longa)
   await page.keyboard.press('Enter');
   await page.keyboard.press('Enter');
