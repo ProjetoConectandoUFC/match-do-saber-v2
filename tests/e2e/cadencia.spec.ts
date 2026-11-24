@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { esperarCartaPousada } from './carta';
 
 // FR-20 / NFR Performance (v13.3.0, Fase 52): a tela não anda no ritmo da detecção de pose.
@@ -8,13 +8,17 @@ test.use({
   permissions: ['camera'],
 });
 
-/** Intervalos entre quadros da tela (rAF) durante `ms`. */
+/**
+ * Intervalos entre quadros da tela durante `ms`, pelo relógio real (performance.now() no começo de cada callback de rAF):
+ * o carimbo do rAF é o do vsync previsto e esconde parte do bloqueio da thread principal.
+ */
 async function medirQuadros(page: Page, ms: number): Promise<number[]> {
   return page.evaluate((duracao) => new Promise<number[]>((ok) => {
     const intervalos: number[] = [];
     let anterior = 0;
     const inicio = performance.now();
-    const quadro = (agora: number) => {
+    const quadro = () => {
+      const agora = performance.now();
       if (anterior) intervalos.push(agora - anterior);
       anterior = agora;
       if (agora - inicio < duracao) requestAnimationFrame(quadro);
@@ -46,6 +50,11 @@ async function abrirComDeteccao(page: Page, deteccao: { ms: number; onde?: strin
   return painel;
 }
 
+/** As três primeiras linhas do Diagnóstico: quadros e leituras por segundo, detecção, aceleração. */
+async function linhasPainel(painel: Locator) {
+  return (await painel.innerText()).split(/\n+/).slice(0, 3).join(' | ');
+}
+
 async function irParaCarta(page: Page) {
   await page.keyboard.press('Enter'); // abre a calibração
   await page.keyboard.press('Enter'); // pula a calibração
@@ -56,14 +65,25 @@ test('NFR Performance (v13.3.0): com detecção de 60 ms, a tela fica a ≥ 50 f
   test.setTimeout(90_000);
   const painel = await abrirComDeteccao(page, { ms: 60 });
   const espera = estatisticas(await medirQuadros(page, 3000));
+  console.log(`painel (espera): ${await linhasPainel(painel)}`);
   await irParaCarta(page);
   const carta = estatisticas(await medirQuadros(page, 4000));
   console.log(`cadência (detecção falsa 60 ms) espera: ${JSON.stringify(espera)} carta: ${JSON.stringify(carta)}`);
-  console.log(`painel: ${(await painel.innerText()).split('\n').slice(0, 4).join(' | ')}`);
+  console.log(`painel (carta): ${await linhasPainel(painel)}`);
   for (const e of [espera, carta]) {
     expect(e.medianaMs).toBeLessThanOrEqual(20);
     expect(e.acimaDe100).toBe(0);
   }
+});
+
+test('FR-20: na reserva (detecção na thread principal), nunca dois quadros seguidos travados pela detecção', async ({ page }) => {
+  test.setTimeout(90_000);
+  const painel = await abrirComDeteccao(page, { ms: 60, onde: 'principal' });
+  const intervalos = await medirQuadros(page, 3000);
+  const seguidos = intervalos.filter((v, i) => i > 0 && v > 50 && intervalos[i - 1]! > 50).length;
+  console.log(`cadência (reserva, detecção falsa 60 ms) espera: ${JSON.stringify(estatisticas(intervalos))} seguidos>50ms: ${seguidos}`);
+  console.log(`painel: ${await linhasPainel(painel)}`);
+  expect(seguidos).toBe(0);
 });
 
 test('medição (sem critério): cadência com o modelo de pose real nesta máquina', async ({ page }) => {
@@ -72,5 +92,5 @@ test('medição (sem critério): cadência com o modelo de pose real nesta máqu
   await page.waitForTimeout(3000); // a primeira detecção do modelo real é lenta
   const espera = estatisticas(await medirQuadros(page, 3000));
   console.log(`cadência (modelo real) espera: ${JSON.stringify(espera)}`);
-  console.log(`painel: ${(await painel.innerText()).split('\n').slice(0, 4).join(' | ')}`);
+  console.log(`painel: ${await linhasPainel(painel)}`);
 });

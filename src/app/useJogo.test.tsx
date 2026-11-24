@@ -88,6 +88,7 @@ describe('laço de quadros (NFR Reliability v12.1.0)', () => {
     expect(jogo.camera).toBe('ativa');
 
     act(() => avancarQuadros(1));
+    await esvaziar(); // FR-20 (v13.3.0): o erro chega pela leitura (promessa), fora do quadro
     expect(r.detectar).toHaveBeenCalledTimes(1);
     expect(r.fechar).toHaveBeenCalled();
     expect(jogo.camera).toBe('indisponivel');
@@ -211,12 +212,17 @@ describe('câmera (NFR Reliability v12.1.0)', () => {
     render(<Jogo />);
     await esvaziar();
     act(() => avancarQuadros(1));
+    await esvaziar();
     expect(jogo.camera).toBe('indisponivel');
     await act(async () => { vi.advanceTimersByTime(5500); });
     await esvaziar();
     expect(primeiro.trilha.stop).toHaveBeenCalled();
     expect(jogo.camera).toBe('ativa');
-    act(() => avancarQuadros(2));
+    // FR-20: na thread principal (jsdom não tem Worker), uma leitura por vez e nunca em dois quadros seguidos.
+    for (let i = 0; i < 4; i++) {
+      act(() => avancarQuadros(1, 20));
+      await esvaziar();
+    }
     expect(novo.detectar).toHaveBeenCalledTimes(2);
   });
 

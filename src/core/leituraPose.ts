@@ -47,25 +47,33 @@ export function criarUltimaLeitura() {
   };
 }
 
+/** Na reserva (thread principal), o teto da pausa entre leituras: mais que isso atrasaria os gestos numa máquina lenta. */
+export const LIVRE_MAX_MS = 100;
+
 /**
  * Quando pedir uma leitura: uma por vez, no máximo `LEITURAS_MAX_POR_S` por segundo. `alternarQuadros` (detecção na
- * thread principal, a reserva): nunca em dois quadros seguidos, para a tela não travar duas vezes em sequência.
+ * thread principal, a reserva): nunca em dois quadros seguidos, e depois de uma leitura de D ms a tela fica livre por
+ * min(D, `LIVRE_MAX_MS`) antes da próxima, para a tela não travar em sequência.
  */
 export function criarRitmoDeteccao({ alternarQuadros, travadaMs = LEITURA_TRAVADA_MS }: { alternarQuadros: boolean; travadaMs?: number }) {
   const intervaloMs = 1000 / LEITURAS_MAX_POR_S;
   let pedidaEm: number | null = null;
   let ultimoPedido = -Infinity;
   let pediuNoQuadroAnterior = false;
+  let pausaMs = 0;
   return {
     /** Chamado uma vez por quadro da tela; verdadeiro quando este quadro deve pedir uma leitura. */
     pedir(agora: number): boolean {
-      const pode = pedidaEm === null && agora - ultimoPedido >= intervaloMs - 1 && !(alternarQuadros && pediuNoQuadroAnterior);
+      const pode = pedidaEm === null && agora - ultimoPedido >= Math.max(intervaloMs - 1, pausaMs) && !(alternarQuadros && pediuNoQuadroAnterior);
       pediuNoQuadroAnterior = pode;
       if (pode) { pedidaEm = agora; ultimoPedido = agora; }
       return pode;
     },
-    /** A leitura pedida terminou (com resultado ou erro). */
-    concluir() { pedidaEm = null; },
+    /** A leitura pedida terminou (com resultado ou erro); `deteccaoMs`: quanto ela ocupou a thread principal. */
+    concluir(deteccaoMs = 0) {
+      pedidaEm = null;
+      pausaMs = alternarQuadros ? deteccaoMs + Math.min(deteccaoMs, LIVRE_MAX_MS) : 0;
+    },
     travada(agora: number): boolean { return pedidaEm !== null && agora - pedidaEm > travadaMs; },
   };
 }

@@ -2,11 +2,13 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import { extrairPontos, type Aceleracao, type Registro } from '../core/diagnostico';
 import { AJUSTES_PADRAO, contextoDosAjustes, type Ajustes } from '../core/ajustes';
 import { configGestos, criarInterpretador, medirCabeca, medirMaos, type Gesto, type Pose } from '../core/gestos';
+import { criarAplicadorLeituras, criarRitmoDeteccao, criarUltimaLeitura } from '../core/leituraPose';
 import { ESTADO_INICIAL, calibrarAoSair, permanenciaConta, reduzir, type Contexto, type Estado, type Evento } from '../core/partida';
 import { dtDoQuadro } from '../core/relogio';
 import type { Noticia } from '../core/types';
 import { PERFIS_TUTORIAL } from './perfisTutorial';
-import { abrirCamera, criarRastreador, type Rastreador } from './rastreador';
+import { criarDetector, type DetectorPose } from './detectorPose';
+import { abrirCamera } from './rastreador';
 import { useTelaAcordada } from './useTelaAcordada';
 
 export type StatusCamera = 'carregando' | 'ativa' | 'negada' | 'indisponivel';
@@ -20,6 +22,13 @@ const EVENTO_DO_GESTO: Record<Gesto, Evento> = {
   maosParaCima: { tipo: 'saibaMais' },
 };
 
+/** O gesto de um evento despachado pela câmera, para o registro do Diagnóstico. */
+function gestoDoEvento(e: Evento): Gesto | null {
+  if (e.tipo === 'saibaMais') return 'maosParaCima';
+  if (e.tipo === 'escolha') return e.resposta === 'verdadeira' ? 'direita' : 'esquerda';
+  return null;
+}
+
 const EVENTO_DA_TECLA: Record<string, Evento | undefined> = {
   ArrowRight: EVENTO_DO_GESTO.direita,
   ArrowLeft: EVENTO_DO_GESTO.esquerda,
@@ -27,6 +36,9 @@ const EVENTO_DA_TECLA: Record<string, Evento | undefined> = {
   Enter: { tipo: 'enter' },
   Escape: { tipo: 'sair' }, // FR-10
 };
+
+/** O detector em uso e o ritmo dos pedidos dele (FR-20): na thread principal, nunca em dois quadros seguidos. */
+interface Deteccao { detector: DetectorPose; ritmo: ReturnType<typeof criarRitmoDeteccao> }
 
 /** `noticias`: as jogáveis dentro dos filtros de conteúdo dos Ajustes (AC-9.27, AC-6.4). */
 export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, pausado = false, registro?: Registro) {
@@ -52,13 +64,30 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
   // AC-2.13 + AC-17.6: o laço lê o estado do último render para saber se a carta está pousada.
   const estadoRef = useRef(estado);
   estadoRef.current = estado;
-  const rastreador = useRef<Rastreador | null>(null);
+  // FR-20 (v13.3.0): a detecção roda fora do laço de desenho e entrega leituras; o laço aplica só a mais recente.
+  const deteccao = useRef<Deteccao | null>(null);
+  const caixa = useRef(criarUltimaLeitura());
+  const aplicador = useRef(criarAplicadorLeituras());
   const telaAnterior = useRef(estado.tela);
   // Lidos pela reabertura da câmera (NFR Reliability, v12.1.0) sem recriar o efeito.
   const telaRef = useRef(estado.tela as string);
   telaRef.current = estado.tela;
   const cameraRef = useRef(camera);
   cameraRef.current = camera;
+
+  /**
+   * Erro na detecção (worker morto, contexto WebGL perdido depois de horas ou de um repouso, leitura travada): o
+   * detector sai; a câmera fica "indisponivel" e é reaberta na tela de espera (efeito abaixo; NFR Reliability, v12.1.0).
+   */
+  const falhou = useRef((d: DetectorPose, e: unknown) => {
+    if (deteccao.current?.detector !== d) return;
+    console.error('[match-do-saber] erro na detecção de pose', e);
+    deteccao.current = null;
+    caixa.current.limpar();
+    aplicador.current.esquecer();
+    d.fechar();
+    setCamera('indisponivel');
+  });
 
   useTelaAcordada(); // NFR Reliability (v12.1.0): sem repouso de tela na web
 
@@ -83,7 +112,7 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
     const cancelado = () => abortar.signal.aborted;
     const desktop = !!(window as { matchDoSaber?: { desktop?: boolean } }).matchDoSaber?.desktop;
     let stream: MediaStream | null = null;
-    let meu: Rastreador | null = null;
+    let meu: DetectorPose | null = null;
     let abrindo = false;
     // Por que a última abertura falhou: 'permissao' (web) não é tentada de novo; 'modelo' só na troca de
     // dispositivo (tentar a cada 5 s acenderia e apagaria a luz da webcam sem parar).
@@ -93,7 +122,11 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
       stream?.getTracks().forEach((t) => t.stop());
       stream = null;
       if (meu) {
-        if (rastreador.current === meu) rastreador.current = null;
+        if (deteccao.current?.detector === meu) {
+          deteccao.current = null;
+          caixa.current.limpar();
+          aplicador.current.esquecer();
+        }
         meu.fechar();
         meu = null;
       }
@@ -120,9 +153,10 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
         }
         if (cancelado()) return s.getTracks().forEach((t) => t.stop());
         stream = s;
-        let r: Rastreador;
+        let d: DetectorPose;
         try {
-          r = await criarRastreador();
+          // FR-20: Web Worker quando dá; senão, a thread principal. Carrega e aquece o modelo aqui, na espera.
+          d = await criarDetector({ aoFalhar: (e) => falhou.current(d, e) });
         } catch {
           if (cancelado()) return;
           liberar(); // sem modelo, a câmera não serve para nada: desliga (luz apaga)
@@ -130,10 +164,11 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
           setCamera('indisponivel');
           return;
         }
-        if (cancelado()) return r.fechar();
-        meu = r;
-        rastreador.current = r;
-        setAceleracao(r.aceleracao ?? null);
+        if (cancelado()) return d.fechar();
+        meu = d;
+        caixa.current.limpar();
+        deteccao.current = { detector: d, ritmo: criarRitmoDeteccao({ alternarQuadros: d.onde === 'principal' }) };
+        setAceleracao(d.aceleracao);
         bloqueio = null;
         s.getVideoTracks()[0]?.addEventListener('ended', () => {
           if (cancelado() || stream !== s) return;
@@ -166,58 +201,59 @@ export function useJogo(noticias: Noticia[], config: Ajustes = AJUSTES_PADRAO, p
     };
   }, []);
 
-  // Loop único: tick por quadro.
+  // Laço de desenho (FR-20, v13.3.0): a cada quadro da tela, pede uma leitura se for a vez (sem esperar por ela),
+  // aplica a mais recente que já chegou e avança o relógio e o reducer com o tempo real do quadro.
   useEffect(() => {
     let raf = 0;
     let anterior = performance.now();
+    let pessoas = 0; // da última leitura, para o Diagnóstico
     const quadro = (agora: number) => {
       // Reagendado antes de tudo: uma exceção no resto do quadro não congela o jogo (NFR Reliability, v12.1.0).
       raf = requestAnimationFrame(quadro);
       const dtMs = dtDoQuadro(agora, anterior);
       anterior = agora;
       const video = videoRef.current;
-      const r = rastreador.current;
-      let poses: Pose[] | null = null;
-      const antesDeteccao = performance.now();
-      if (r && video && video.readyState >= 2) {
-        try {
-          poses = r.detectar(video, agora);
-        } catch (e) {
-          // Ex.: contexto WebGL perdido depois de horas ou de um repouso. O rastreador sai; a câmera fica
-          // "indisponivel" e é reaberta na tela de espera (efeito acima).
-          console.error('[match-do-saber] erro na detecção de pose', e);
-          if (rastreador.current === r) rastreador.current = null;
-          r.fechar();
-          setCamera('indisponivel');
-        }
+      const atual = deteccao.current;
+      if (atual && video && video.readyState >= 2 && atual.ritmo.pedir(agora)) {
+        const { detector, ritmo } = atual;
+        detector.ler(video, agora).then(
+          (l) => {
+            if (deteccao.current?.detector !== detector) return;
+            ritmo.concluir(l?.deteccaoMs);
+            if (l) caixa.current.publicar(l);
+          },
+          (e) => falhou.current(detector, e),
+        );
+      } else if (atual?.ritmo.travada(agora)) {
+        falhou.current(atual.detector, new Error('a leitura de pose não respondeu'));
       }
-      if (poses) {
-        const deteccaoMs = performance.now() - antesDeteccao;
-        // AC-2.13 (v12.1.0): fora de um card ou treino, nenhuma permanência conta; ela só começa com o card na tela.
-        // v13.0.0 (AC-17.6): também não durante a abertura do fan e a distribuição; começa com a carta pousada.
-        // O estado vem do último render: no quadro em que o tick pousa a carta, ainda vale o anterior e zera.
-        if (!permanenciaConta(estadoRef.current)) interp.current.zerar();
-        // AC-1.5 (v12.1.0): o interpretador acompanha o jogador entre os quadros; um passante não toma o controle.
-        const leitura = interp.current.lerPoses(poses, agora);
-        const pose = leitura.pose;
-        poseRef.current = pose;
-        // Com os Ajustes, o menu ☰ ou um painel dele abertos, a câmera não gera presença nem gestos (FR-14).
-        inclinacaoRef.current = pausadoRef.current ? 0 : leitura.inclinacao;
-        despachar({ tipo: 'tick', dtMs, presenca: pausadoRef.current ? null : leitura.presenca });
-        if (!pausadoRef.current) for (const g of leitura.gestos) despachar(EVENTO_DO_GESTO[g]);
-        const d = diagRef.current;
-        d.registro?.adicionar({
-          t: agora, dtMs, deteccaoMs, pessoas: poses.length, tela: d.tela, modo: d.modo,
+
+      const pausadoAgora = pausadoRef.current;
+      // AC-2.13 (v12.1.0): fora de um card ou treino, nenhuma permanência conta; ela só começa com o card na tela.
+      // v13.0.0 (AC-17.6): também não durante a abertura do fan e a distribuição; começa com a carta pousada.
+      // O estado vem do último render. Com os Ajustes, o menu ☰ ou um painel dele abertos, a câmera não gera
+      // presença nem gestos (FR-14).
+      const saida = aplicador.current.quadro({
+        agora, dtMs, nova: caixa.current.tomar(), interp: interp.current,
+        permanenciaConta: permanenciaConta(estadoRef.current), pausado: pausadoAgora,
+      });
+      poseRef.current = saida.pose;
+      inclinacaoRef.current = saida.inclinacao;
+      for (const e of saida.eventos) despachar(e);
+
+      const d = diagRef.current;
+      const nova = saida.aplicada;
+      if (nova) pessoas = nova.pessoas;
+      else if (!atual) pessoas = 0;
+      if (d.registro) {
+        const pose = saida.pose;
+        d.registro.adicionar({
+          t: agora, dtMs, deteccaoMs: nova ? nova.deteccaoMs : null, pessoas,
+          tela: d.tela, modo: d.modo,
           pontos: extrairPontos(pose),
           medidas: pose ? { maos: medirMaos(pose), cabeca: medirCabeca(pose) } : {},
-          gestos: pausadoRef.current ? [] : leitura.gestos,
+          gestos: (nova?.gestos ?? []).map(gestoDoEvento).filter((g): g is Gesto => g !== null),
         });
-      } else {
-        poseRef.current = null;
-        inclinacaoRef.current = 0;
-        despachar({ tipo: 'tick', dtMs, presenca: null });
-        const d = diagRef.current;
-        d.registro?.adicionar({ t: agora, dtMs, deteccaoMs: null, pessoas: 0, tela: d.tela, modo: d.modo, pontos: {}, medidas: {}, gestos: [] });
       }
     };
     raf = requestAnimationFrame(quadro);

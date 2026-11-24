@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { criarInterpretador, type Pose } from './gestos';
 import {
-  LEITURA_VALIDA_MS, LEITURAS_MAX_POR_S, criarAplicadorLeituras, criarRitmoDeteccao, criarUltimaLeitura, type LeituraPose,
+  LEITURA_VALIDA_MS, LEITURAS_MAX_POR_S, LIVRE_MAX_MS, criarAplicadorLeituras, criarRitmoDeteccao, criarUltimaLeitura, type LeituraPose,
 } from './leituraPose';
 
 // FR-20 (v13.3.0, Fase 52.2): a detecção roda fora do laço de desenho; o laço aplica só a leitura mais recente.
@@ -98,6 +98,26 @@ describe('criarRitmoDeteccao: uma leitura por vez, no ritmo próprio (FR-20)', (
     expect(r.travada(5001)).toBe(true);
     r.concluir();
     expect(r.travada(20_000)).toBe(false);
+  });
+
+  it('na thread principal, depois de uma leitura de D ms a tela fica livre por min(D, LIVRE_MAX_MS) antes da próxima', () => {
+    const r = criarRitmoDeteccao({ alternarQuadros: true });
+    expect(r.pedir(0)).toBe(true);
+    r.concluir(60); // a detecção ocupou o quadro até ~60 ms
+    expect(r.pedir(76)).toBe(false);
+    expect(r.pedir(93)).toBe(false);
+    expect(r.pedir(110)).toBe(false);
+    expect(r.pedir(121)).toBe(true); // 60 de leitura + 60 livres
+    r.concluir(450); // máquina lenta: a pausa não passa de LIVRE_MAX_MS, para não atrasar os gestos
+    expect(r.pedir(121 + 450 + LIVRE_MAX_MS - 2)).toBe(false);
+    expect(r.pedir(121 + 450 + LIVRE_MAX_MS + 1)).toBe(true);
+  });
+
+  it('no worker, a duração da leitura não espaça os pedidos (a tela não espera por ela)', () => {
+    const r = criarRitmoDeteccao({ alternarQuadros: false });
+    r.pedir(0);
+    r.concluir(60);
+    expect(r.pedir(61)).toBe(true);
   });
 });
 
