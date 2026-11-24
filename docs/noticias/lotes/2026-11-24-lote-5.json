@@ -1,0 +1,516 @@
+{
+  "criterioDificuldade": {
+    "facil": "O palpite de bom senso acerta. Falsa com absurdo evidente (promessa impossível, foto ou alerta exagerado) ou verdadeira muito conhecida, ensinada na escola ou famosa.",
+    "medio": "Soa estranho, mas é plausível. O jogador precisa de uma pista do card (quem diz, quando, como é a foto) ou de uma informação que nem todo mundo tem.",
+    "dificil": "O palpite intuitivo tende a errar: falsa repetida como fato por muita gente, ou verdadeira que parece invenção. Só checando fonte, data ou contexto dá para acertar.",
+    "observacao": "Lote 5 (2026-11-24). 25 notícias: 12 verdadeiras e 13 falsas. Técnicas: fonte 6, data 7, imagem 6, contexto 6. Dificuldade: 8 fáceis, 9 médias, 8 difíceis. Temas: politica 5, saude 4, ciencia 4, historia 3, tecnologia 3, curiosidades 3, meio-ambiente 3. Política pelo mote, sem nomes no card; campo de cada uma: mds-0059 direita (falsa), mds-0060 esquerda (falsa; versão de 2022, a mesma alegação voltou em 2024 contra o governo seguinte), mds-0061, mds-0062 e mds-0063 neutras. As verdadeiras foram escolhidas para soar absurdas, para o jogador não aprender que absurdo = falso. saibaMais mirado em até 250 caracteres (AC-7.13)."
+  },
+  "noticias": [
+    {
+      "id": "mds-0059",
+      "titulo": "Urnas eletrônicas do Brasil foram feitas por empresa da Venezuela",
+      "descricao": "Posts dizem que a empresa que forneceu urnas para a Venezuela também desenvolveu as urnas usadas nas eleições brasileiras.",
+      "saibaMais": "O Brasil vota em urnas eletrônicas desde 1996. A alegação voltou a circular em 2026, ano de eleição, em posts com a foto de uma urna e a palavra \"BOMBA\".",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo o Aos Fatos, a Smartmatic só foi fundada em 2000, quatro anos depois da primeira eleição com urna eletrônica, e nunca fabricou as urnas brasileiras. O Comprova, publicado pelo O Povo, mostra que elas vieram de Unisys, Procomp, Diebold e, depois, Positivo. Na dúvida, procure o que diz o TSE, citado nas duas checagens.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/smartmatic-urnas-eletronicas-brasileiras/",
+      "fontesExtras": [
+        "https://www.opovo.com.br/noticias/checagemopovo/2020/11/13/smartmatic-que-forneceu-urnas-venezuela-nunca-vendeu-aparelhos-brasil.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0060",
+      "titulo": "Lei acabou com a multa de 40% do FGTS para quem é demitido",
+      "descricao": "Vídeo afirma que o trabalhador demitido sem justa causa não recebe mais a multa de 40% sobre o FGTS.",
+      "saibaMais": "O FGTS é um dinheiro que a empresa deposita todo mês para quem tem carteira assinada. Mudanças na multa da demissão já foram estudadas por diferentes governos.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Em 2022, o Comprova, publicado pelo Metrópoles, mostrou que a multa segue valendo pela lei do FGTS. Houve estudos para reduzi-la, mas nenhum foi aprovado. Em 2024, o boato voltou contra o governo seguinte, e o Aos Fatos não achou nenhuma medida no Diário Oficial. Veja a data: o mesmo boato volta a cada governo, e estudo não é lei.",
+      "tecnica": "data",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.metropoles.com/projeto-comprova/e-enganoso-que-bolsonaro-extinguiu-multa-para-demissao-sem-justa-causa",
+      "fontesExtras": [
+        "https://www.aosfatos.org/noticias/governo-nao-aprovou-lei-tirando-multa-fgts/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0061",
+      "titulo": "Se a maioria votar nulo, a eleição é anulada e feita de novo",
+      "descricao": "Mensagem que volta a cada eleição diz que, se mais da metade anular o voto, a Justiça Eleitoral convoca uma nova votação.",
+      "saibaMais": "No Brasil, o voto é obrigatório dos 18 aos 70 anos e opcional para quem tem 16 ou 17. Na urna, o eleitor pode escolher um candidato, votar em branco ou anular o voto.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O jornal O Povo explica que votos nulos e brancos não entram na conta dos votos válidos, os únicos que decidem a eleição. Em 2006, o então presidente do TSE disse ao Congresso em Foco que a regra do Código Eleitoral sobre anular eleições trata de fraudes, não de voto de protesto. Veja o contexto: a \"nulidade\" da lei não é o voto nulo.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.opovo.com.br/noticias/politica/eleicoes/2026/08/03/voto-em-branco-e-voto-nulo-entenda-a-diferenca-e-como-sao-contabilizados.html",
+      "fontesExtras": [
+        "https://www.congressoemfoco.com.br/noticia/88868/tse-voto-nulo-nao-invalida-eleicao"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0062",
+      "titulo": "Multa para quem não vota nem justifica é de só R$ 3,51",
+      "descricao": "Quem falta à eleição e não justifica a ausência pagaria uma multa de poucos reais por turno.",
+      "saibaMais": "O voto é obrigatório a partir dos 18 anos. Quem não vai votar pode justificar a ausência no dia da eleição ou depois dela, inclusive pela internet.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo a Agência Senado e a BBC News Brasil, publicada pelo O Povo, a multa vai de R$ 1,05 a R$ 3,51 por turno e costuma sair pelo teto. O contexto importa: até regularizar, o eleitor não tira passaporte nem renova matrícula em escola ou universidade pública. O valor é baixo; o problema são as restrições.",
+      "tecnica": "contexto",
+      "tema": "politica",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www12.senado.leg.br/noticias/materias/2026/08/31/faltou-a-eleicao-saiba-como-justificar-e-evitar-multas",
+      "fontesExtras": [
+        "https://www.opovo.com.br/agencia/bbc/2026/10/02/como-justificar-o-voto-e-o-que-acontece-se-voce-nao-votar.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0063",
+      "titulo": "Lei que barra políticos condenados nasceu de assinaturas do povo",
+      "descricao": "Uma lei que impede condenados de disputar eleições teria começado com mais de 1 milhão de assinaturas de cidadãos comuns.",
+      "saibaMais": "A Constituição permite que cidadãos proponham leis, desde que reúnam assinaturas de eleitores de vários estados. O mais comum é que os projetos venham de deputados, senadores ou do governo.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. É a Lei da Ficha Limpa, de 2010. Segundo a Agência Câmara, ela nasceu de um projeto de iniciativa popular que chegou ao Congresso com mais de 1,5 milhão de assinaturas; o Congresso em Foco fala em mais de 1,6 milhão. A lei deixa inelegível quem foi condenado por um tribunal colegiado. Para checar, vá ao site oficial da Câmara.",
+      "tecnica": "fonte",
+      "tema": "politica",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.camara.leg.br/noticias/1165108-lei-da-ficha-limpa-completa-15-anos-em-junho/",
+      "fontesExtras": [
+        "https://www.congressoemfoco.com.br/noticia/109828/15-anos-de-ficha-limpa-a-lei-popular-que-sacudiu-a-politica"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0064",
+      "titulo": "Brasil cria e solta mosquitos da dengue para combater a doença",
+      "descricao": "Uma fábrica no Paraná produziria milhões de ovos do Aedes aegypti por semana, e os mosquitos seriam soltos nas ruas de várias cidades.",
+      "saibaMais": "O Aedes aegypti transmite dengue, zika e chikungunya. Em anos de epidemia, campanhas pedem para eliminar a água parada, onde o mosquito põe seus ovos.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Os mosquitos levam a bactéria Wolbachia, que impede o vírus de se desenvolver neles. Segundo a Agência Gov, a biofábrica de Curitiba, aberta em 2025, produz 100 milhões de ovos por semana, numa parceria com a Fiocruz. O Metrópoles diz que a bactéria não passa para pessoas. Procure a fonte: órgãos de saúde explicam o método.",
+      "tecnica": "fonte",
+      "tema": "saude",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://agenciagov.ebc.com.br/noticias/202507/ministerio-da-saude-inaugura-a-maior-biofabrica-de-wolbachia-do-mundo",
+      "fontesExtras": [
+        "https://www.metropoles.com/saude/biofabrica-dengue-wolbachia"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0065",
+      "titulo": "Brasil já perdeu o certificado de país livre do sarampo",
+      "descricao": "Depois de eliminar a doença, o país teria voltado a ter casos e perdido o título dado pela Organização Pan-Americana da Saúde.",
+      "saibaMais": "O sarampo é uma doença muito contagiosa causada por vírus. A vacina tríplice viral protege contra ele e faz parte do calendário de vacinação das crianças.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo a OPAS, um surto iniciado em 2018 fez o vírus voltar a circular, com mais de 21 mil casos em 2019, e o Brasil perdeu o certificado. Ele só foi devolvido em novembro de 2024, informa o Correio Braziliense, com a vacinação de novo em alta. Confira as datas: perdeu em 2019, recuperou em 2024.",
+      "tecnica": "data",
+      "tema": "saude",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.paho.org/pt/noticias/12-11-2024-opas-verifica-que-brasil-e-mais-uma-vez-um-pais-livre-do-sarampo",
+      "fontesExtras": [
+        "https://www.correiobraziliense.com.br/politica/2024/11/6986871-brasil-retoma-certificado-de-pais-livre-do-sarampo-perdido-em-2019.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0066",
+      "titulo": "Vacina contra HPV dada a adolescentes causa paralisia",
+      "descricao": "Vídeo com trecho de reportagem de TV diz que a vacina aplicada em meninas e meninos provoca paralisia e outros efeitos graves.",
+      "saibaMais": "O HPV é um vírus que pode causar câncer, como o de colo do útero. A vacina é oferecida de graça pelo SUS para crianças e adolescentes.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O Comprova, publicado pela Alma Preta em 2025, mostrou que o vídeo reaproveita uma reportagem de 2016 sobre um pedido do MPF para suspender a vacina, que a Justiça negou em 2017 por falta de provas. A OPAS diz que estudos não mostram risco de problemas neurológicos. Veja a data: vídeo antigo não é notícia nova.",
+      "tecnica": "data",
+      "tema": "saude",
+      "dificuldade": "facil",
+      "fonteUrl": "https://almapreta.com.br/sessao/post-desinforma-sobre-vacina-contra-hpv-usando-reportagem-antiga-de-um-caso-nao-comprovado/",
+      "fontesExtras": [
+        "https://www.paho.org/pt/topicos/imunizacao/desmascarando-mitos-sobre-vacina-contra-papilomavirus-humano-hpv"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0067",
+      "titulo": "Cigarro eletrônico solta só vapor de água e não faz mal",
+      "descricao": "Muita gente diz que o vape é seguro porque a \"fumaça\" seria só vapor de água com sabor, sem os químicos do cigarro comum.",
+      "saibaMais": "Os vapes aquecem um líquido, muitas vezes com sabor de fruta ou de doce. Eles se espalharam entre jovens, apesar de a venda ser proibida no Brasil.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Um pneumologista ouvido pela revista Pesquisa FAPESP diz que o termo vapor é enganoso: o aerossol leva nicotina, que vicia, e quase 2 mil substâncias, muitas tóxicas. A Secretaria de Saúde de Alagoas chama de mito a ideia de inalar só vapor de água. Confira a fonte: quem vende o produto não é quem estuda a saúde.",
+      "tecnica": "fonte",
+      "tema": "saude",
+      "dificuldade": "facil",
+      "fonteUrl": "https://revistapesquisa.fapesp.br/quase-1-milhao-de-brasileiros-fumam-regularmente-cigarros-eletronicos/",
+      "fontesExtras": [
+        "https://www.saude.al.gov.br/no-dia-mundial-sem-tabaco-sesau-alerta-sobre-o-alto-poder-destrutivo-do-cigarro-eletronico/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0068",
+      "titulo": "Fóssil de dinossauro do Ceará estava na Alemanha e foi devolvido",
+      "descricao": "Um pequeno dinossauro com penas, achado no Cariri e levado para um museu alemão nos anos 1990, teria voltado ao Brasil em 2023.",
+      "saibaMais": "A Bacia do Araripe ocupa partes do Ceará, do Piauí e de Pernambuco. Em Santana do Cariri, no Ceará, há um museu de paleontologia ligado a uma universidade.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo a Agência Brasil, o fóssil, de cerca de 110 milhões de anos, saiu do país de forma irregular nos anos 1990 e voltou em junho de 2023. O Diário do Nordeste conta que ele foi para o museu da Urca, em Santana do Cariri. Para checar, procure órgãos oficiais e jornais da região onde o fato aconteceu.",
+      "tecnica": "fonte",
+      "tema": "ciencia",
+      "dificuldade": "medio",
+      "fonteUrl": "https://agenciabrasil.ebc.com.br/en/geral/noticia/2023-06/germany-returns-brazil-dinosaur-fossil-smuggled-90s",
+      "fontesExtras": [
+        "https://diariodonordeste.verdesmares.com.br/ceara/fossil-do-ubirajara-jubatus-chega-ao-ceara-e-ira-compor-acervo-de-museu-no-cariri-1.3381169"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0069",
+      "titulo": "Foto mostra meteorito intacto após incêndio que destruiu museu",
+      "descricao": "Imagens feitas depois do incêndio do Museu Nacional, no Rio, mostrariam um meteorito de mais de 5 toneladas quase sem danos.",
+      "saibaMais": "O Museu Nacional, no Rio de Janeiro, pegou fogo em setembro de 2018 e perdeu grande parte do acervo. O meteorito Bendegó foi achado na Bahia em 1784.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. A revista Pesquisa FAPESP e o Olhar Digital confirmam que o Bendegó resistiu praticamente intacto ao incêndio de 2018 e virou símbolo da reconstrução do museu. Para checar uma imagem, faça a busca reversa e veja se veículos sérios publicaram a mesma cena, na mesma data.",
+      "tecnica": "imagem",
+      "tema": "ciencia",
+      "dificuldade": "medio",
+      "fonteUrl": "https://revistapesquisa.fapesp.br/2018/10/22/memorias-que-o-fogo-nao-apagou/",
+      "fontesExtras": [
+        "https://olhardigital.com.br/2023/01/24/ciencia-e-espaco/a-epica-jornada-do-meteorito-bendego/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0070",
+      "titulo": "Bandeira balançando prova que a ida à Lua foi gravada em estúdio",
+      "descricao": "Teoria repetida nas redes diz que a bandeira dos EUA tremula nos vídeos da Apollo 11, o que seria impossível na Lua, onde não há vento.",
+      "saibaMais": "Em julho de 1969, a Apollo 11 levou os primeiros astronautas à Lua. Até 1972, 12 pessoas caminharam por lá.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. A National Geographic Brasil explica, com dados da NASA, que os astronautas giraram o mastro para fincá-lo no chão, e o tecido balançou com o movimento, não com vento. O Aos Fatos lista outras provas, como 382 kg de rochas lunares analisadas. Olhe a imagem com atenção: o pano se mexe enquanto o astronauta mexe no mastro.",
+      "tecnica": "imagem",
+      "tema": "ciencia",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.nationalgeographicbrasil.com/espaco/2023/07/mitos-e-verdades-sobre-o-pouso-do-homem-na-lua-realmente-chegamos-la",
+      "fontesExtras": [
+        "https://www.aosfatos.org/noticias/as-provas-de-que-o-homem-pisou-na-lua/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0071",
+      "titulo": "Brasil não tem terremotos porque fica no meio de uma placa",
+      "descricao": "Ideia repetida por muita gente diz que o país está livre de tremores de terra por estar longe das bordas das placas tectônicas.",
+      "saibaMais": "As placas tectônicas são grandes blocos da crosta da Terra que se movem devagar. O Brasil fica no meio da placa Sul-Americana; o Chile, na borda dela.",
+      "veredito": "falsa",
+      "explicacao": "Falsa, mas com base real. Longe das bordas, os tremores são menores e mais raros, explica a National Geographic Brasil: aqui ocorre um de magnitude 5 a cada cinco anos. O maior, em 1955, em Mato Grosso, teve 6,2. Segundo o Metrópoles, um tremor em Minas Gerais, em 2007, derrubou casas. Veja o contexto: risco menor não é risco zero.",
+      "tecnica": "contexto",
+      "tema": "ciencia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.nationalgeographicbrasil.com/meio-ambiente/2023/09/por-que-no-brasil-nao-tem-grandes-terremotos",
+      "fontesExtras": [
+        "https://www.metropoles.com/ciencia/brasil-teve-terremotos-com-mortes"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0072",
+      "titulo": "Retrato famoso de Machado de Assis o deixa mais branco do que era",
+      "descricao": "A foto do escritor que aparece em livros didáticos teria clareado a pele dele ao longo do tempo, apagando sua origem negra.",
+      "saibaMais": "Machado de Assis nasceu no Rio de Janeiro, em 1839, e escreveu clássicos como Dom Casmurro. Os livros dele são leitura comum no ensino médio e nos vestibulares.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo a BBC News Brasil, publicada por A Gazeta, Machado era filho de pai pardo e, em vida, era descrito como mulato; mesmo assim, imagens em livros o embranqueceram no século 20. Em 2019, uma campanha da Faculdade Zumbi dos Palmares recoloriu a foto, conta a Catraca Livre. Compare versões da mesma imagem: a cor também pode ser editada.",
+      "tecnica": "imagem",
+      "tema": "historia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.agazeta.com.br/mundo/de-machado-de-assis-a-alexandre-dumas-os-grandes-nomes-cuja-origem-negra-esta-sendo-resgatada-1126",
+      "fontesExtras": [
+        "https://catracalivre.com.br/cidadania/movimento-pede-troca-de-foto-embranquecida-de-machado-de-assis/",
+        "https://mais.opovo.com.br/jornal/vidaearte/2019/05/02/machado-de-assis-era-negro.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0073",
+      "titulo": "Mulher casada precisava da permissão do marido para trabalhar",
+      "descricao": "Por lei, uma mulher casada no Brasil só poderia ter emprego fora de casa se o marido deixasse, e ele poderia mudar de ideia.",
+      "saibaMais": "As leis sobre família e trabalho mudaram muito ao longo do século 20. Hoje, a Constituição diz que homens e mulheres têm os mesmos direitos e deveres.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira, mas confira a data. O Código Civil de 1916 exigia autorização do marido, que podia ser retirada a qualquer momento, segundo o Aos Fatos e um artigo acadêmico na SciELO. A regra só caiu com o Estatuto da Mulher Casada, de 1962. A igualdade entre homens e mulheres só ficou escrita na Constituição de 1988.",
+      "tecnica": "data",
+      "tema": "historia",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.aosfatos.org/noticias/cinco-fatos-sobre-direitos-das-mulheres-no-brasil/",
+      "fontesExtras": [
+        "https://www.scielo.br/j/ref/a/mkBHYrM8HVHMbwHsYTDmzKz/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0074",
+      "titulo": "13º salário foi criado por Getúlio Vargas junto com a CLT",
+      "descricao": "Muita gente acredita que o salário extra de fim de ano veio no mesmo pacote de leis trabalhistas de 1943, criado por Vargas.",
+      "saibaMais": "O 13º é pago no fim do ano a quem trabalha com carteira assinada, a aposentados e a pensionistas. Getúlio Vargas governou o Brasil por quase 20 anos e morreu em 1954.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo a Agência Senado e o Diário do Comércio, o 13º não estava na CLT de 1943. Ele foi criado pela Lei 4.090, sancionada pelo então presidente João Goulart em julho de 1962, oito anos depois da morte de Vargas. A ideia foi proposta em 1959 por um deputado. Confira a data da lei antes de dar o crédito a alguém.",
+      "tecnica": "data",
+      "tema": "historia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www12.senado.leg.br/noticias/especiais/arquivo-s/13o-salario-foi-criado-em-meio-a-intensa-disputa-ideologica-entre-esquerda-e-direita",
+      "fontesExtras": [
+        "https://diariodocomercio.com.br/legislacao/criacao-da-gratificacao-do-13o-salario-no-brasil-chega-aos-60-anos/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0075",
+      "titulo": "Quase toda a internet que vem de fora chega por uma praia do Ceará",
+      "descricao": "Cabos no fundo do mar, que ligam o Brasil a outros continentes, chegariam juntos a uma praia de Fortaleza e trariam os dados do exterior.",
+      "saibaMais": "Vídeos, mensagens e sites hospedados em outros países precisam atravessar o oceano para chegar ao seu celular. Satélites também transmitem dados.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. A BBC News Brasil, publicada por A Gazeta, e o Olhar Digital contam que a Praia do Futuro recebe 16 cabos submarinos, o maior número da América Latina. Segundo o NIC.br, perto de 90% do tráfego internacional do país passa por lá. Satélites levam só 3% dos dados entre continentes. Procure especialistas: o número vem do NIC.br.",
+      "tecnica": "fonte",
+      "tema": "tecnologia",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://www.agazeta.com.br/mundo/por-que-90-dos-dados-de-internet-que-chegam-ao-brasil-passam-por-essa-praia-do-ceara-0625",
+      "fontesExtras": [
+        "https://olhardigital.com.br/2025/06/23/internet-e-redes-sociais/como-praia-de-fortaleza-se-tornou-o-principal-hub-de-internet-do-brasil/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0076",
+      "titulo": "Antenas de 5G espalham o coronavírus",
+      "descricao": "Vídeos e posts afirmam que a pandemia de covid-19 começou e cresceu por causa das ondas das novas antenas de internet 5G.",
+      "saibaMais": "O 5G é a quinta geração da internet móvel, mais rápida que o 4G. A pandemia de covid-19 foi declarada pela Organização Mundial da Saúde em março de 2020.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Em 2020, cientistas ouvidos pela BBC Brasil, em texto publicado pelo TNH1, chamaram a teoria de absurdo total: vírus e ondas de rádio são coisas diferentes. E o vírus já se espalhava em países sem 5G, como o Brasil. O Canaltech mostra que Wuhan não foi a primeira cidade com 5G. Compare as datas: a doença chegou antes das antenas.",
+      "tecnica": "data",
+      "tema": "tecnologia",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.tnh1.com.br/noticia/nid/cientistas-condenam-teoria-espalhada-na-internet-de-que-5g-transmite-coronavirus/",
+      "fontesExtras": [
+        "https://canaltech.com.br/saude/conspiracionistas-estao-atribuindo-o-avanco-do-covid-19-ao-5g-161032/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0077",
+      "titulo": "Vídeo de telejornal anuncia indenização de R$ 7 mil por dados vazados",
+      "descricao": "No vídeo, um apresentador conhecido diz que o governo vai pagar quem teve dados vazados e indica um site para resgatar o dinheiro.",
+      "saibaMais": "Vazamentos de dados pessoais, como CPF e telefone, já foram notícia no Brasil. Programas do governo federal costumam ser divulgados em sites que terminam em gov.br.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O Aos Fatos achou, por busca reversa, o vídeo original no perfil do telejornal, sobre outro assunto; a versão do golpe foi manipulada com IA, e o benefício não existe. A Folha de Pernambuco mostrou golpes iguais com outros jornalistas e políticos. Olhe a imagem com atenção e busque o vídeo original antes de clicar.",
+      "tecnica": "imagem",
+      "tema": "tecnologia",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.aosfatos.org/noticias/golpe-resgata-brasil-inventa-indenizacao-deepfake-william-bonner/",
+      "fontesExtras": [
+        "https://www.folhape.com.br/politica/criminosos-usam-de-lula-a-nikolas-ferreira-para-enganar-populacao/396906/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0078",
+      "titulo": "Votação mundial elegeu o Hino Nacional o mais bonito do planeta",
+      "descricao": "Posts comemoram que o hino do Brasil venceu uma eleição internacional e foi escolhido como o mais bonito de todos os países.",
+      "saibaMais": "O Hino Nacional tem música de Francisco Manuel da Silva e letra de Osório Duque-Estrada. Em 2026, ele foi tocado antes dos jogos da seleção na Copa do Mundo.",
+      "veredito": "falsa",
+      "explicacao": "Falsa, com base real. Em junho de 2026, o jornalista Tim Spiers, do The Athletic, ligado ao New York Times, pôs o hino do Brasil em 1º lugar numa lista dos 48 países da Copa, contam Lance! e Metrópoles. Não houve votação nem concurso mundial: foi a opinião de um jornalista. Veja o contexto antes de repassar.",
+      "tecnica": "contexto",
+      "tema": "curiosidades",
+      "dificuldade": "medio",
+      "fonteUrl": "https://www.metropoles.com/entretenimento/hino-brasileiro-e-eleito-o-mais-bonito-da-copa-veja-ranking",
+      "fontesExtras": [
+        "https://www.lance.com.br/selecao-brasileira/hino-do-brasil-supera-franca-e-argentina-e-e-eleito-o-mais-bonito-da-copa-veja-top-10.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0079",
+      "titulo": "Drones formam Nossa Senhora gigante ao lado do Cristo Redentor",
+      "descricao": "Vídeo mostra luzes no céu do Rio formando a imagem da padroeira do Brasil, numa homenagem do Dia das Mães.",
+      "saibaMais": "Shows de drones usam centenas de aparelhos com luzes que voam juntos e desenham figuras no céu. O vídeo teve milhões de visualizações e voltou a circular em 2026.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. Segundo a Folha de Pernambuco e O Tempo, a cena de maio de 2025 foi feita por computador para divulgar um filme sobre Nossa Senhora Aparecida; não houve drones. O Santuário do Cristo disse que a imagem não é real. Em 2026, o Boatos.org viu o vídeo voltar com nova legenda. Olhe a imagem e procure a origem antes de compartilhar.",
+      "tecnica": "imagem",
+      "tema": "curiosidades",
+      "dificuldade": "facil",
+      "fonteUrl": "https://www.folhape.com.br/noticias/e-falsa-projecao-de-nossa-senhora-aparecida-feita-por-drones-ao-lado/410543/",
+      "fontesExtras": [
+        "https://www.otempo.com.br/brasil/2025/5/11/e-falsa-a-nossa-senhora-aparecida-projetada-por-drones-ao-lado-do-cristo-redentor",
+        "https://www.boatos.org/religiao/cristo-redentor-fez-homenagem-ao-dia-das-maes-com-imagem-de-nossa-senhora-abracando-jesus.html"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0080",
+      "titulo": "Foto mostra raio caindo bem em cima do Cristo Redentor",
+      "descricao": "Imagem feita durante uma tempestade no Rio mostraria o exato momento em que um raio atinge a estátua.",
+      "saibaMais": "O Cristo Redentor fica no alto do morro do Corcovado, no Rio de Janeiro, e é um dos monumentos mais fotografados do país.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. O Chequeado mostrou que a foto é de Fernando Braga, feita em fevereiro de 2023 depois de três horas e mais de 500 cliques, e que foi publicada pelo próprio Santuário do Cristo. O Olhar Digital registrou novas fotos de raios na estátua dias depois. Busque a origem: o perfil oficial do monumento confirmou o autor.",
+      "tecnica": "imagem",
+      "tema": "curiosidades",
+      "dificuldade": "facil",
+      "fonteUrl": "https://chequeado.com/?p=60401",
+      "fontesExtras": [
+        "https://olhardigital.com.br/2023/02/23/ciencia-e-espaco/veja-novas-imagens-de-raios-atingindo-o-cristo-redentor/"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0081",
+      "titulo": "Existem rios voando no céu que levam água da Amazônia",
+      "descricao": "Cientistas diriam que rios invisíveis passam sobre nossas cabeças, levando água da floresta para outras regiões do país.",
+      "saibaMais": "Uma árvore grande da Amazônia pode jogar no ar cerca de mil litros de água por dia, pela transpiração das folhas.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira, no sentido figurado. \"Rios voadores\" são correntes de ar úmido a uns 3 km de altura, explica a Pesquisa FAPESP; numa medição, uma levava 3.200 m³ de água por segundo, mais que o rio São Francisco. A National Geographic Brasil diz que essa umidade ajuda a fazer chover em boa parte da América do Sul. Veja o contexto: o rio é de vapor.",
+      "tecnica": "contexto",
+      "tema": "meio-ambiente",
+      "dificuldade": "medio",
+      "fonteUrl": "https://revistapesquisa.fapesp.br/um-rio-que-flui-pelo-ar/",
+      "fontesExtras": [
+        "https://www.nationalgeographicbrasil.com/meio-ambiente/2024/08/o-que-sao-rios-voadores-e-qual-e-a-sua-importancia"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0082",
+      "titulo": "Brasil vai ter o inverno mais frio dos últimos 100 anos",
+      "descricao": "Mensagem com texto e áudio avisa que uma onda de frio histórica vai atingir o país e pede para todos se prepararem.",
+      "saibaMais": "Previsões do tempo e do clima são feitas por órgãos como o Inmet e por empresas de meteorologia. O inverno no Brasil vai de junho a setembro.",
+      "veredito": "falsa",
+      "explicacao": "Falsa. O Aos Fatos desmentiu a versão de 2019 e lembrou que o mesmo texto já tinha circulado em 2018. Em 2022, o Inmet avisou que o \"pior frio dos últimos 100 anos\" não tinha base científica. É um boato reciclado: só muda o ano. Veja a data e procure a previsão oficial antes de repassar.",
+      "tecnica": "data",
+      "tema": "meio-ambiente",
+      "dificuldade": "facil",
+      "fonteUrl": "https://aosfatos.org/noticias/e-falso-que-inverno-de-2019-sera-o-mais-frio-dos-ultimos-cem-anos-no-brasil/",
+      "fontesExtras": [
+        "https://portal.inmet.gov.br/noticias/aviso-de-notícia-falsa-3"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    },
+    {
+      "id": "mds-0083",
+      "titulo": "Rio Amazonas não tem nenhuma ponte que o atravesse",
+      "descricao": "Um dos maiores rios do mundo, com mais de 6 mil km, não teria uma única ponte ligando suas margens.",
+      "saibaMais": "O rio Amazonas atravessa o norte do Brasil até o oceano Atlântico. Barcos e balsas são o principal transporte de muitas cidades da região.",
+      "veredito": "verdadeira",
+      "explicacao": "Verdadeira. Segundo o Olhar Digital e a IFLScience, nenhuma ponte cruza o curso principal do Amazonas. A mais próxima, perto de Manaus, atravessa o rio Negro, um afluente. Há pouca demanda, as cheias mudam o rio e estradas na floresta puxam desmatamento. Veja o contexto: ponte sobre afluente não é ponte sobre o Amazonas.",
+      "tecnica": "contexto",
+      "tema": "meio-ambiente",
+      "dificuldade": "dificil",
+      "fonteUrl": "https://olhardigital.com.br/2026/04/27/ciencia-e-espaco/por-que-o-rio-amazonas-nao-tem-nenhuma-ponte/",
+      "fontesExtras": [
+        "https://www.iflscience.com/the-amazon-is-the-worlds-second-longest-river-and-it-doesnt-have-a-single-bridge-heres-why-83308"
+      ],
+      "imagemBoatoUrl": "",
+      "status": "rascunho",
+      "revisadoPor": ""
+    }
+  ],
+  "descartadasNaCriacao": [
+    {
+      "titulo": "Terra vai ficar 7 segundos sem gravidade em 12 de agosto de 2026",
+      "motivo": "Repete o formato de mds-0004 (\"NASA confirma...\") e a data do boato já passou; checagens brasileiras fracas."
+    },
+    {
+      "titulo": "Taurina dos energéticos é feita de sêmen de touro",
+      "motivo": "Só achei a página da própria fabricante e sites fracos; nenhuma checagem brasileira sólida."
+    },
+    {
+      "titulo": "Desodorante antitranspirante causa câncer de mama",
+      "motivo": "Sem página do INCA acessível nem checagem forte; pouco relevante para o público."
+    },
+    {
+      "titulo": "Cabral foi o primeiro europeu a chegar ao Brasil (Pinzón chegou antes)",
+      "motivo": "Historiadores divergem sobre onde Pinzón desembarcou; gabarito discutível."
+    },
+    {
+      "titulo": "De Gaulle disse que o Brasil não é um país sério",
+      "motivo": "Fontes conflitam: colunas atribuem a frase a um embaixador brasileiro, mas reportagem da Gazeta do Povo (2014) atribui a De Gaulle."
+    },
+    {
+      "titulo": "O Brasil já teve primeiro-ministro (1961-1963)",
+      "motivo": "Verdadeira e checada, mas se sobrepõe ao plebiscito de 1993 (mds-0040), que também decidiu entre parlamentarismo e presidencialismo."
+    },
+    {
+      "titulo": "Einstein disse que, sem abelhas, a humanidade teria só quatro anos",
+      "motivo": "Só achei checagens estrangeiras, que não consegui abrir; nenhuma em português."
+    },
+    {
+      "titulo": "Programa do MEC de 2019 previa mensalidade nas universidades federais",
+      "motivo": "Nenhuma checagem formal; só notas de associação e declarações do governo. Era a candidata de boato do campo da esquerda."
+    },
+    {
+      "titulo": "Decreto de 2020 privatizou o SUS",
+      "motivo": "Veredito com nuance (decreto de estudos, revogado em dois dias) e sem checagem formal; gabarito discutível."
+    },
+    {
+      "titulo": "Vídeo mostra enxurrada destruindo casas em Minas Gerais (IA)",
+      "motivo": "Só uma agência checou, e a tragédia real de 2026 teve dezenas de mortos; sensível para o estande."
+    },
+    {
+      "titulo": "Vídeo mostra chuva de granizo gigante em Santa Catarina",
+      "motivo": "Uma só checagem (Aos Fatos); não achei segunda fonte independente."
+    },
+    {
+      "titulo": "Vídeo mostra chuva de sapos no Brasil",
+      "motivo": "Só checagens em espanhol."
+    },
+    {
+      "titulo": "\"A cobra vai fumar\" nasceu de piada sobre o Brasil ir à Segunda Guerra",
+      "motivo": "Verdadeira e checada (Pesquisa FAPESP, Gazeta do Povo, Diário do Rio), mas cortada para fechar o equilíbrio de técnicas; fica como reserva."
+    }
+  ]
+}
