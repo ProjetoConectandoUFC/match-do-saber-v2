@@ -68,6 +68,18 @@ describe('painel Ajustes (AC-9.1, AC-9.2, AC-9.18, AC-9.27, AC-9.30)', () => {
     expect(onDefinir).toHaveBeenLastCalledWith({ ...AJUSTES_PADRAO, interface: 'cartas' });
   });
 
+  it('AC-19.1 (v13.4.0): "Intensidade dos efeitos" logo abaixo da interface, Média marcada, e o clique troca', () => {
+    const { onDefinir } = montar();
+    const grupos = screen.getAllByRole('group');
+    expect(grupos[1]).toHaveAccessibleName('Intensidade dos efeitos');
+    const botoes = within(grupos[1]!).getAllByRole('button');
+    expect(botoes.map((b) => [b.textContent, b.getAttribute('aria-pressed')])).toEqual([
+      ['○ Desligada', 'false'], ['○ Baixa', 'false'], ['◉ Média', 'true'], ['○ Alta', 'false'],
+    ]);
+    fireEvent.click(botoes[3]!);
+    expect(onDefinir).toHaveBeenLastCalledWith({ ...AJUSTES_PADRAO, efeitos: 'alta' });
+  });
+
   it('AC-9.2: clicar num valor muda o ajuste', () => {
     const { onDefinir } = montar();
     fireEvent.click(within(screen.getByRole('group', { name: 'Notícias por partida' })).getByRole('button', { name: '○ 5' }));

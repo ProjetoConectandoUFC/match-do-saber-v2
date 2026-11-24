@@ -21,7 +21,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
       noticiasPorPartida: 10, tempoCardS: 15, feedbackS: 3, voltaResumoS: 60,
       temas: [...TEMAS], dificuldade: 'misturada',
       modo: 'corpo', sensibilidade: 'normal', toleranciaS: 10,
-      som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false, interface: 'cartas',
+      som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false, interface: 'cartas', efeitos: 'media',
     });
     expect(lerAjustes(memoria())).toEqual(AJUSTES_PADRAO);
     expect(lerAjustes(null)).toEqual(AJUSTES_PADRAO);
@@ -45,6 +45,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
   it('AC-9.1: itens agrupados, na ordem do painel, com "Restaurar padrão" no fim', () => {
     expect(ITENS_AJUSTES.map((i) => [i.grupo, i.id])).toEqual([
       ['interface', 'interface'], // AC-18.1 (v13.2.0): o primeiro item do painel
+      ['interface', 'efeitos'], // AC-19.1 (v13.4.0): logo abaixo da interface
       ['partida', 'noticiasPorPartida'], ['partida', 'tempoCardS'], ['partida', 'feedbackS'], ['partida', 'voltaResumoS'],
       ['conteudo', 'temas'], ['conteudo', 'dificuldade'],
       ['deteccao', 'modo'], ['deteccao', 'sensibilidade'], ['deteccao', 'toleranciaS'],
@@ -53,7 +54,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
       [null, 'restaurar'],
     ]);
     expect(ITENS_AJUSTES.map((i) => i.rotulo)).toEqual([
-      'Interface do jogo',
+      'Interface do jogo', 'Intensidade dos efeitos',
       'Notícias por partida', 'Tempo por card', 'Tempo do feedback', 'Volta automática do resumo',
       'Temas', 'Dificuldade', 'Modo de jogo', 'Sensibilidade do gesto', 'Tolerância sem pessoa',
       'Som', 'Volume', 'Foto no resumo', 'QR das fontes', 'Tutorial', 'Revisar questões', 'Restaurar padrão',
@@ -76,7 +77,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
     const aj: Ajustes = {
       noticiasPorPartida: 5, tempoCardS: 60, feedbackS: 8, voltaResumoS: 60, temas: ['saude', 'politica'], dificuldade: 'crescente',
       modo: 'mao', sensibilidade: 'maior', toleranciaS: 20, som: false, volume: 'baixo', foto: false, qrFontes: false, tutorial: true,
-      interface: 'cartas',
+      interface: 'cartas', efeitos: 'alta',
     };
     salvarAjustes(a, aj);
     expect(lerAjustes(a)).toEqual(aj);
@@ -119,7 +120,7 @@ describe('ajustes do estande (FR-9, v12.0.0)', () => {
     salvarAjustes(a, AJUSTES_PADRAO);
     expect(Object.keys(a.dados).every((k) => k.startsWith('match-do-saber:'))).toBe(true);
     expect(Object.keys(a.dados).sort()).toEqual([
-      'match-do-saber:dificuldade', 'match-do-saber:foto', 'match-do-saber:interface', 'match-do-saber:modo', 'match-do-saber:noticiasPorPartida',
+      'match-do-saber:dificuldade', 'match-do-saber:efeitos', 'match-do-saber:foto', 'match-do-saber:interface', 'match-do-saber:modo', 'match-do-saber:noticiasPorPartida',
       'match-do-saber:qrFontes', 'match-do-saber:sensibilidade', 'match-do-saber:som', 'match-do-saber:temasDesligados',
       'match-do-saber:tempoCard', 'match-do-saber:tempoFeedback', 'match-do-saber:tolerancia', 'match-do-saber:tutorial',
       'match-do-saber:voltaResumo', 'match-do-saber:volume',

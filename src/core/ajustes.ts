@@ -1,3 +1,4 @@
+import { INTENSIDADES, INTENSIDADE_PADRAO, type Intensidade } from './juice';
 import { MODOS, MODO_PADRAO, MODO_ROTULO, type ModoJogo } from './modos';
 import { INTERFACES_JOGO, type InterfaceJogo } from './partida';
 import { TEMAS, type Tema } from './types';
@@ -31,6 +32,8 @@ export interface Ajustes {
   tutorial: boolean;
   /** v13.2.0 (AC-18.1, FR-19): Cartas (a da v13.1.0; padrão desde a v13.4.0) ou Clássica (a da v12.1.0, só reserva). */
   interface: InterfaceJogo;
+  /** v13.4.0 (AC-19.1, FR-21): intensidade dos efeitos de reação (juice); a efetiva tem o teto de `prefers-reduced-motion`. */
+  efeitos: Intensidade;
 }
 
 /** AC-9.4. `voltaResumoS` 60 desde a v12.1.0 (AC-5.2, AC-9.26): a foto não fica exposta sem operador; valor salvo continua valendo. */
@@ -39,7 +42,7 @@ export const AJUSTES_PADRAO: Ajustes = {
   temas: [...TEMAS], dificuldade: 'misturada',
   modo: MODO_PADRAO, sensibilidade: 'normal', toleranciaS: 10,
   som: true, volume: 'alto', foto: true, qrFontes: true, tutorial: false,
-  interface: 'cartas',
+  interface: 'cartas', efeitos: INTENSIDADE_PADRAO,
 };
 
 /** AC-9.28: multiplicador dos limiares dos gestos (Menor exige gesto maior). Normal = limiares atuais. */
@@ -71,13 +74,15 @@ export const OPCOES: { [K in ItemValor]: readonly Ajustes[K][] } = {
   qrFontes: [true, false],
   tutorial: [true, false],
   interface: INTERFACES_JOGO,
+  efeitos: INTENSIDADES,
 };
 
 export interface ItemPainel { id: ItemAjuste; grupo: GrupoAjuste | null; rotulo: string }
 
-/** AC-9.1: ordem do painel; AC-18.1 (v13.2.0): a interface do jogo é o primeiro item. */
+/** AC-9.1: ordem do painel; AC-18.1 (v13.2.0): a interface do jogo é o primeiro item; AC-19.1 (v13.4.0): os efeitos, o segundo. */
 export const ITENS_AJUSTES: readonly ItemPainel[] = [
   { id: 'interface', grupo: 'interface', rotulo: 'Interface do jogo' },
+  { id: 'efeitos', grupo: 'interface', rotulo: 'Intensidade dos efeitos' }, // AC-19.1 (v13.4.0)
   { id: 'noticiasPorPartida', grupo: 'partida', rotulo: 'Notícias por partida' },
   { id: 'tempoCardS', grupo: 'partida', rotulo: 'Tempo por card' },
   { id: 'feedbackS', grupo: 'partida', rotulo: 'Tempo do feedback' },
@@ -128,6 +133,7 @@ const CHAVE = {
   volume: 'match-do-saber:volume',
   qrFontes: 'match-do-saber:qrFontes',
   interface: 'match-do-saber:interface',
+  efeitos: 'match-do-saber:efeitos',
 } as const satisfies Record<keyof Ajustes, string>;
 
 /** Liga/desliga como texto: "ligado"/"desligado" (foto: "ligada"/"desligada", como na v8.0.0). */
@@ -199,6 +205,7 @@ const ROTULO_DIFICULDADE: Record<FiltroDificuldade, string> = {
 const ROTULO_SENSIBILIDADE: Record<Sensibilidade, string> = { menor: 'Menor', normal: 'Normal', maior: 'Maior' };
 const ROTULO_INTERFACE: Record<InterfaceJogo, string> = { classica: 'Clássica', cartas: 'Cartas' };
 const ROTULO_VOLUME: Record<Volume, string> = { baixo: 'Baixo', medio: 'Médio', alto: 'Alto' };
+const ROTULO_EFEITOS: Record<Intensidade, string> = { desligada: 'Desligada', baixa: 'Baixa', media: 'Média', alta: 'Alta' };
 
 export function rotuloValor<K extends ItemValor>(item: K, valor: Ajustes[K]): string {
   switch (item) {
@@ -210,6 +217,7 @@ export function rotuloValor<K extends ItemValor>(item: K, valor: Ajustes[K]): st
     case 'sensibilidade': return ROTULO_SENSIBILIDADE[valor as Sensibilidade];
     case 'volume': return ROTULO_VOLUME[valor as Volume];
     case 'interface': return ROTULO_INTERFACE[valor as InterfaceJogo];
+    case 'efeitos': return ROTULO_EFEITOS[valor as Intensidade];
     case 'foto': return valor ? 'Ligada' : 'Desligada';
     default: return valor ? 'Ligado' : 'Desligado';
   }

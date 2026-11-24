@@ -24,6 +24,7 @@ import { PERFIS_TUTORIAL } from './perfisTutorial';
 import { useAjustes } from './useAjustes';
 import { useFotoPartida } from './useFotoPartida';
 import { useInclinacaoCard } from './useInclinacaoCard';
+import { ProvedorJuice, useIntensidadeEfetiva } from './juice';
 import { useJogo } from './useJogo';
 import { useSons } from './useSons';
 import s from './App.module.css';
@@ -118,6 +119,8 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   const baixarDiagnostico = useCallback(() => { if (diagnostico) baixarJson(diagnostico.exportar()); }, [diagnostico]);
   const partidaResumo = estado.tela === 'resumo' ? estado.partida : null;
   const linhasResumo = useMemo(() => (partidaResumo ? linhasDoResumo(partidaResumo.cards, partidaResumo.resultados) : []), [partidaResumo]);
+  // v13.4.0 (AC-19.1, FR-21): intensidade efetiva dos efeitos (teto de prefers-reduced-motion), para a tela inteira.
+  const juice = useIntensidadeEfetiva(cfg.ajustes.efeitos);
   useSons(estado, cfg.ajustes.som, FATOR_VOLUME[cfg.ajustes.volume]); // AC-9.29
   // Foto do resumo (FR-13): só com a câmera ativa; fica só neste estado React, com as âncoras do rosto
   // calculadas pela pose do mesmo quadro (AC-13.6), que posicionam o filtro da faixa no resumo (AC-13.8, v11.0.0).
@@ -252,10 +255,13 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   }
 
   return (
-    // `data-*`: o que o reducer diz da partida (AC-17.3, AC-17.6), para os E2E e para o fan (Fase 48).
+    // `data-*`: o que o reducer diz da partida (AC-17.3, AC-17.6), para os E2E e para o fan (Fase 48). `data-juice`: a
+    // intensidade efetiva dos efeitos (AC-19.1), para o CSS; os componentes leem a mesma por `useJuice` (./juice).
+    <ProvedorJuice intensidade={juice}>
     <div
       className={s.app}
       data-tela={estado.tela}
+      data-juice={juice}
       data-interface-jogo={interfaceAtiva}
       data-distribuindo={distribuindo(estado) || undefined}
       data-cartas-no-fan={cartasNoFan(estado)}
@@ -296,5 +302,6 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
       {/* A prévia da câmera não aparece no resumo (AC-2.6, v10.0.0); o vídeo continua ligado para a foto. */}
       <CameraPreview videoRef={videoRef} poseRef={poseRef} visivel={camera === 'ativa' && estado.tela !== 'resumo'} />
     </div>
+    </ProvedorJuice>
   );
 }
