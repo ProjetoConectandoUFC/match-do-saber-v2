@@ -18,7 +18,11 @@ const escopo = self as unknown as EscopoWorker & Parameters<typeof bloquearRedeE
 // NFR Security: o worker não herda a CSP da página; o registro de uso do MediaPipe não sai daqui.
 bloquearRedeExterna(escopo);
 
-/** No build o worker é clássico e o MediaPipe carrega o WASM com importScripts; no dev é de módulo e usa a versão ES. */
+/**
+ * O MediaPipe carrega o script do WASM (o mesmo da thread principal e do precache) com importScripts. No build o worker
+ * é clássico e isso funciona. No dev o Vite só serve o worker como módulo, onde importScripts falha e o MediaPipe tenta
+ * `self.import`; o Vite recusa import() de arquivos de public/, então aqui o script é lido e avaliado no escopo global.
+ */
 function workerClassico(): boolean {
   try {
     escopo.importScripts?.();
@@ -27,6 +31,12 @@ function workerClassico(): boolean {
     return false;
   }
 }
+if (!workerClassico()) {
+  (escopo as unknown as { import: (url: string) => Promise<void> }).import = async (url) => {
+    const codigo = await (await fetch(url)).text();
+    (0, eval)(codigo);
+  };
+}
 
 let inicio: Extract<PedidoWorker, { tipo: 'iniciar' }> | null = null;
 
@@ -34,7 +44,7 @@ const servico = criarServicoPose({
   async criarMarcador(delegate, numPoses): Promise<Marcador> {
     const falsa = inicio?.falsa;
     if (falsa) return { detectar: () => { esperaOcupada(falsa.ms); return [poseFalsa()]; }, fechar() {} };
-    const vision = await FilesetResolver.forVisionTasks(`${inicio?.base ?? '/'}mediapipe/wasm`, !workerClassico());
+    const vision = await FilesetResolver.forVisionTasks(`${inicio?.base ?? '/'}mediapipe/wasm`);
     const marcador = await PoseLandmarker.createFromOptions(vision, {
       baseOptions: { modelAssetPath: `${inicio?.base ?? '/'}mediapipe/pose_landmarker_lite.task`, delegate },
       runningMode: 'VIDEO',
