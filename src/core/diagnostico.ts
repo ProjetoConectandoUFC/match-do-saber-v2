@@ -34,8 +34,10 @@ export function extrairPontos(pose: Pose | null): Amostra['pontos'] {
   return out;
 }
 
-/** Onde a detecção de pose roda (performance, 23/11): `software` quando está na CPU, direto ou por WebGL emulado. */
-/** `onde` e `aquecimentoMs` (FR-20, v13.3.0): worker ou thread principal, e quanto o modelo levou para aquecer. */
+/**
+ * Onde a detecção de pose roda (performance, 23/11): `software` quando está na CPU, direto ou por WebGL emulado.
+ * `onde` e `aquecimentoMs` (FR-20, v13.3.0): worker ou thread principal, e quanto o modelo levou para aquecer.
+ */
 export interface Aceleracao { software: boolean; texto: string; onde?: 'worker' | 'principal'; aquecimentoMs?: number }
 
 const RENDERIZADOR_SOFTWARE = /swiftshader|llvmpipe|softpipe|basic render|software/i;

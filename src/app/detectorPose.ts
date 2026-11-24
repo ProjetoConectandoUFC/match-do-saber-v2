@@ -123,13 +123,26 @@ export function detectorPrincipal(r: Rastreador): DetectorPose {
 }
 
 /**
- * O detector do jogo: o Web Worker quando dá (Electron e navegadores atuais); se ele não puder ser criado ou não
- * iniciar, a thread principal. Os E2E de cadência podem pedir a detecção falsa (`__mdsDeteccaoFalsa`).
+ * FR-20 (v13.3.1): o worker já falhou nesta execução do app (não iniciou ou morreu durante o uso). Daí em diante, toda
+ * abertura da câmera usa a reserva (thread principal) até o app ser reaberto. Sem isso, um worker que sempre morre
+ * deixava a câmera "indisponível" em laço e a reserva nunca entrava.
+ */
+let workerFalhou = false;
+
+/** Só para os testes: volta ao estado de um app recém-aberto. */
+export function reiniciarFalhaWorker() {
+  workerFalhou = false;
+}
+
+/**
+ * O detector do jogo: o Web Worker quando dá (Electron e navegadores atuais); se ele não puder ser criado, não iniciar
+ * ou já tiver falhado nesta execução do app (`workerFalhou`), a thread principal. Os E2E de cadência podem pedir a
+ * detecção falsa (`__mdsDeteccaoFalsa`).
  */
 export async function criarDetector({ aoFalhar }: { aoFalhar: (e: unknown) => void }): Promise<DetectorPose> {
   const falsa = lerDeteccaoFalsa(globalThis);
   const podeWorker = typeof Worker !== 'undefined' && typeof createImageBitmap === 'function';
-  if (podeWorker && falsa?.onde !== 'principal') {
+  if (podeWorker && falsa?.onde !== 'principal' && !workerFalhou) {
     try {
       // No build, worker clássico (IIFE): o MediaPipe carrega o mesmo WASM da thread principal com importScripts, que
       // já está no precache do PWA. No dev, o Vite só serve o worker como módulo (usa a versão ES do WASM).
@@ -141,10 +154,14 @@ export async function criarDetector({ aoFalhar }: { aoFalhar: (e: unknown) => vo
         base: import.meta.env.BASE_URL,
         falsa: falsa ? { ms: falsa.ms } : null,
         numPoses: NUM_POSES,
-        aoFalhar,
+        aoFalhar: (e) => {
+          workerFalhou = true; // morreu durante o uso: a reabertura vai para a reserva
+          aoFalhar(e);
+        },
         capturar: (video) => createImageBitmap(video),
       });
     } catch (e) {
+      workerFalhou = true;
       console.warn('[match-do-saber] worker da pose indisponível; a detecção roda na thread principal', e);
     }
   }
