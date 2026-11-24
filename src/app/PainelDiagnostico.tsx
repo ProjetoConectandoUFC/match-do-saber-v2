@@ -14,8 +14,10 @@ function textoAceleracao(a: Aceleracao): string {
   return `${a.software ? '⚠ ' : ''}${onde}${a.texto}${aquec}`;
 }
 
-/** Painel do modo de diagnóstico (FR-12, AC-12.3); atualiza a cada 500 ms. */
-/** `aceleracao`: onde a detecção roda (performance, 23/11); ⚠ quando está na CPU. */
+/**
+ * Painel do modo de diagnóstico (FR-12, AC-12.3); atualiza a cada 500 ms. `aceleracao`: onde a detecção roda
+ * (performance, 23/11; worker ou thread principal desde a v13.3.0, FR-20); ⚠ quando está na CPU.
+ */
 function PainelDiagnosticoBase({ registro, onBaixar, aceleracao }: { registro: Registro; onBaixar: () => void; aceleracao?: Aceleracao | null }) {
   const [agora, setAgora] = useState(() => performance.now());
   useEffect(() => {

@@ -175,10 +175,10 @@ function BotaoSairBase({ onSair }: { onSair: () => void }) {
   );
 }
 
-/** Tempo restante do card, na base da tela (AC-4.6); coral nos últimos 5 s (AC-4.7). A barra do card saiu na v10.0.0 (AC-4.8). */
 // FR-20 (v13.3.0): não re-renderiza a cada tick quando as props não mudam.
 export const BotaoSair = memo(BotaoSairBase);
 
+/** Tempo restante do card, na base da tela (AC-4.6); coral nos últimos 5 s (AC-4.7). A barra do card saiu na v10.0.0 (AC-4.8). */
 export function BarraTempo({ restanteMs, totalMs, alerta }: { restanteMs: number; totalMs: number; alerta: boolean }) {
   const fracao = Math.max(0, Math.min(1, restanteMs / totalMs));
   return (
