@@ -41,10 +41,15 @@ describe('criarRegistro', () => {
     expect(res.gestosRecentes).toEqual(['maosParaCima']);
     expect(r.ultima()!.t).toBe(6000);
   });
+  it('FR-20 (v13.3.0): quadros da tela e leituras de pose por segundo, separados (só o quadro que aplicou uma leitura tem deteccaoMs)', () => {
+    const r = criarRegistro();
+    for (let i = 0; i < 60; i++) r.adicionar(amostra(1000 + i * 16, { deteccaoMs: i % 4 === 0 ? 60 : null }));
+    expect(r.resumo(1000 + 59 * 16)).toMatchObject({ fps: 60, leiturasPorS: 15, deteccaoMediaMs: 60 });
+  });
   it('sem amostras com detecção, as médias são null', () => {
     const r = criarRegistro();
     r.adicionar(amostra(100, { deteccaoMs: null }));
-    expect(r.resumo(100)).toMatchObject({ fps: 1, deteccaoMediaMs: null, deteccaoMaxMs: null });
+    expect(r.resumo(100)).toMatchObject({ fps: 1, leiturasPorS: 0, deteccaoMediaMs: null, deteccaoMaxMs: null });
   });
   it('AC-12.4: exportar devolve versão, data e cópia das amostras', () => {
     const r = criarRegistro(60_000, () => '2026-10-28T12:00:00.000Z');
@@ -93,5 +98,13 @@ describe('descreverAceleracao', () => {
   });
   it('sem renderizador conhecido', () => {
     expect(descreverAceleracao('GPU', null)).toEqual({ software: false, texto: 'GPU · renderizador desconhecido' });
+  });
+});
+
+describe('resumo: só o último segundo até `agora` (AC-12.3)', () => {
+  it('amostras depois de `agora` (o painel redesenha com o `agora` de até 500 ms atrás) não entram na conta', () => {
+    const r = criarRegistro();
+    for (let t = 0; t < 2000; t += 1000 / 60) r.adicionar(amostra(t, { deteccaoMs: null }));
+    expect(r.resumo(1000).fps).toBe(60);
   });
 });

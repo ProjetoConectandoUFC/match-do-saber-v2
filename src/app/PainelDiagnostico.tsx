@@ -7,6 +7,13 @@ const n2 = (v: number) => v.toFixed(2);
 const linhaPunho = (rotulo: string, p: PontoMedido | undefined, acima: boolean | undefined) =>
   p ? `${rotulo}: y=${n2(p.y)} conf ${n2(p.conf)}${acima ? ' · acima do ombro' : ''}` : `${rotulo}: —`;
 
+/** Onde a detecção roda (FR-20, v13.3.0: worker ou thread principal), o delegate, o renderizador e o aquecimento. */
+function textoAceleracao(a: Aceleracao): string {
+  const onde = a.onde === 'worker' ? 'worker · ' : a.onde === 'principal' ? 'thread principal · ' : '';
+  const aquec = a.aquecimentoMs !== undefined ? ` · aquecimento ${a.aquecimentoMs} ms` : '';
+  return `${a.software ? '⚠ ' : ''}${onde}${a.texto}${aquec}`;
+}
+
 /** Painel do modo de diagnóstico (FR-12, AC-12.3); atualiza a cada 500 ms. */
 /** `aceleracao`: onde a detecção roda (performance, 23/11); ⚠ quando está na CPU. */
 export function PainelDiagnostico({ registro, onBaixar, aceleracao }: { registro: Registro; onBaixar: () => void; aceleracao?: Aceleracao | null }) {
@@ -22,9 +29,10 @@ export function PainelDiagnostico({ registro, onBaixar, aceleracao }: { registro
   const cab = a?.medidas.cabeca;
   return (
     <aside className={s.diagnostico} aria-label="Diagnóstico">
-      <p>{`quadros/s: ${r.fps}`}</p>
+      {/* FR-20 (v13.3.0): quadros da tela e leituras de pose, separados. */}
+      <p>{`quadros/s: ${r.fps} (tela) · leituras/s: ${r.leiturasPorS}`}</p>
       <p>{`detecção: ${det}`}</p>
-      <p>{`aceleração: ${aceleracao ? `${aceleracao.software ? '⚠ ' : ''}${aceleracao.texto}` : '—'}`}</p>
+      <p>{`aceleração: ${aceleracao ? textoAceleracao(aceleracao) : '—'}`}</p>
       <p>{`pessoas: ${a?.pessoas ?? 0} · modo: ${a ? MODO_ROTULO[a.modo] : '—'} · tela: ${a?.tela ?? '—'}`}</p>
       <p>{linhaPunho('punho D', a?.pontos.punhoD, a?.medidas.maos?.direita)}</p>
       <p>{linhaPunho('punho E', a?.pontos.punhoE, a?.medidas.maos?.esquerda)}</p>

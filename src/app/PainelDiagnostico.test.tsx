@@ -50,3 +50,24 @@ describe('PainelDiagnostico', () => {
     expect(baixar).toHaveBeenCalledOnce();
   });
 });
+
+// FR-20 (v13.3.0, Fase 52.6): quadros da tela e leituras de pose separados; onde a detecção roda.
+describe('PainelDiagnostico (FR-20)', () => {
+  it('mostra quadros da tela e leituras de pose por segundo, separados', () => {
+    const r = criarRegistro();
+    const agora = performance.now();
+    for (let i = 0; i < 60; i++) {
+      r.adicionar({ t: agora - 990 + i * 16, dtMs: 16, deteccaoMs: i % 4 === 0 ? 60 : null, pessoas: 1, tela: 'espera', modo: 'corpo', pontos: {}, medidas: {}, gestos: [] });
+    }
+    render(<PainelDiagnostico registro={r} onBaixar={() => {}} />);
+    expect(screen.getByRole('complementary', { name: 'Diagnóstico' })).toHaveTextContent('quadros/s: 60 (tela) · leituras/s: 15');
+  });
+  it('mostra se a detecção roda no worker ou na thread principal, e o aquecimento do modelo', () => {
+    const { rerender } = render(<PainelDiagnostico registro={criarRegistro()} onBaixar={() => {}}
+      aceleracao={{ software: false, texto: 'GPU · AMD Radeon', onde: 'worker', aquecimentoMs: 1200 }} />);
+    const painel = () => screen.getByRole('complementary', { name: 'Diagnóstico' });
+    expect(painel()).toHaveTextContent('aceleração: worker · GPU · AMD Radeon · aquecimento 1200 ms');
+    rerender(<PainelDiagnostico registro={criarRegistro()} onBaixar={() => {}} aceleracao={{ software: true, texto: 'CPU (a GPU falhou)', onde: 'principal' }} />);
+    expect(painel()).toHaveTextContent('aceleração: ⚠ thread principal · CPU (a GPU falhou)');
+  });
+});

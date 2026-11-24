@@ -9,7 +9,10 @@ export interface PontoMedido { x: number; y: number; conf: number }
 export interface Amostra {
   t: number;
   dtMs: number;
-  /** null quando não houve detecção (sem câmera ou menu aberto sem rastreador). */
+  /**
+   * Uma amostra por quadro da tela. v13.3.0 (FR-20): deteccaoMs só no quadro que aplicou uma leitura nova de pose
+   * (a detecção roda fora do laço de desenho); null nos outros e sem câmera. Pontos e medidas: da última leitura.
+   */
   deteccaoMs: number | null;
   pessoas: number;
   tela: string;
@@ -32,7 +35,8 @@ export function extrairPontos(pose: Pose | null): Amostra['pontos'] {
 }
 
 /** Onde a detecção de pose roda (performance, 23/11): `software` quando está na CPU, direto ou por WebGL emulado. */
-export interface Aceleracao { software: boolean; texto: string }
+/** `onde` e `aquecimentoMs` (FR-20, v13.3.0): worker ou thread principal, e quanto o modelo levou para aquecer. */
+export interface Aceleracao { software: boolean; texto: string; onde?: 'worker' | 'principal'; aquecimentoMs?: number }
 
 const RENDERIZADOR_SOFTWARE = /swiftshader|llvmpipe|softpipe|basic render|software/i;
 
@@ -45,7 +49,10 @@ export function descreverAceleracao(delegate: 'GPU' | 'CPU', renderizador: strin
 }
 
 export interface Resumo {
+  /** Quadros da tela no último segundo. */
   fps: number;
+  /** Leituras de pose aplicadas no último segundo (FR-20, v13.3.0). */
+  leiturasPorS: number;
   deteccaoMediaMs: number | null;
   deteccaoMaxMs: number | null;
   gestosRecentes: Gesto[];
@@ -77,10 +84,11 @@ export function criarRegistro(
       if (amostras[0]!.t < limite) amostras = amostras.filter((x) => x.t >= limite);
     },
     resumo(agora) {
-      const ultimoSegundo = amostras.filter((a) => a.t > agora - 1000);
+      const ultimoSegundo = amostras.filter((a) => a.t > agora - 1000 && a.t <= agora);
       const det = ultimoSegundo.map((a) => a.deteccaoMs).filter((d): d is number => d !== null);
       return {
         fps: ultimoSegundo.length,
+        leiturasPorS: det.length,
         deteccaoMediaMs: det.length ? Math.round(det.reduce((s, d) => s + d, 0) / det.length) : null,
         deteccaoMaxMs: det.length ? Math.round(Math.max(...det)) : null,
         gestosRecentes: amostras.filter((a) => a.t > agora - 5000).flatMap((a) => a.gestos),
