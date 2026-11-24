@@ -10,6 +10,11 @@ const SONS: Record<Exclude<Som, 'carta'>, Nota[]> = {
     { freq: 990, duracao: 0.2, tipo: 'triangle', volume: 0.2, atraso: 0.1 },
   ],
   erro: [{ freq: 220, ate: 140, duracao: 0.35, tipo: 'sawtooth', volume: 0.12 }],
+  // Baque do carimbo (AC-19.2, v13.4.0): um "tum" grave e curto, que cai rápido, com um estalo seco por cima.
+  carimbo: [
+    { freq: 160, ate: 45, duracao: 0.16, tipo: 'sine', volume: 0.45 },
+    { freq: 120, ate: 60, duracao: 0.05, tipo: 'square', volume: 0.08 },
+  ],
   // Vinheta do resumo (AC-11.6, v11.0.0): sempre em dó maior, crescendo com a faixa; de 1 a 1,5 s, nunca triste.
   fim1: [
     { freq: 392, duracao: 0.32, tipo: 'triangle', volume: 0.18 }, // sol: "quase…"
@@ -70,8 +75,11 @@ function tocarPapel(c: AudioContext, fator: number) {
   fonte.stop(inicio + PAPEL.duracao);
 }
 
-/** `fator`: volume dos Ajustes (AC-9.29): 1 = Alto (como antes), 0,6 = Médio, 0,3 = Baixo. */
-export interface Tocador { tocar(som: Som, fator?: number): void; desbloquear(): void }
+/**
+ * `fator`: volume dos Ajustes (AC-9.29): 1 = Alto (como antes), 0,6 = Médio, 0,3 = Baixo. `semitons` (v13.4.0, AC-19.5):
+ * desloca todas as notas do som (o acerto sobe com a sequência); 0 = o tom de sempre. Não vale para a `carta` (ruído).
+ */
+export interface Tocador { tocar(som: Som, fator?: number, semitons?: number): void; desbloquear(): void }
 
 export function criarTocador(): Tocador {
   let ctx: AudioContext | null = null;
@@ -92,7 +100,7 @@ export function criarTocador(): Tocador {
       const c = obter();
       if (c?.state === 'suspended') c.resume().catch(() => {});
     },
-    tocar(som, fator = 1) {
+    tocar(som, fator = 1, semitons = 0) {
       const c = obter();
       if (!c) return;
       if (som === 'carta') {
@@ -104,13 +112,14 @@ export function criarTocador(): Tocador {
         }
         return;
       }
+      const tom = 2 ** (semitons / 12);
       for (const n of SONS[som]) {
         const inicio = c.currentTime + (n.atraso ?? 0);
         const osc = c.createOscillator();
         const ganho = c.createGain();
         osc.type = n.tipo;
-        osc.frequency.setValueAtTime(n.freq, inicio);
-        if (n.ate) osc.frequency.exponentialRampToValueAtTime(n.ate, inicio + n.duracao);
+        osc.frequency.setValueAtTime(n.freq * tom, inicio);
+        if (n.ate) osc.frequency.exponentialRampToValueAtTime(n.ate * tom, inicio + n.duracao);
         ganho.gain.setValueAtTime(n.volume * fator, inicio);
         ganho.gain.exponentialRampToValueAtTime(0.001, inicio + n.duracao);
         osc.connect(ganho);

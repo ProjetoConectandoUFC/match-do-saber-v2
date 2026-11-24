@@ -121,7 +121,7 @@ function Jogo({ repo, estadoBanco, onBancoAlterado }: {
   const linhasResumo = useMemo(() => (partidaResumo ? linhasDoResumo(partidaResumo.cards, partidaResumo.resultados) : []), [partidaResumo]);
   // v13.4.0 (AC-19.1, FR-21): intensidade efetiva dos efeitos (teto de prefers-reduced-motion), para a tela inteira.
   const juice = useIntensidadeEfetiva(cfg.ajustes.efeitos);
-  useSons(estado, cfg.ajustes.som, FATOR_VOLUME[cfg.ajustes.volume]); // AC-9.29
+  useSons(estado, cfg.ajustes.som, FATOR_VOLUME[cfg.ajustes.volume], juice); // AC-9.29; AC-19.2/AC-19.5
   // Foto do resumo (FR-13): só com a câmera ativa; fica só neste estado React, com as âncoras do rosto
   // calculadas pela pose do mesmo quadro (AC-13.6), que posicionam o filtro da faixa no resumo (AC-13.8, v11.0.0).
   const foto = useFotoPartida<FotoPartida>(estado, cfg.ajustes.foto, () =>
