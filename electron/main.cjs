@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { criarBancoLocal } = require('./banco-local.cjs');
 const { linkExterno } = require('./links.cjs');
-const { escutar } = require('./servidor.cjs');
+const { cabecalhosArquivo, escutar } = require('./servidor.cjs');
 const { aplicarSwitchesGpu } = require('./gpu.cjs');
 
 // Porta fixa para manter as configurações do jogo (localStorage é por origem); se ocupada, usa outra.
@@ -86,7 +86,7 @@ function tratar(req, res) {
   if (!arquivo.startsWith(DIST)) return enviar(res, 403, 'Proibido', 'text/plain');
   if (!fs.existsSync(arquivo) || fs.statSync(arquivo).isDirectory()) arquivo = path.join(DIST, 'index.html');
   const tipo = MIME[path.extname(arquivo).toLowerCase()] || 'application/octet-stream';
-  res.writeHead(200, { 'Content-Type': tipo });
+  res.writeHead(200, cabecalhosArquivo(tipo));
   fs.createReadStream(arquivo).pipe(res);
 }
 

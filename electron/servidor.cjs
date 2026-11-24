@@ -23,4 +23,13 @@ function escutar(criar, portaPreferida, host) {
   });
 }
 
-module.exports = { escutar };
+// NFR Security (v10.2.0): a mesma política da meta de index.html, também no cabeçalho, para valer no Web Worker da
+// pose (FR-20, v13.3.0), que não herda a meta da página. Bloqueia o registro de uso do MediaPipe (odml.pa.googleapis.com).
+const CSP = "connect-src 'self' blob: data:";
+
+/** Cabeçalhos de um arquivo estático do jogo. */
+function cabecalhosArquivo(tipo) {
+  return { 'Content-Type': tipo, 'Content-Security-Policy': CSP };
+}
+
+module.exports = { escutar, cabecalhosArquivo };

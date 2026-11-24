@@ -57,3 +57,16 @@ describe('escutar', () => {
     await expect(escutar(criarSempreFalha, 37425, '127.0.0.1')).rejects.toThrow('sem rede');
   });
 });
+
+// NFR Security (v10.2.0) com o Web Worker da pose (FR-20, v13.3.0): o worker não herda a CSP da meta de index.html; o
+// servidor local manda a mesma política no cabeçalho de todo arquivo, então ela vale também para o worker.
+describe('cabecalhosArquivo', () => {
+  it('manda o tipo e a mesma connect-src de index.html', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { cabecalhosArquivo } = await import('./servidor.cjs');
+    const meta = /<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]+)"/i.exec(readFileSync('index.html', 'utf8'))?.[1];
+    const c = cabecalhosArquivo('text/javascript; charset=utf-8');
+    expect(c['Content-Type']).toBe('text/javascript; charset=utf-8');
+    expect(c['Content-Security-Policy']).toBe(meta);
+  });
+});

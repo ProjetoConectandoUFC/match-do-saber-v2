@@ -2,6 +2,7 @@ import { FilesetResolver, PoseLandmarker } from '@mediapipe/tasks-vision';
 import { descreverAceleracao, type Aceleracao } from '../core/diagnostico';
 import { esperaOcupada, lerDeteccaoFalsa, poseFalsa } from '../core/deteccaoFalsa';
 import type { Pose } from '../core/gestos';
+import { renderizadorWebgl } from './renderizador';
 
 export interface Rastreador {
   detectar(video: HTMLVideoElement, tMs: number): Pose[];
@@ -10,19 +11,8 @@ export interface Rastreador {
   aceleracao?: Aceleracao;
 }
 
-/** O renderizador WebGL da página (ex.: "ANGLE (AMD, ...)" ou "SwiftShader"); null se o navegador não informa. */
-function renderizadorWebgl(): string | null {
-  try {
-    const gl = document.createElement('canvas').getContext('webgl2') ?? document.createElement('canvas').getContext('webgl');
-    if (!gl) return null;
-    const info = gl.getExtension('WEBGL_debug_renderer_info');
-    const r = gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER);
-    gl.getExtension('WEBGL_lose_context')?.loseContext();
-    return typeof r === 'string' && r ? r : null;
-  } catch {
-    return null;
-  }
-}
+/** Quantas pessoas o modelo procura por quadro (AC-1.5: o jogador central entre passantes). */
+export const NUM_POSES = 3;
 
 export async function criarRastreador(): Promise<Rastreador> {
   // Fase 52.1 (v13.3.0): só nos E2E de cadência, uma detecção falsa de duração conhecida.
@@ -40,14 +30,14 @@ export async function criarRastreador(): Promise<Rastreador> {
     PoseLandmarker.createFromOptions(vision, {
       baseOptions: { modelAssetPath: `${base}mediapipe/pose_landmarker_lite.task`, delegate },
       runningMode: 'VIDEO',
-      numPoses: 3,
+      numPoses: NUM_POSES,
     });
   let delegate: 'GPU' | 'CPU' = 'GPU';
   const landmarker = await criar('GPU').catch(() => {
     delegate = 'CPU';
     return criar('CPU');
   });
-  const aceleracao = descreverAceleracao(delegate, renderizadorWebgl());
+  const aceleracao = descreverAceleracao(delegate, renderizadorWebgl(() => document.createElement('canvas')));
   let ultimo = -1;
   let fechado = false;
   return {
